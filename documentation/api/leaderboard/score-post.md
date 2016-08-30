@@ -37,9 +37,7 @@ latitude            | No        | String    | Latitude of player
 
 ### Response
 
-Status code: 202 - Accepted
-
-TODO: Should not be the same response as request
+Status code: 201 - Created
 
 ### JSON Body
 ```json
