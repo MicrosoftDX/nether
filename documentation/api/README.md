@@ -8,7 +8,6 @@ The REST API for Nether is and should be designed to be easy to use and conform 
 
 The API should conform to the "normal" guidance of returning HTTP Response Codes that conform to the [HTTP Standard](https://tools.ietf.org/html/rfc7231).
 
------ | ------------------------------ | ----------
 Code  | Reason-Phrase                  | Cacheable 
 ----- | ------------------------------ | ----------
 100   | Continue                       | False     
