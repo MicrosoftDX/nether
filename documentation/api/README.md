@@ -2,7 +2,7 @@
 
 ## API Design Philosopy
 
-The REST API for Nether is and should be designed to be easy to use and conform to the "normal" guidance of how a good REST API should look like. The Azure REST API (specifically the Azure Resource Manager, ARM, REST API) has and should influence the design and documentation of Nether's API. While still conforming to "best practices" of REST APIs, Nether's API has to take special consideration of beeing efficient "enough" for the different gaming scenarios it tries to solve.
+The REST API for Nether is and should be designed to be easy to use and conform to the "normal" guidance of how a good REST API should look like. The Azure REST API (specifically the [Azure Resource Manager, ARM, REST API](https://msdn.microsoft.com/en-us/library/azure/dn790568.aspx)) has and should influence the design and documentation of Nether's API. While still conforming to "best practices" of REST APIs, Nether's API has to take special consideration of beeing efficient "enough" for the different gaming scenarios it tries to solve.
 
 ## HTTP Response Codes
 
