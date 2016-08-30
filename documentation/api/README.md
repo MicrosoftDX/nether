@@ -8,50 +8,50 @@ The REST API for Nether is and should be designed to be easy to use and conform 
 
 The API should conform to the "normal" guidance of returning HTTP Response Codes that conform to the [HTTP Standard](https://tools.ietf.org/html/rfc7231).
 
-|------|-------------------------------|-----------|
-| Code | Reason-Phrase                 | Cacheable |
-|------|-------------------------------|-----------|
-| 100  | Continue                      | False     |
-| 101  | Switching Protocols           | False     |
-| 200  | OK                            | True      |
-| 201  | Created                       | False     |
-| 202  | Accepted                      | False     |
-| 203  | Non-Authoritative Information | True      |
-| 204  | No Content                    | True      |
-| 205  | Reset Content                 | False     |
-| 206  | Partial Content               | True      |
-| 300  | Multiple Choices              | True      |
-| 301  | Moved Permanently             | True      |
-| 302  | Found                         | False     |
-| 303  | See Other                     | False     |
-| 304  | Not Modified                  | False     |
-| 305  | Use Proxy                     | False     |
-| 307  | Temporary Redirect            | False     |
-| 400  | Bad Request                   | False     |
-| 401  | Unauthorized                  | False     |
-| 402  | Payment Required              | False     |
-| 403  | Forbidden                     | False     |
-| 404  | Not Found                     | True      |
-| 405  | Method Not Allowed            | True      |
-| 406  | Not Acceptable                | False     |
-| 407  | Proxy Authentication Required | False     |
-| 408  | Request Timeout               | False     |
-| 409  | Conflict                      | False     |
-| 410  | Gone                          | True      |
-| 411  | Length Required               | False     |
-| 412  | Precondition Failed           | False     |
-| 413  | Payload Too Large             | False     |
-| 414  | URI Too Long                  | True      |
-| 415  | Unsupported Media Type        | False     |
-| 416  | Range Not Satisfiable         | False     |
-| 417  | Expectation Failed            | False     |
-| 426  | Upgrade Required              | False     |
-| 500  | Internal Server Error         | False     |
-| 501  | Not Implemented               | True      |
-| 502  | Bad Gateway                   | False     |
-| 503  | Service Unavailable           | False     |
-| 504  | Gateway Timeout               | False     |
-| 505  | HTTP Version Not Supported    | False     |
+------ | ------------------------------- | -----------
+ Code  |  Reason-Phrase                  |  Cacheable 
+------ | ------------------------------- | -----------
+ 100   |  Continue                       |  False     
+ 101   |  Switching Protocols            |  False     
+ 200   |  OK                             |  True      
+ 201   |  Created                        |  False     
+ 202   |  Accepted                       |  False     
+ 203   |  Non-Authoritative Information  |  True      
+ 204   |  No Content                     |  True      
+ 205   |  Reset Content                  |  False     
+ 206   |  Partial Content                |  True      
+ 300   |  Multiple Choices               |  True      
+ 301   |  Moved Permanently              |  True      
+ 302   |  Found                          |  False     
+ 303   |  See Other                      |  False     
+ 304   |  Not Modified                   |  False     
+ 305   |  Use Proxy                      |  False     
+ 307   |  Temporary Redirect             |  False     
+ 400   |  Bad Request                    |  False     
+ 401   |  Unauthorized                   |  False     
+ 402   |  Payment Required               |  False     
+ 403   |  Forbidden                      |  False     
+ 404   |  Not Found                      |  True      
+ 405   |  Method Not Allowed             |  True      
+ 406   |  Not Acceptable                 |  False     
+ 407   |  Proxy Authentication Required  |  False     
+ 408   |  Request Timeout                |  False     
+ 409   |  Conflict                       |  False     
+ 410   |  Gone                           |  True      
+ 411   |  Length Required                |  False     
+ 412   |  Precondition Failed            |  False     
+ 413   |  Payload Too Large              |  False     
+ 414   |  URI Too Long                   |  True      
+ 415   |  Unsupported Media Type         |  False     
+ 416   |  Range Not Satisfiable          |  False     
+ 417   |  Expectation Failed             |  False     
+ 426   |  Upgrade Required               |  False     
+ 500   |  Internal Server Error          |  False     
+ 501   |  Not Implemented                |  True      
+ 502   |  Bad Gateway                    |  False     
+ 503   |  Service Unavailable            |  False     
+ 504   |  Gateway Timeout                |  False     
+ 505   |  HTTP Version Not Supported     |  False     
 
 ### 200 OK
 
