@@ -22,17 +22,19 @@ TODO: Write description of request here
     "country": "Sweden",
     "city": "Stockholm",
     "longitude": "xxx",
-    "latitude": "xxx"
+    "latitude": "xxx",
+    "max-session-length": 3600
 }
 ```
 
-Element name | Required | Type   | Description
------------- | -------- | ------ | -----------
-event        | Yes      | String | Specifies the type of event being sent. Has to be "session-start".
-game         | No       | String | Specifies what game is being played. Useful if backend handles more than one game.
-player       | No       | String | Specifies the player playing the game.
-ip           | No       | String | Specifies IP of game client.
-...          | ...      | ...    | ...
+Element name       | Required | Type   | Description
+------------------ | -------- | ------ | -----------
+event              | Yes      | String | Specifies the type of event being sent. Has to be "session-start".
+game               | No       | String | Specifies what game is being played. Useful if backend handles more than one game.
+player             | No       | String | Specifies the player playing the game.
+ip                 | No       | String | Specifies IP of game client.
+...                | ...      | ...    | ...
+max-session-length | No       | Int    | Number of seconds a session is maximum expected to be
 
 ### Response
 
