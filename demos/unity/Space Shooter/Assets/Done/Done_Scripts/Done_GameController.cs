@@ -79,5 +79,6 @@ public class Done_GameController : MonoBehaviour
 	{
 		gameOverText.text = "Game Over!";
 		gameOver = true;
-	}
+        StartCoroutine(Nether.PostScore());
+    }
 }
