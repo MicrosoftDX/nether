@@ -1,0 +1,69 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.Leaderboard.Web", "src\Leaderboard\Nether.Leaderboard.Web\Nether.Leaderboard.Web.xproj", "{344C1255-EE9B-4E0C-A921-884715FCCA6B}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.PlayerManagement.Web", "src\PlayerManagement\Nether.PlayerManagement.Web\Nether.PlayerManagement.Web.xproj", "{C0B83ADA-5916-4C5D-906B-9D1C83562AA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Leaderboard", "Leaderboard", "{EBC4B75B-AC18-4303-85FF-00C260D5EF98}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlayerManagement", "PlayerManagement", "{E3F05AFB-CD97-4F62-8568-396292A54837}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.Leaderboard.Data", "src\Leaderboard\Nether.Leaderboard.Data\Nether.Leaderboard.Data.xproj", "{10CAC5B7-8CD4-450C-9676-C4C3093B8BEB}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.PlayerManagement.Data", "src\PlayerManagement\Nether.PlayerManagement.Data\Nether.PlayerManagement.Data.xproj", "{5DD80009-073A-43D6-ACAC-33B6BE9EA055}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.Leaderboard.Data.InMemory", "src\Leaderboard\Nether.Leaderboard.Data.InMemory\Nether.Leaderboard.Data.InMemory.xproj", "{9DA192B6-202B-47BF-87DA-0CBF3C8EEA14}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.Leaderboard.Web.Tests", "tests\Leaderboard\Nether.Leaderboard.Web.Tests\Nether.Leaderboard.Web.Tests.xproj", "{80DFD445-168A-4A0E-8D3C-AA29CDA05E7C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D5706806-E8EF-4983-A31C-8841DFE169A8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Leaderboard", "Leaderboard", "{59B7B79A-CD8C-46B0-849C-AC42B37B0F2F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{344C1255-EE9B-4E0C-A921-884715FCCA6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{344C1255-EE9B-4E0C-A921-884715FCCA6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{344C1255-EE9B-4E0C-A921-884715FCCA6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{344C1255-EE9B-4E0C-A921-884715FCCA6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0B83ADA-5916-4C5D-906B-9D1C83562AA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0B83ADA-5916-4C5D-906B-9D1C83562AA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0B83ADA-5916-4C5D-906B-9D1C83562AA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0B83ADA-5916-4C5D-906B-9D1C83562AA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10CAC5B7-8CD4-450C-9676-C4C3093B8BEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10CAC5B7-8CD4-450C-9676-C4C3093B8BEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10CAC5B7-8CD4-450C-9676-C4C3093B8BEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10CAC5B7-8CD4-450C-9676-C4C3093B8BEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DD80009-073A-43D6-ACAC-33B6BE9EA055}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DD80009-073A-43D6-ACAC-33B6BE9EA055}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DD80009-073A-43D6-ACAC-33B6BE9EA055}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DD80009-073A-43D6-ACAC-33B6BE9EA055}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DA192B6-202B-47BF-87DA-0CBF3C8EEA14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DA192B6-202B-47BF-87DA-0CBF3C8EEA14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DA192B6-202B-47BF-87DA-0CBF3C8EEA14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DA192B6-202B-47BF-87DA-0CBF3C8EEA14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80DFD445-168A-4A0E-8D3C-AA29CDA05E7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80DFD445-168A-4A0E-8D3C-AA29CDA05E7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80DFD445-168A-4A0E-8D3C-AA29CDA05E7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80DFD445-168A-4A0E-8D3C-AA29CDA05E7C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{344C1255-EE9B-4E0C-A921-884715FCCA6B} = {EBC4B75B-AC18-4303-85FF-00C260D5EF98}
+		{C0B83ADA-5916-4C5D-906B-9D1C83562AA4} = {E3F05AFB-CD97-4F62-8568-396292A54837}
+		{10CAC5B7-8CD4-450C-9676-C4C3093B8BEB} = {EBC4B75B-AC18-4303-85FF-00C260D5EF98}
+		{5DD80009-073A-43D6-ACAC-33B6BE9EA055} = {E3F05AFB-CD97-4F62-8568-396292A54837}
+		{9DA192B6-202B-47BF-87DA-0CBF3C8EEA14} = {EBC4B75B-AC18-4303-85FF-00C260D5EF98}
+		{80DFD445-168A-4A0E-8D3C-AA29CDA05E7C} = {59B7B79A-CD8C-46B0-849C-AC42B37B0F2F}
+		{59B7B79A-CD8C-46B0-849C-AC42B37B0F2F} = {D5706806-E8EF-4983-A31C-8841DFE169A8}
+	EndGlobalSection
+EndGlobal
