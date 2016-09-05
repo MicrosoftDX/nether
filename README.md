@@ -43,5 +43,29 @@ To build Nether from PowerShell, ensure you have installed the dependencies from
 
 To build Nether from Bash, ensure you have installed the dependencies from the Development Machine Setup above and run `build.sh`
 
+<<<<<<< c176716a49062c6cbe1db40a426c912a21950070
 ## Packages
 MongoDB.Driver 2.3.0-rc1
+=======
+
+
+## Running Nether
+
+### Development environment with Visual Studio
+
+TODO
+
+### Development environment - PowerShell
+
+TODO
+ - need to set ASPNETCORE_ENVIRONMENT to Development (VS does this automatically)
+
+### Development environment - Bash
+
+TODO
+ - need to set ASPNETCORE_ENVIRONMENT to Development (VS does this automatically)
+
+### Deploying Nether
+
+TODO
+>>>>>>> WIP
