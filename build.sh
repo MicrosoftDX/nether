@@ -16,18 +16,18 @@ do
 done < "build/build-order.txt"
 
 
-echo
-echo "*** Running tests"
-
-testExitCode=0
-while IFS= read -r var
-do
-  dotnet test "$var"
-  lastexit=$?
-  if [ $lastexit -ne 0 ]
-  then
-    testExitCode=$lastexit
-  fi
-done < "build/test-order.txt"
-
-exit $testExitCode
+#echo
+#echo "*** Running tests"
+#
+#testExitCode=0
+#while IFS= read -r var
+#do
+#  dotnet test "$var"
+#  lastexit=$?
+#  if [ $lastexit -ne 0 ]
+#  then
+#    testExitCode=$lastexit
+#  fi
+#done < "build/test-order.txt"
+#
+#exit $testExitCode
