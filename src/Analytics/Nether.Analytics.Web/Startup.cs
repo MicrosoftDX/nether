@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Nether.Analytics.Data;
 
 namespace Nether.Analytics.Web
 {
@@ -29,6 +30,10 @@ namespace Nether.Analytics.Web
         {
             // Add framework services.
             services.AddMvc();
+
+            //TODO: Fix so that both Swagger and dependency injection is configurable
+            services.AddSwaggerGen();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +43,8 @@ namespace Nether.Analytics.Web
             loggerFactory.AddDebug();
 
             app.UseMvc();
+            app.UseSwagger(routeTemplate: "api/swagger/{apiVersion}/swagger.json");
+            app.UseSwaggerUi(baseRoute: "api/swagger/ui", swaggerUrl: "/api/swagger/v1/swagger.json");
         }
     }
 }
