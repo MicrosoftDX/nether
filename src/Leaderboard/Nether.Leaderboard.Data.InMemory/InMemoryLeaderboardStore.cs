@@ -10,7 +10,7 @@ namespace Nether.Leaderboard.Data.InMemory
     {        
         private static Dictionary<string, List<int>> leaderboard = new Dictionary<string, List<int>>();
 
-        public async Task<Dictionary<string, int>> GetScoreAsync()
+        public async Task<Dictionary<string, int>> GetScoresAsync()
         {
             Dictionary<string, int> result = new Dictionary<string, int>();
             foreach (var item in leaderboard)
@@ -32,6 +32,11 @@ namespace Nether.Leaderboard.Data.InMemory
                 leaderboard.Add(gamertag, new List<int>() { score });
             }
             return Task.CompletedTask;
+        }
+
+        public Task SaveScoresAsync(string gamertag, int score)
+        {
+            throw new NotImplementedException();
         }
     }
 }

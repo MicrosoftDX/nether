@@ -26,7 +26,7 @@ namespace Nether.Leaderboard.Web.Controllers
         [HttpGet]
         public async Task<ActionResult> Get() // TODO add swagger annotations for response shape
         {
-            var scores = await _store.GetScoreAsync();
+            var scores = await _store.GetScoresAsync();
             var resultModel = new ScoresListRequestModel<ScoreRequestModel>
             {
                 Leaderboard = ToScoresModel(scores)
