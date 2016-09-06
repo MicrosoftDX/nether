@@ -1,5 +1,7 @@
 #!/bin/bash
 
+dotnet --version
+
 # TODO - investigate the exception when running dotnet restore with parallelisation
 echo "*** Restoring packages"
 dotnet restore --disable-parallel
