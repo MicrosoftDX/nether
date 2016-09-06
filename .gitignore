@@ -256,3 +256,6 @@ paket-files/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
+
+# OS X
+.DS_Store
