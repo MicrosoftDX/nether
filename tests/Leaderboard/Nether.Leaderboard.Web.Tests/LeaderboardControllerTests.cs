@@ -20,7 +20,11 @@ namespace Nether.Leaderboard.Web.Tests
             var controller = new LeaderboardController(leaderboardStore.Object);
 
             // Act
-            var result = await controller.Post(-1);
+            var result = await controller.Post(new ScoreRequestModel
+            {
+                Gamertag = "anonymous",
+                Score = -1
+            }); 
 
             // Assert
             var statusCodeResult = Assert.IsType<StatusCodeResult>(result);
@@ -35,7 +39,11 @@ namespace Nether.Leaderboard.Web.Tests
             var controller = new LeaderboardController(leaderboardStore.Object);
 
             // Act
-            var result = await controller.Post(-1);
+            var result = await controller.Post(new ScoreRequestModel
+            {
+                Gamertag = "anonymous",
+                Score = -1
+            });
 
             // Assert
             leaderboardStore.Verify(o => o.SaveScoreAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);

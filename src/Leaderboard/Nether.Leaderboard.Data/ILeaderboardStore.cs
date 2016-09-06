@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Nether.Leaderboard.Data
 {
     public interface ILeaderboardStore
     {
-        Task SaveScoreAsync(string playerId, int score);
-        Task<int> GetScoreAsync(string v);
+        Task SaveScoreAsync(string gamertag, int score);
+        Task<Dictionary<string, int>> GetScoreAsync();
     }
 }
