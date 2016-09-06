@@ -17,4 +17,3 @@ Method  | Request URI
 ------- | -----------------------
 GET     | /leaderboards/
 POST    | /leaderboards/scores/
-GET     | /leaderboards/scores/
