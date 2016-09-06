@@ -2,6 +2,11 @@
 
 TODO: Put description here
 
+master branch status
+
+[![Build status](https://ci.appveyor.com/api/projects/status/4fgaaeakffhf32vu/branch/master?svg=true)](https://ci.appveyor.com/project/stuartleeks/nether/branch/master)
+
+
 ## Prerequisites
 
 ### Development Machine Setup
