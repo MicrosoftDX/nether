@@ -8,7 +8,7 @@ See Common parameters and headers that are used by all requests related to the L
 
 Method  | Request URI
 ------- | -----------
-POST    | https://nethertheproject.com/scores?api-version={api-version}
+POST    | /leaderboards/{game-id}/scores?api-version={api-version}
 
 ### JSON Body
 ```json

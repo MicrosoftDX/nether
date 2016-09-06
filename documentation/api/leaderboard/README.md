@@ -11,4 +11,10 @@ The following information is common to all tasks that you might do related to le
 * Set the Content-Type header to application/json.
 * Set the Authorization header to a JSON Web Token that you obtained from ... TODO
 
+## API Overview
 
+Method  | Request URI
+------- | -----------------------
+GET     | /leaderboards/
+POST    | /leaderboards/scores/
+GET     | /leaderboards/scores/
