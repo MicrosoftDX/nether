@@ -27,22 +27,22 @@ namespace Nether.Leaderboard.Web.Controllers
         public async Task<ActionResult> Get() // TODO add swagger annotations for response shape
         {
             var scores = await _store.GetScoresAsync();
-            var resultModel = new ScoresListRequestModel<ScoreRequestModel>
+            var resultModel = new ScoresListResponeModel<ScoreResponseModel>
             {
                 Leaderboard = ToScoresModel(scores)
             };
             return Ok(resultModel);
         }
 
-        private List<ScoreRequestModel> ToScoresModel(Dictionary<string, int> scores)
+        private List<ScoreResponseModel> ToScoresModel(IEnumerable<GameScore> scores)
         {
-            List<ScoreRequestModel> result = new List<ScoreRequestModel>();
+            List<ScoreResponseModel> result = new List<ScoreResponseModel>();
             foreach (var item in scores)
             {
-                result.Add(new ScoreRequestModel
+                result.Add(new ScoreResponseModel
                 {
-                    Gamertag = item.Key,
-                    Score = item.Value
+                    Gamertag = item.Gamertag,
+                    Score = item.Score
                 });
             }
             return result;

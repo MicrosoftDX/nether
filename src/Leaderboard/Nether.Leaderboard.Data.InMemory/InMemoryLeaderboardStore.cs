@@ -10,12 +10,12 @@ namespace Nether.Leaderboard.Data.InMemory
     {        
         private static Dictionary<string, List<int>> leaderboard = new Dictionary<string, List<int>>();
 
-        public async Task<Dictionary<string, int>> GetScoresAsync()
+        public async Task<IEnumerable<GameScore>> GetScoresAsync()
         {
-            Dictionary<string, int> result = new Dictionary<string, int>();
+            var result = new List<GameScore>();
             foreach (var item in leaderboard)
             {
-                result[item.Key] = item.Value.Max();
+                result.Add(new GameScore(item.Key, item.Value.Max()));
             }
 
             return result;
