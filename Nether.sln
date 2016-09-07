@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analytics", "Analytics", "{
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.Analytics.Data", "src\Analytics\Nether.Analytics.Data\Nether.Analytics.Data.xproj", "{C12E91C6-37ED-49D2-B1DD-E21A3646E7C4}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.Leaderboard.Data.Mongodb", "src\Leaderboard\Nether.Leaderboard.Data.Mongodb\Nether.Leaderboard.Data.Mongodb.xproj", "{8A1E0559-F764-4DAD-A455-40A4A90224B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{C12E91C6-37ED-49D2-B1DD-E21A3646E7C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C12E91C6-37ED-49D2-B1DD-E21A3646E7C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C12E91C6-37ED-49D2-B1DD-E21A3646E7C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A1E0559-F764-4DAD-A455-40A4A90224B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A1E0559-F764-4DAD-A455-40A4A90224B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A1E0559-F764-4DAD-A455-40A4A90224B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A1E0559-F764-4DAD-A455-40A4A90224B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,5 +97,6 @@ Global
 		{C4710F9F-BF3A-4FF6-AF96-F94F637A9E1B} = {1D8B2676-E540-4E0D-B3C8-E7D3B14A3025}
 		{1D8B2676-E540-4E0D-B3C8-E7D3B14A3025} = {D5706806-E8EF-4983-A31C-8841DFE169A8}
 		{C12E91C6-37ED-49D2-B1DD-E21A3646E7C4} = {644B223C-E0D1-4B67-A57C-EECF37E9BE56}
+		{8A1E0559-F764-4DAD-A455-40A4A90224B7} = {EBC4B75B-AC18-4303-85FF-00C260D5EF98}
 	EndGlobalSection
 EndGlobal

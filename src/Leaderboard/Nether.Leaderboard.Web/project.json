@@ -16,7 +16,8 @@
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Swashbuckle": "6.0.0-beta902",
     "Nether.Leaderboard.Data": "1.0.0-*",
-    "Nether.Leaderboard.Data.InMemory": "1.0.0-*"
+    "Nether.Leaderboard.Data.InMemory": "1.0.0-*",
+    "Nether.Leaderboard.Data.Mongodb": "1.0.0-*"
   },
 
   "tools": {

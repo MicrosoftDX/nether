@@ -24,3 +24,6 @@ All code should compile and work on both Windows and OSX hence we strive to use 
 ### [Unity](http://unity3d.com)
 
 We support and build SDKs for Unity but Nether as service is available from any operating system that would have access to Internet.
+
+## Packages
+MongoDB.Driver 2.3.0-rc1
