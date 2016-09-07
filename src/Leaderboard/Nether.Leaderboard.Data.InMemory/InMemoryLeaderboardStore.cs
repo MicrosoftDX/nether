@@ -7,18 +7,36 @@ using Nether.Leaderboard.Data;
 namespace Nether.Leaderboard.Data.InMemory
 {
     public class InMemoryLeaderboardStore : ILeaderboardStore
-    {
-        private static int _score = 0;
+    {        
+        private static Dictionary<string, List<int>> leaderboard = new Dictionary<string, List<int>>();
 
-        public Task<int> GetScoreAsync(string v)
+        public async Task<IEnumerable<GameScore>> GetScoresAsync()
         {
-            return Task.FromResult(_score);
+            var result = new List<GameScore>();
+            foreach (var item in leaderboard)
+            {
+                result.Add(new GameScore(item.Key, item.Value.Max()));
+            }
+
+            return result;
         }
 
-        public Task SaveScoreAsync(string playerId, int score)
+        public Task SaveScoreAsync(string gamertag, int score)
         {
-            _score = score;
+            if (leaderboard.ContainsKey(gamertag))
+            {
+                leaderboard[gamertag].Add(score);
+            }
+            else
+            {
+                leaderboard.Add(gamertag, new List<int>() { score });
+            }
             return Task.CompletedTask;
+        }
+
+        public Task SaveScoresAsync(string gamertag, int score)
+        {
+            throw new NotImplementedException();
         }
     }
 }
