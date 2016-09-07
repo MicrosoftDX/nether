@@ -15,26 +15,39 @@ namespace Nether.Leaderboard.Data.Mongodb
 
         private static string _collectionName = "Leaderboard";
 
-        public MongodbLeaderboardStore(string connectionString) // connect to local "test" db
+        public MongodbLeaderboardStore(string connectionString) 
         {
             _client = new MongoClient();
             _database = _client.GetDatabase(connectionString);
         }
 
-        public Task<IEnumerable<GameScore>> GetScoresAsync()
+        public async Task<IEnumerable<GameScore>> GetScoresAsync()
         {
-            return null;
+            List<GameScore> result = new List<GameScore>();
+                         
+            var collection = _database.GetCollection<BsonDocument>(_collectionName);
+            var aggregate = collection.Aggregate().Group(new BsonDocument { { "_id", "$gamertag" }, { "highScore", new BsonDocument("$max", "$score") } });  
+                          
+            foreach (var document in aggregate.ToList())
+            {
+                result.Add(new GameScore(document.GetValue("_id").AsString, document.GetValue("highScore").AsInt32));
+            }
+               
+            return result;            
         }
 
+        
         public async Task SaveScoreAsync(string gamertag, int score)
         {
             var document = new BsonDocument
             {
-                {gamertag, score}
+                {"gamertag", gamertag },
+                { "score" ,score}
             };
 
             var collection = _database.GetCollection<BsonDocument>(_collectionName);
-            await collection.InsertOneAsync(document);
+            await collection.InsertOneAsync(document);            
         }
+        
     }
 }
