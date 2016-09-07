@@ -1,2 +1,4 @@
 # force bash script files to have LF only, even on Windows so that the scripts run in the bash console!
 *.sh text eol=lf
+build/build-order.txt eol=lf
+build/test-order.txt eol=lf
