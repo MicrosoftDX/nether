@@ -24,23 +24,16 @@ namespace Nether.Leaderboard.Data.Mongodb
         public async Task<IEnumerable<GameScore>> GetScoresAsync()
         {
             List<GameScore> result = new List<GameScore>();
-            try
-            {                
-                var collection = _database.GetCollection<BsonDocument>(_collectionName);
-
-                var aggregate = collection.Aggregate().Group(new BsonDocument { { "_id", "$gamertag" }, { "highScore", new BsonDocument("$max", "$score") } });                
-                foreach (var document in aggregate.ToList())
-                {
-                    result.Add(new GameScore(document.GetValue("_id").AsString, document.GetValue("highScore").AsInt32));
-                }
-               
-
-                return result;
-            }
-            catch (Exception e)
+                         
+            var collection = _database.GetCollection<BsonDocument>(_collectionName);
+            var aggregate = collection.Aggregate().Group(new BsonDocument { { "_id", "$gamertag" }, { "highScore", new BsonDocument("$max", "$score") } });  
+                          
+            foreach (var document in aggregate.ToList())
             {
-                return result;               
+                result.Add(new GameScore(document.GetValue("_id").AsString, document.GetValue("highScore").AsInt32));
             }
+               
+            return result;            
         }
 
         
@@ -53,14 +46,7 @@ namespace Nether.Leaderboard.Data.Mongodb
             };
 
             var collection = _database.GetCollection<BsonDocument>(_collectionName);
-            try
-            {
-                await collection.InsertOneAsync(document);
-            }
-            catch (Exception e)
-            {
-
-            }
+            await collection.InsertOneAsync(document);            
         }
         
     }
