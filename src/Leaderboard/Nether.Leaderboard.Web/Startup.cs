@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nether.Leaderboard.Data;
-using Nether.Leaderboard.Data.InMemory;
 using Nether.Leaderboard.Data.Mongodb;
 
 namespace Nether.Leaderboard.Web
@@ -41,7 +40,7 @@ namespace Nether.Leaderboard.Web
 
         private MongodbLeaderboardStore getConfiguration(IServiceProvider arg)
         {
-            string connectionString = Configuration.GetValue<string>("mondbConnectionString");
+            string connectionString = Configuration.GetValue<string>("MongoDbConnectionString");
             return new MongodbLeaderboardStore(connectionString);
         }
 
