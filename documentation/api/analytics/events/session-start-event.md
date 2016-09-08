@@ -16,7 +16,7 @@ See Common parameters and headers that are used by all requests related to analy
 
 Method  | Request URI
 ------- | -----------
-POST    | https://eventhuburl.com/blabla/blabla
+POST    | <event hub url>
 
 TODO: Write description of request here
 

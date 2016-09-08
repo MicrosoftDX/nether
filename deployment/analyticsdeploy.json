@@ -1,95 +1,109 @@
-{  
-   "$schema":"http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
-   "contentVersion":"1.0.0.0",
-   "parameters":{  
-        "storageAccountType": {
-            "type": "string",
-            "defaultValue": "Standard_LRS",
-            "allowedValues": [ "Standard_LRS", "Standard_ZRS", "Standard_GRS", "Standard_RAGRS", "Premium_LRS" ]
-        },
-      "namespaceName":{  
-         "type":"string",
-         "metadata":{  
-            "description":"Name of the EventHub namespace"
-         }
-      },
-      "eventHubName":{  
-         "type":"string",
-         "metadata":{  
-            "description":"Name of the Event Hub"
-         }
-      },
-      "consumerGroupName":{  
-         "type":"string",
-         "metadata":{  
-            "description":"Name of the Consumer Group"
-         }
+{
+  "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    },
+    "namespaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the EventHub namespace"
       }
-   },
-   "variables":{  
-      "location":"[resourceGroup().location]",
-      "apiVersion":"2015-08-01",
-      "defaultSASKeyName":"RootManageSharedAccessKey",
-      "authRuleResourceId":"[resourceId('Microsoft.EventHub/namespaces/authorizationRules', parameters('namespaceName'), variables('defaultSASKeyName'))]",
-      "blobStorageAnalytics": "netheranalyticsstor",
-      "rawDataContainerName": "rawdata",
-      "asaJobName": "netherJob",
-      "asaJobQuery": "SELECT\r\n\t*\r\nINTO\r\nBlobSink\r\nFROM\r\nInput",
-      "asaConsumerGroupName": "asa",
-      "ehVersion": "2015-08-01"
-   },
-"resources":[  
-        {
-            "apiVersion": "2015-06-15",
-            "type": "Microsoft.Storage/storageAccounts",
-            "name": "[variables('blobStorageAnalytics')]",
-            "location": "[resourceGroup().location]",
-            "properties": { "accountType": "[parameters('storageAccountType')]" }
-        },
-        {  
-         "apiVersion":"[variables('ehVersion')]",
-         "name":"[parameters('namespaceName')]",
-         "type":"Microsoft.EventHub/Namespaces",
-         "location":"[variables('location')]",
-         "sku":{  
-            "name":"Standard",
-            "tier":"Standard"
-         },
-         "resources":[  
-            {  
-               "apiVersion":"[variables('ehVersion')]",
-               "name":"[parameters('eventHubName')]",
-               "type":"EventHubs",
-               "dependsOn":[  
-                  "[concat('Microsoft.EventHub/namespaces/', parameters('namespaceName'))]"
-               ],
-               "properties":{  
-                  "path":"[parameters('eventHubName')]"
-               },
-               "resources":[  
-                  {  
-                     "apiVersion":"[variables('ehVersion')]",
-                     "name":"[parameters('consumerGroupName')]",
-                     "type":"ConsumerGroups",
-                     "dependsOn":[  
-                        "[parameters('eventHubName')]"
-                     ],
-                     "properties":{  
-
-                     }
-                  }
-               ]
-            }
-         ]
+    },
+    "eventHubName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Event Hub"
+      }
+    },
+    "blobStorageName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Azure Blob Storage Account"
+      }
+    },
+    "consumerGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Consumer Group"
+      }
+    }
+  },
+  "variables": {
+    "location": "[resourceGroup().location]",
+    "apiVersion": "2015-08-01",
+    "defaultSASKeyName": "RootManageSharedAccessKey",
+    "authRuleResourceId": "[resourceId('Microsoft.EventHub/namespaces/authorizationRules', parameters('namespaceName'), variables('defaultSASKeyName'))]",
+    "rawDataContainerName": "rawdata",
+    "asaJobName": "netherJob",
+    "asaJobQuery": "SELECT\r\n\t*\r\nINTO\r\nBlobSink\r\nFROM\r\nInput",
+    "asaConsumerGroupName": "asa",
+    "ehVersion": "2015-08-01"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[parameters('blobStorageName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "accountType": "[parameters('storageAccountType')]"
+      }
+    },
+    {
+      "apiVersion": "[variables('ehVersion')]",
+      "name": "[parameters('namespaceName')]",
+      "type": "Microsoft.EventHub/Namespaces",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "Standard",
+        "tier": "Standard"
       },
+      "resources": [
+        {
+          "apiVersion": "[variables('ehVersion')]",
+          "name": "[parameters('eventHubName')]",
+          "type": "EventHubs",
+          "dependsOn": [
+            "[concat('Microsoft.EventHub/namespaces/', parameters('namespaceName'))]"
+          ],
+          "properties": {
+            "path": "[parameters('eventHubName')]"
+          },
+          "resources": [
+            {
+              "apiVersion": "[variables('ehVersion')]",
+              "name": "[parameters('consumerGroupName')]",
+              "type": "ConsumerGroups",
+              "dependsOn": [
+                "[parameters('eventHubName')]"
+              ],
+              "properties": {}
+            }
+          ]
+        }
+      ]
+    },
     {
       "apiVersion": "2015-09-01",
       "type": "Microsoft.StreamAnalytics/StreamingJobs",
       "name": "[variables('asaJobName')]",
       "location": "[resourceGroup().location]",
       "properties": {
-        /* The only supported value for ASA sku is standard https://msdn.microsoft.com/en-us/library/azure/dn834994.aspx */
-        "sku": { "name": "Standard" },
+        "sku": {
+          "name": "Standard"
+        },
+        "outputStartMode": "CustomTime",
+        "outputStartTime": "2016-09-08T14:26:00Z",
         "inputs": [
           {
             "name": "Input",
@@ -97,15 +111,17 @@
               "type": "stream",
               "serialization": {
                 "type": "JSON",
-                "properties": { "encoding": "UTF8" }
+                "properties": {
+                  "encoding": "UTF8"
+                }
               },
               "datasource": {
                 "type": "Microsoft.ServiceBus/EventHub",
                 "properties": {
-                    "eventHubName": "[parameters('eventHubName')]",
-                    "serviceBusNamespace": "[parameters('namespaceName')]",
-                    "sharedAccessPolicyName": "[variables('defaultSASKeyName')]",
-                    "sharedAccessPolicyKey":"[listkeys(variables('authRuleResourceId'), variables('apiVersion')).primaryKey]",
+                  "eventHubName": "[parameters('eventHubName')]",
+                  "serviceBusNamespace": "[parameters('namespaceName')]",
+                  "sharedAccessPolicyName": "[variables('defaultSASKeyName')]",
+                  "sharedAccessPolicyKey": "[listkeys(variables('authRuleResourceId'), variables('apiVersion')).primaryKey]",
                   "consumerGroupName": "[variables('asaConsumerGroupName')]"
                 }
               }
@@ -135,8 +151,8 @@
                 "properties": {
                   "storageAccounts": [
                     {
-                      "accountName": "[variables('blobStorageAnalytics')]",
-                      "accountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('blobStorageAnalytics')), '2015-06-15').key1]"
+                      "accountName": "[parameters('blobStorageName')]",
+                      "accountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('blobStorageName')), '2015-06-15').key1]"
                     }
                   ],
                   "container": "[variables('rawDataContainerName')]",
@@ -151,18 +167,18 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaceName'))]",
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('blobStorageAnalytics'))]"
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('blobStorageName'))]"
       ]
     }
-   ],
-   "outputs":{  
-      "NamespaceConnectionString":{  
-         "type":"string",
-         "value":"[listkeys(variables('authRuleResourceId'), variables('apiVersion')).primaryConnectionString]"
-      },
-      "SharedAccessPolicyPrimaryKey":{  
-         "type":"string",
-         "value":"[listkeys(variables('authRuleResourceId'), variables('apiVersion')).primaryKey]"
-      }
-   }
+  ],
+  "outputs": {
+    "NamespaceConnectionString": {
+      "type": "string",
+      "value": "[listkeys(variables('authRuleResourceId'), variables('apiVersion')).primaryConnectionString]"
+    },
+    "SharedAccessPolicyPrimaryKey": {
+      "type": "string",
+      "value": "[listkeys(variables('authRuleResourceId'), variables('apiVersion')).primaryKey]"
+    }
+  }
 }
