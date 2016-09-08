@@ -11,8 +11,8 @@
     "IdentityServer4": "1.0.0-rc1",
     "Microsoft.AspNetCore.Mvc": "1.0.0",
     "Microsoft.AspNetCore.StaticFiles": "1.0.0",
-    "Microsoft.Extensions.Configuration.FileExtensions": "1.1.0-alpha1-22050",
-    "Microsoft.Extensions.Configuration.Json": "1.1.0-alpha1-22050",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
     "Microsoft.Extensions.Logging.Debug": "1.0.0"
   },
 
