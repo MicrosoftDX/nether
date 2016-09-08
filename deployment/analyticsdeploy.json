@@ -45,8 +45,8 @@
     "authRuleResourceId": "[resourceId('Microsoft.EventHub/namespaces/authorizationRules', parameters('namespaceName'), variables('defaultSASKeyName'))]",
     "rawDataContainerName": "rawdata",
     "asaJobName": "netherJob",
-    "asaJobQuery": "SELECT\r\n\t*\r\nINTO\r\nBlobSink\r\nFROM\r\nInput",
-    "asaConsumerGroupName": "asa",
+    "asaJobQuery": "Select\r\n\tCount(*) as numUsers,\r\n\tSystem.timestamp as time\r\nInto BlobSink\r\nFrom\r\n\tInput timestamp by ClientUtc\r\nWhere\r\n\tEvent = 'heartbeat'\r\n\tor Event = 'session-start'\r\nGroup By\r\n\ttumblingwindow(second, 1), time",
+    "asaConsumerGroupName": "[parameters('consumerGroupName')]",
     "ehVersion": "2015-08-01"
   },
   "resources": [

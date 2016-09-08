@@ -3,16 +3,16 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "namespaceName": {
-            "value": "netheranalytics-ns"
+            "value": "netherstuff-ns"
         },
         "eventHubName": {
             "value": "gameevents"
         },
         "consumerGroupName": {
-            "value": "default"
+            "value": "asa"
         },
         "blobStorageName": {
-            "value": "netheranalyticsst"
+            "value": "netherstuff"
         }
     }
 }
