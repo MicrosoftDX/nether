@@ -2,6 +2,9 @@
     "version": "0.1.0",
     "windows": {
         "command": "powershell",
+        "args": [
+            "-NoProfile", "-ExecutionPolicy", "ByPass"
+        ],
         "tasks": [
             {
                 "taskName": "build",
