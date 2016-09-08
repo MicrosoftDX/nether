@@ -17,7 +17,7 @@ Get-Content build\build-order.txt | ForEach-Object {
    Write-Output "*** dotnet build $_"
     dotnet build $_
    if ($LASTEXITCODE -ne 0){
-       $testExitCode = $LASTEXITCODE
+       $buildExitCode = $LASTEXITCODE
    }
 }
 if($buildExitCode -ne 0) {
