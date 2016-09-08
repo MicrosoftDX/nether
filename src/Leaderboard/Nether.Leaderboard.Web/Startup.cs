@@ -41,7 +41,8 @@ namespace Nether.Leaderboard.Web
         private MongodbLeaderboardStore getConfiguration(IServiceProvider arg)
         {
             string connectionString = Configuration.GetValue<string>("MongoDbConnectionString");
-            return new MongodbLeaderboardStore(connectionString);
+            string dbName = Configuration.GetValue<string>("MongoDbDatabaseName");
+            return new MongodbLeaderboardStore(connectionString, dbName);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

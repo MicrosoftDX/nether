@@ -7,6 +7,10 @@ namespace Nether.Leaderboard.Data
 {
     public class GameScore
     {
+        public GameScore()
+        {
+
+        }
         public GameScore(string gamertag, int score)
         {
             Gamertag = gamertag;
