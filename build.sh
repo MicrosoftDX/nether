@@ -21,12 +21,15 @@ buildExitCode=0
 
 while IFS= read -r var
 do
-  echo "*** dotnet build $var"
-  dotnet build "$var"
-  lastexit=$?
-  if [ $lastexit -ne 0 ]
+  if [ "x$var" != "x" ]
   then
-    buildExitCode=$lastexit
+    echo "*** dotnet build $var"
+    dotnet build "$var"
+    lastexit=$?
+    if [ $lastexit -ne 0 ]
+    then
+      buildExitCode=$lastexit
+    fi
   fi
 done < "build/build-order.txt"
 
