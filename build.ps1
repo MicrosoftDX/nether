@@ -1,3 +1,5 @@
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+
 dotnet --version
 
 $buildExitCode=0
@@ -13,7 +15,7 @@ if ($buildExitCode -ne 0){
 
 Write-Output "*** Building projects"
 $buildExitCode=0
-Get-Content build\build-order.txt | ForEach-Object { 
+Get-Content "$here\build\build-order.txt" | ForEach-Object { 
    Write-Output "*** dotnet build $_"
     dotnet build $_
    if ($LASTEXITCODE -ne 0){
