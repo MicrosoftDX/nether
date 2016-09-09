@@ -1,16 +1,50 @@
 {
     "version": "0.1.0",
-    "command": "dotnet",
+    "windows": {
+        "command": "powershell",
+        "args": [
+            "-NoProfile", "-ExecutionPolicy", "ByPass"
+        ],
+        "tasks": [
+            {
+                "taskName": "build",
+                "args": [
+                    "${workspaceRoot}\\build.ps1"
+                ],
+                "suppressTaskName": true,
+                "isBuildCommand": true,
+                "problemMatcher": "$msCompile"
+            }
+        ]
+    },
+    "linux": {
+        "command": "sh",
+        "tasks": [
+            {
+                "taskName": "build",
+                "args": [
+                    "${workspaceRoot}/build.sh"
+                ],
+                "suppressTaskName": true,
+                "isBuildCommand": true,
+                "problemMatcher": "$msCompile"
+            }
+        ]
+    },
+    "osx": {
+        "command": "sh",
+        "tasks": [
+            {
+                "taskName": "build",
+                "args": [
+                    "${workspaceRoot}/build.sh"
+                ],
+                "suppressTaskName": true,
+                "isBuildCommand": true,
+                "problemMatcher": "$msCompile"
+            }
+        ]
+    },
     "isShellCommand": true,
-    "args": [],
-    "tasks": [
-        {
-            "taskName": "build",
-            "args": [
-                "${workspaceRoot}\\src\\Leaderboard\\Nether.Leaderboard.Web\\project.json"
-            ],
-            "isBuildCommand": true,
-            "problemMatcher": "$msCompile"
-        }
-    ]
+    "args": []
 }
