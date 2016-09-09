@@ -1,27 +1,27 @@
 {
-    "version": "1.0.0-*",
+  "version": "1.0.0-*",
 
-    "dependencies": {
-        "Moq": "4.6.38-alpha",
-        "Nether.Leaderboard.Data": "1.0.0-*",
-        "Nether.Leaderboard.Web": "1.0.0-*",
-        "NETStandard.Library": "1.6.0",
-        "xunit": "2.2.0-beta2-build3300",
-        "dotnet-test-xunit": "1.0.0-rc2-build10025"
-    },
-    "testRunner": "xunit",
-    "frameworks": {
-        "netcoreapp1.0": {
-            "dependencies": {
-                "Microsoft.NETCore.App": {
-                    "type": "platform",
-                    "version": "1.0.0"
-                }
-            },
-            "imports": [
-                "dotnet5.6",
-                "portable-net451+win8"
-            ]
+  "dependencies": {
+    "Moq": "4.6.38-alpha",
+    "Nether.Leaderboard.Data": "1.0.0-*",
+    "Nether.Leaderboard.Web": "1.0.0-*",
+    "NETStandard.Library": "1.6.0",
+    "xunit": "2.2.0-beta2-build3300",
+    "dotnet-test-xunit": "1.0.0-rc2-build10025"
+  },
+  "testRunner": "xunit",
+  "frameworks": {
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
         }
+      },
+      "imports": [
+        "dotnet5.6",
+        "portable-net451+win8"
+      ]
     }
+  }
 }

@@ -1,4 +1,4 @@
 {
-    "projects": [ "src/Leaderboard" ]
+  "projects": [ "src/Leaderboard", "src/Analytics" ]
 
 }
