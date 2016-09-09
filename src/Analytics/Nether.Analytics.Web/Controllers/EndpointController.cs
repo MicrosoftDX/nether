@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nether.Analytics.Web.Models;
-using System.Security.Cryptography;
-using System.Text;
-using System.Net;
-using System.Globalization;
+using Nether.Analytics.Web.Utilities;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,11 +13,32 @@ namespace Nether.Analytics.Web.Controllers
     {
         // GET: api/endpoint
         [HttpGet]
-        public async Task<ActionResult> Get()
+        public ActionResult Get()
         {
-            throw new NotImplementedException();
+            //TODO: Pick up the hardcoded information below from configuration as soon as we have that implemented
+            var keyName = "test";
+            var sharedAccessKey = "w8UXwPyDp6a0oxbeUyFoy6HEUOzJ0cYnVjt7muyzps4=";
+            var resource = "https://netheranalytics-ns.servicebus.windows.net/gameevents/messages";
+            var timeSpan = TimeSpan.FromHours(24);
 
-            return Ok(new EndpointResponseModel());
+            var validUntilUtc = DateTime.UtcNow + timeSpan;
+
+            var authorization = SharedAccessSignatureTokenProviderEx.GetSharedAccessSignature(
+                keyName,
+                sharedAccessKey,
+                resource,
+                timeSpan);
+
+            var result = new AnalyticsEndpointInfoResponseModel()
+            {
+                HttpVerb = "POST",
+                Url = resource,
+                ContentType = "application/json",
+                Authorization = authorization,
+                ValidUntilUtc = validUntilUtc
+            };
+
+            return Ok(result);
         }
     }
 }
