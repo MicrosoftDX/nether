@@ -1,0 +1,184 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_GRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    },
+    "namespaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the EventHub namespace"
+      }
+    },
+    "eventHubName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Event Hub"
+      }
+    },
+    "blobStorageName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Azure Blob Storage Account"
+      }
+    },
+    "consumerGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Consumer Group"
+      }
+    }
+  },
+  "variables": {
+    "location": "[resourceGroup().location]",
+    "apiVersion": "2015-08-01",
+    "defaultSASKeyName": "RootManageSharedAccessKey",
+    "authRuleResourceId": "[resourceId('Microsoft.EventHub/namespaces/authorizationRules', parameters('namespaceName'), variables('defaultSASKeyName'))]",
+    "rawDataContainerName": "rawdata",
+    "asaJobName": "netherJob",
+    "asaJobQuery": "Select\r\n\tCount(*) as numUsers,\r\n\tSystem.timestamp as time\r\nInto BlobSink\r\nFrom\r\n\tInput timestamp by ClientUtc\r\nWhere\r\n\tEvent = 'heartbeat'\r\n\tor Event = 'session-start'\r\nGroup By\r\n\ttumblingwindow(second, 1), time",
+    "asaConsumerGroupName": "[parameters('consumerGroupName')]",
+    "ehVersion": "2015-08-01"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[parameters('blobStorageName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "accountType": "[parameters('storageAccountType')]"
+      }
+    },
+    {
+      "apiVersion": "[variables('ehVersion')]",
+      "name": "[parameters('namespaceName')]",
+      "type": "Microsoft.EventHub/Namespaces",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "Standard",
+        "tier": "Standard"
+      },
+      "resources": [
+        {
+          "apiVersion": "[variables('ehVersion')]",
+          "name": "[parameters('eventHubName')]",
+          "type": "EventHubs",
+          "dependsOn": [
+            "[concat('Microsoft.EventHub/namespaces/', parameters('namespaceName'))]"
+          ],
+          "properties": {
+            "path": "[parameters('eventHubName')]"
+          },
+          "resources": [
+            {
+              "apiVersion": "[variables('ehVersion')]",
+              "name": "[parameters('consumerGroupName')]",
+              "type": "ConsumerGroups",
+              "dependsOn": [
+                "[parameters('eventHubName')]"
+              ],
+              "properties": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "apiVersion": "2015-09-01",
+      "type": "Microsoft.StreamAnalytics/StreamingJobs",
+      "name": "[variables('asaJobName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "sku": {
+          "name": "Standard"
+        },
+        "outputStartMode": "CustomTime",
+        "outputStartTime": "2016-09-09T08:00:00.23Z",
+        "inputs": [
+          {
+            "name": "Input",
+            "properties": {
+              "type": "stream",
+              "serialization": {
+                "type": "JSON",
+                "properties": {
+                  "encoding": "UTF8"
+                }
+              },
+              "datasource": {
+                "type": "Microsoft.ServiceBus/EventHub",
+                "properties": {
+                  "eventHubName": "[parameters('eventHubName')]",
+                  "serviceBusNamespace": "[parameters('namespaceName')]",
+                  "sharedAccessPolicyName": "[variables('defaultSASKeyName')]",
+                  "sharedAccessPolicyKey": "[listkeys(variables('authRuleResourceId'), variables('apiVersion')).primaryKey]",
+                  "consumerGroupName": "[variables('asaConsumerGroupName')]"
+                }
+              }
+            }
+          }
+        ],
+        "transformation": {
+          "name": "[variables('asaJobName')]",
+          "properties": {
+            "streamingUnits": 1,
+            "query": "[variables('asaJobQuery')]"
+          }
+        },
+        "outputs": [
+          {
+            "name": "BlobSink",
+            "properties": {
+              "serialization": {
+                "type": "CSV",
+                "properties": {
+                  "fieldDelimiter": ",",
+                  "encoding": "UTF8"
+                }
+              },
+              "datasource": {
+                "type": "Microsoft.Storage/Blob",
+                "properties": {
+                  "storageAccounts": [
+                    {
+                      "accountName": "[parameters('blobStorageName')]",
+                      "accountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('blobStorageName')), '2015-06-15').key1]"
+                    }
+                  ],
+                  "container": "[variables('rawDataContainerName')]",
+                  "pathPattern": "sessions",
+                  "dateFormat": "yyyy/MM/dd",
+                  "timeFormat": "HH"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaceName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('blobStorageName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "NamespaceConnectionString": {
+      "type": "string",
+      "value": "[listkeys(variables('authRuleResourceId'), variables('apiVersion')).primaryConnectionString]"
+    },
+    "SharedAccessPolicyPrimaryKey": {
+      "type": "string",
+      "value": "[listkeys(variables('authRuleResourceId'), variables('apiVersion')).primaryKey]"
+    }
+  }
+}
