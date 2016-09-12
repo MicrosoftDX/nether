@@ -36,17 +36,8 @@ namespace Nether.Leaderboard.Web
 
             services.AddSwaggerGen();
 
-            ////services.AddTransient<ILeaderboardStore, MongodbLeaderboardStore>(getConfiguration);
-
             services.AddServiceFromConfiguration<ILeaderboardStore>(Configuration, "LeaderboardStore");
         }
-
-        //private MongodbLeaderboardStore getConfiguration(IServiceProvider arg)
-        //{
-        //    string connectionString = Configuration.GetValue<string>("MongoDbConnectionString");
-        //    string dbName = Configuration.GetValue<string>("MongoDbDatabaseName");
-        //    return new MongodbLeaderboardStore(connectionString, dbName);
-        //}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

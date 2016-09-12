@@ -30,6 +30,10 @@ if($buildExitCode -ne 0) {
     exit $buildExitCode
 }
 
+# TODO - think about how to handle this going forwards. e.g. xplat msbuild?
+
+
+
 #$testExitCode = 0
 #Get-Content build\test-order.txt | ForEach-Object { 
 #    dotnet test $_
