@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using Nether.Leaderboard.Data;
-using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+
+using Nether.Leaderboard.Data;
+using Nether.Leaderboard.Web.Models;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,7 +28,7 @@ namespace Nether.Leaderboard.Web.Controllers
         public async Task<ActionResult> Get() // TODO add swagger annotations for response shape
         {
             var scores = await _store.GetScoresAsync();
-            var resultModel = new ScoresListResponeModel<ScoreResponseModel>
+            var resultModel = new ScoresListResponseModel
             {
                 Leaderboard = ToScoresModel(scores)
             };

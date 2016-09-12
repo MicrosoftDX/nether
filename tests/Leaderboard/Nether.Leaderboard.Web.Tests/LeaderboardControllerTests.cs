@@ -2,6 +2,7 @@
 using Moq;
 using Nether.Leaderboard.Data;
 using Nether.Leaderboard.Web.Controllers;
+using Nether.Leaderboard.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
