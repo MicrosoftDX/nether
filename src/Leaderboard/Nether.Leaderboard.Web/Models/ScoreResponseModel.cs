@@ -1,4 +1,4 @@
-﻿namespace Nether.Leaderboard.Web.Controllers
+﻿namespace Nether.Leaderboard.Web.Models
 {
     public class ScoreResponseModel
     {
