@@ -1,6 +1,6 @@
-# Post a Score
+# Get Endpoint Information
 
-Gives information on where and how to send game events to the analytics engine in Nether.
+Retrieves information on where and how to send game events to the analytics engine in Nether.
 
 ## Request
 
