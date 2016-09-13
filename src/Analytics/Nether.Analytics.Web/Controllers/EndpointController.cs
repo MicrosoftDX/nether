@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nether.Analytics.Web.Models;
 using Nether.Analytics.Web.Utilities;
