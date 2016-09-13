@@ -1,5 +1,5 @@
-![Logo](https://github.com/dx-ted-emea/nether/blob/master/logos/both-logo-and-title/logo-title-1109x256.png)
-# Nether - A set of open sourced building blocks for gaming on Azure
+![Nether Logo](https://github.com/dx-ted-emea/nether/blob/master/logos/both-logo-and-title/logo-title-1109x256.png)
+# Building blocks for gaming on Azure
 
 TODO: Put description here
 
