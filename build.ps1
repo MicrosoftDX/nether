@@ -29,13 +29,4 @@ if($buildExitCode -ne 0) {
     Write-Output "*** Build failed"
     exit $buildExitCode
 }
-
-#$testExitCode = 0
-#Get-Content build\test-order.txt | ForEach-Object { 
-#    dotnet test $_
-#    if ($LASTEXITCODE -ne 0){
-#        $testExitCode = $LASTEXITCODE
-#    }
-#}
-#
-#exit $testExitCode
+# TODO - think about how to handle this going forwards. e.g. xplat msbuild?

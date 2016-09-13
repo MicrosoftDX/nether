@@ -1,4 +1,3 @@
 {
-  "projects": [ "src/Leaderboard", "src/Analytics" ]
-
+  "projects": [ "src/Leaderboard", "src/Analytics", "src/Common"  ]
 }
