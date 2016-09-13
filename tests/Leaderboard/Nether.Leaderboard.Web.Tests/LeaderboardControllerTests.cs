@@ -3,10 +3,8 @@ using Moq;
 using Nether.Leaderboard.Data;
 using Nether.Leaderboard.Web.Controllers;
 using Nether.Leaderboard.Web.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Nether.Leaderboard.Data.Mongodb;
 using Xunit;
 
 namespace Nether.Leaderboard.Web.Tests
@@ -21,7 +19,7 @@ namespace Nether.Leaderboard.Web.Tests
             var controller = new LeaderboardController(leaderboardStore.Object);
 
             // Act
-            var result = await controller.Post(new ScoreRequestModel
+            var result = await controller.Post(new LeaderboardPostRequestModel
             {
                 Gamertag = "anonymous",
                 Score = -1
@@ -40,14 +38,14 @@ namespace Nether.Leaderboard.Web.Tests
             var controller = new LeaderboardController(leaderboardStore.Object);
 
             // Act
-            var result = await controller.Post(new ScoreRequestModel
+            var result = await controller.Post(new LeaderboardPostRequestModel
             {
                 Gamertag = "anonymous",
                 Score = -1
             });
 
             // Assert
-            leaderboardStore.Verify(o => o.SaveScoreAsync(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
+            leaderboardStore.Verify(o=>o.SaveScoreAsync(It.IsAny<GameScore>()), Times.Never);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Nether.Leaderboard.Data;
 using Nether.Leaderboard.Web.Models;
+using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,39 +26,35 @@ namespace Nether.Leaderboard.Web.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult> Get() // TODO add swagger annotations for response shape
+        public async Task<ActionResult> Get() //TODO: add swagger annotations for response shape
         {
-            var scores = await _store.GetScoresAsync();
-            var resultModel = new ScoresListResponseModel
+            // Call data store
+            var scores = await _store.GetAllHighScoresAsync();
+
+            // Format response model
+            var resultModel = new LeaderboardGetResponseModel
             {
-                Leaderboard = ToScoresModel(scores)
+                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
+
+            // Return result
             return Ok(resultModel);
         }
 
-        private List<ScoreResponseModel> ToScoresModel(IEnumerable<GameScore> scores)
-        {
-            List<ScoreResponseModel> result = new List<ScoreResponseModel>();
-            foreach (var item in scores)
-            {
-                result.Add(new ScoreResponseModel
-                {
-                    Gamertag = item.Gamertag,
-                    Score = item.Score
-                });
-            }
-            return result;
-        }
-
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody]ScoreRequestModel score)
+        public async Task<ActionResult> Post([FromBody]LeaderboardPostRequestModel score)
         {
+            //TODO: Make validation more sofisticated, perhaps some games want/need negative scores
+            // Validate input
             if (score.Score < 0)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); // TODO return error info in body
+                return StatusCode((int)HttpStatusCode.BadRequest); //TODO: return error info in body
             }
 
-            await _store.SaveScoreAsync(score.Gamertag, score.Score);
+            // Call data store
+            await _store.SaveScoreAsync(new GameScore {Gamertag = score.Gamertag, Score = score.Score});
+
+            // Return result
             return Ok();
         }
     }

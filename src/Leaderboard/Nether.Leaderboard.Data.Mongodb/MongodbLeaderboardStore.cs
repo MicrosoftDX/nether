@@ -1,57 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace Nether.Leaderboard.Data.Mongodb
 {
     public class MongodbLeaderboardStore : ILeaderboardStore
     {
-        protected static IMongoClient _client;
-        protected static IMongoDatabase _database;
+        private readonly IMongoDatabase _database;
 
-        private static string _collectionName = "Leaderboard";
-        private static string _gamertagLabel = "gamertag";
-        private static string _scoreLabel = "score";
+        private IMongoCollection<MongoDbGameScore> ScoresCollection
+            => _database.GetCollection<MongoDbGameScore>("scores");
 
-        public MongodbLeaderboardStore(string connectionString, string dbName) 
-        {            
-            _client = new MongoClient(connectionString);
-            _database = _client.GetDatabase(dbName);
-        }
-
-        public async Task<IEnumerable<GameScore>> GetScoresAsync()
-        {                                   
-            var collection = _database.GetCollection<BsonDocument>(_collectionName);           
-            var all = collection.Find(new BsonDocument()).ToList();
-           
-            var query = (from l in all
-                         group l by l.GetValue(_gamertagLabel) into lbgt
-                         let topscore = lbgt.Max(x => x.GetValue(_scoreLabel))
-                         select new GameScore
-                         {
-                             Gamertag = lbgt.Key.AsString,
-                             Score = topscore.AsInt32
-                         });
-
-            return query.ToList();
-        }
-
-        
-        public async Task SaveScoreAsync(string gamertag, int score)
+        public MongodbLeaderboardStore(string connectionString, string dbName)
         {
-            var document = new BsonDocument
-            {
-                {_gamertagLabel, gamertag },
-                {_scoreLabel ,score}
-            };
-
-            var collection = _database.GetCollection<BsonDocument>(_collectionName);
-            await collection.InsertOneAsync(document);            
+            //TODO: Implement full support for configurable server and database
+            var client = new MongoClient();
+            _database = client.GetDatabase("nether-leaderboard");
         }
-        
+
+        public async Task SaveScoreAsync(GameScore gameScore)
+        {
+            await ScoresCollection.InsertOneAsync(gameScore);
+        }
+
+        public async Task<List<GameScore>> GetAllHighScoresAsync()
+        {
+            var query = from s in ScoresCollection.AsQueryable()
+                        group s by s.Gamertag
+                        into g
+                        orderby g.Max(s => s.Score) descending 
+                        select new GameScore
+                        {
+                            Gamertag = g.Key,
+                            Score = g.Max(s => s.Score)
+                        };
+
+            return await query.ToListAsync();
+        }
     }
 }
