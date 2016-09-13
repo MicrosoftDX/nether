@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nether.Analytics.Web.Models
 {
-    public class AnalyticsEndpointInfoResponseModel
+    public class EndpointGetResponseModel
     {
         public string HttpVerb { get; set; }
         public string Url { get; set; }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nether.Analytics.Web.Models;
 using Nether.Analytics.Web.Utilities;
@@ -29,7 +28,7 @@ namespace Nether.Analytics.Web.Controllers
                 resource,
                 timeSpan);
 
-            var result = new AnalyticsEndpointInfoResponseModel()
+            var result = new EndpointGetResponseModel()
             {
                 HttpVerb = "POST",
                 Url = resource,
