@@ -44,10 +44,8 @@ To build Nether from PowerShell, ensure you have installed the dependencies from
 
 To build Nether from Bash, ensure you have installed the dependencies from the Development Machine Setup above and run `build.sh`
 
-<<<<<<< c176716a49062c6cbe1db40a426c912a21950070
 ## Packages
 MongoDB.Driver 2.3.0-rc1
-=======
 
 
 ## Running Nether
@@ -69,4 +67,3 @@ TODO
 ### Deploying Nether
 
 TODO
->>>>>>> WIP
