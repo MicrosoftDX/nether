@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -35,13 +32,13 @@ namespace Nether.Leaderboard.Web
             //TODO: Fix so that both Swagger and dependency injection is configurable
             services.AddSwaggerGen();
 
-            services.AddTransient<ILeaderboardStore, MongodbLeaderboardStore>(getConfiguration);
+            services.AddTransient<ILeaderboardStore, MongodbLeaderboardStore>(GetConfiguration);
         }
 
-        private MongodbLeaderboardStore getConfiguration(IServiceProvider arg)
+        private MongodbLeaderboardStore GetConfiguration(IServiceProvider arg)
         {
-            string connectionString = Configuration.GetValue<string>("MongoDbConnectionString");
-            string dbName = Configuration.GetValue<string>("MongoDbDatabaseName");
+            var connectionString = Configuration.GetValue<string>("MongoDbConnectionString");
+            var dbName = Configuration.GetValue<string>("MongoDbDatabaseName");
             return new MongodbLeaderboardStore(connectionString, dbName);
         }
 

@@ -28,7 +28,7 @@ namespace Nether.Analytics.Web.Controllers
                 resource,
                 timeSpan);
 
-            var result = new AnalyticsEndpointInfoResponseModel()
+            var result = new EndpointGetResponseModel()
             {
                 HttpVerb = "POST",
                 Url = resource,
