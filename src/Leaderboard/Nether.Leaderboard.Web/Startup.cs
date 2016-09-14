@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nether.Leaderboard.Data;
-using Nether.Leaderboard.Data.Mongodb;
 using System.Reflection.Metadata;
 using Nether.Common.DependencyInjection;
 
@@ -33,14 +32,7 @@ namespace Nether.Leaderboard.Web
 
             services.AddSwaggerGen();
 
-            services.AddTransient<ILeaderboardStore, MongodbLeaderboardStore>(GetConfiguration);
-        }
-
-        private MongodbLeaderboardStore GetConfiguration(IServiceProvider arg)
-        {
-            var connectionString = Configuration.GetValue<string>("MongoDbConnectionString");
-            var dbName = Configuration.GetValue<string>("MongoDbDatabaseName");
-            return new MongodbLeaderboardStore(connectionString, dbName);
+            services.AddServiceFromConfiguration<ILeaderboardStore>(Configuration, "LeaderboardStore");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
