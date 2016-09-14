@@ -15,9 +15,8 @@ namespace Nether.Leaderboard.Data.Mongodb
 
         public MongodbLeaderboardStore(string connectionString, string dbName)
         {
-            //TODO: Implement full support for configurable server and database
-            var client = new MongoClient();
-            _database = client.GetDatabase("nether-leaderboard");
+            var client = new MongoClient(connectionString);
+            _database = client.GetDatabase(dbName);
         }
 
         public async Task SaveScoreAsync(GameScore gameScore)
