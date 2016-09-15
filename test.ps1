@@ -13,6 +13,7 @@ Get-Content "$here\build\test-order.txt" `
     }
 
 if($testExitCode -ne 0) {
+    Write-Output ""
     Write-Output "*** Tests failed"
     exit $testExitCode
 }

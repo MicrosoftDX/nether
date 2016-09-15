@@ -3,31 +3,68 @@
     "windows": {
         "command": "powershell",
         "args": [
-            "-NoProfile", "-ExecutionPolicy", "ByPass"
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "ByPass"
         ],
         "tasks": [
             {
                 "taskName": "build",
                 "args": [
-                    "${workspaceRoot}\\build.ps1"
+                    "${workspaceRoot}\\build.ps1",
+                    "-NoRestore"
                 ],
                 "suppressTaskName": true,
                 "isBuildCommand": true,
                 "problemMatcher": "$msCompile"
+            },
+            {
+                "taskName": "test",
+                "args": [
+                    "${workspaceRoot}\\test.ps1"
+                ],
+                "suppressTaskName": true,
+                "isTestCommand": true,
+                "problemMatcher": "$msCompile"
+            },
+            {
+                "taskName": "restore",
+                "args": [
+                    "dotnet",
+                    "restore"
+                ],
+                "suppressTaskName": true
             }
         ]
     },
     "linux": {
-        "command": "sh",
+        "command": "bash",
         "tasks": [
             {
                 "taskName": "build",
                 "args": [
-                    "${workspaceRoot}/build.sh"
+                    "${workspaceRoot}/build.sh",
+                    "--no-restore"
                 ],
                 "suppressTaskName": true,
                 "isBuildCommand": true,
                 "problemMatcher": "$msCompile"
+            },
+            {
+                "taskName": "test",
+                "args": [
+                    "${workspaceRoot}/test.sh"
+                ],
+                "suppressTaskName": true,
+                "isTestCommand": true,
+                "problemMatcher": "$msCompile"
+            },
+            {
+                "taskName": "restore",
+                "args": [
+                    "dotnet",
+                    "restore"
+                ]
             }
         ]
     },
@@ -37,11 +74,28 @@
             {
                 "taskName": "build",
                 "args": [
-                    "${workspaceRoot}/build.sh"
+                    "${workspaceRoot}/build.sh",
+                    "--no-restore"
                 ],
                 "suppressTaskName": true,
                 "isBuildCommand": true,
                 "problemMatcher": "$msCompile"
+            },
+            {
+                "taskName": "test",
+                "args": [
+                    "${workspaceRoot}/test.sh"
+                ],
+                "suppressTaskName": true,
+                "isTestCommand": true,
+                "problemMatcher": "$msCompile"
+            },
+            {
+                "taskName": "restore",
+                "args": [
+                    "dotnet",
+                    "restore"
+                ]
             }
         ]
     },
