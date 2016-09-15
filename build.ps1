@@ -1,18 +1,27 @@
+
+param(
+    [switch] $NoRestore
+    )
+
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 dotnet --version
 
-$buildExitCode=0
+if ($NoRestore) {
+    Write-Output "*** Skipping package restore"
+} else {
+    $buildExitCode=0
 
-Write-Output "*** Restoring packages"
-dotnet restore
-$buildExitCode = $LASTEXITCODE
-if ($buildExitCode -ne 0){
-    Write-Output "*** Restore failed"
-    exit $buildExitCode
+    Write-Output "*** Restoring packages"
+    dotnet restore
+    $buildExitCode = $LASTEXITCODE
+    if ($buildExitCode -ne 0){
+        Write-Output "*** Restore failed"
+        exit $buildExitCode
+    }
 }
 
-
+Write-Output
 Write-Output "*** Building projects"
 $buildExitCode=0
 Get-Content "$here\build\build-order.txt" `
@@ -26,6 +35,7 @@ Get-Content "$here\build\build-order.txt" `
     }
 
 if($buildExitCode -ne 0) {
+    Write-Output
     Write-Output "*** Build failed"
     exit $buildExitCode
 }

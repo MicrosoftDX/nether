@@ -9,11 +9,20 @@
             {
                 "taskName": "build",
                 "args": [
-                    "${workspaceRoot}\\build.ps1"
+                    "${workspaceRoot}\\build.ps1",
+                    "-NoRestore"
                 ],
                 "suppressTaskName": true,
                 "isBuildCommand": true,
                 "problemMatcher": "$msCompile"
+            },
+            {
+                "taskName": "restore",
+                "args": [
+                    "dotnet",
+                    "restore"
+                ],
+                "suppressTaskName": true
             }
         ]
     },
@@ -23,11 +32,19 @@
             {
                 "taskName": "build",
                 "args": [
-                    "${workspaceRoot}/build.sh"
+                    "${workspaceRoot}/build.sh",
+                    "--no-restore"
                 ],
                 "suppressTaskName": true,
                 "isBuildCommand": true,
                 "problemMatcher": "$msCompile"
+            },
+            {
+                "taskName": "restore",
+                "args": [
+                    "dotnet",
+                    "restore"
+                ]
             }
         ]
     },
@@ -37,11 +54,19 @@
             {
                 "taskName": "build",
                 "args": [
-                    "${workspaceRoot}/build.sh"
+                    "${workspaceRoot}/build.sh",
+                    "--no-restore"
                 ],
                 "suppressTaskName": true,
                 "isBuildCommand": true,
                 "problemMatcher": "$msCompile"
+            },
+            {
+                "taskName": "restore",
+                "args": [
+                    "dotnet",
+                    "restore"
+                ]
             }
         ]
     },
