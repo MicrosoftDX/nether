@@ -27,7 +27,7 @@
         ]
     },
     "linux": {
-        "command": "sh",
+        "command": "bash",
         "tasks": [
             {
                 "taskName": "build",
