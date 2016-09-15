@@ -21,7 +21,7 @@ if ($NoRestore) {
     }
 }
 
-Write-Output
+Write-Output ""
 Write-Output "*** Building projects"
 $buildExitCode=0
 Get-Content "$here\build\build-order.txt" `
@@ -35,7 +35,7 @@ Get-Content "$here\build\build-order.txt" `
     }
 
 if($buildExitCode -ne 0) {
-    Write-Output
+    Write-Output ""
     Write-Output "*** Build failed"
     exit $buildExitCode
 }
