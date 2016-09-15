@@ -1,1 +1,1 @@
-tests/Leaderboard/Nether.Leaderboard.Web.Tests/
+tests/Nether.Web.UnitTests/

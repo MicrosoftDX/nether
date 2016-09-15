@@ -6,14 +6,14 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}\\src\\Leaderboard\\Nether.Leaderboard.Web\\bin\\Debug\\netcoreapp1.0\\Nether.Leaderboard.Web.dll",
+            "program": "${workspaceRoot}\\src\\Nether.Web\\bin\\Debug\\netcoreapp1.0\\Nether.Web.dll",
             "args": [],
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceRoot}\\src\\Nether.Web",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "launchBrowser": {
                 "enabled": true,
-                "args": "${auto-detect-url}",
+                "args": "${auto-detect-url}/api/swagger/ui",
                 "windows": {
                     "command": "cmd.exe",
                     "args": "/C start ${auto-detect-url}"

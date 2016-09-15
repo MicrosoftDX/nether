@@ -1,6 +1,6 @@
-src/Leaderboard/Nether.Leaderboard.Data
-src/Leaderboard/Nether.Leaderboard.Data.Mongodb
-src/Leaderboard/Nether.Leaderboard.Web
+src/Nether.Data.Mongodb
+src/Nether.Web
 src/Identity/Nether.Identity.Development
 src/Identity/Nether.Identity.Development.DummyApi
 src/Identity/Nether.Identity.Development.DummyWeb
+tests/Nether.Web.UnitTests
