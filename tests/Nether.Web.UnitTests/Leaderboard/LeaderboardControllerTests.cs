@@ -4,7 +4,6 @@ using Nether.Leaderboard.Data;
 using Nether.Leaderboard.Web.Controllers;
 using Nether.Leaderboard.Web.Models;
 using System.Threading.Tasks;
-using Nether.Leaderboard.Data.MongoDB;
 using Xunit;
 
 namespace Nether.Leaderboard.Web.Tests
