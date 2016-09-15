@@ -3,7 +3,9 @@
     "windows": {
         "command": "powershell",
         "args": [
-            "-NoProfile", "-ExecutionPolicy", "ByPass"
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "ByPass"
         ],
         "tasks": [
             {
@@ -14,6 +16,15 @@
                 ],
                 "suppressTaskName": true,
                 "isBuildCommand": true,
+                "problemMatcher": "$msCompile"
+            },
+            {
+                "taskName": "test",
+                "args": [
+                    "${workspaceRoot}\\test.ps1"
+                ],
+                "suppressTaskName": true,
+                "isTestCommand": true,
                 "problemMatcher": "$msCompile"
             },
             {
@@ -40,6 +51,15 @@
                 "problemMatcher": "$msCompile"
             },
             {
+                "taskName": "test",
+                "args": [
+                    "${workspaceRoot}/test.sh"
+                ],
+                "suppressTaskName": true,
+                "isTestCommand": true,
+                "problemMatcher": "$msCompile"
+            },
+            {
                 "taskName": "restore",
                 "args": [
                     "dotnet",
@@ -59,6 +79,15 @@
                 ],
                 "suppressTaskName": true,
                 "isBuildCommand": true,
+                "problemMatcher": "$msCompile"
+            },
+            {
+                "taskName": "test",
+                "args": [
+                    "${workspaceRoot}/test.sh"
+                ],
+                "suppressTaskName": true,
+                "isTestCommand": true,
                 "problemMatcher": "$msCompile"
             },
             {
