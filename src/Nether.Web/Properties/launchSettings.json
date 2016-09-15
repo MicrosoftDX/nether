@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Nether.Web": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "localhost:5000/api/swagger/ui",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
