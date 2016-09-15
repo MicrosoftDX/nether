@@ -1,8 +1,8 @@
 ﻿using System;
-using Nether.Analytics.Web.Utilities;
+using Nether.Web.Utilities;
 using Xunit;
 
-namespace Nether.Analytics.Web.Tests
+namespace Nether.Web.UnitTests.Utilities
 {
     public class SharedAccessSignatureTokenProviderExTests
     {

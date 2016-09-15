@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Nether.Leaderboard.Data
+namespace Nether.Data.Leaderboard
 {
     public interface ILeaderboardStore
     {

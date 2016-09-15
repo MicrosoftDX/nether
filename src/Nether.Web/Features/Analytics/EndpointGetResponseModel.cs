@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nether.Analytics.Web.Models
+namespace Nether.Web.Features.Analytics
 {
     public class EndpointGetResponseModel
     {

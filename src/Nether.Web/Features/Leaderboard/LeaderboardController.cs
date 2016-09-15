@@ -1,15 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-using Nether.Leaderboard.Data;
-using Nether.Leaderboard.Web.Models;
+using Nether.Data.Leaderboard;
 using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Nether.Leaderboard.Web.Controllers
+namespace Nether.Web.Features.Leaderboard
 {
     [Route("api/leaderboard")]
     public class LeaderboardController : Controller

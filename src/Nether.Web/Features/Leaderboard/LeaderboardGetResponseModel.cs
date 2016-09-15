@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Nether.Leaderboard.Data;
+using Nether.Data.Leaderboard;
 
-namespace Nether.Leaderboard.Web.Models
+namespace Nether.Web.Features.Leaderboard
 {
     public class LeaderboardGetResponseModel
     {

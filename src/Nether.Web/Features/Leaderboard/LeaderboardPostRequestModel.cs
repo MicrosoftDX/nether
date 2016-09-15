@@ -1,4 +1,4 @@
-﻿namespace Nether.Leaderboard.Web.Models
+﻿namespace Nether.Web.Features.Leaderboard
 {
     public class LeaderboardPostRequestModel
     {        

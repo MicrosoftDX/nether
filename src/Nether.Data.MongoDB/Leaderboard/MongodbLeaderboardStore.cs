@@ -3,17 +3,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using Nether.Data.Leaderboard;
 
-namespace Nether.Leaderboard.Data.Mongodb
+namespace Nether.Data.MongoDB.Leaderboard
 {
-    public class MongodbLeaderboardStore : ILeaderboardStore
+    public class MongoDBLeaderboardStore : ILeaderboardStore
     {
         private readonly IMongoDatabase _database;
 
-        private IMongoCollection<MongoDbGameScore> ScoresCollection
-            => _database.GetCollection<MongoDbGameScore>("scores");
+        private IMongoCollection<MongoDBGameScore> ScoresCollection
+            => _database.GetCollection<MongoDBGameScore>("scores");
 
-        public MongodbLeaderboardStore(string connectionString, string dbName)
+        public MongoDBLeaderboardStore(string connectionString, string dbName)
         {
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase(dbName);

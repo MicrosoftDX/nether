@@ -1,14 +1,15 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Nether.Data.Leaderboard;
 
-namespace Nether.Leaderboard.Data.Mongodb
+namespace Nether.Data.MongoDB.Leaderboard
 {
-    public class MongoDbGameScore
+    public class MongoDBGameScore
     {
         // Implicit operator allows GameScore objects to be used as MongoDbGameScore objects
-        public static implicit operator MongoDbGameScore(GameScore value)
+        public static implicit operator MongoDBGameScore(GameScore value)
         {
-            return new MongoDbGameScore { Gamertag = value.Gamertag, Score = value.Score };
+            return new MongoDBGameScore { Gamertag = value.Gamertag, Score = value.Score };
         }
 
         [BsonId]

@@ -1,11 +1,10 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using Nether.Analytics.Web.Models;
-using Nether.Analytics.Web.Utilities;
+using Nether.Web.Utilities;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Nether.Analytics.Web.Controllers
+namespace Nether.Web.Features.Analytics
 {
     [Route("api/endpoint")]
     public class EndpointController : Controller

@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Nether.Analytics.Web.Controllers;
-using Nether.Analytics.Web.Models;
+using Nether.Web.Features.Analytics;
 using Xunit;
 
-namespace Nether.Analytics.Web.Tests
+namespace Nether.Web.UnitTests.Features.Analytics
 {
     public class EndpointControllerTests
     {

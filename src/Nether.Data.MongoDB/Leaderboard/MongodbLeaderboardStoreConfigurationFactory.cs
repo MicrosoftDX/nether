@@ -1,13 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Nether.Common.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Nether.Data.Leaderboard;
 
-namespace Nether.Leaderboard.Data.Mongodb
+namespace Nether.Data.MongoDB.Leaderboard
 {
-    public class MongodbLeaderboardStoreConfigurationFactory : IDependencyFactory<ILeaderboardStore>
+    public class MongoDBLeaderboardStoreConfigurationFactory : IDependencyFactory<ILeaderboardStore>
     {
         public ILeaderboardStore CreateInstance(IConfiguration configuration)
         {
@@ -15,7 +12,7 @@ namespace Nether.Leaderboard.Data.Mongodb
             //                     string connectionString = configuration["ConnectionString"];
             string connectionString = configuration["LeaderboardStore:properties:ConnectionString"];
             string databaseName = configuration["LeaderboardStore:properties:DatabaseName"];
-            return new MongodbLeaderboardStore(connectionString, databaseName);
+            return new MongoDBLeaderboardStore(connectionString, databaseName);
         }
     }
 }

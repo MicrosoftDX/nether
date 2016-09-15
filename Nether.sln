@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{50F921
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.Data", "src\Nether.Data\Nether.Data.xproj", "{10CAC5B7-8CD4-450C-9676-C4C3093B8BEB}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.Data.Mongodb", "src\Nether.Data.MongoDb\Nether.Data.Mongodb.xproj", "{8A1E0559-F764-4DAD-A455-40A4A90224B7}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.Data.MongoDB", "src\Nether.Data.MongoDb\Nether.Data.MongoDB.xproj", "{8A1E0559-F764-4DAD-A455-40A4A90224B7}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.Web", "src\Nether.Web\Nether.Web.xproj", "{9116E859-D00D-42E6-AC0C-9B4E04109428}"
 EndProject

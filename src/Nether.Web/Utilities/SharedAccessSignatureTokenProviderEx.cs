@@ -4,7 +4,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Nether.Analytics.Web.Utilities
+namespace Nether.Web.Utilities
 {
     public class SharedAccessSignatureTokenProviderEx
     {

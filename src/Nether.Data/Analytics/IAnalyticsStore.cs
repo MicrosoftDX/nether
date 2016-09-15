@@ -1,4 +1,4 @@
-﻿namespace Nether.Analytics.Data
+﻿namespace Nether.Data.Analytics
 {
     public interface IAnalyticsStore
     {

@@ -1,4 +1,4 @@
-﻿namespace Nether.Leaderboard.Data
+﻿namespace Nether.Data.Leaderboard
 {
     public class GameScore
     {

@@ -16,6 +16,7 @@
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Swashbuckle": "6.0.0-beta902",
     "Nether.Data": "1.0.0-*",
+    "Nether.Data.MongoDB": "1.0.0-*",
     "Nether.Common.DependencyInjection": "1.0.0-*"
   },
 

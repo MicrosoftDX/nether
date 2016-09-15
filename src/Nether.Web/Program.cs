@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 
-namespace Nether.Leaderboard.Web
+namespace Nether.Web
 {
     public class Program
     {

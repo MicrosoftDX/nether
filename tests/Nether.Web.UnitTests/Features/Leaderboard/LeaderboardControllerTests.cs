@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Nether.Leaderboard.Data;
-using Nether.Leaderboard.Web.Controllers;
-using Nether.Leaderboard.Web.Models;
+using Nether.Data.Leaderboard;
+using Nether.Web.Features.Leaderboard;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Nether.Leaderboard.Web.Tests
+namespace Nether.Web.UnitTests.Features.Leaderboard
 {
     public class LeaderboardControllerTests
     {

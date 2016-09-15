@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Nether.PlayerManagement.Web.Controllers
+namespace Nether.Web.Features.PlayerManagement
 {
     [Route("api/[controller]")]
     public class ValuesController : Controller

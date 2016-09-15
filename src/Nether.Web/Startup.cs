@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Nether.Leaderboard.Data;
+using Nether.Data.Leaderboard;
 using System.Reflection.Metadata;
 using Nether.Common.DependencyInjection;
 
-namespace Nether.Leaderboard.Web
+namespace Nether.Web
 {
     public class Startup
     {
