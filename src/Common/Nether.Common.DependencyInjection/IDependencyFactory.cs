@@ -8,6 +8,6 @@ namespace Nether.Common.DependencyInjection
 {
     public interface IDependencyFactory<T>
     {
-        T CreateInstance(IConfiguration configuration);
+        T CreateInstance(IServiceProvider services);
     }
 }
