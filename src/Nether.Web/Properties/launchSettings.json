@@ -18,7 +18,7 @@
     "Nether.Web": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "localhost:5000/api/swagger/ui",
+      "launchUrl": "http://localhost:5000/api/swagger/ui",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

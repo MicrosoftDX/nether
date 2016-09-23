@@ -18,7 +18,7 @@ namespace Nether.Web.UnitTests.Features.Analytics
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var model = okResult.Value as EndpointGetResponseModel;
+            var model = okResult.Value as AnalyticsEndpointInfoResponseModel;
             Assert.NotNull(model);
 
             //TODO: Add additional asserts as soon as we can handle configurations witin unit tests

@@ -8,7 +8,8 @@
     "dotnet-test-xunit": "1.0.0-rc2-build10025",
     "Microsoft.AspNetCore.Mvc": "1.0.1",
     "Nether.Data": "1.0.0-*",
-    "Nether.Web": "1.0.0-*"
+    "Nether.Web": "1.0.0-*",
+    "Nether.Integration": "1.0.0-*"
   },
   "testRunner": "xunit",
   "frameworks": {

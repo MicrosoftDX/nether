@@ -14,7 +14,7 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
         {
             // Arrange
             var leaderboardStore = new Mock<ILeaderboardStore>();
-            var controller = new LeaderboardController(leaderboardStore.Object);
+            var controller = new LeaderboardController(leaderboardStore.Object, null);
 
             // Act
             var result = await controller.Post(new LeaderboardPostRequestModel
@@ -33,7 +33,7 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
         {
             // Arrange
             var leaderboardStore = new Mock<ILeaderboardStore>();
-            var controller = new LeaderboardController(leaderboardStore.Object);
+            var controller = new LeaderboardController(leaderboardStore.Object, null);
 
             // Act
             var result = await controller.Post(new LeaderboardPostRequestModel

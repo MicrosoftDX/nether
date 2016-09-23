@@ -10,8 +10,8 @@ namespace Nether.Data.MongoDB.Leaderboard
         {
             // TODO - explore scoping the configuration to the "properties" section. This would change the code to:
             //                     string connectionString = configuration["ConnectionString"];
-            string connectionString = configuration["LeaderboardStore:properties:ConnectionString"];
-            string databaseName = configuration["LeaderboardStore:properties:DatabaseName"];
+            var connectionString = configuration["LeaderboardStore:properties:ConnectionString"];
+            var databaseName = configuration["LeaderboardStore:properties:DatabaseName"];
             return new MongoDBLeaderboardStore(connectionString, databaseName);
         }
     }

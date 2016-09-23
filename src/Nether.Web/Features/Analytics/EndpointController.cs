@@ -14,9 +14,9 @@ namespace Nether.Web.Features.Analytics
         public ActionResult Get()
         {
             //TODO: Pick up the hardcoded information below from configuration as soon as we have that implemented
-            var keyName = "test";
-            var sharedAccessKey = "w8UXwPyDp6a0oxbeUyFoy6HEUOzJ0cYnVjt7muyzps4=";
-            var resource = "https://netheranalytics-ns.servicebus.windows.net/gameevents/messages";
+            const string keyName = "game";
+            const string sharedAccessKey = "rxvfLSc98g95pL6+iSAgDya88M+emLKgNXQ0+asRf/8=";
+            const string resource = "https://nether.servicebus.windows.net/analytics/messages";
             var timeSpan = TimeSpan.FromHours(24);
 
             var validUntilUtc = DateTime.UtcNow + timeSpan;
@@ -27,7 +27,7 @@ namespace Nether.Web.Features.Analytics
                 resource,
                 timeSpan);
 
-            var result = new EndpointGetResponseModel()
+            var result = new AnalyticsEndpointInfoResponseModel()
             {
                 HttpVerb = "POST",
                 Url = resource,
