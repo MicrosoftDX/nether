@@ -1,6 +1,3 @@
 src/Nether.Data.MongoDB
 src/Nether.Web
-src/Identity/Nether.Identity.Development
-src/Identity/Nether.Identity.Development.DummyApi
-src/Identity/Nether.Identity.Development.DummyWeb
 tests/Nether.Web.UnitTests
