@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Threading.Tasks;
 
 using Nether.Data.Leaderboard;
 using System.Linq;
+using Nether.Integration.Analytics;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,10 +15,12 @@ namespace Nether.Web.Features.Leaderboard
     public class LeaderboardController : Controller
     {
         private readonly ILeaderboardStore _store;
+        private readonly IAnalyticsIntegrationClient _analyticsIntegrationClient;
 
-        public LeaderboardController(ILeaderboardStore store)
+        public LeaderboardController(ILeaderboardStore store, IAnalyticsIntegrationClient analyticsIntegrationClient)
         {
             _store = store;
+            _analyticsIntegrationClient = analyticsIntegrationClient;
         }
 
         //TODO: Add versioning support
@@ -49,8 +53,16 @@ namespace Nether.Web.Features.Leaderboard
                 return StatusCode((int)HttpStatusCode.BadRequest); //TODO: return error info in body
             }
 
-            // Call data store
-            await _store.SaveScoreAsync(new GameScore {Gamertag = score.Gamertag, Score = score.Score});
+            //TODO: Handle exceptions and retries
+            // Save score and call analytics in parallel
+            await Task.WhenAll(
+                _store.SaveScoreAsync(new GameScore { Gamertag = score.Gamertag, Score = score.Score }),
+                _analyticsIntegrationClient.SendGameEventAsync(new ScoreAchieved
+                {
+                    GamerTag = score.Gamertag,
+                    UtcDateTime = DateTime.UtcNow,
+                    Score = score.Score
+                }));
 
             // Return result
             return Ok();

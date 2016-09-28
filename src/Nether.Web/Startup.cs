@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Nether.Data.Leaderboard;
 using System.Reflection.Metadata;
 using Nether.Common.DependencyInjection;
+using Nether.Integration.Analytics;
 
 namespace Nether.Web
 {
@@ -33,6 +34,8 @@ namespace Nether.Web
             services.AddSwaggerGen();
 
             services.AddServiceFromConfiguration<ILeaderboardStore>(Configuration, "LeaderboardStore");
+            services.AddServiceFromConfiguration<IAnalyticsIntegrationClient>(Configuration, "AnalyticsIntegrationClient");
+            //services.AddServiceFromConfiguration<IAnalyticsIntegrationClient>(Configuration, "AnalyticsIntegrationNullClient");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

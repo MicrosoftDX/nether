@@ -2,7 +2,7 @@
 
 namespace Nether.Web.Features.Analytics
 {
-    public class EndpointGetResponseModel
+    public class AnalyticsEndpointInfoResponseModel
     {
         public string HttpVerb { get; set; }
         public string Url { get; set; }
