@@ -39,7 +39,6 @@ namespace Nether.Web
 
             services.AddServiceFromConfiguration<ILeaderboardStore>(Configuration, "LeaderboardStore");
             services.AddServiceFromConfiguration<IAnalyticsIntegrationClient>(Configuration, "AnalyticsIntegrationClient");
-            //services.AddServiceFromConfiguration<IAnalyticsIntegrationClient>(Configuration, "AnalyticsIntegrationNullClient");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
