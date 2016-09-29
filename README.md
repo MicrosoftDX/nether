@@ -37,6 +37,8 @@ We support and build SDKs for [Unity](http://unity3d.com) but Nether as service 
 
 Assuming you have installed the Prerequisites above, follow the steps to build and run Nether in your chosen environment below.
 
+If you want to configure nether to use a different connection string or data store then see the [Configuration](documentation/Configuration.md) section.
+
 ### Visual Studio
 
 To build Nether from Visual Studio, open `Nether.sln` and trigger a build. 
