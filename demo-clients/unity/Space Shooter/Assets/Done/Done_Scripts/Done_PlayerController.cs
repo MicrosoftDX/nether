@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using UnityEngine;
 using System.Collections;
 
 [System.Serializable]
@@ -47,3 +49,4 @@ public class Done_PlayerController : MonoBehaviour
 		GetComponent<Rigidbody>().rotation = Quaternion.Euler (0.0f, 0.0f, GetComponent<Rigidbody>().velocity.x * -tilt);
 	}
 }
+
