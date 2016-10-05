@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Nether.Data.Leaderboard;
 using Nether.Web.Features.Leaderboard;
@@ -47,3 +49,4 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
         }
     }
 }
+

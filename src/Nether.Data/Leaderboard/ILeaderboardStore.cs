@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Nether.Data.Leaderboard
@@ -9,3 +11,4 @@ namespace Nether.Data.Leaderboard
         Task<List<GameScore>> GetAllHighScoresAsync();
     }
 }
+
