@@ -47,9 +47,14 @@ namespace Nether.Common.DependencyInjection
         /// <returns></returns>
         private static Type GetTypeFromConfiguration(IConfiguration configuration, string baseConfigKey)
         {
-            string factoryType = configuration[$"{baseConfigKey}:type"];
-            string factoryAssembly = configuration[$"{baseConfigKey}:assembly"];
-            return Type.GetType($"{factoryType}, {factoryAssembly}");
+            string typeName = configuration[$"{baseConfigKey}:type"];
+            string assemblyName = configuration[$"{baseConfigKey}:assembly"];
+            var type = Type.GetType($"{typeName}, {assemblyName}");
+            if (type == null)
+            {
+                throw new ArgumentException($"Type not found for '{baseConfigKey}'. Type='{typeName}', Assembly:'{assemblyName}'");
+            }
+            return type;
         }
     }
 }

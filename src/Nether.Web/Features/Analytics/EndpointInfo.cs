@@ -14,24 +14,4 @@ namespace Nether.Web.Features.Analytics
         public string Resource { get; set; }
         public TimeSpan Ttl { get; set; }
     }
-
-    public static class EndpointInfoServicesExtensions
-    {
-        public static IServiceCollection AddEndpointInfo(this IServiceCollection services, IConfiguration configuration, string key)
-        {
-            var endpointInfo = GetEndpointInfo(configuration.GetSection(key));
-            services.AddSingleton(endpointInfo);
-            return services;
-        }
-        public static EndpointInfo GetEndpointInfo(IConfiguration configuration)
-        {
-            return new EndpointInfo
-            {
-                KeyName = configuration["KeyName"],
-                AccessKey = configuration["AccessKey"],
-                Resource = configuration["Resource"],
-                Ttl = TimeSpan.Parse(configuration["Ttl"])
-            };
-        }
-    }
 }

@@ -7,7 +7,20 @@ There is some configuration that controls dependency injection. It is a work in 
 
 ### How it works
 
-In the configuration file there can be a top-level property (e.g. `LeaderboardStore`) with a known format:
+In the configuration file there can be a top-level property (e.g. `LeaderboardStore`). For the types that are integral to Nether, use the `wellknown` property as shown below. The values for `wellknown` are specific to each service. Additionally, there can be a `properties` property that contains the configuration values for the type in use (e.g. connection string for mongo).
+
+```json 
+"LeaderboardStore" : {
+  "wellknown": "mongo",
+  "properties": {
+    "ConnectionString": "mongodb://localhost:27017",
+    "DatabaseName": "leaderboard"
+  }
+}
+```
+
+To configure a service type that isn't part of Nether, use can use the `implementation` or `factory` properties. When the type can be created via a default constructor then the `implementation` property can be used. The property value is an object with `assembly` and `type` parameters that specify the type to load (the assembly must be in the bin folder currently):
+
 
 ```json
 "LeaderboardStore": {
@@ -18,7 +31,7 @@ In the configuration file there can be a top-level property (e.g. `LeaderboardSt
 }
 ``` 
 
-or 
+If the service type needs some configuration then you can create a factory class that implements `IDependencyFactory<>`, and configure Nether to use that type to obtain instances of the service by specifying the `factory` property as shown below. As with `implementation`, the `factory` property value is an object with `assembly` and `type` parameters to specify the type of the factory (the assembly must be in the bin folder currently):
 
 ```json
 "LeaderboardStore": {
@@ -32,10 +45,6 @@ or
     }
 }
 ```
-
-Here you can see that there can be properties of `implementation` to specify the implementation type to use if it doesn't require any configuration (NOTE: not currently implemented!), or `factory` to specify a type to use to create the required dependency (the type must implement `IDependencyFactory<>`). 
-
-Both `implementation` and `factory` have two properties `type` and `assembly` that specify the type name and assembly name respectively
 
 To consume this configuration in code, add the following to the `Startup.ConfigureServices` method:
 

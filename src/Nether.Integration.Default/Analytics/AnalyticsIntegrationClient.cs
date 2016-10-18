@@ -37,9 +37,9 @@ namespace Nether.Integration.Default.Analytics
 
             // Create content to send
             var content = new StringContent(
-                JsonConvert.SerializeObject(gameEvent), 
+                JsonConvert.SerializeObject(gameEvent),
                 Encoding.UTF8, "application/json");
-            
+
             //TODO: Implement retry logic and handling of exceptions
             await httpClient.PostAsync(_eventHubUrl, content);
         }
