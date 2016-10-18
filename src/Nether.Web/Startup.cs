@@ -1,18 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Nether.Data.Leaderboard;
-using System.Reflection.Metadata;
-using Nether.Common.DependencyInjection;
-using Nether.Integration.Analytics;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Nether.Web.Features.Analytics;
+using Nether.Web.Features.Leaderboard;
 
 namespace Nether.Web
 {
@@ -40,10 +34,9 @@ namespace Nether.Web
 
             services.AddSwaggerGen();
 
-            services.AddServiceFromConfiguration<ILeaderboardStore>(Configuration, "LeaderboardStore");
-            services.AddServiceFromConfiguration<IAnalyticsIntegrationClient>(Configuration, "AnalyticsIntegrationClient");
-
-            services.AddEndpointInfo(Configuration, "EventHub");
+            // TODO make this conditional with feature switches
+            services.AddLeaderboardServices(Configuration);
+            services.AddAnalyticsServices(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
