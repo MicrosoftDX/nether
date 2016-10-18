@@ -12,6 +12,7 @@ using Nether.Common.DependencyInjection;
 using Nether.Integration.Analytics;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Nether.Web.Features.Analytics;
 
 namespace Nether.Web
 {
@@ -41,6 +42,8 @@ namespace Nether.Web
 
             services.AddServiceFromConfiguration<ILeaderboardStore>(Configuration, "LeaderboardStore");
             services.AddServiceFromConfiguration<IAnalyticsIntegrationClient>(Configuration, "AnalyticsIntegrationClient");
+
+            services.AddEndpointInfo(Configuration, "EventHub");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

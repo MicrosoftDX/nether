@@ -19,12 +19,12 @@ namespace Nether.Web.Utilities
             var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(sharedAccessKey));
 
             var signature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(stringToSign)));
-        
-            var token = string.Format(CultureInfo.InvariantCulture, 
+
+            var token = string.Format(CultureInfo.InvariantCulture,
                 "SharedAccessSignature sr={0}&sig={1}&se={2}&skn={3}",
-                WebUtility.UrlEncode(resource), 
-                WebUtility.UrlEncode(signature), 
-                expiry, 
+                WebUtility.UrlEncode(resource),
+                WebUtility.UrlEncode(signature),
+                expiry,
                 keyName);
 
             return token;

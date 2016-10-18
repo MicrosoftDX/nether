@@ -1,7 +1,10 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Nether.Web.Features.Analytics;
+using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Nether.Web.UnitTests.Features.Analytics
@@ -12,8 +15,13 @@ namespace Nether.Web.UnitTests.Features.Analytics
         public void ShouldBeAbleToRetrieveEndpointInformation()
         {
             // Arrange
-            //TODO: Configure endpoint controller, as soon as we can handle configurations
-            var controller = new EndpointController();
+            var controller = new EndpointController(new EndpointInfo
+            {
+                KeyName = "qwerty",
+                AccessKey = "qwerty",
+                Resource = "qwerty",
+                Ttl = TimeSpan.FromMinutes(10),
+            });
 
             // Act
             var result = controller.Get();
@@ -24,7 +32,6 @@ namespace Nether.Web.UnitTests.Features.Analytics
             Assert.NotNull(model);
 
             //TODO: Add additional asserts as soon as we can handle configurations witin unit tests
-
             Assert.Equal("POST", model.HttpVerb);
             Assert.NotEmpty(model.Url);
             Assert.Equal("application/json", model.ContentType);
