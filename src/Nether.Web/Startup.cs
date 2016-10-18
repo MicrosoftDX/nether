@@ -14,6 +14,8 @@ namespace Nether.Web
 {
     public class Startup
     {
+        private IHostingEnvironment HostingEnvironment { get; set; }
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -22,6 +24,7 @@ namespace Nether.Web
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+            HostingEnvironment = env;
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -30,6 +33,7 @@ namespace Nether.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IConfiguration>(Configuration);
+
 
             // Add framework services.
             services.AddMvc();
@@ -47,6 +51,8 @@ namespace Nether.Web
             //});
 
             // TODO make this conditional with feature switches
+
+            services.AddIdentityServices(Configuration, HostingEnvironment);
             services.AddLeaderboardServices(Configuration);
             services.AddAnalyticsServices(Configuration);
         }
@@ -58,15 +64,15 @@ namespace Nether.Web
             loggerFactory.AddDebug();
 
 
-            app.UseCookieAuthentication(new CookieAuthenticationOptions()
-            {
-                AuthenticationScheme = "NetherCookieAuth",
-                LoginPath = new PathString("/Account/Unauthorized/"),
-                AccessDeniedPath = new PathString("/Account/Forbidden/"),
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = false
-            });
-
+            //app.UseCookieAuthentication(new CookieAuthenticationOptions()
+            //{
+            //    AuthenticationScheme = "NetherCookieAuth",
+            //    LoginPath = new PathString("/Account/Unauthorized/"),
+            //    AccessDeniedPath = new PathString("/Account/Forbidden/"),
+            //    AutomaticAuthenticate = true,
+            //    AutomaticChallenge = false
+            //});
+            app.UseIdentityServer();
             app.UseMvc();
             app.UseSwagger(routeTemplate: "api/swagger/{apiVersion}/swagger.json");
             app.UseSwaggerUi(baseRoute: "api/swagger/ui", swaggerUrl: "/api/swagger/v1/swagger.json");
