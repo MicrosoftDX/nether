@@ -21,18 +21,22 @@ The player management functionality in Nether will allow a game to administrate,
 
 
 ###Overall requirements:
-* AAA
-* BBB
+* To be defined
 
 ###Required Features/Methods
-* AAA
-* BBB
+* To be defined
 
 ##Leaderboard
 
 The leaderboard functionality in Nether will allow a game to submit and retrieve leaderboards in a fast and efficient manner.
 
 ###User Stories
+* As a game developer I can send achieved scores for a particular game when the player is online
+* As a game developer I can cache achieved scores for a particular game when player is off line in order to send later
+* As a game developer I can query TOP(n) scores per “this or last”: hour, day, month, year or for all times
+* As a game developer I can retrieve the surrounding (n) scores compared to the currently logged in player
+* As a game developer I can retrieve high scores of my friends, given a list of friends or a configured connection to a User Management solution
+
 
 ###Overall requirements:
 * Leaderboard should support thousands of simultaneous players, reporting scores and retrieving leaderboards on a close to 1:1 ratio.
@@ -91,9 +95,7 @@ The analytics functionality in Nether will allow a game to collect, analyze and 
 * As a game developer I can easily add additional historical, near real time and predictive analytical queries
 
 ###Overall requirements:
-* AAA
-* BBB
+* To be defined
 
 ###Required Features/Methods
-* AAA
-* BBB
+* To be defined
