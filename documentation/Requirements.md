@@ -32,6 +32,8 @@ The player management functionality in Nether will allow a game to administrate,
 
 The leaderboard functionality in Nether will allow a game to submit and retrieve leaderboards in a fast and efficient manner.
 
+###User Stories
+
 ###Overall requirements:
 * Leaderboard should support thousands of simultaneous players, reporting scores and retrieving leaderboards on a close to 1:1 ratio.
 * Data store should support millions of historically reported scores with no or little degradation of speed (as long as scaled properly, see below)
