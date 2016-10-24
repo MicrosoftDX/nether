@@ -19,7 +19,11 @@
     "Nether.Data.MongoDB": "1.0.0-*",
     "Nether.Common.DependencyInjection": "1.0.0-*",
     "Nether.Integration": "1.0.0-*",
-    "Nether.Integration.Default": "1.0.0-*"
+    "Nether.Integration.Default": "1.0.0-*",
+    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
+    "Microsoft.AspNet.WebApi.Client": "5.2.3",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0",
+    "System.Runtime.Serialization.Xml": "4.1.1"
   },
 
   "tools": {
