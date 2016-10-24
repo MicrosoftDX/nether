@@ -1,6 +1,33 @@
 #Nether
 
 
+##Player management
+
+The player management functionality in Nether will allow a game to administrate, authenticate and authorize users/players of your game.
+
+###User Stories
+* As a player, I can sign up to the game using
+	* Username and password
+	* Facebook Account (priority 1)
+	* Google Account
+* As a player I can login to the game using
+	* Username and password
+	* Facebook Account
+	* Google Account
+* As a player I can login with limited capabilities if I’m off line
+* As a game developer, I can save user preferences per player using JSON documents
+* As a game developer I should be able to register friends of a player
+* As a game publisher I can manage and edit user preferences of the registered players using a web based interface
+
+
+###Overall requirements:
+* AAA
+* BBB
+
+###Required Features/Methods
+* AAA
+* BBB
+
 ##Leaderboard
 
 The leaderboard functionality in Nether will allow a game to submit and retrieve leaderboards in a fast and efficient manner.
@@ -50,3 +77,21 @@ The leaderboard functionality in Nether will allow a game to submit and retrieve
 			* DateTime Achieved
 		* Should be sorted by Score/Rank
 		* Should be consistent up to a specific point requested by using a specified Leaderboard Consistency Token/Number
+
+##Analytics
+
+The analytics functionality in Nether will allow a game to collect, analyze and react to incoming game events.
+
+###User Stories
+* As a game developer I can send game events to the server for further analysis (GameStarted, SessionStarted, LevelStarted, LevelFinished, CustomEvent, SessionEnded, GameEnded)
+* As a game publisher I can monitor live events and basic KPIs (CCUs, etc.) in an easy to use Web Interface
+* As a game publisher I can get batched reports on basic KPIs (retention, active users per day/week/month, average session length, etc.)
+* As a game developer I can easily add additional historical, near real time and predictive analytical queries
+
+###Overall requirements:
+* AAA
+* BBB
+
+###Required Features/Methods
+* AAA
+* BBB
