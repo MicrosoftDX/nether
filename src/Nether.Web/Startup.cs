@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nether.Web.Features.Analytics;
 using Nether.Web.Features.Leaderboard;
+using Swashbuckle.Swagger.Model;
 
 namespace Nether.Web
 {
@@ -34,6 +35,16 @@ namespace Nether.Web
             services.AddMvc();
 
             services.AddSwaggerGen();
+            //services.ConfigureSwaggerGen(options =>
+            //{
+            //    options.SingleApiVersion(new Info
+            //    {
+            //        Version = "1.0.0-beta",
+            //        Title = "Project Nether",
+            //        Description = "Building blocks for gaming on Microsoft Azure",
+            //        License = new License { Name = "MIT", Url = "https://github.com/dx-ted-emea/nether/blob/master/LICENSE" }
+            //    });
+            //});
 
             // TODO make this conditional with feature switches
             services.AddLeaderboardServices(Configuration);

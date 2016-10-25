@@ -45,6 +45,61 @@ namespace Nether.Web.Features.Leaderboard
             return Ok(resultModel);
         }
 
+        [HttpGet("top({n})")]
+        public async Task<ActionResult> GetTopAsync(int n, string partitionedBy, string country, string customTag) //TODO: add swagger annotations for response shape
+        {
+
+            // Call data store
+            var scores = await _store.GetTopHighScoresAsync(n);
+
+            // Format response model
+            var resultModel = new LeaderboardGetResponseModel
+            {
+                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+            };
+
+            // Return result
+            return Ok(resultModel);
+        }
+
+        [HttpGet("around({gamerTag},{nBetter},{nWorse})")]
+        public async Task<ActionResult> GetLeaderboardAroundMeAsync(string gamerTag, int nBetter, int nWorse, string partitionedBy, string country, string customTag) //TODO: add swagger annotations for response shape
+        {
+            // Call data store
+            var scores = await _store.GetScoresAroundMe(nBetter, nWorse, gamerTag);
+
+            // Format response model
+            var resultModel = new LeaderboardGetResponseModel
+            {
+                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+            };
+
+            // Return result
+            return Ok(resultModel);
+        }
+
+        [HttpGet("friends")]
+        public async Task<ActionResult> GetLeaderboardWithFriendsAsync() //TODO: add swagger annotations for response shape
+        {
+            throw new NotImplementedException();
+
+            // Call data store
+            var scores = await _store.GetAllHighScoresAsync();
+
+            // Format response model
+            var resultModel = new LeaderboardGetResponseModel
+            {
+                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+            };
+
+            // Return result
+            return Ok(resultModel);
+        }
+
+
+
+
+
         [HttpPost]
         public async Task<ActionResult> Post([FromBody]LeaderboardPostRequestModel score)
         {
@@ -55,10 +110,17 @@ namespace Nether.Web.Features.Leaderboard
                 return StatusCode((int)HttpStatusCode.BadRequest); //TODO: return error info in body
             }
 
+            if (string.IsNullOrWhiteSpace(score.Gamertag))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest); //TODO: return error info in body
+            }
+            
+
             //TODO: Handle exceptions and retries
+            
             // Save score and call analytics in parallel
             await Task.WhenAll(
-                _store.SaveScoreAsync(new GameScore { Gamertag = score.Gamertag, Score = score.Score }),
+                _store.SaveScoreAsync(new GameScore { Gamertag = score.Gamertag, Country = score.Country, CustomTag = score.CustomTag, Score = score.Score }),
                 _analyticsIntegrationClient.SendGameEventAsync(new ScoreAchieved
                 {
                     GamerTag = score.Gamertag,
