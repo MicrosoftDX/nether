@@ -17,10 +17,15 @@ namespace Nether.Web.Features.Analytics
         public EndpointController(EndpointInfo endpointInfo)
         {
             _endpointInfo = endpointInfo;
+
         }
         [HttpGet]
         public ActionResult Get()
         {
+            Console.WriteLine();
+            Console.WriteLine($"AccessKey = {_endpointInfo.AccessKey}");
+            Console.WriteLine();
+
             var validUntilUtc = DateTime.UtcNow + _endpointInfo.Ttl;
 
             var authorization = SharedAccessSignatureTokenProviderEx.GetSharedAccessSignature(
