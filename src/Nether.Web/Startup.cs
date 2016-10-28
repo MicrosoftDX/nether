@@ -9,11 +9,14 @@ using Microsoft.Extensions.Logging;
 using Nether.Web.Features.Analytics;
 using Nether.Web.Features.Leaderboard;
 using Swashbuckle.Swagger.Model;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Nether.Web
 {
     public class Startup
     {
+        private IHostingEnvironment HostingEnvironment { get; set; }
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -22,6 +25,7 @@ namespace Nether.Web
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+            HostingEnvironment = env;
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -30,6 +34,7 @@ namespace Nether.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IConfiguration>(Configuration);
+
 
             // Add framework services.
             services.AddMvc();
@@ -47,6 +52,8 @@ namespace Nether.Web
             //});
 
             // TODO make this conditional with feature switches
+
+            services.AddIdentityServices(Configuration, HostingEnvironment);
             services.AddLeaderboardServices(Configuration);
             services.AddAnalyticsServices(Configuration);
         }
@@ -58,15 +65,31 @@ namespace Nether.Web
             loggerFactory.AddDebug();
 
 
-            app.UseCookieAuthentication(new CookieAuthenticationOptions()
+            //app.UseCookieAuthentication(new CookieAuthenticationOptions()
+            //{
+            //    AuthenticationScheme = "NetherCookieAuth",
+            //    LoginPath = new PathString("/Account/Unauthorized/"),
+            //    AccessDeniedPath = new PathString("/Account/Forbidden/"),
+            //    AutomaticAuthenticate = true,
+            //    AutomaticChallenge = false
+            //});
+
+
+
+            // TODO - this code was copied from Identity Server sample. Need to understand why the map is cleared!
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            // TODO - this code was copied from the Identity Server sample. Once working, revisit this config and see what is needed to wire up with the generic OpenIdConnect helpers
+            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
             {
-                AuthenticationScheme = "NetherCookieAuth",
-                LoginPath = new PathString("/Account/Unauthorized/"),
-                AccessDeniedPath = new PathString("/Account/Forbidden/"),
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = false
+                Authority = "http://localhost:5000",
+                RequireHttpsMetadata = false, // we're dev-only ;-)
+
+                ScopeName = "nether-all",
+                //AutomaticAuthenticate = true // TODO - understand this setting!
             });
 
+            app.UseIdentityServer();
             app.UseMvc();
             app.UseSwagger(routeTemplate: "api/swagger/{apiVersion}/swagger.json");
             app.UseSwaggerUi(baseRoute: "api/swagger/ui", swaggerUrl: "/api/swagger/v1/swagger.json");
