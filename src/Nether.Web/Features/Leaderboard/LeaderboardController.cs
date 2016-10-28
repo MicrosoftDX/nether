@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Nether.Data.Leaderboard;
 using System.Linq;
 using Nether.Integration.Analytics;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -99,31 +101,32 @@ namespace Nether.Web.Features.Leaderboard
 
 
 
-
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody]LeaderboardPostRequestModel score)
         {
-            //TODO: Make validation more sofisticated, perhaps some games want/need negative scores
+            //TODO: Make validation more sophisticated, perhaps some games want/need negative scores
             // Validate input
             if (score.Score < 0)
             {
                 return StatusCode((int)HttpStatusCode.BadRequest); //TODO: return error info in body
             }
 
-            if (string.IsNullOrWhiteSpace(score.Gamertag))
+            //TODO: Handle exceptions and retries
+            var gamerTag = User.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.Name) // For a quick implementation, assume that name is the gamertag - review later!
+                ?.Value;
+            if (string.IsNullOrWhiteSpace(gamerTag))
             {
                 return StatusCode((int)HttpStatusCode.BadRequest); //TODO: return error info in body
             }
-            
 
-            //TODO: Handle exceptions and retries
-            
             // Save score and call analytics in parallel
             await Task.WhenAll(
-                _store.SaveScoreAsync(new GameScore { Gamertag = score.Gamertag, Country = score.Country, CustomTag = score.CustomTag, Score = score.Score }),
+                _store.SaveScoreAsync(new GameScore { Gamertag = gamerTag, Country = score.Country, CustomTag = score.CustomTag, Score = score.Score }),
                 _analyticsIntegrationClient.SendGameEventAsync(new ScoreAchieved
                 {
-                    GamerTag = score.Gamertag,
+                    GamerTag = gamerTag,
                     UtcDateTime = DateTime.UtcNow,
                     Score = score.Score
                 }));

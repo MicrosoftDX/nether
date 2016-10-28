@@ -21,7 +21,8 @@ namespace Nether.Web.Features.Identity.Configuration
                     Name = "nether-all",
                     DisplayName = "Nether (All)",
                     Description = "All nether features",
-                    Type = ScopeType.Resource
+                    Type = ScopeType.Resource,
+                    IncludeAllClaimsForUser = true // TODO - review and filter down once security has settled down :-)
                 }
             };
         }

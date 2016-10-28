@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace FacebookUserTokenClient
@@ -18,20 +19,38 @@ namespace FacebookUserTokenClient
 
             Console.WriteLine("Enter the Facebook User Token (see https://developers.facebook.com/tools/accesstoken):");
             string fbToken = Console.ReadLine();
+            Console.WriteLine();
 
             var client = new HttpClient
             {
                 BaseAddress = new Uri(baseUrl)
             };
 
-
             var accessTokenResult = await client.GetAccessTokenAsync(fbToken);
+
             if (accessTokenResult.Error != null)
             {
                 Console.WriteLine($"Error: {accessTokenResult.Error}");
                 return;
             }
             Console.WriteLine($"Access token: {accessTokenResult.AccessToken}");
+            Console.WriteLine();
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessTokenResult.AccessToken);
+
+            Console.WriteLine("Enter your score");
+            int score = int.Parse(Console.ReadLine());
+            Console.WriteLine();
+            Console.WriteLine("Posting score {0}", score);
+            await client.PostScoreAsync(accessTokenResult.AccessToken, score);
+        }
+
+
+        public static async Task PostScoreAsync(this HttpClient client, string bearerToken, int score)
+        {
+            var response = await client.PostAsJsonAsync("/api/leaderboard", new { country = "missing", customTag = "testclient", score = score });
+
+            response.EnsureSuccessStatusCode();
         }
 
         public static async Task<AccessTokenResult> GetAccessTokenAsync(this HttpClient client, string facebookUserAccessToken)
@@ -57,8 +76,13 @@ namespace FacebookUserTokenClient
             {
                 return new AccessTokenResult { Error = responseBody.Error};
             }
+            Console.WriteLine(responseBody);
 
             var access_token = (string)responseBody.access_token;
+            if (string.IsNullOrWhiteSpace(access_token))
+            {
+                response.EnsureSuccessStatusCode();
+            }
             return new AccessTokenResult
             {
                 AccessToken = access_token

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Nether.Web.Features.Analytics;
 using Nether.Web.Features.Leaderboard;
 using Swashbuckle.Swagger.Model;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Nether.Web
 {
@@ -72,6 +73,22 @@ namespace Nether.Web
             //    AutomaticAuthenticate = true,
             //    AutomaticChallenge = false
             //});
+
+
+
+            // TODO - this code was copied from Identity Server sample. Need to understand why the map is cleared!
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            // TODO - this code was copied from the Identity Server sample. Once working, revisit this config and see what is needed to wire up with the generic OpenIdConnect helpers
+            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
+            {
+                Authority = "http://localhost:5000",
+                RequireHttpsMetadata = false, // we're dev-only ;-)
+
+                ScopeName = "nether-all",
+                //AutomaticAuthenticate = true // TODO - understand this setting!
+            });
+
             app.UseIdentityServer();
             app.UseMvc();
             app.UseSwagger(routeTemplate: "api/swagger/{apiVersion}/swagger.json");

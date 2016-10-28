@@ -38,6 +38,47 @@ namespace Nether.Web.Features.Identity.Configuration
                         StandardScopes.Profile.Name,
                         "nether-all"
                     }
+                },
+
+                new Client
+                {
+                    ClientId = "clientcreds-test",
+                    ClientName = "Test Client for client credentials flow",
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("devsecret".Sha256())
+                    },
+
+                    AllowedScopes = new List<string>
+                    {
+                        StandardScopes.OpenId.Name,
+                        StandardScopes.Profile.Name,
+                        "nether-all"
+                    }
+                },
+                new Client
+                {
+                    ClientId = "resourceowner-test",
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+
+                    ClientSecrets =
+                    {
+                        new Secret("devsecret".Sha256())
+                    },
+                    AllowedScopes = { "nether-all" }
+                },
+                new Client
+                {
+                    ClientId = "customgrant-test",
+                    AllowedGrantTypes = GrantTypes.List("fb-usertoken"),
+
+                    ClientSecrets =
+                    {
+                        new Secret("devsecret".Sha256())
+                    },
+                    AllowedScopes = { "nether-all" }
                 }
             };
         }
