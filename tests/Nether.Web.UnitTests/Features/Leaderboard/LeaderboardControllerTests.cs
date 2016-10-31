@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -20,15 +21,13 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
 {
     public class LeaderboardControllerTests
     {
-
-
         [Fact(DisplayName = "WhenPostedScoreIsNegativeThenReturnHTTP400")]
         public async Task WhenPostedScoreIsNegative_ThenTheApiReturns400Response()
         {
             // Arrange
             var leaderboardStore = new Mock<ILeaderboardStore>();
             var controller = CreateController<LeaderboardController>(
-                services=>
+                services =>
                 {
                     services.Setup(s => s.GetService(typeof(ILeaderboardStore))).Returns(leaderboardStore.Object);
                     services.Setup(s => s.GetService(typeof(IAnalyticsIntegrationClient))).Returns(Mock.Of<IAnalyticsIntegrationClient>());

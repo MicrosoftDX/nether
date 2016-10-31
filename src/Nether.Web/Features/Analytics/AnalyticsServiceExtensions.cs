@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -27,7 +28,8 @@ namespace Nether.Web.Features.Analytics
                         var scopedConfiguration = configuration.GetSection("AnalyticsIntegrationClient:properties");
                         string baseUrl = scopedConfiguration["AnalyticsBaseUrl"];
 
-                        services.AddTransient<IAnalyticsIntegrationClient>(serviceProvider=>{
+                        services.AddTransient<IAnalyticsIntegrationClient>(serviceProvider =>
+                        {
                             return new AnalyticsIntegrationClient(baseUrl);
                         });
                         break;

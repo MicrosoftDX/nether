@@ -1,4 +1,7 @@
-﻿using IdentityServer4.Services.InMemory;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using IdentityServer4.Services.InMemory;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.Configuration;

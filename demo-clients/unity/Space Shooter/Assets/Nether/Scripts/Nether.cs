@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using UnityEngine;
 using UnityEngine.Networking;
 using System;
 using System.Collections;
@@ -11,20 +14,20 @@ public class Nether : MonoBehaviour
     public int renewAuthNMinutesAheadOfTime;
     public int sendEventsEveryNSeconds;
 
-    private NetherAnalyticsClient analyticsClient;
-    private DateTime lastEventSentAt;
+    private NetherAnalyticsClient _analyticsClient;
+    private DateTime _lastEventSentAt;
 
     // Use this for initialization
-    void Start()
+    private void Start()
     {
-        analyticsClient = new NetherAnalyticsClient("anonymous", analyticsBaseUrl, TimeSpan.FromMinutes(renewAuthNMinutesAheadOfTime));
+        _analyticsClient = new NetherAnalyticsClient("anonymous", analyticsBaseUrl, TimeSpan.FromMinutes(renewAuthNMinutesAheadOfTime));
         SendSessionStarted();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if ((DateTime.Now - lastEventSentAt).TotalSeconds > sendEventsEveryNSeconds)
+        if ((DateTime.Now - _lastEventSentAt).TotalSeconds > sendEventsEveryNSeconds)
             SendHeartbeat();
     }
 
@@ -50,10 +53,9 @@ public class Nether : MonoBehaviour
 
     private void SendGameEvent(GameEvent e)
     {
-        lastEventSentAt = DateTime.Now;
-        StartCoroutine(analyticsClient.SendGameEvent(e));
+        _lastEventSentAt = DateTime.Now;
+        StartCoroutine(_analyticsClient.SendGameEvent(e));
     }
-
 }
 
 
@@ -79,7 +81,7 @@ public class NetherAnalyticsClient
             analyticsBaseUrl += "/";
 
         _analyticsBaseUrl = analyticsBaseUrl;
-        
+
         _renewAuthorizationAheadOfTime = renewAuthorizationAheadOfTime;
     }
 
@@ -113,7 +115,6 @@ public class NetherAnalyticsClient
             "authorization: " + _authorization + "\n" +
             "validUntil: " + _validUntil.ToString(CultureInfo.InvariantCulture)
         );
-
     }
 
     public IEnumerator SendGameEvent(GameEvent gameEvent)
@@ -122,10 +123,10 @@ public class NetherAnalyticsClient
 
         if (DateTime.Now - _validUntil > _renewAuthorizationAheadOfTime)
             yield return GetEndpointInfo();
-        
 
-        var body = System.Text.Encoding.UTF8.GetBytes(json); 
-        
+
+        var body = System.Text.Encoding.UTF8.GetBytes(json);
+
         var uploader = new UploadHandlerRaw(body);
         uploader.contentType = _contentType;
 

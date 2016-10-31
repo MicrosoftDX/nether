@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -74,7 +77,7 @@ namespace FacebookUserTokenClient
 
             if (responseBody.error != null)
             {
-                return new AccessTokenResult { Error = responseBody.Error};
+                return new AccessTokenResult { Error = responseBody.Error };
             }
             Console.WriteLine(responseBody);
 
@@ -92,7 +95,7 @@ namespace FacebookUserTokenClient
         public class AccessTokenResult
         {
             public string Error { get; set; }
-            public string  AccessToken { get; set; }
+            public string AccessToken { get; set; }
         }
     }
 }

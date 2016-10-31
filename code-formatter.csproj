@@ -1,0 +1,10 @@
+<!-- Dummy csproj file for https://github.com/dotnet/codeformatter as it doesn't support project.json -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Compile Include="*.cs" />
+    <Compile Include=".\**\*.cs" />
+  </ItemGroup>
+  <Target Name="Compile">
+    <Csc Sources="@(Compile)"/>  
+  </Target>
+</Project>
