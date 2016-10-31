@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,11 +27,11 @@ namespace Nether.Web.Features.Leaderboard
                         string connectionString = scopedConfiguration["ConnectionString"];
                         string databaseName = scopedConfiguration["DatabaseName"];
 
-                        services.AddTransient<ILeaderboardStore>(serviceProvider=>{
+                        services.AddTransient<ILeaderboardStore>(serviceProvider =>
+                        {
                             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
                             // TODO - look at encapsulating the connection info and registering that so that we can just register the type without the factory
                             return new MongoDBLeaderboardStore(connectionString, databaseName, loggerFactory);
-
                         });
                         break;
                     default:

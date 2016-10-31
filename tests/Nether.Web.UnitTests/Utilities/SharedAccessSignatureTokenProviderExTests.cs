@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System;
 using Nether.Web.Utilities;
 using Xunit;
@@ -23,11 +24,10 @@ namespace Nether.Web.UnitTests.Utilities
             var sasToken = SharedAccessSignatureTokenProviderEx.GetSharedAccessSignature(keyName, sharedAccessKey, resource, tokenTimeToLive);
 
             // Assert
-            
+
             // Signature will come out differently every time, hence the need to use RegEx to validate the token and not a fixed string
             Assert.Matches($"SharedAccessSignature sr=https%3A%2F%2F{servicebusNamespace}.servicebus.windows.net%2F{eventhubName}%2Fmessages&sig=.*&se=.*&skn={keyName}",
                 sasToken);
-
         }
     }
 }

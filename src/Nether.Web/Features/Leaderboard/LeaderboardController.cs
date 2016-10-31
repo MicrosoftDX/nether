@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -50,7 +51,6 @@ namespace Nether.Web.Features.Leaderboard
         [HttpGet("top({n})")]
         public async Task<ActionResult> GetTopAsync(int n, string partitionedBy, string country, string customTag) //TODO: add swagger annotations for response shape
         {
-
             // Call data store
             var scores = await _store.GetTopHighScoresAsync(n);
 
