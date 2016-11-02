@@ -28,7 +28,7 @@ TO DO : Add description
 4.	[Architecture](Documentation/architecture.md)
  * [Main components](Documentation/architecture.md#main-components)
 5.	[Developer guide](Documentation/developerguide.md)
- * [Set the development environment](Documentation/setup.md)
+ * [Set the development environment](documentation/setup.md)
  * [Configuration](Documentation/configuration.md)
  * [Providers](Documentation/developerguide.md#providers)
  * [Test](Documentation/test.md)
