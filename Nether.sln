@@ -34,6 +34,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FacebookUserTokenClient", "
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IdentityServerTestClient", "src\TestClients\IdentityServerTestClient\IdentityServerTestClient.xproj", "{F9C18B96-9902-4FA3-9D19-99F8FA1252E2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PerformanceTests", "PerformanceTests", "{86942C3A-4907-4D51-BFC2-D551A85A335E}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LeaderboardLoadTest", "src\PerformanceTests\LeaderboardLoadTest\LeaderboardLoadTest.xproj", "{93A6E0EC-DCD9-41EE-9DFA-565A0A3605E0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +80,10 @@ Global
 		{F9C18B96-9902-4FA3-9D19-99F8FA1252E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9C18B96-9902-4FA3-9D19-99F8FA1252E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9C18B96-9902-4FA3-9D19-99F8FA1252E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93A6E0EC-DCD9-41EE-9DFA-565A0A3605E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93A6E0EC-DCD9-41EE-9DFA-565A0A3605E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93A6E0EC-DCD9-41EE-9DFA-565A0A3605E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93A6E0EC-DCD9-41EE-9DFA-565A0A3605E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,5 +100,7 @@ Global
 		{71C19CC0-E81B-4271-8C2E-E749FB445EB3} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
 		{FE4D1073-2FE6-41C0-8449-47D081BC25E4} = {71C19CC0-E81B-4271-8C2E-E749FB445EB3}
 		{F9C18B96-9902-4FA3-9D19-99F8FA1252E2} = {71C19CC0-E81B-4271-8C2E-E749FB445EB3}
+		{86942C3A-4907-4D51-BFC2-D551A85A335E} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
+		{93A6E0EC-DCD9-41EE-9DFA-565A0A3605E0} = {86942C3A-4907-4D51-BFC2-D551A85A335E}
 	EndGlobalSection
 EndGlobal
