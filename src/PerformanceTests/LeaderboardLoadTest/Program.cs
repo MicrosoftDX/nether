@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityModel.Client;
@@ -15,7 +18,7 @@ namespace LeaderboardLoadTest
             {"devadmin", "devadmin"}
         };
 
-        static Random _r = new Random();
+        private static Random s_r = new Random();
 
         public static void Main(string[] args)
         {
@@ -33,32 +36,32 @@ namespace LeaderboardLoadTest
                 var tokenResponse = await gamerLogin(userEntry);
 
                 // simulate leaderboard activity  
-                var task = Task.Factory.StartNew(() => simulateGame(tokenResponse, cancellationToken));                                              
+                var task = Task.Factory.StartNew(() => simulateGame(tokenResponse, cancellationToken));
             }
             Console.Read();
         }
 
         private static async Task simulateGame(TokenResponse tokenResponse, CancellationToken cancellationToken)
         {
-            var accessToken = tokenResponse.AccessToken; 
+            var accessToken = tokenResponse.AccessToken;
 
             while (true)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                int count = _r.Next(1, 5);
+                int count = s_r.Next(1, 5);
                 for (int i = 0; i < count; i++)
                 {
                     // send game score (POST)
                     await postScore(accessToken);
-                    Thread.Sleep(_r.Next(1000, 10000));
+                    Thread.Sleep(s_r.Next(1000, 10000));
                 }
 
                 // ask for leaderboard scores (GET)
                 await getScores(accessToken);
-                Thread.Sleep(_r.Next(1000, 10000));
-            }                           
-        }      
+                Thread.Sleep(s_r.Next(1000, 10000));
+            }
+        }
 
         private static async Task getScores(string accessToken)
         {
@@ -77,7 +80,7 @@ namespace LeaderboardLoadTest
 
         private static async Task postScore(string accessToken)
         {
-            int score = _r.Next(1500);
+            int score = s_r.Next(1500);
             Console.WriteLine("Post Score: " + score);
 
             var client = new HttpClient();
@@ -93,10 +96,9 @@ namespace LeaderboardLoadTest
 
             // request token
             var tokenClient = new TokenClient(disco.TokenEndpoint, "resourceowner-test", "devsecret");
-            var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(userEntry.Key, userEntry.Value, "nether-all");           
+            var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(userEntry.Key, userEntry.Value, "nether-all");
 
             return tokenResponse;
         }
-        
     }
 }
