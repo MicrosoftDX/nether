@@ -18,11 +18,11 @@ TO DO : Add description
 ## Documentation Index
 
 2.	[Overview](documentation/overview.md)
- * [Introduction - What is Nether?] (Documentation/overview.md#introduction---what-is-device-silhouette)
- * [Features](Documentation/overview.md#features)
- * [Benefits](Documentation/overview.md#benefits)
- * [Scenarios](Documentation/overview.md#scenarios)
-3.	[How it works?](Documentation/howitworks.md)
+ * [Introduction - What is Nether?] (documentation/overview.md#introduction---what-is-nether)
+ * [Features](documentation/overview.md#features)
+ * [Benefits](documentation/overview.md#benefits)
+ * [Scenarios](documentation/overview.md#scenarios)
+3.	[How it works?](documentation/howitworks.md)
  * [REST API](Documentation/RESTAPI.md)
  * Example scenarios: [Shooter Game](Documentation/lightsSampleScenario.md)
 4.	[Architecture](Documentation/architecture.md)
