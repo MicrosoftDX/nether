@@ -17,7 +17,7 @@ TO DO : Add description
 
 ## Documentation Index
 
-2.	[Overview](Documentation/overview.md)
+2.	[Overview](documentation/overview.md)
  * [Introduction - What is Nether?] (Documentation/overview.md#introduction---what-is-device-silhouette)
  * [Features](Documentation/overview.md#features)
  * [Benefits](Documentation/overview.md#benefits)
