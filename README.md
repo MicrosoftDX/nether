@@ -9,10 +9,7 @@ master branch status
 
 ##About
 
-Nether is an open source framework developed by TED GE EMEA team in Microsoft.
-
-
-TO DO : Add description
+Nether is a project composed of reusable set of bluiding blocks, projects, services and best practices designed for Gaming workloads on Azure. Nether is a set of reusable components that leverage the power of the Microsoft Azure cloud that will be beneficial for many game developers.
 
 
 ## Documentation Index
