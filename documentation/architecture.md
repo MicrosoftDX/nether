@@ -1,7 +1,7 @@
 # Architecture
 
 
-![Architecture](images/silhouette_architecture_sep2016.gif?raw=true)
+![Architecture](images/solution_architecture.gif?raw=true)
 
 
 ## Main Components:
