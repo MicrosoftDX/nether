@@ -13,6 +13,7 @@ namespace Nether.Data.PlayerManagement
         public string Name { get; set; }
         public string CustomType { get; set; }
         public string Description { get; set; }
+        public byte[] Image { get; set; }
         public List<Player> Players { get; set; }
     }
 }
