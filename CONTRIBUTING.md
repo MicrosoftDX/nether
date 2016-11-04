@@ -15,15 +15,29 @@ We appriciate and welcome community contributions.
 
 ## Building
 
-### Windows
-Run PowerShell, and execute `build.ps1`
+### PowerShell
+Run PowerShell and execute `build.ps1`
 
-### Bash on Linux/Mac
+### Bash
 Run bash and execute `build.sh`
 
 ### Adding a project to build
 Update `build\build-order.txt` to include the path to the folder of the project you want to build (relative to the root of the repo).
 
+## Running
+Once you have built Nether, you can run it in a number of ways.
+
+### Visual Studio
+To run from Visual Studio, open `Nether.sln` and click Start (Ctrl+F5, or F5 to run with the debugger)
+
+### Visual Studio Code
+To run from Visual Studio code, open the root of the repo in Visual Studio Code and click Start on the Debugger tab (F5, ot Ctrl+F5 to run without the debugger)
+
+### PowerShell
+Run PowerShell and execute `rundev.ps1`
+
+### Bash
+Run bash and execute `rundev.sh`
 
 ## Coding style
 This project uses the [coding style](https://github.com/dotnet/corefx/blob/master/Documentation/coding-guidelines/coding-style.md) from the [dotnet/corefx](https://github.com/dotnet/corefx) repo.
