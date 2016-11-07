@@ -36,15 +36,15 @@ namespace LeaderboardLoadTest
             foreach (var userEntry in users)
             {
                 // login to the game
-                var tokenResponse = await gamerLoginAsync(userEntry);
+                var tokenResponse = await GamerLoginAsync(userEntry);
 
                 // simulate leaderboard activity  
-                var task = Task.Factory.StartNew(() => simulateGameAsync(tokenResponse, cancellationToken));
+                var task = Task.Factory.StartNew(() => SimulateGameAsync(tokenResponse, cancellationToken));
             }
             Console.Read();
         }
 
-        private static async Task simulateGameAsync(TokenResponse tokenResponse, CancellationToken cancellationToken)
+        private static async Task SimulateGameAsync(TokenResponse tokenResponse, CancellationToken cancellationToken)
         {
             var accessToken = tokenResponse.AccessToken;
 
@@ -57,18 +57,18 @@ namespace LeaderboardLoadTest
                 {
                     // send game score (POST)
                     // TODO - handle execption
-                    await postScoreAsync(accessToken);
+                    await PostScoreAsync(accessToken);
                     Thread.Sleep(s_r.Next(1000, 10000));
                 }
 
                 // ask for leaderboard scores (GET)
                 // TODO - handle execption
-                await getScoresAsync(accessToken);
+                await GetScoresAsync(accessToken);
                 Thread.Sleep(s_r.Next(1000, 10000));
             }
         }
 
-        private static async Task getScoresAsync(string accessToken)
+        private static async Task GetScoresAsync(string accessToken)
         {
             var client = new HttpClient();
             client.SetBearerToken(accessToken);
@@ -83,7 +83,7 @@ namespace LeaderboardLoadTest
             Console.WriteLine(content);
         }
 
-        private static async Task postScoreAsync(string accessToken)
+        private static async Task PostScoreAsync(string accessToken)
         {
             int score = s_r.Next(1500);
 
@@ -101,7 +101,7 @@ namespace LeaderboardLoadTest
             }
         }
 
-        private static async Task<TokenResponse> gamerLoginAsync(KeyValuePair<string, string> userEntry)
+        private static async Task<TokenResponse> GamerLoginAsync(KeyValuePair<string, string> userEntry)
         {
             var disco = await DiscoveryClient.GetAsync(s_baseUrl);
 
