@@ -18,8 +18,8 @@ namespace LeaderboardLoadTest
             {"devadmin", "devadmin"}
         };
 
-        private static string baseUrl = "http://localhost:5000";
-        private static string route = "/api/leaderboard";
+        private static string s_baseUrl = "http://localhost:5000";
+        private static string s_route = "/api/leaderboard";
 
         private static Random s_r = new Random();
 
@@ -72,7 +72,7 @@ namespace LeaderboardLoadTest
         {
             var client = new HttpClient();
             client.SetBearerToken(accessToken);
-            var response = await client.GetAsync(baseUrl + route);
+            var response = await client.GetAsync(s_baseUrl + s_route);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -85,11 +85,11 @@ namespace LeaderboardLoadTest
 
         private static async Task postScoreAsync(string accessToken)
         {
-            int score = s_r.Next(1500);           
+            int score = s_r.Next(1500);
 
             var client = new HttpClient();
             client.SetBearerToken(accessToken);
-            var response = await client.PostAsJsonAsync(baseUrl + route, new { country = "missing", customTag = "testclient", score = score });
+            var response = await client.PostAsJsonAsync(s_baseUrl + s_route, new { country = "missing", customTag = "testclient", score = score });
 
             if (!response.IsSuccessStatusCode)
             {
@@ -103,7 +103,7 @@ namespace LeaderboardLoadTest
 
         private static async Task<TokenResponse> gamerLoginAsync(KeyValuePair<string, string> userEntry)
         {
-            var disco = await DiscoveryClient.GetAsync(baseUrl);
+            var disco = await DiscoveryClient.GetAsync(s_baseUrl);
 
             // request token
             var tokenClient = new TokenClient(disco.TokenEndpoint, "resourceowner-test", "devsecret");
