@@ -14,6 +14,6 @@ namespace Nether.Data.PlayerManagement
         public string Gamertag { get; set; }
         public string Country { get; set; }
         public string CustomTag { get; set; }
-        public byte[] PlayerImage { get; set; } 
-     }
+        public byte[] PlayerImage { get; set; }
+    }
 }
