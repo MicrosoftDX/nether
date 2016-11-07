@@ -18,98 +18,18 @@ namespace LeaderboardLoadTest
             {"devadmin", "devadmin"}
         };
 
-        private static string s_baseUrl = "http://localhost:5000";
-        private static string s_route = "/api/leaderboard";
-
-        private static Random s_r = new Random();
-
         public static void Main(string[] args)
         {
-            var tokenSource = new CancellationTokenSource();
-            var token = tokenSource.Token;
+            var cancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = cancellationTokenSource.Token;
 
-            MainAsync(token).Wait();
-        }
-
-        public static async Task MainAsync(CancellationToken cancellationToken)
-        {
             foreach (var userEntry in users)
             {
-                // login to the game
-                var tokenResponse = await GamerLoginAsync(userEntry);
+                var player = new AutoPlayer(userEntry.Key, userEntry.Value, Console.Out);
 
-                // simulate leaderboard activity  
-                var task = Task.Factory.StartNew(() => SimulateGameAsync(tokenResponse, cancellationToken));
+                var task = Task.Factory.StartNew(() => player.PlayGameAsync(cancellationToken));
             }
             Console.Read();
-        }
-
-        private static async Task SimulateGameAsync(TokenResponse tokenResponse, CancellationToken cancellationToken)
-        {
-            var accessToken = tokenResponse.AccessToken;
-
-            while (true)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                int count = s_r.Next(1, 5);
-                for (int i = 0; i < count; i++)
-                {
-                    // send game score (POST)
-                    // TODO - handle execption
-                    await PostScoreAsync(accessToken);
-                    Thread.Sleep(s_r.Next(1000, 10000));
-                }
-
-                // ask for leaderboard scores (GET)
-                // TODO - handle execption
-                await GetScoresAsync(accessToken);
-                Thread.Sleep(s_r.Next(1000, 10000));
-            }
-        }
-
-        private static async Task GetScoresAsync(string accessToken)
-        {
-            var client = new HttpClient();
-            client.SetBearerToken(accessToken);
-            var response = await client.GetAsync(s_baseUrl + s_route);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("Failed to get score: " + response.StatusCode);
-            }
-
-            var content = response.Content.ReadAsStringAsync().Result;
-            Console.WriteLine(content);
-        }
-
-        private static async Task PostScoreAsync(string accessToken)
-        {
-            int score = s_r.Next(1500);
-
-            var client = new HttpClient();
-            client.SetBearerToken(accessToken);
-            var response = await client.PostAsJsonAsync(s_baseUrl + s_route, new { country = "missing", customTag = "testclient", score = score });
-
-            if (!response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("Failed to post score: " + response.StatusCode);
-            }
-            else
-            {
-                Console.WriteLine("Post Score: " + score);
-            }
-        }
-
-        private static async Task<TokenResponse> GamerLoginAsync(KeyValuePair<string, string> userEntry)
-        {
-            var disco = await DiscoveryClient.GetAsync(s_baseUrl);
-
-            // request token
-            var tokenClient = new TokenClient(disco.TokenEndpoint, "resourceowner-test", "devsecret");
-            var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(userEntry.Key, userEntry.Value, "nether-all");
-
-            return tokenResponse;
         }
     }
 }
