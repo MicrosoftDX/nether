@@ -18,6 +18,9 @@ namespace LeaderboardLoadTest
             {"devadmin", "devadmin"}
         };
 
+        private static string baseUrl = "http://localhost:5000";
+        private static string route = "/api/leaderboard";
+
         private static Random s_r = new Random();
 
         public static void Main(string[] args)
@@ -33,15 +36,15 @@ namespace LeaderboardLoadTest
             foreach (var userEntry in users)
             {
                 // login to the game
-                var tokenResponse = await gamerLogin(userEntry);
+                var tokenResponse = await gamerLoginAsync(userEntry);
 
                 // simulate leaderboard activity  
-                var task = Task.Factory.StartNew(() => simulateGame(tokenResponse, cancellationToken));
+                var task = Task.Factory.StartNew(() => simulateGameAsync(tokenResponse, cancellationToken));
             }
             Console.Read();
         }
 
-        private static async Task simulateGame(TokenResponse tokenResponse, CancellationToken cancellationToken)
+        private static async Task simulateGameAsync(TokenResponse tokenResponse, CancellationToken cancellationToken)
         {
             var accessToken = tokenResponse.AccessToken;
 
@@ -53,46 +56,54 @@ namespace LeaderboardLoadTest
                 for (int i = 0; i < count; i++)
                 {
                     // send game score (POST)
-                    await postScore(accessToken);
+                    // TODO - handle execption
+                    await postScoreAsync(accessToken);
                     Thread.Sleep(s_r.Next(1000, 10000));
                 }
 
                 // ask for leaderboard scores (GET)
-                await getScores(accessToken);
+                // TODO - handle execption
+                await getScoresAsync(accessToken);
                 Thread.Sleep(s_r.Next(1000, 10000));
             }
         }
 
-        private static async Task getScores(string accessToken)
+        private static async Task getScoresAsync(string accessToken)
         {
             var client = new HttpClient();
             client.SetBearerToken(accessToken);
-            var response = await client.GetAsync("http://localhost:5000/api/leaderboard");
+            var response = await client.GetAsync(baseUrl + route);
 
             if (!response.IsSuccessStatusCode)
             {
-                Console.WriteLine(response.StatusCode);
+                Console.WriteLine("Failed to get score: " + response.StatusCode);
             }
 
             var content = response.Content.ReadAsStringAsync().Result;
             Console.WriteLine(content);
         }
 
-        private static async Task postScore(string accessToken)
+        private static async Task postScoreAsync(string accessToken)
         {
-            int score = s_r.Next(1500);
-            Console.WriteLine("Post Score: " + score);
+            int score = s_r.Next(1500);           
 
             var client = new HttpClient();
             client.SetBearerToken(accessToken);
-            var response = await client.PostAsJsonAsync("http://localhost:5000/api/leaderboard", new { country = "missing", customTag = "testclient", score = score });
+            var response = await client.PostAsJsonAsync(baseUrl + route, new { country = "missing", customTag = "testclient", score = score });
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Failed to post score: " + response.StatusCode);
+            }
+            else
+            {
+                Console.WriteLine("Post Score: " + score);
+            }
         }
 
-        private static async Task<TokenResponse> gamerLogin(KeyValuePair<string, string> userEntry)
+        private static async Task<TokenResponse> gamerLoginAsync(KeyValuePair<string, string> userEntry)
         {
-            var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
+            var disco = await DiscoveryClient.GetAsync(baseUrl);
 
             // request token
             var tokenClient = new TokenClient(disco.TokenEndpoint, "resourceowner-test", "devsecret");
