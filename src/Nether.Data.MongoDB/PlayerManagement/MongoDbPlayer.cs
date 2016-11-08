@@ -1,0 +1,26 @@
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using Nether.Data.PlayerManagement;
+
+namespace Nether.Data.MongoDB.PlayerManagement
+{
+    public class MongoDBPlayer
+    {
+
+        // Implicit operator allows Player objects to be used as MongoDbPlayer objects
+        public static implicit operator MongoDBPlayer(Player value)
+        {
+            return new MongoDBPlayer { Gamertag = value.Gamertag, Country = value.Country, CustomTag = value.CustomTag, PlayerImage = value.PlayerImage };
+        }
+
+        [BsonId]
+        public ObjectId TestId { get; set; }
+        public string Gamertag { get; set; }
+        public string Country { get; set; }
+        public string CustomTag { get; set; }
+        public byte[] PlayerImage { get; set; }
+    }
+}
