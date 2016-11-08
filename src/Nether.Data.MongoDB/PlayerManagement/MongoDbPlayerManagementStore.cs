@@ -14,11 +14,10 @@ namespace Nether.Data.MongoDB.PlayerManagement
 {
     public class MongoDBPlayerManagementStore : IPlayerManagementStore
     {
-
         private readonly IMongoDatabase _database;
         private readonly ILogger<MongoDBPlayerManagementStore> _logger;
 
-        private IMongoCollection<MongoDBPlayer > PlayersCollection
+        private IMongoCollection<MongoDBPlayer> PlayersCollection
             => _database.GetCollection<MongoDBPlayer>("players");
 
         private IMongoCollection<MongoDBGroup> GroupsCollection
@@ -42,16 +41,16 @@ namespace Nether.Data.MongoDB.PlayerManagement
         public async Task<Group> GetGroupDetailsAsync(string groupname)
         {
             var getGroup = from s in GroupsCollection.AsQueryable()
-                                 where s.Name == groupname
-                                 orderby s.Name descending
-                                 select new Group
-                                 {
-                                     Name= s.Name,
-                                     CustomType= s.CustomType,
-                                     Description = s.Description,
-                                     Image = s.Image,
-                                     Players  = s.Players
-                                 };
+                           where s.Name == groupname
+                           orderby s.Name descending
+                           select new Group
+                           {
+                               Name = s.Name,
+                               CustomType = s.CustomType,
+                               Description = s.Description,
+                               Image = s.Image,
+                               Players = s.Players
+                           };
 
             return await getGroup.FirstOrDefaultAsync();
         }
@@ -59,15 +58,15 @@ namespace Nether.Data.MongoDB.PlayerManagement
         public async Task<Player> GetPlayerDetailsAsync(string gamertag)
         {
             var getPlayer = from s in PlayersCollection.AsQueryable()
-                            where s.Gamertag == gamertag 
-                           orderby s.Gamertag descending
-                           select new Player
-                           {
+                            where s.Gamertag == gamertag
+                            orderby s.Gamertag descending
+                            select new Player
+                            {
                                 Gamertag = s.Gamertag,
                                 Country = s.Country,
                                 CustomTag = s.CustomTag,
                                 PlayerImage = s.PlayerImage
-                           };
+                            };
 
             return await getPlayer.FirstOrDefaultAsync();
         }

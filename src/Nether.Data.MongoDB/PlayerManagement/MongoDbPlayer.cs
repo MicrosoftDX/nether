@@ -9,7 +9,6 @@ namespace Nether.Data.MongoDB.PlayerManagement
 {
     public class MongoDBPlayer
     {
-
         // Implicit operator allows Player objects to be used as MongoDbPlayer objects
         public static implicit operator MongoDBPlayer(Player value)
         {
