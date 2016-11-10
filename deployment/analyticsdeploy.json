@@ -37,7 +37,7 @@
         "description": "The folder in the blob container that will hold the transformed data."
       }
     },
-    "hiveScriptFile": {
+    "hiveScriptFilePath": {
       "type": "string",
       "metadata": {
         "description": "Name of the hive query (HQL) file."
@@ -436,7 +436,7 @@
                 {
                   "type": "HDInsightHive",
                   "typeProperties": {
-                    "scriptPath": "[parameters('hiveScriptFile')]",
+                    "scriptPath": "[parameters('hiveScriptFilePath')]",
                     "scriptLinkedService": "[variables('azureHiveStorageLinkedServiceName')]",
                     "defines": {
                       "rawevents": "[concat('wasbs://', parameters('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/', parameters('inputBlobFolder'), '/')]",

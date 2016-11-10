@@ -14,8 +14,8 @@
         "outputBlobFolder": {
             "value": "dailyactiveusers"
         },
-        "hiveScriptFile": {
-            "value": "nether/scripts/dau.hql"
+        "hiveScriptFilePath": {
+            "value": ""
         },
         "hiveScriptStorageAccountName": {
             "value": ""
