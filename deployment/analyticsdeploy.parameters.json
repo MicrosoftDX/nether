@@ -2,17 +2,26 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "namespaceName": {
-            "value": "netherstuff-ns"
-        },
         "eventHubName": {
             "value": "gameevents"
         },
-        "consumerGroupName": {
-            "value": "asa"
+        "blobContainer": {
+            "value": "gamedata"
         },
-        "blobStorageName": {
-            "value": "netherstuff"
+        "inputBlobFolder": {
+            "value": "rawevents"
+        },
+        "outputBlobFolder": {
+            "value": "dailyactiveusers"
+        },
+        "hiveScriptFilePath": {
+            "value": ""
+        },
+        "hiveScriptStorageAccountName": {
+            "value": ""
+        },
+        "hiveScriptStorageAccountKey": {
+            "value": ""
         }
     }
 }
