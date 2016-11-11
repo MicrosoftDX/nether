@@ -16,7 +16,7 @@ Empty body
 
 ### Response
 
-Status code: 201 - Created
+Status code: 200 - Success
 
 ### JSON Body
 
@@ -27,23 +27,26 @@ Status code: 201 - Created
         "gamertag": "krist00fer",
         "country" : "Sweden",
         "customtag" : "my tag",
-        "image": 4711    
+        "imageUrl": "https://storagesample.blob.core.windows.net/mycontainer/photos/kristofer.jpg"    
     },
     {
         "gamertag": "anko",
         "country" : "Netherlands",
         "customtag" : "my tag",
-        "image": 4711    
+        "imageUrl": "https://storagesample.blob.core.windows.net/mycontainer/photos/kristofer.jpg"    
     },
     {
         "gamertag": "vito",
         "country" : "Italy",
         "customtag" : "my tag",
-        "image": 4711    
+        "imageUrl": "https://storagesample.blob.core.windows.net/mycontainer/photos/kristofer.jpg"    
     }]
 }
 ```
 
 Element name        | Required  | Type       | Description
 ------------------- | --------- | ---------  | -----------
-players             | Yes       | json array | A list of players
+gamertag            | Yes       | String     | Tag of the player
+country             | Yes       | String     | Country of the player
+customtag           | No        | String     | Custom tag
+imageUrl            | No        | String     | Reference url to an image
