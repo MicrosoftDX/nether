@@ -1,6 +1,6 @@
 # Nether Players (part of Player Management)
 
-Player Management (palyers) provides a simple way to manage players and teams (or groups)
+Player Management (players) provides a simple way to manage players and teams (or groups)
 * Player Management serves a single game
 
 
@@ -21,3 +21,4 @@ GET     | /players/{player}/
 GET     | /players/{player}/groups
 POST    | /players/
 PUT     | /players/{player}/
+POST    | /players/{player}/groups/{groupname}/
