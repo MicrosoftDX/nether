@@ -17,4 +17,7 @@ The following information is common to all tasks that you might do related to pl
 Method  | Request URI
 ------- | -----------------------
 GET     | /players/
-POST    | /leaderboard/scores/
+GET     | /players/{player}/
+GET     | /players/{player}/groups
+POST    | /players/
+PUT     | /players/{player}/
