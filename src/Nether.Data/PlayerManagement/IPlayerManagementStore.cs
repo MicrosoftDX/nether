@@ -10,12 +10,22 @@ namespace Nether.Data.PlayerManagement
 {
     public interface IPlayerManagementStore
     {
+        //Players
         Task SavePlayerAsync(Player player);
         Task<Player> GetPlayerDetailsAsync(string gamertag);
+        Task<List<Player>> GetPlayersAsync();
+        Task<List<Group>> GetPlayersGroupsAsync(string gamertag);
+        Task UploadPlayerImageAsync(string gamertag, byte[] image);
+        Task<byte[]> GetPlayerImageAsync(string gamertag);
 
+        //Group 
         Task SaveGroupAsync(Group group);
         Task<Group> GetGroupDetailsAsync(string groupname);
         Task AddPlayerToGroupAsync(Group group, Player player);
         Task RemovePlayerFromGroupAsync(Group group, Player player);
+        Task<List<Player>> GetGroupPlayersAsync(string groupname);
+        Task<List<Group>> GetGroups();
+        Task UploadGroupImageAsync(string groupname, byte[] image);
+        Task<byte[]> GetGroupImageAsync(string name);
     }
 }
