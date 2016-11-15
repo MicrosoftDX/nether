@@ -20,6 +20,6 @@ GET     | /groups/
 GET     | /groups/{groupname}/
 GET     | /groups/{groupname}/players
 POST    | /groups/
-POST    | /groups/{groupname}/players/{player}/
-DELETE  | /groups/{groupname}/players/{player}/
+POST    | /groups/{groupname}/players/{playername}/
+DELETE  | /groups/{groupname}/players/{playername}/
 PUT     | /groups/{groupname}/
