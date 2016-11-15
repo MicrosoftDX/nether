@@ -35,8 +35,8 @@ namespace Nether.Web.Features.PlayerManagement
             _analyticsIntegrationClient = analyticsIntegrationClient;
         }
 
-        
-        
+
+
         //Implementation of the player API
 
         [HttpGet("players")]
@@ -93,7 +93,6 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpPost]
         public async Task<ActionResult> Post([FromBody]PlayerPostRequestModel player)
         {
-
             //TODO: Handle exceptions and retries
             var gamerTag = User.Claims
                 .FirstOrDefault(c => c.Type == ClaimTypes.Name) // For a quick implementation, assume that name is the gamertag - review later!
@@ -115,7 +114,6 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpPut]
         public async Task<ActionResult> Put([FromBody]PlayerPostRequestModel player)
         {
-
             // Update player
             await Task.WhenAll(
                 _store.SavePlayerAsync(new Player { Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag }));
@@ -129,7 +127,6 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpPost]
         public async Task<ActionResult> AddPlayerToGroup(string playername, string groupname)
         {
-
             //Get Player
             Player player = await _store.GetPlayerDetailsAsync(playername);
 
@@ -144,8 +141,8 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok();
         }
 
-        
-        
+
+
         //Implementation of the group API
 
         [HttpGet("groups")]
@@ -200,7 +197,6 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpPost]
         public async Task<ActionResult> PostGroup([FromBody]GroupPostRequestModel group)
         {
-
             // Save group
             await Task.WhenAll(
                 _store.SaveGroupAsync(new Group { Name = group.Name, CustomType = group.CustomType, Description = group.Description, Players = group.Players }));
@@ -229,7 +225,6 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpDelete]
         public async Task<ActionResult> DeletePlayerFromGroup(string groupname, string playername)
         {
-
             Player player = await _store.GetPlayerDetailsAsync(playername);
             Group group = await _store.GetGroupDetailsAsync(groupname);
 
@@ -244,7 +239,6 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpPut]
         public async Task<ActionResult> PutGroup([FromBody]GroupPostRequestModel group)
         {
-
             // Update group
             await Task.WhenAll(
                 _store.SaveGroupAsync(new Group { Name = group.Name, CustomType = group.CustomType, Description = group.Description, Players = group.Players }));

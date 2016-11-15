@@ -74,10 +74,8 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
         public async Task RemovePlayerFromGroupAsync(Group group, Player player)
         {
-
             //Not implemented for now. The SaveGroupAsync method can be used to send an updated players list instead.
             await SaveGroupAsync(group);
-                
         }
 
         public async Task SaveGroupAsync(Group group)
@@ -94,28 +92,25 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
         public async Task<List<Player>> GetGroupPlayersAsync(string groupname)
         {
-
             var query = from s in GroupsCollection.AsQueryable()
-                           where s.Name == groupname
-                           orderby s.Name descending
-                           select new Group
-                           {
-                               Name = s.Name,
-                               CustomType = s.CustomType,
-                               Description = s.Description,
-                               Image = s.Image,
-                               Players = s.Players
-                           };
+                        where s.Name == groupname
+                        orderby s.Name descending
+                        select new Group
+                        {
+                            Name = s.Name,
+                            CustomType = s.CustomType,
+                            Description = s.Description,
+                            Image = s.Image,
+                            Players = s.Players
+                        };
 
             var groupplayers = await query.FirstOrDefaultAsync();
-            
-            return groupplayers.Players;
 
+            return groupplayers.Players;
         }
 
         public async Task<List<Player>> GetPlayersAsync()
         {
-
             var getPlayer = from s in PlayersCollection.AsQueryable()
                             orderby s.Gamertag descending
                             select new Player
@@ -127,7 +122,6 @@ namespace Nether.Data.MongoDB.PlayerManagement
                             };
 
             return await getPlayer.ToListAsync();
-
         }
 
         public async Task<List<Group>> GetPlayersGroupsAsync(string gamertag)
@@ -155,13 +149,11 @@ namespace Nether.Data.MongoDB.PlayerManagement
                 }
             }
 
-           return result;
-
+            return result;
         }
 
         public async Task<List<Group>> GetGroups()
         {
-
             var getGroup = from s in GroupsCollection.AsQueryable()
                            orderby s.Name descending
                            select new Group
@@ -174,7 +166,6 @@ namespace Nether.Data.MongoDB.PlayerManagement
                            };
 
             return await getGroup.ToListAsync();
-
         }
 
         public async Task UploadPlayerImageAsync(string gamertag, byte[] image)
@@ -188,7 +179,6 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
         public async Task<byte[]> GetPlayerImageAsync(string gamertag)
         {
-
             var getPlayer = from s in PlayersCollection.AsQueryable()
                             where s.Gamertag == gamertag
                             orderby s.Gamertag descending
@@ -202,23 +192,20 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
             Player p = await getPlayer.FirstOrDefaultAsync<Player>();
 
-            return p.PlayerImage;          
-
+            return p.PlayerImage;
         }
 
         public async Task UploadGroupImageAsync(string groupname, byte[] image)
         {
             _logger.LogDebug("Saving Group image {0}", groupname);
 
-            var filter = Builders<MongoDBGroup>.Filter.Eq(s => s.Name , groupname);
-            var update = Builders<MongoDBGroup>.Update.Set(s => s.Image , image);
+            var filter = Builders<MongoDBGroup>.Filter.Eq(s => s.Name, groupname);
+            var update = Builders<MongoDBGroup>.Update.Set(s => s.Image, image);
             await GroupsCollection.UpdateOneAsync(filter, update);
-   
         }
 
         public async Task<byte[]> GetGroupImageAsync(string name)
         {
-
             var getGroup = from s in GroupsCollection.AsQueryable()
                            where s.Name == name
                            orderby s.Name descending
@@ -234,7 +221,6 @@ namespace Nether.Data.MongoDB.PlayerManagement
             Group g = await getGroup.FirstOrDefaultAsync<Group>();
 
             return g.Image;
-
         }
     }
 }

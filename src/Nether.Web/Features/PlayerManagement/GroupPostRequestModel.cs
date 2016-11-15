@@ -14,7 +14,7 @@ namespace Nether.Web.Features.PlayerManagement
         public string Name { get; set; }
         public string CustomType { get; set; }
         public string Description { get; set; }
-       
+
         // TO DO The Group Image get/set needs to be implemented
         //public byte[] Image { get; set; }
         public List<Player> Players { get; set; }

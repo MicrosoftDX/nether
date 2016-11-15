@@ -15,7 +15,6 @@ namespace Nether.Web.Features.PlayerManagement
 
         public class GroupsEntry
         {
-
             public static implicit operator GroupsEntry(Group group)
             {
                 return new GroupsEntry { Name = group.Name, CustomType = group.CustomType, Description = group.Description };
@@ -24,8 +23,6 @@ namespace Nether.Web.Features.PlayerManagement
             public string Name { get; set; }
             public string CustomType { get; set; }
             public string Description { get; set; }
-
-
         }
     }
 }

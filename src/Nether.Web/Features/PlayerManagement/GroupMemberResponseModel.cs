@@ -11,20 +11,16 @@ namespace Nether.Web.Features.PlayerManagement
 {
     public class GroupMemberResponseModel
     {
-
         public List<PlayersEntry> Members { get; set; }
 
         public class PlayersEntry
         {
-
             public static implicit operator PlayersEntry(Player player)
             {
                 return new PlayersEntry { Gamertag = player.Gamertag };
             }
 
             public string Gamertag { get; set; }
-
-
         }
     }
 }

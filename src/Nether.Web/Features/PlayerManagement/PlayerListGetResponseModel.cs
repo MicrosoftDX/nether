@@ -15,7 +15,6 @@ namespace Nether.Web.Features.PlayerManagement
 
         public class PlayersEntry
         {
-
             public static implicit operator PlayersEntry(Player player)
             {
                 return new PlayersEntry { Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag };
@@ -27,8 +26,6 @@ namespace Nether.Web.Features.PlayerManagement
 
             // TO DO The Player Image get/set needs to be implemented
             public string imageUrl { get; set; }
-
-
         }
     }
 }

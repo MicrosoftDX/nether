@@ -11,7 +11,6 @@ namespace Nether.Web.Features.PlayerManagement
 {
     public class PlayerGetResponseModel
     {
-
         public PlayerEntry Player { get; set; }
 
         public class PlayerEntry
