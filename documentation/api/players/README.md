@@ -17,8 +17,8 @@ The following information is common to all tasks that you might do related to pl
 Method  | Request URI
 ------- | -----------------------
 GET     | /players/
-GET     | /players/{player}/
-GET     | /players/{player}/groups
+GET     | /players/{playername}/
+GET     | /players/{playername}/groups
 POST    | /players/
 PUT     | /players/{player}/
-POST    | /players/{player}/groups/{groupname}/
+POST    | /players/{playername}/groups/{groupname}/
