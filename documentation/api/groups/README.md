@@ -22,4 +22,4 @@ GET     | /groups/{groupname}/players
 POST    | /groups/
 POST    | /groups/{groupname}/players/{player}/
 DELETE  | /groups/{groupname}/players/{player}/
-PUT     | /group/{groupname}/
+PUT     | /groups/{groupname}/
