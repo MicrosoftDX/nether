@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="50608fc9-9ca5-483b-97a2-72bc7229e32a" ChangeDateTime="11/16/2016 11:45:04">
+    <Property Name="ElementName" Value="[dbo].[Scores].[Country]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Scores]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CutomTag" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7c558c0d-52b1-44e1-9168-3b49a2bf6bdf" ChangeDateTime="11/16/2016 11:49:48">
+    <Property Name="ElementName" Value="[dbo].[Scores].[IX_Scores_Column_1]" />
+    <Property Name="ElementType" Value="SqlIndex" />
+    <Property Name="ParentElementName" Value="[dbo].[Scores]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IX_DateAchieved_column]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3bfbd0da-5f6f-465d-bdbe-8e5712eb079c" ChangeDateTime="11/16/2016 11:52:30">
+    <Property Name="ElementName" Value="[dbo].[Scores].[IX_Scores_Column_1]" />
+    <Property Name="ElementType" Value="SqlIndex" />
+    <Property Name="ParentElementName" Value="[dbo].[Scores]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IX_Scores_1]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7fa2e27b-6605-43e3-8764-af083ff5cd1a" ChangeDateTime="11/16/2016 11:54:14">
+    <Property Name="ElementName" Value="[dbo].[Friends].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Friends]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="GamerTag" />
+  </Operation>
+</Operations>
