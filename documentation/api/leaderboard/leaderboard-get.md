@@ -1,6 +1,6 @@
 # Get leaderboard
 
-Get all scores for the leaderboard.
+Get a sorted list of scores and gamertags for a defined leaderboard. If {name} is omitted then the default leaderboard is returned.
 
 ## Request
 
@@ -8,36 +8,44 @@ See Common parameters and headers that are used by all requests related to the L
 
 Method  | Request URI
 ------- | -----------
-GET    | /leaderboard?api-version={api-version}
+GET     | /leaderboard/{name}?api-version={api-version}
 
-### JSON Body
+### Request Parameters
+
+Element name        | Required  | Type       | Description
+------------------- | --------- | ---------- | -----------
+name                | No        | string     | Name of defined leaderboard to retrieve, defaults to "default"
+
+### Request Body
 
 Empty body
 
-### Response
+## Response
 
 Status code: 201 - Created
 
-### JSON Body
+### Response Body
+
+#### Example
 
 ```json
 {
     leaderboard: [
         {
         "gamertag": "krist00fer",
-        "score": 4711    
+        "score": 900    
     },
     {
         "gamertag": "anko",
-        "score": 10000000001    
+        "score": 500    
     },
     {
         "gamertag": "vito",
-        "score": 6789    
+        "score": 100    
     }]
 }
 ```
 
-Element name        | Required  | Type      | Description
-------------------- | --------- | --------- | -----------
+Element name        | Required  | Type       | Description
+------------------- | --------- | ---------- | -----------
 leaderboard         | Yes       | json array | A list of gamertags and their highest score

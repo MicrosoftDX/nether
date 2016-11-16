@@ -20,7 +20,7 @@ POST    | /leaderboard/scores?api-version={api-version}
 
 Element name        | Required  | Type      | Description
 ------------------- | --------- | --------- | -----------
-gamertag            | Yes       | String    | Specifies the gamer playing the game.
+gamertag            | Yes       | String    | Specifies the gamer playing the game. //TODO: Will be removed once authentication is in place
 score               | Yes       | Int       | The achieved score
 
 ### Response
