@@ -2,19 +2,14 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Net;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 using Nether.Data.PlayerManagement;
-using System.Linq;
-using Nether.Integration.Analytics;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-
-// For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -27,15 +22,11 @@ namespace Nether.Web.Features.PlayerManagement
     public class PlayerManagementController : Controller
     {
         private readonly IPlayerManagementStore _store;
-        private readonly IAnalyticsIntegrationClient _analyticsIntegrationClient;
 
-        public PlayerManagementController(IPlayerManagementStore store, IAnalyticsIntegrationClient analyticsIntegrationClient)
+        public PlayerManagementController(IPlayerManagementStore store)
         {
             _store = store;
-            _analyticsIntegrationClient = analyticsIntegrationClient;
         }
-
-
 
         //Implementation of the player API
 
@@ -48,7 +39,7 @@ namespace Nether.Web.Features.PlayerManagement
             // Format response model
             var resultModel = new PlayerListGetResponseModel
             {
-                Players = players.Select(s => (PlayerListGetResponseModel.PlayersEntry)s).ToList()
+                Players = players.Cast<PlayerListGetResponseModel.PlayersEntry>().ToList()
             };
 
             // Return result
@@ -56,10 +47,15 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         [HttpGet("players/{playername}/")]
-        public async Task<ActionResult> GetPlayers(string playername)
+        public async Task<ActionResult> GetPlayer(string playername)
         {
             // Call data store
             var player = await _store.GetPlayerDetailsAsync(playername);
+
+            if (player == null)
+            {
+                return NotFound();
+            }
 
             // Format response model
             var resultModel = new PlayerGetResponseModel
@@ -81,7 +77,7 @@ namespace Nether.Web.Features.PlayerManagement
             // Format response model
             var resultModel = new GroupListResponseModel
             {
-                Groups = groups.Select(s => (GroupListResponseModel.GroupsEntry)s).ToList()
+                Groups = groups.Cast<GroupListResponseModel.GroupsEntry>().ToList()
             };
 
             // Return result
@@ -99,15 +95,15 @@ namespace Nether.Web.Features.PlayerManagement
                 ?.Value;
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); //TODO: return error info in body
+                return BadRequest(); //TODO: return error info in body
             }
 
             // Save player
-            await Task.WhenAll(
-                _store.SavePlayerAsync(new Player { Gamertag = gamerTag, Country = player.Country, CustomTag = player.CustomTag }));
+            await _store.SavePlayerAsync(new Player { Gamertag = gamerTag, Country = player.Country, CustomTag = player.CustomTag });
 
             // Return result
-            return Ok();
+            var location = Url.Link("GetPlayer", new { playername = player.Gamertag });
+            return Created("GetPlayer", new { playername = player.Gamertag });
         }
 
         [Route("players/{player}")]
@@ -115,8 +111,8 @@ namespace Nether.Web.Features.PlayerManagement
         public async Task<ActionResult> Put([FromBody]PlayerPostRequestModel player)
         {
             // Update player
-            await Task.WhenAll(
-                _store.SavePlayerAsync(new Player { Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag }));
+            await _store.SavePlayerAsync(
+                new Player { Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
 
             // Return result
             return new NoContentResult();
@@ -129,13 +125,10 @@ namespace Nether.Web.Features.PlayerManagement
         {
             //Get Player
             Player player = await _store.GetPlayerDetailsAsync(playername);
-
             Group group = await _store.GetGroupDetailsAsync(groupname);
 
             // Save player
-            await Task.WhenAll(
-                _store.AddPlayerToGroupAsync(group, player));
-
+            await _store.AddPlayerToGroupAsync(group, player);
 
             // Return result
             return Ok();
@@ -161,11 +154,15 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(resultModel);
         }
 
-        [HttpGet("groups/{groupname}/")]
-        public async Task<ActionResult> GetGroups(string groupname)
+        [HttpGet("groups/{groupname}/", Name = "GetGroup")]
+        public async Task<ActionResult> GetGroup(string groupname)
         {
             // Call data store
             var group = await _store.GetGroupDetailsAsync(groupname);
+            if (group == null)
+            {
+                return NotFound();
+            }
 
             // Format response model
             var resultModel = new GroupGetResponseModel
@@ -186,7 +183,7 @@ namespace Nether.Web.Features.PlayerManagement
             // Format response model
             var resultModel = new GroupMemberResponseModel
             {
-                Members = players.Select(s => (GroupMemberResponseModel.PlayersEntry)s).ToList()
+                Members = players.Cast<GroupMemberResponseModel.PlayersEntry>().ToList()
             };
 
             // Return result
@@ -198,11 +195,19 @@ namespace Nether.Web.Features.PlayerManagement
         public async Task<ActionResult> PostGroup([FromBody]GroupPostRequestModel group)
         {
             // Save group
-            await Task.WhenAll(
-                _store.SaveGroupAsync(new Group { Name = group.Name, CustomType = group.CustomType, Description = group.Description, Players = group.Players }));
+            await _store.SaveGroupAsync(
+                new Group
+                {
+                    Name = group.Name,
+                    CustomType = group.CustomType,
+                    Description = group.Description,
+                    Players = group.Players
+                }
+            );
 
             // Return result
-            return Ok();
+            var location = Url.Link("GetGroup", new { groupname = group.Name });
+            return Created(location, null);
         }
 
         [Route("groups/{groupname}/players/{playername}")]
@@ -213,8 +218,7 @@ namespace Nether.Web.Features.PlayerManagement
             Group group = await _store.GetGroupDetailsAsync(groupname);
 
             // Save group
-            await Task.WhenAll(
-                _store.AddPlayerToGroupAsync(group, player));
+            await _store.AddPlayerToGroupAsync(group, player);
 
             // Return result
             return Ok();
@@ -228,8 +232,7 @@ namespace Nether.Web.Features.PlayerManagement
             Player player = await _store.GetPlayerDetailsAsync(playername);
             Group group = await _store.GetGroupDetailsAsync(groupname);
 
-            await Task.WhenAll(
-               _store.RemovePlayerFromGroupAsync(group, player));
+            await _store.RemovePlayerFromGroupAsync(group, player);
 
             return new NoContentResult();
         }
@@ -240,8 +243,15 @@ namespace Nether.Web.Features.PlayerManagement
         public async Task<ActionResult> PutGroup([FromBody]GroupPostRequestModel group)
         {
             // Update group
-            await Task.WhenAll(
-                _store.SaveGroupAsync(new Group { Name = group.Name, CustomType = group.CustomType, Description = group.Description, Players = group.Players }));
+            await _store.SaveGroupAsync(
+                    new Group
+                    {
+                        Name = group.Name,
+                        CustomType = group.CustomType,
+                        Description = group.Description,
+                        Players = group.Players
+                    }
+                );
 
             // Return result
             return new NoContentResult();
