@@ -14,7 +14,14 @@ namespace Nether.Data.MongoDB.PlayerManagement
         // Implicit operator allows Group objects to be used as MongoDBGroup objects
         public static implicit operator MongoDBGroup(Group value)
         {
-            return new MongoDBGroup { Name = value.Name, CustomType = value.CustomType, Description = value.Description, Image = value.Image, Players = value.Players };
+            return new MongoDBGroup
+            {
+                Name = value.Name,
+                CustomType = value.CustomType,
+                Description = value.Description,
+                Image = value.Image,
+                Players = value.Players
+            };
         }
 
         [BsonId]
