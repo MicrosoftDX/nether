@@ -138,7 +138,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
                                Image = s.Image,
                                Players = s.Players
                            };
-            foreach (Group g in getGroup)
+            await getGroup.ForEachAsync(g =>
             {
                 foreach (Player p in g.Players)
                 {
@@ -147,8 +147,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
                         result.Add(g);
                     }
                 }
-            }
-
+            });
             return result;
         }
 
@@ -190,7 +189,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
                                 PlayerImage = s.PlayerImage
                             };
 
-            Player p = await getPlayer.FirstOrDefaultAsync<Player>();
+            Player p = await getPlayer.FirstOrDefaultAsync();
 
             return p.PlayerImage;
         }
@@ -218,7 +217,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
                                Players = s.Players
                            };
 
-            Group g = await getGroup.FirstOrDefaultAsync<Group>();
+            Group g = await getGroup.FirstOrDefaultAsync();
 
             return g.Image;
         }
