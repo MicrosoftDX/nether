@@ -113,9 +113,10 @@ namespace Nether.Web.Features.Leaderboard
             }
 
             //TODO: Handle exceptions and retries
-            var gamerTag = User.Claims
-                .FirstOrDefault(c => c.Type == ClaimTypes.Name) // For a quick implementation, assume that name is the gamertag - review later!
-                ?.Value;
+            // For a quick implementation, assume that name is the gamertag - review later!
+            var gamerTag = User.Identities
+                .FirstOrDefault()
+                ?.Name;
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
                 return StatusCode((int)HttpStatusCode.BadRequest); //TODO: return error info in body

@@ -8,6 +8,7 @@ using System;
 using Nether.Common.DependencyInjection;
 using Nether.Data.Leaderboard;
 using Nether.Data.MongoDB.Leaderboard;
+using Nether.Data.Sql.Leaderboard;
 
 namespace Nether.Web.Features.Leaderboard
 {
@@ -20,11 +21,12 @@ namespace Nether.Web.Features.Leaderboard
             {
                 // register using well-known type
                 var wellKnownType = configuration["LeaderboardStore:wellknown"];
+                var scopedConfiguration = configuration.GetSection("LeaderboardStore:properties");
+                string connectionString;
                 switch (wellKnownType)
                 {
-                    case "mongo":
-                        var scopedConfiguration = configuration.GetSection("LeaderboardStore:properties");
-                        string connectionString = scopedConfiguration["ConnectionString"];
+                    case "mongo":                        
+                        connectionString = scopedConfiguration["ConnectionString"];
                         string databaseName = scopedConfiguration["DatabaseName"];
 
                         services.AddTransient<ILeaderboardStore>(serviceProvider =>
@@ -34,6 +36,14 @@ namespace Nether.Web.Features.Leaderboard
                             return new MongoDBLeaderboardStore(connectionString, databaseName, loggerFactory);
                         });
                         break;
+                    case "sql":
+                        connectionString = scopedConfiguration["ConnectionString"];
+                        services.AddTransient<ILeaderboardStore>(serviceProvider =>
+                        {
+                            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();                            
+                            return new SqlLeaderboardStore(connectionString, loggerFactory);
+                        });
+                        break;                                          
                     default:
                         throw new Exception($"Unhandled 'wellKnown' type for LeaderboardStore: '{wellKnownType}'");
                 }
