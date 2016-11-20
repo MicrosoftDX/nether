@@ -1,4 +1,7 @@
-﻿using Nether.Data.Leaderboard;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Nether.Data.Leaderboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,15 +15,15 @@ namespace Nether.Data.Sql.Leaderboard
         private ScoreContext _db;
         private readonly ILogger<SqlLeaderboardStore> _logger;
         private readonly string _table = "Scores";
-        
+
         public SqlLeaderboardStore(string connectionString, ILoggerFactory loggerFactory)
         {
             _db = new ScoreContext(connectionString, _table);
-            _logger = loggerFactory.CreateLogger<SqlLeaderboardStore>();            
+            _logger = loggerFactory.CreateLogger<SqlLeaderboardStore>();
         }
 
         public async Task SaveScoreAsync(GameScore score)
-        {            
+        {
             await _db.SaveSoreAsync(score);
         }
 
@@ -38,6 +41,5 @@ namespace Nether.Data.Sql.Leaderboard
         {
             throw new NotImplementedException();
         }
-        
     }
 }

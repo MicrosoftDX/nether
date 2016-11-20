@@ -25,7 +25,7 @@ namespace Nether.Web.Features.Leaderboard
                 string connectionString;
                 switch (wellKnownType)
                 {
-                    case "mongo":                        
+                    case "mongo":
                         connectionString = scopedConfiguration["ConnectionString"];
                         string databaseName = scopedConfiguration["DatabaseName"];
 
@@ -40,10 +40,10 @@ namespace Nether.Web.Features.Leaderboard
                         connectionString = scopedConfiguration["ConnectionString"];
                         services.AddTransient<ILeaderboardStore>(serviceProvider =>
                         {
-                            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();                            
+                            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
                             return new SqlLeaderboardStore(connectionString, loggerFactory);
                         });
-                        break;                                          
+                        break;
                     default:
                         throw new Exception($"Unhandled 'wellKnown' type for LeaderboardStore: '{wellKnownType}'");
                 }

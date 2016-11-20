@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.EntityFrameworkCore;
 using Nether.Data.Leaderboard;
 using System;
 using System.Collections.Generic;
@@ -9,7 +12,6 @@ namespace Nether.Data.Sql.Leaderboard
 {
     public class ScoreContext : DbContext
     {
-
         private readonly string _connectionString;
         private readonly string _table;
 
@@ -26,7 +28,7 @@ namespace Nether.Data.Sql.Leaderboard
             builder.Entity<GamerScore>()
             .HasKey(c => c.Gamertag);
 
-            builder.Entity<GamerScore>().ToTable(_table);            
+            builder.Entity<GamerScore>().ToTable(_table);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -45,7 +47,7 @@ namespace Nether.Data.Sql.Leaderboard
             // currently returns default list of all players with their high score for the last 24H
             DateTime now = DateTime.UtcNow; // the date in the table is utc
             DateTime lastDay = now.AddHours(-24);
-                       
+
             // TODO: consider swithiching to linq in DateAchieved will be part of the GamerScore record
             var res = Scores.FromSql("select max(score) as score, gamertag , customtag from Scores where DateAchieved between {0} and {1} group by gamertag, customtag", lastDay.ToString(), now.ToString())
                 .ToList().Select(s => new GameScore { Gamertag = s.Gamertag, Score = s.Score })
@@ -59,6 +61,5 @@ namespace Nether.Data.Sql.Leaderboard
         public int Score { get; set; }
         public string Gamertag { get; set; }
         public string CustomTag { get; set; }
-
     }
 }
