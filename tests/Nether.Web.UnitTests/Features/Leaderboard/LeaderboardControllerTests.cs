@@ -40,8 +40,7 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
             });
 
             // Assert
-            var statusCodeResult = Assert.IsType<StatusCodeResult>(result);
-            Assert.Equal(400, statusCodeResult.StatusCode);
+            var statusCodeResult = Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
