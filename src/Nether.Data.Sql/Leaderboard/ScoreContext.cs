@@ -38,21 +38,30 @@ namespace Nether.Data.Sql.Leaderboard
 
         public async Task SaveSoreAsync(GameScore score)
         {
-            await Scores.AddAsync(new GamerScore { Score = score.Score, CustomTag = score.CustomTag, Gamertag = score.Gamertag });
+            Scores.Add(new GamerScore { Score = score.Score, CustomTag = score.CustomTag, Gamertag = score.Gamertag });
             await SaveChangesAsync();
         }
 
-        public async Task<List<GameScore>> GetHighScoresAsync()
+        public List<GameScore> GetHighScoresAsync(int n)
         {
             // currently returns default list of all players with their high score for the last 24H
             DateTime now = DateTime.UtcNow; // the date in the table is utc
             DateTime lastDay = now.AddHours(-24);
 
-            // TODO: consider swithiching to linq in DateAchieved will be part of the GamerScore record
-            var res = Scores.FromSql("select max(score) as score, gamertag , customtag from Scores where DateAchieved between {0} and {1} group by gamertag, customtag", lastDay.ToString(), now.ToString())
-                .ToList().Select(s => new GameScore { Gamertag = s.Gamertag, Score = s.Score })
-                .ToList();
-            return res;
+            string sql = "select {0} score, gamertag, customtag, rank() over (order by Score desc) as ranking from scores s1 where score = (select max(score) from  scores s2 where s1.gamertag = s2.gamertag and s1.DateAchieved between {1} and {2})";
+            string top = n > 0 ? "top " + n : "";
+
+            try
+            {
+                var res = Scores.FromSql(sql, top, lastDay.ToString(), now.ToString())
+                    .ToList();
+
+                return res.Select(s => new GameScore { Score = s.Score, Gamertag = s.Gamertag, CustomTag = s.CustomTag, Rank = s.Ranking }).ToList();
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
     }
 
@@ -61,5 +70,6 @@ namespace Nether.Data.Sql.Leaderboard
         public int Score { get; set; }
         public string Gamertag { get; set; }
         public string CustomTag { get; set; }
+        public int Ranking { get; }
     }
 }

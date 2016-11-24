@@ -82,9 +82,7 @@ namespace Nether.Web.Features.Leaderboard
 
         [HttpGet("friends")]
         public async Task<ActionResult> GetLeaderboardWithFriendsAsync() //TODO: add swagger annotations for response shape
-        {
-            throw new NotImplementedException();
-
+        {            
             // Call data store
             var scores = await _store.GetAllHighScoresAsync();
 

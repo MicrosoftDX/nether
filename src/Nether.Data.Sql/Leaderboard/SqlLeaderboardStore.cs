@@ -29,7 +29,7 @@ namespace Nether.Data.Sql.Leaderboard
 
         public Task<List<GameScore>> GetAllHighScoresAsync()
         {
-            return _db.GetHighScoresAsync();
+            return Task.FromResult(_db.GetHighScoresAsync(0));
         }
 
         public Task<List<GameScore>> GetScoresAroundMe(int nBetter, int nWorse, string gamerTag)
@@ -39,7 +39,7 @@ namespace Nether.Data.Sql.Leaderboard
 
         public Task<List<GameScore>> GetTopHighScoresAsync(int n)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(_db.GetHighScoresAsync(n));
         }
     }
 }

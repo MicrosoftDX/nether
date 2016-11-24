@@ -57,8 +57,8 @@ namespace LeaderboardLoadTest
                 }
 
                 // ask for leaderboard scores (GET)
-                _logger.WriteLine("Player({0}). Getting scores", _playerInternalId);
-                var getScoresResponse = await client.GetScoresAsync();
+                _logger.WriteLine("Player({0}). Getting all scores", _playerInternalId);
+                var getScoresResponse = await client.GetScoresAsync(0);
                 if (getScoresResponse.IsSuccess)
                 {
                     _logger.WriteLine("Player({0}). Got scores {1}", _playerInternalId, getScoresResponse.Result);
@@ -67,6 +67,18 @@ namespace LeaderboardLoadTest
                 {
                     _logger.WriteLine("Player({0}). Failed to get scores: {1}", _playerInternalId, getScoresResponse.Message);
                 }
+
+                _logger.WriteLine("Player({0}). Getting top 10 scores", _playerInternalId);
+                var getTopScoresResponse = await client.GetScoresAsync(10);
+                if (getScoresResponse.IsSuccess)
+                {
+                    _logger.WriteLine("Player({0}). Got scores {1}", _playerInternalId, getScoresResponse.Result);
+                }
+                else
+                {
+                    _logger.WriteLine("Player({0}). Failed to get scores: {1}", _playerInternalId, getScoresResponse.Message);
+                }
+
                 delayTime = _random.Next(1000, 10000);
                 await Task.Delay(delayTime);
             }
