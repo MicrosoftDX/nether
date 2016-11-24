@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace Nether.Data.Achievement
 {
-
     //to do:
     // This is planned for M2
     // just early thinking
@@ -17,7 +16,6 @@ namespace Nether.Data.Achievement
 
     public class Achievement
     {
-
         public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -25,7 +23,6 @@ namespace Nether.Data.Achievement
         public int Order { get; set; }
         public bool Incremental { get; set; }
         public State DefaultState { get; set; }
-
     }
 }
 

@@ -11,8 +11,8 @@ namespace Nether.Data.PlayerManagement
 {
     public class PlayerAchievement
     {
-        public string AchievementId { get; set;  }
-        public string PlayerId { get; set;  }
+        public string AchievementId { get; set; }
+        public string PlayerId { get; set; }
         public State CurrentState { get; set; }
         public int Percentage { get; set; }
     }
