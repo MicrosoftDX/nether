@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nether.Web.Features.Analytics;
 using Nether.Web.Features.Leaderboard;
+using Nether.Web.Features.PlayerManagement;
 using Swashbuckle.Swagger.Model;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -56,6 +57,7 @@ namespace Nether.Web
 
             services.AddIdentityServices(Configuration, HostingEnvironment);
             services.AddLeaderboardServices(Configuration);
+            services.AddPlayerManagementServices(Configuration);
             services.AddAnalyticsServices(Configuration);
         }
 

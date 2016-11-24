@@ -41,7 +41,7 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+                LeaderboardEntries = scores.Cast<LeaderboardGetResponseModel.LeaderboardEntry>().ToList()
             };
 
             // Return result
@@ -57,7 +57,7 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+                LeaderboardEntries = scores.Cast<LeaderboardGetResponseModel.LeaderboardEntry>().ToList()
             };
 
             // Return result
@@ -73,7 +73,7 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+                LeaderboardEntries = scores.Cast<LeaderboardGetResponseModel.LeaderboardEntry>().ToList()
             };
 
             // Return result
@@ -91,7 +91,7 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+                LeaderboardEntries = scores.Cast<LeaderboardGetResponseModel.LeaderboardEntry>().ToList()
             };
 
             // Return result
@@ -109,7 +109,8 @@ namespace Nether.Web.Features.Leaderboard
             // Validate input
             if (score.Score < 0)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); //TODO: return error info in body
+                // TODO log
+                return BadRequest(); //TODO: return error info in body
             }
 
             //TODO: Handle exceptions and retries
@@ -119,12 +120,19 @@ namespace Nether.Web.Features.Leaderboard
                 ?.Name;
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); //TODO: return error info in body
+                // TODO log
+                return BadRequest(); //TODO: return error info in body
             }
 
             // Save score and call analytics in parallel
             await Task.WhenAll(
-                _store.SaveScoreAsync(new GameScore { Gamertag = gamerTag, Country = score.Country, CustomTag = score.CustomTag, Score = score.Score }),
+                _store.SaveScoreAsync(new GameScore
+                {
+                    Gamertag = gamerTag,
+                    Country = score.Country,
+                    CustomTag = score.CustomTag,
+                    Score = score.Score
+                }),
                 _analyticsIntegrationClient.SendGameEventAsync(new ScoreAchieved
                 {
                     GamerTag = gamerTag,

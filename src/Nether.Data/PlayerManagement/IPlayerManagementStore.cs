@@ -18,7 +18,7 @@ namespace Nether.Data.PlayerManagement
         Task UploadPlayerImageAsync(string gamertag, byte[] image);
         Task<byte[]> GetPlayerImageAsync(string gamertag);
 
-        //Group 
+        //Group
         Task SaveGroupAsync(Group group);
         Task<Group> GetGroupDetailsAsync(string groupname);
         Task AddPlayerToGroupAsync(Group group, Player player);
