@@ -1,3 +1,6 @@
 {
-  "projects": [ "src/Common", "src" ]
+  "projects": [ "src/Common", "src" ],
+  "sdk": {
+    "version": "1.0.0-preview2-003121"
+  }
 }
