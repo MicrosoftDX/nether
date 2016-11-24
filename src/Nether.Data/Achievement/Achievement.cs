@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 namespace Nether.Data.Achievement
 {
 
+    //to do:
+    // This is planned for M2
+    // just early thinking
+
     public enum State { Hidden, Revealed, Unlocked }
 
     public class Achievement
