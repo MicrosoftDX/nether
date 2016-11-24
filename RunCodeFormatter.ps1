@@ -12,11 +12,13 @@ if($gitHasChanges)
     git status
     exit 10
 }
-Write-Host "No changes, downloading CodeFormatter..."
+Write-Host "No changes, continuing..."
 
-# Download CodeFormatter
-(New-Object Net.WebClient).DownloadFile($codeFormatterDownloadUri, $codeFormatterDownloadLocation)
-Expand-Archive -Path $codeFormatterDownloadLocation -DestinationPath $codeFormatterExtractLocation -Force
+if (-not (Test-Path "$codeFormatterExtractLocation\CodeFormatter\CodeFormatter.exe")){
+    Write-Host "CodeFormatter not found, downloading..."
+    (New-Object Net.WebClient).DownloadFile($codeFormatterDownloadUri, $codeFormatterDownloadLocation)
+    Expand-Archive -Path $codeFormatterDownloadLocation -DestinationPath $codeFormatterExtractLocation -Force
+}
 
 # Run CodeFormatter
 Write-Host "Running CodeFormatter..."
