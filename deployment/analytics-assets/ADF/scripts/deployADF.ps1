@@ -1,3 +1,5 @@
+#Note: set the variables according to your Azure environment
+
 Login-AzureRmAccount
 Get-AzureRmSubscription -SubscriptionName "Internal Consumption" | Set-AzureRmContext
 
@@ -11,11 +13,6 @@ $df = Get-AzureRmDataFactory -ResourceGroupName $resourceGrp -Name $dfName
 New-AzureRmDataFactoryLinkedService $df -File ..\LinkedServices\storageLinkedService.json
 New-AzureRmDataFactoryLinkedService $df -File ..\LinkedServices\sqlLinkedService.json
 New-AzureRmDataFactoryLinkedService $df -File ..\LinkedServices\HDIonDemandLinkedService.json
-
-New-AzureRmDataFactoryDataset $df -File ..\Datasets\rawData.json
-New-AzureRmDataFactoryDataset $df -File ..\Datasets\dailyActiveUsers.json
-
-New-AzureRmDataFactoryPipeline $df -File ..\Pipelines\calcDAU.json
 
 #Datasets
 $files = Get-ChildItem ..\Datasets
