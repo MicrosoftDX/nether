@@ -90,14 +90,14 @@ GROUP BY
 
 
 -- Daily active users (non-distinct)
-drop table if exists nondailyactiveusers;
-CREATE EXTERNAL TABLE nondailyactiveusers
+drop table if exists dailyactivesessions;
+CREATE EXTERNAL TABLE dailyactivesessions
 (
   	eventdate DATE,
     DAU INT
 )
 stored as textfile location '${hiveconf:nddau}';
-insert OVERWRITE TABLE nondailyactiveusers
+insert OVERWRITE TABLE dailyactivesessions
 SELECT
   eventdate,
   COUNT(DISTINCT(gamertag)) AS DAU
