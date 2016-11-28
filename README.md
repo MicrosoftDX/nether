@@ -23,7 +23,7 @@ Nether is a project composed of reusable set of bluiding blocks, projects, servi
 4.	[Architecture](documentation/architecture.md)
  * [Main components](documentation/architecture.md#main-components)
 5.	[Developer guide](documentation/developerguide.md)
- * [Set the development environment](documentation/setup.md)
+ * [Set up the development environment](documentation/setup.md)
  * [Configuration](documentation/configuration.md)
  * [Test](documentation/test.md)
 6.	[Deploy to production](documentation/deployment.md)
