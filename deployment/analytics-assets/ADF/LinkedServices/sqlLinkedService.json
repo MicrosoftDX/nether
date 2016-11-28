@@ -1,0 +1,9 @@
+{
+  "name": "sqlLinkedService",
+  "properties": {
+    "type": "AzureSqlDatabase",
+    "typeProperties": {
+      "connectionString": "Server=tcp:oldknether.database.windows.net,1433;Database=gameevents;User ID=oliviak@oldknether;Password=Passw0rds!123;Trusted_Connection=False;Encrypt=True;Connection Timeout=30"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+ {
+     "name": "rawData",
+     "properties": {
+         "type": "AzureBlob",
+         "linkedServiceName": "storageLinkedService",
+         "typeProperties": {
+             "folderPath": "gamedata/rawevents/",
+             "format": {
+                 "type": "TextFormat",
+                 "columnDelimiter": ","
+             }
+         },
+         "availability": {
+             "frequency": "Hour",
+             "interval": 1
+         },
+         "external": true,
+         "policy": {}
+     }
+ }

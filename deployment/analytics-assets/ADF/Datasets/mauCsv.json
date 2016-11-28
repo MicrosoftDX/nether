@@ -1,0 +1,19 @@
+{
+    "name": "mauCsv",
+    "properties": {
+        "type": "AzureBlob",
+        "linkedServiceName": "storageLinkedService",
+        "typeProperties": {
+            "fileName": "000000_0.csv",
+            "folderPath": "gamedata/monthlyactiveusersCsv",
+            "format": {
+                "type": "TextFormat",
+                "columnDelimiter": ","
+            }
+        },
+        "availability": {
+            "frequency": "Hour",
+            "interval": 1
+        }
+    }
+}

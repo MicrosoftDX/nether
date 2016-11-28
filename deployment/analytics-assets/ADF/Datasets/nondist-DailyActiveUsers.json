@@ -1,0 +1,19 @@
+{
+    "name": "nondist-DailyActiveUsers",
+    "properties": {
+        "type": "AzureBlob",
+        "linkedServiceName": "storageLinkedService",
+        "typeProperties": {
+            "fileName": "000000_0",
+            "folderPath": "gamedata/nondistinct-dailyactiveusers",
+            "format": {
+                "type": "TextFormat",
+                "columnDelimiter": ","
+            }
+        },
+        "availability": {
+            "frequency": "Hour",
+            "interval": 1
+        }
+    }
+}

@@ -1,0 +1,18 @@
+With concurrentusers as (
+    Select
+        Count(*) as numUsers,
+        System.timestamp as time
+    From
+        Input timestamp by ClientUtc
+    Where
+        Event = 'heartbeat'
+        or Event = 'session-start'
+    Group By
+        tumblingwindow(second, 10), time
+)
+
+Select * into PBISink from concurrentusers
+Select * into BlobSink from concurrentusers
+
+-- For ARM Template
+With concurrentusers as (\r\n\tSelect\r\n\t\tCount(*) as numUsers,\r\n\t\tSystem.timestamp as time\r\n\tFrom\r\n\t\tInput timestamp by ClientUtc\r\n\tWhere\r\n\t\tEvent = 'heartbeat'\r\n\t\tor Event = 'session-start'\r\n\tGroup By\r\n\t\ttumblingwindow(second, 10), time\r\n)\r\nSelect * into PBISink from concurrentusers\r\nSelect * into BlobSink from concurrentusers

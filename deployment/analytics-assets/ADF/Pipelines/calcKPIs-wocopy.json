@@ -1,0 +1,152 @@
+{
+    "name": "calcKPIs",
+    "properties": {
+        "description": "Calculates key game KPIs (e.g. daily active users)",
+        "activities": [
+            {
+                "type": "HDInsightHive",
+                "typeProperties": {
+                    "scriptPath": "gamedata/scripts/kpis.hql",
+                    "scriptLinkedService": "storageLinkedService",
+                    "defines": {
+                        "rawinfo": "wasbs://gamedata@oldknether.blob.core.windows.net/rawinfo/",
+                        "dau": "wasbs://gamedata@oldknether.blob.core.windows.net/dailyactiveusers",
+                        "nddau": "wasbs://gamedata@oldknether.blob.core.windows.net/nondistinct-dailyactiveusers",
+                        "mau": "wasbs://gamedata@oldknether.blob.core.windows.net/monthlyactiveusers"
+                    }
+                },
+                "inputs": [
+                    {
+                        "name": "rawData"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "dailyActiveUsers"
+                    },
+                    {
+                        "name": "nondist-DailyActiveUsers"
+                    },
+                    {
+                        "name": "monthlyActiveUsers"
+                    }
+                ],
+                "policy": {
+                    "concurrency": 1,
+                    "retry": 0
+                },
+                "scheduler": {
+                    "frequency": "Hour",
+                    "interval": 1
+                },
+                "name": "RunKPIActivitiy",
+                "linkedServiceName": "HDIonDemandLinkedService"
+            },
+            {
+                "type": "Copy",
+                "typeProperties": {
+                    "source": {
+                        "type": "BlobSource"
+                    },
+                    "sink": {
+                        "type": "BlobSink",
+                        "writeBatchSize": 0,
+                        "writeBatchTimeout": "00:00:00"
+                    }
+                },
+                "inputs": [
+                    {
+                        "name": "dailyActiveUsers"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "dauCsv"
+                    }
+                ],
+                "policy": {
+                    "timeout": "01:00:00",
+                    "executionPriorityOrder": "OldestFirst",
+                    "concurrency": 1,
+                    "retry": 1
+                },
+                "scheduler": {
+                    "frequency": "Hour",
+                    "interval": 1
+                },
+                "name": "RenameHiveOutput2CSVdauActivity"
+            },
+            {
+                "type": "Copy",
+                "typeProperties": {
+                    "source": {
+                        "type": "BlobSource"
+                    },
+                    "sink": {
+                        "type": "BlobSink",
+                        "writeBatchSize": 0,
+                        "writeBatchTimeout": "00:00:00"
+                    }
+                },
+                "inputs": [
+                    {
+                        "name": "monthlyActiveUsers"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "mauCsv"
+                    }
+                ],
+                "policy": {
+                    "timeout": "01:00:00",
+                    "executionPriorityOrder": "OldestFirst",
+                    "concurrency": 1,
+                    "retry": 1
+                },
+                "scheduler": {
+                    "frequency": "Hour",
+                    "interval": 1
+                },
+                "name": "RenameHiveOutput2CSVmauActivity"
+            },
+            {
+                "type": "Copy",
+                "typeProperties": {
+                    "source": {
+                        "type": "BlobSource"
+                    },
+                    "sink": {
+                        "type": "BlobSink",
+                        "writeBatchSize": 0,
+                        "writeBatchTimeout": "00:00:00"
+                    }
+                },
+                "inputs": [
+                    {
+                        "name": "nondist-DailyActiveUsers"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "nddauCsv"
+                    }
+                ],
+                "policy": {
+                    "timeout": "01:00:00",
+                    "executionPriorityOrder": "OldestFirst",
+                    "concurrency": 1,
+                    "retry": 1
+                },
+                "scheduler": {
+                    "frequency": "Hour",
+                    "interval": 1
+                },
+                "name": "RenameHiveOutput2CSVnddauActivity"
+            }
+        ],
+        "start": "2016-11-21T08:00:00Z",
+        "end": "2017-11-19T00:00:00Z",
+        "isPaused": false
+    }
+}
