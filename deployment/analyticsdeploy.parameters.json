@@ -14,13 +14,16 @@
         "outputBlobFolder": {
             "value": "dailyactiveusers"
         },
-        "hiveScriptFilePath": {
-            "value": ""
-        },
         "hiveScriptStorageAccountName": {
             "value": ""
         },
         "hiveScriptStorageAccountKey": {
+            "value": ""
+        },
+        "sqlServerAdminName": {
+            "value": ""
+        },
+        "sqlServerAdminPassword": {
             "value": ""
         }
     }

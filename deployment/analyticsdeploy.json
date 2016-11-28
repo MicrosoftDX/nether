@@ -37,12 +37,6 @@
         "description": "The folder in the blob container that will hold the transformed data."
       }
     },
-    "hiveScriptFilePath": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the hive query (HQL) file."
-      }
-    },
     "hiveScriptStorageAccountName": {
       "type": "string",
       "metadata": {
@@ -54,36 +48,60 @@
       "metadata": {
         "description": "Storage account key of blob storage where the hive script is stored."
       }
+    },
+    "sqlServerAdminName": {
+      "type": "string",
+      "metadata": {
+        "description": "Administrator name to the Azure SQL Server"
+      }
+    },
+    "sqlServerAdminPassword": {
+      "type": "string",
+      "metadata": {
+        "description": "Administrator password to the Azure SQL Server"
+      }
     }
   },
   "variables": {
     "location": "[resourceGroup().location]",
-    "apiVersion": "2015-08-01",
+    "stgApiVersion": "2015-06-15",
+    "ehApiVersion": "2015-08-01",
+    "asaApiVersion": "2015-09-01",
+    "sqlApiVersion": "2014-04-01",
+    "dfApiVersion": "2015-10-01",
     "uniqueIdentifier": "[uniqueString(resourceGroup().id)]",
     "storageAccountName": "[concat(resourceGroup().name, variables('uniqueIdentifier'))]",
+    "sharedStorageAccountSAS": "https://oldkpublic.blob.core.windows.net/nether?st=2016-11-14T14%3A46%3A00Z&se=2016-11-30T14%3A46%3A00Z&sp=rl&sv=2015-12-11&sr=c&sig=l%2ByIy4NKI%2FC6tZfo%2BmhMvIfcyGnxxGD2VRPHA0lg0l4%3D",
     "namespaceName": "[concat(resourceGroup().name, variables('uniqueIdentifier'), '-ns')]",
     "defaultSASKeyName": "RootManageSharedAccessKey",
     "authRuleResourceId": "[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('namespaceName'), variables('defaultSASKeyName'))]",
     "asaCCUJobName": "ccu",
-    "asaCCUJobQuery": "Select\r\n\tCount(*) as numUsers,\r\n\tSystem.timestamp as time\r\nInto BlobSink\r\nFrom\r\n\tInput timestamp by ClientUtc\r\nWhere\r\n\tEvent = 'heartbeat'\r\n\tor Event = 'session-start'\r\nGroup By\r\n\ttumblingwindow(second, 1), time",
+    "asaCCUJobQuery": "With concurrentusers as (\r\n\tSelect\r\n\t\tCount(*) as numUsers,\r\n\t\tSystem.timestamp as time\r\n\tFrom\r\n\t\tInput timestamp by ClientUtc\r\n\tWhere\r\n\t\tEvent = 'heartbeat'\r\n\t\tor Event = 'session-start'\r\n\tGroup By\r\n\t\ttumblingwindow(second, 10), time\r\n)\r\nSelect * into PBISink from concurrentusers\r\nSelect * into BlobSink from concurrentusers",
     "asaCCUConsumerGroupName": "asaCCU",
     "asaCCUContainerName": "ccus",
     "asaRawDataContainerName": "rawdata",
     "asaRawJobName": "rawdata",
-    "asaRawJobQuery": "Select\r\n\tCount(*) as numUsers,\r\n\tSystem.timestamp as time\r\nInto BlobSink\r\nFrom\r\n\tInput timestamp by ClientUtc\r\nWhere\r\n\tEvent = 'heartbeat'\r\n\tor Event = 'session-start'\r\nGroup By\r\n\ttumblingwindow(second, 1), time",
+    "asaRawJobQuery": "SELECT\r\nEvent,\r\n\tVersion,\r\n\tClientUtc,\r\n\tYear(ClientUtc) as ClientYear,\r\n\tMonth(ClientUtc) as ClientMonth,\r\n\tDay(ClientUtc) as ClientDay,\r\n\tDatepart(hh, ClientUtc) as ClientHour,\r\n\tGamertag\r\nINTO\r\n\tOutputBlob\r\nFROM\r\n\tInput",
     "asaRawConsumerGroupName": "asaRaw",
-    "ehVersion": "2015-08-01",
+    "sqlServerName": "[concat(resourceGroup().name, variables('uniqueIdentifier'))]",
+    "sqlDBName": "gamemetrics",
     "dataFactoryName": "[concat('HiveTransformDF', variables('uniqueIdentifier'))]",
-    "azureStorageLinkedServiceName": "AzureStorageLinkedService",
-    "azureHiveStorageLinkedServiceName": "AzureHiveStorageLinkedService",
-    "hdInsightOnDemandLinkedServiceName": "HDInsightOnDemandLinkedService",
+    "dfStorageLinkedServiceName": "AzureStorageLinkedService",
+    "dfStorageLinkedServiceSasName": "AzureStorageLinkedServiceSas",
+    "dfHiveStorageLinkedServiceName": "AzureHiveStorageLinkedService",
+    "dfSqlLinkedServiceName": "SQLServerLinkedService",
+    "dfHDIOnDemandLinkedServiceName": "HDInsightOnDemandLinkedService",
     "blobInputDatasetName": "AzureBlobInput",
     "blobOutputDatasetName": "AzureBlobOutput",
-    "pipelineName": "DAUPipeline"
+    "hdiPipelineName": "DAUPipeline",
+    "copyPipelineName": "CopyScriptsPipeline",
+    "scriptsOrig": "ScriptsOrig",
+    "scriptsDest": "ScriptsDest",
+    "hiveScriptFilePath": "nether/scripts/dau.hql"
   },
   "resources": [
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "[variables('stgApiVersion')]",
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageAccountName')]",
       "location": "[resourceGroup().location]",
@@ -92,7 +110,7 @@
       }
     },
     {
-      "apiVersion": "[variables('ehVersion')]",
+      "apiVersion": "[variables('ehApiVersion')]",
       "name": "[variables('namespaceName')]",
       "type": "Microsoft.EventHub/Namespaces",
       "location": "[variables('location')]",
@@ -102,7 +120,7 @@
       },
       "resources": [
         {
-          "apiVersion": "[variables('ehVersion')]",
+          "apiVersion": "[variables('ehApiVersion')]",
           "name": "[parameters('eventHubName')]",
           "type": "EventHubs",
           "dependsOn": [
@@ -113,7 +131,7 @@
           },
           "resources": [
             {
-              "apiVersion": "[variables('ehVersion')]",
+              "apiVersion": "[variables('ehApiVersion')]",
               "name": "[variables('asaCCUConsumerGroupName')]",
               "type": "ConsumerGroups",
               "dependsOn": [
@@ -122,7 +140,7 @@
               "properties": {}
             },
             {
-              "apiVersion": "[variables('ehVersion')]",
+              "apiVersion": "[variables('ehApiVersion')]",
               "name": "[variables('asaRawConsumerGroupName')]",
               "type": "ConsumerGroups",
               "dependsOn": [
@@ -134,7 +152,7 @@
       ]
     },
     {
-      "apiVersion": "2015-09-01",
+      "apiVersion": "[variables('asaApiVersion')]",
       "type": "Microsoft.StreamAnalytics/StreamingJobs",
       "name": "[variables('asaRawJobName')]",
       "location": "[resourceGroup().location]",
@@ -160,7 +178,7 @@
                   "eventHubName": "[parameters('eventHubName')]",
                   "serviceBusNamespace": "[variables('namespaceName')]",
                   "sharedAccessPolicyName": "[variables('defaultSASKeyName')]",
-                  "sharedAccessPolicyKey": "[listkeys(variables('authRuleResourceId'), variables('apiVersion')).primaryKey]",
+                  "sharedAccessPolicyKey": "[listkeys(variables('authRuleResourceId'), variables('ehApiVersion')).primaryKey]",
                   "consumerGroupName": "[variables('asaRawConsumerGroupName')]"
                 }
               }
@@ -195,9 +213,8 @@
                     }
                   ],
                   "container": "[variables('asaRawDataContainerName')]",
-                  "pathPattern": "arwdata",
-                  "dateFormat": "yyyy/MM/dd",
-                  "timeFormat": "HH"
+                  "pathPattern": "rawdata/date={date}",
+                  "dateFormat": "yyyy-MM-dd"
                 }
               }
             }
@@ -235,255 +252,441 @@
         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
       ]
     },
-      {
-        "apiVersion": "2015-09-01",
-        "comments": "Azure stream analytics job for calculating the concurrent users",
-        "type": "Microsoft.StreamAnalytics/StreamingJobs",
-        "name": "[variables('asaCCUJobName')]",
-        "location": "[resourceGroup().location]",
-        "properties": {
-          "sku": {
-            "name": "Standard"
-          },
-          "outputStartMode": "LastOutputEventTime",
-          "inputs": [
-            {
-              "name": "Input",
-              "properties": {
-                "type": "stream",
-                "serialization": {
-                  "type": "JSON",
-                  "properties": {
-                    "encoding": "UTF8"
-                  }
-                },
-                "datasource": {
-                  "type": "Microsoft.ServiceBus/EventHub",
-                  "properties": {
-                    "eventHubName": "[parameters('eventHubName')]",
-                    "serviceBusNamespace": "[variables('namespaceName')]",
-                    "sharedAccessPolicyName": "[variables('defaultSASKeyName')]",
-                    "sharedAccessPolicyKey": "[listkeys(variables('authRuleResourceId'), variables('apiVersion')).primaryKey]",
-                    "consumerGroupName": "[variables('asaCCUConsumerGroupName')]"
-                  }
-                }
-              }
-            }
-          ],
-          "transformation": {
-            "name": "[variables('asaCCUJobName')]",
-            "properties": {
-              "streamingUnits": 1,
-              "query": "[variables('asaCCUJobQuery')]"
-            }
-          },
-          "outputs": [
-            {
-              "name": "BlobSink",
-              "properties": {
-                "serialization": {
-                  "type": "CSV",
-                  "properties": {
-                    "fieldDelimiter": ",",
-                    "encoding": "UTF8"
-                  }
-                },
-                "datasource": {
-                  "type": "Microsoft.Storage/Blob",
-                  "properties": {
-                    "storageAccounts": [
-                      {
-                        "accountName": "[variables('storageAccountName')]",
-                        "accountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-06-15').key1]"
-                      }
-                    ],
-                    "container": "[variables('asaCCUContainerName')]",
-                    "pathPattern": "sessions",
-                    "dateFormat": "yyyy/MM/dd",
-                    "timeFormat": "HH"
-                  }
-                }
-              }
-            }
-          ]
+    {
+      "apiVersion": "[variables('asaApiVersion')]",
+      "comments": "Azure stream analytics job for calculating the concurrent users",
+      "type": "Microsoft.StreamAnalytics/StreamingJobs",
+      "name": "[variables('asaCCUJobName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "sku": {
+          "name": "Standard"
         },
-        "dependsOn": [
-          "[resourceId('Microsoft.EventHub/namespaces', variables('namespaceName'))]",
-          "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
-        ]
-      },
-      {
-        "name": "[variables('dataFactoryName')]",
-        "apiVersion": "2015-10-01",
-        "type": "Microsoft.DataFactory/datafactories",
-        "location": "[resourceGroup().location]",
-        "resources": [
+        "outputStartMode": "LastOutputEventTime",
+        "inputs": [
           {
-            "type": "linkedservices",
-            "name": "[variables('azureStorageLinkedServiceName')]",
-            "dependsOn": [
-              "[variables('dataFactoryName')]",
-              "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
-            ],
-            "apiVersion": "2015-10-01",
+            "name": "Input",
             "properties": {
-              "type": "AzureStorage",
-              "description": "Azure Storage linked service",
-              "typeProperties": {
-                "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-06-15').key1)]"
-              }
-            }
-          },
-          {
-            "type": "linkedservices",
-            "name": "[variables('azureHiveStorageLinkedServiceName')]",
-            "dependsOn": [
-              "[variables('dataFactoryName')]",
-              "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
-            ],
-            "apiVersion": "2015-10-01",
-            "properties": {
-              "type": "AzureStorage",
-              "description": "Azure Storage that contains the Hive script - to be a SAS linked service later",
-              "typeProperties": {
-                "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('hiveScriptStorageAccountName'),';AccountKey=', parameters('hiveScriptStorageAccountKey'))]"
-              }
-            }
-          },
-          {
-            "type": "linkedservices",
-            "name": "[variables('hdInsightOnDemandLinkedServiceName')]",
-            "dependsOn": [
-              "[variables('dataFactoryName')]",
-              "[variables('azureStorageLinkedServiceName')]"
-            ],
-            "apiVersion": "2015-10-01",
-            "properties": {
-              "type": "HDInsightOnDemand",
-              "typeProperties": {
-                "clusterSize": 8,
-                "version": "3.2",
-                "timeToLive": "00:30:00",
-                "osType": "linux",
-                "linkedServiceName": "[variables('azureStorageLinkedServiceName')]"
-              }
-            }
-          },
-          {
-            "type": "datasets",
-            "name": "[variables('blobInputDatasetName')]",
-            "dependsOn": [
-              "[variables('dataFactoryName')]",
-              "[variables('azureStorageLinkedServiceName')]"
-            ],
-            "apiVersion": "2015-10-01",
-            "properties": {
-              "type": "AzureBlob",
-              "linkedServiceName": "[variables('azureStorageLinkedServiceName')]",
-              "typeProperties": {
-                "folderPath": "[concat(parameters('blobContainer'), '/', parameters('inputBlobFolder'))]",
-                "format": {
-                  "type": "TextFormat",
-                  "columnDelimiter": ","
+              "type": "stream",
+              "serialization": {
+                "type": "JSON",
+                "properties": {
+                  "encoding": "UTF8"
                 }
               },
-              "availability": {
-                "frequency": "Day",
-                "interval": 1
-              },
-              "external": true
-            }
-          },
-          {
-            "type": "datasets",
-            "name": "[variables('blobOutputDatasetName')]",
-            "dependsOn": [
-              "[variables('dataFactoryName')]",
-              "[variables('azureStorageLinkedServiceName')]"
-            ],
-            "apiVersion": "2015-10-01",
-            "properties": {
-              "type": "AzureBlob",
-              "linkedServiceName": "[variables('azureStorageLinkedServiceName')]",
-              "typeProperties": {
-                "folderPath": "[concat(parameters('blobContainer'), '/', parameters('outputBlobFolder'))]",
-                "format": {
-                  "type": "TextFormat",
-                  "columnDelimiter": ","
+              "datasource": {
+                "type": "Microsoft.ServiceBus/EventHub",
+                "properties": {
+                  "eventHubName": "[parameters('eventHubName')]",
+                  "serviceBusNamespace": "[variables('namespaceName')]",
+                  "sharedAccessPolicyName": "[variables('defaultSASKeyName')]",
+                  "sharedAccessPolicyKey": "[listkeys(variables('authRuleResourceId'), variables('ehApiVersion')).primaryKey]",
+                  "consumerGroupName": "[variables('asaCCUConsumerGroupName')]"
                 }
-              },
-              "availability": {
-                "frequency": "Day",
-                "interval": 1
               }
             }
-          },
+          }
+        ],
+        "transformation": {
+          "name": "[variables('asaCCUJobName')]",
+          "properties": {
+            "streamingUnits": 1,
+            "query": "[variables('asaCCUJobQuery')]"
+          }
+        },
+        "outputs": [
           {
-            "type": "datapipelines",
-            "name": "[variables('pipelineName')]",
-            "dependsOn": [
-              "[variables('dataFactoryName')]",
-              "[variables('azureStorageLinkedServiceName')]",
-              "[variables('azureHiveStorageLinkedServiceName')]",
-              "[variables('hdInsightOnDemandLinkedServiceName')]",
-              "[variables('blobInputDatasetName')]",
-              "[variables('blobOutputDatasetName')]"
-            ],
-            "apiVersion": "2015-10-01",
+            "name": "BlobSink",
             "properties": {
-              "description": "Pipeline that transforms data using Hive script.",
-              "activities": [
-                {
-                  "type": "HDInsightHive",
-                  "typeProperties": {
-                    "scriptPath": "[parameters('hiveScriptFilePath')]",
-                    "scriptLinkedService": "[variables('azureHiveStorageLinkedServiceName')]",
-                    "defines": {
-                      "rawevents": "[concat('wasbs://', parameters('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/', parameters('inputBlobFolder'), '/')]",
-                      "rawinfo": "[concat('wasbs://', parameters('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/rawinfo/')]",
-                      "dau": "[concat('wasbs://', parameters('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/dailyactiveusers')]",
-                      "nddau": "[concat('wasbs://', parameters('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/nondistinct-dailyactiveusers')]",
-                      "mau": "[concat('wasbs://', parameters('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/monthlyactiveusers')]"
-                    }
-                  },
-                  "inputs": [
+              "serialization": {
+                "type": "CSV",
+                "properties": {
+                  "fieldDelimiter": ",",
+                  "encoding": "UTF8"
+                }
+              },
+              "datasource": {
+                "type": "Microsoft.Storage/Blob",
+                "properties": {
+                  "storageAccounts": [
                     {
-                      "name": "[variables('blobInputDatasetName')]"
+                      "accountName": "[variables('storageAccountName')]",
+                      "accountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-06-15').key1]"
                     }
                   ],
-                  "outputs": [
-                    {
-                      "name": "[variables('blobOutputDatasetName')]"
-                    }
-                  ],
-                  "policy": {
-                    "concurrency": 1,
-                    "retry": 2
-                  },
-                  "scheduler": {
-                    "frequency": "Day",
-                    "interval": 1
-                  },
-                  "name": "RunDAUHiveActivity",
-                  "linkedServiceName": "[variables('hdInsightOnDemandLinkedServiceName')]"
+                  "container": "[variables('asaCCUContainerName')]",
+                  "pathPattern": "sessions/date={date}",
+                  "dateFormat": "yyyy-MM-dd"
                 }
-              ],
-              "start": "2016-11-06T00:16:00Z",
-              "end": "2016-11-06T00:17:00Z",
-              "isPaused": false
+              }
             }
           }
         ]
-      }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces', variables('namespaceName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "name": "[variables('sqlServerName')]",
+      "type": "Microsoft.Sql/servers",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[variables('sqlApiVersion')]",
+      "properties": {
+        "administratorLogin": "[parameters('sqlServerAdminName')]",
+        "administratorLoginPassword": "[parameters('sqlServerAdminPassword')]",
+        "version": "12.0"
+      },
+      "resources": [
+        {
+          "name": "[variables('sqlDBName')]",
+          "type": "databases",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "[variables('sqlApiVersion')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
+          ],
+          "properties": {
+            "edition": "Standard",
+            "collation": "SQL_Latin1_General_Cp1_CS_AS_KI_WI",
+            "maxSizeBytes": "1073741824",
+            "requestedServiceObjectiveName": "S0"
+          }
+        },
+        {
+          "name": "AllowAllWindowsAzureIPs",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "[variables('sqlApiVersion')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
+          ],
+          "properties": {
+            "endIpAddress": "255.255.255.255",
+            "startIpAddress": "0.0.0.0"
+          }
+        }
+      ]
+    },
+    {
+      "name": "[variables('dataFactoryName')]",
+      "apiVersion": "[variables('dfApiVersion')]",
+      "type": "Microsoft.DataFactory/datafactories",
+      "location": "[resourceGroup().location]",
+      "resources": [
+        {
+          "type": "linkedservices",
+          "name": "[variables('dfStorageLinkedServiceName')]",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+          ],
+          "apiVersion": "[variables('dfApiVersion')]",
+          "properties": {
+            "type": "AzureStorage",
+            "description": "Azure Storage linked service",
+            "typeProperties": {
+              "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), variables('stgApiVersion')).key1)]"
+            }
+          }
+        },
+        {
+          "type": "linkedservices",
+          "name": "[variables('dfHiveStorageLinkedServiceName')]",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+          ],
+          "apiVersion": "[variables('dfApiVersion')]",
+          "properties": {
+            "type": "AzureStorage",
+            "description": "Azure Storage that contains the Hive script - to be a SAS linked service later",
+            "typeProperties": {
+              "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('hiveScriptStorageAccountName'),';AccountKey=', parameters('hiveScriptStorageAccountKey'))]"
+            }
+          }
+        },
+        {
+          "type": "linkedservices",
+          "name": "[variables('dfStorageLinkedServiceSasName')]",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+          ],
+          "apiVersion": "[variables('dfApiVersion')]",
+          "properties": {
+            "type": "AzureStorageSas",
+            "description": "Azure Storage SAS linked service",
+            "typeProperties": {
+              "sasUri": "[variables('sharedStorageAccountSAS')]"
+            }
+          }
+        },
+        {
+          "type": "linkedservices",
+          "name": "[variables('dfSqlLinkedServiceName')]",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]",
+            "[concat('Microsoft.Sql/servers/', variables('sqlServerName'), '/databases/', variables('sqlDBName'))]"
+          ],
+          "apiVersion": "[variables('dfApiVersion')]",
+          "properties": {
+            "type": "AzureSqlDatabase",
+            "description": "Azure SQL Server Database to store key game metrics, e.g. DAU, MAU",
+            "typeProperties": {
+              "connectionString": "[concat('Server=tcp:', variables('sqlServerName'),'.database.windows.net,1433;Database=', variables('sqlDBName'), ';User ID=',parameters('sqlServerAdminName'),';Password=',parameters('sqlServerAdminPassword'),';Trusted_Connection=False;Encrypt=True;Connection Timeout=30')]"
+            }
+          }
+        },
+        {
+          "type": "linkedservices",
+          "name": "[variables('dfHDIOnDemandLinkedServiceName')]",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "[variables('dfStorageLinkedServiceName')]"
+          ],
+          "apiVersion": "[variables('dfApiVersion')]",
+          "properties": {
+            "type": "HDInsightOnDemand",
+            "typeProperties": {
+              "clusterSize": 8,
+              "version": "3.2",
+              "timeToLive": "00:30:00",
+              "osType": "linux",
+              "linkedServiceName": "[variables('dfStorageLinkedServiceName')]"
+            }
+          }
+        },
+        {
+          "type": "datasets",
+          "name": "[variables('blobInputDatasetName')]",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "[variables('dfStorageLinkedServiceName')]"
+          ],
+          "apiVersion": "[variables('dfApiVersion')]",
+          "properties": {
+            "type": "AzureBlob",
+            "linkedServiceName": "[variables('dfStorageLinkedServiceName')]",
+            "typeProperties": {
+              "folderPath": "[concat(parameters('blobContainer'), '/', parameters('inputBlobFolder'))]",
+              "format": {
+                "type": "TextFormat",
+                "columnDelimiter": ","
+              }
+            },
+            "availability": {
+              "frequency": "Day",
+              "interval": 1
+            },
+            "external": true
+          }
+        },
+        {
+          "type": "datasets",
+          "name": "[variables('blobOutputDatasetName')]",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "[variables('dfStorageLinkedServiceName')]"
+          ],
+          "apiVersion": "[variables('dfApiVersion')]",
+          "properties": {
+            "type": "AzureBlob",
+            "linkedServiceName": "[variables('dfStorageLinkedServiceName')]",
+            "typeProperties": {
+              "folderPath": "[concat(parameters('blobContainer'), '/', parameters('outputBlobFolder'))]",
+              "format": {
+                "type": "TextFormat",
+                "columnDelimiter": ","
+              }
+            },
+            "availability": {
+              "frequency": "Day",
+              "interval": 1
+            }
+          }
+        },
+        {
+          "type": "datasets",
+          "name": "[variables('scriptsOrig')]",
+          "apiVersion": "[variables('dfApiVersion')]",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "[variables('dfStorageLinkedServiceSasName')]"
+          ],
+          "properties": {
+            "type": "AzureBlob",
+            "linkedServiceName": "[variables('dfStorageLinkedServiceSasName')]",
+            "typeProperties": {
+              "folderPath": "nether/scripts"
+            },
+            "external": true,
+            "availability": {
+              "frequency": "month",
+              "interval": 1
+            }
+          }
+        },
+        {
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "[variables('dfStorageLinkedServiceName')]"
+          ],
+          "type": "datasets",
+          "name": "[variables('scriptsDest')]",
+          "apiVersion": "[variables('dfApiVersion')]",
+          "properties": {
+            "type": "AzureBlob",
+            "linkedServiceName": "[variables('dfStorageLinkedServiceName')]",
+            "typeProperties": {
+              "folderPath": "nether/scripts"
+            },
+            "availability": {
+              "frequency": "month",
+              "interval": 1
+            }
+          }
+        },
+        {
+          "type": "datasets",
+          "name": "",
+          "apiVersion": "[variables('dfApiVersion')]",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "[variables('dfSqlLinkedServiceName')]"
+          ],
+          "properties": {
+            "description": "",
+            "type": "AzureSqlTable",
+            "linkedServiceName": "[variables('dfSqlLinkedServiceName')]",
+            "structure": [],
+            "typeProperties": {
+              "tableName": ""
+            },
+            "availability": {
+              "frequency": "",
+              "interval": 1
+            }
+          }
+        },
+        {
+          "type": "datapipelines",
+          "name": "[variables('copyPipelineName')]",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "[variables('dfStorageLinkedServiceName')]",
+            "[variables('dfStorageLinkedServiceSasName')]",
+            "[variables('scriptsDest')]",
+            "[variables('scriptsOrig')]"
+          ],
+          "apiVersion": "[variables('dfApiVersion')]",
+          "properties": {
+            "description": "Copy the script files needed for the analytics part from shared storage to the current one",
+            "activities": [
+              {
+                "name": "ScriptsFilesCopyActivity",
+                "type": "Copy",
+                "typeProperties": {
+                  "source": {
+                    "type": "BlobSource"
+                  },
+                  "sink": {
+                    "type": "BlobSink",
+                    "copyBehavior": "PreserveHierarchy",
+                    "writeBatchSize": 0,
+                    "writeBatchTimeout": "00:00:00"
+                  }
+                },
+                "inputs": [
+                  {
+                    "name": "[variables('scriptsOrig')]"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "[variables('scriptsDest')]"
+                  }
+                ],
+                "policy": {
+                  "timeout": "01:00:00",
+                  "concurrency": 1,
+                  "retry": 1
+                }
+              }
+            ],
+            "start": "2015-12-01T00:00:00Z",
+            "end": "2016-01-01T00:00:00Z"
+          }
+        },
+        {
+          "type": "datapipelines",
+          "name": "[variables('hdiPipelineName')]",
+          "dependsOn": [
+            "[variables('dataFactoryName')]",
+            "[variables('dfStorageLinkedServiceName')]",
+            "[variables('dfHiveStorageLinkedServiceName')]",
+            "[variables('dfHDIOnDemandLinkedServiceName')]",
+            "[variables('blobInputDatasetName')]",
+            "[variables('blobOutputDatasetName')]",
+            "[variables('copyPipelineName')]"
+          ],
+          "apiVersion": "[variables('dfApiVersion')]",
+          "properties": {
+            "description": "Pipeline that transforms data using Hive script.",
+            "activities": [
+              {
+                "type": "HDInsightHive",
+                "typeProperties": {
+                  "scriptPath": "[variables('hiveScriptFilePath')]",
+                  "scriptLinkedService": "[variables('dfStorageLinkedServiceName')]",
+                  "defines": {
+                    "rawevents": "[concat('wasbs://', parameters('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/', parameters('inputBlobFolder'), '/')]",
+                    "rawinfo": "[concat('wasbs://', parameters('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/rawinfo/')]",
+                    "dau": "[concat('wasbs://', parameters('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/dailyactiveusers')]",
+                    "nddau": "[concat('wasbs://', parameters('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/nondistinct-dailyactiveusers')]",
+                    "mau": "[concat('wasbs://', parameters('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/monthlyactiveusers')]"
+                  }
+                },
+                "inputs": [
+                  {
+                    "name": "[variables('blobInputDatasetName')]"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "[variables('blobOutputDatasetName')]"
+                  }
+                ],
+                "policy": {
+                  "concurrency": 1,
+                  "retry": 2
+                },
+                "scheduler": {
+                  "frequency": "Day",
+                  "interval": 1
+                },
+                "name": "RunDAUHiveActivity",
+                "linkedServiceName": "[variables('dfHDIOnDemandLinkedServiceName')]"
+              }
+            ],
+            "start": "2016-11-06T00:16:00Z",
+            "end": "2016-11-06T00:17:00Z",
+            "isPaused": false
+          }
+        }
+      ]
+    }
   ],
   "outputs": {
     "NamespaceConnectionString": {
       "type": "string",
-      "value": "[listkeys(variables('authRuleResourceId'), variables('apiVersion')).primaryConnectionString]"
+      "value": "[listkeys(variables('authRuleResourceId'), variables('ehApiVersion')).primaryConnectionString]"
     },
     "SharedAccessPolicyPrimaryKey": {
       "type": "string",
-      "value": "[listkeys(variables('authRuleResourceId'), variables('apiVersion')).primaryKey]"
+      "value": "[listkeys(variables('authRuleResourceId'), variables('ehApiVersion')).primaryKey]"
     }
   }
 }
