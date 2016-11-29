@@ -21,7 +21,7 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.Name, "devuser"),
                         new Claim(JwtClaimTypes.GivenName, "Development"),
                         new Claim(JwtClaimTypes.FamilyName, "User"),
-                        new Claim(JwtClaimTypes.Role, "Player"),
+                        new Claim(JwtClaimTypes.Role, "player"),
                     }
                 },
                 new InMemoryUser{Subject = "2222", Username = "devadmin", Password = "devadmin",
@@ -30,7 +30,7 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.Name, "devadmin"),
                         new Claim(JwtClaimTypes.GivenName, "Development"),
                         new Claim(JwtClaimTypes.FamilyName, "Admin"),
-                        new Claim(JwtClaimTypes.Role, "Admin"),
+                        new Claim(JwtClaimTypes.Role, "admin"),
                     }
                 },
 
@@ -41,7 +41,7 @@ namespace Nether.Web.Features.Identity.Configuration
                     Claims = new Claim[]
                     {
                         new Claim(JwtClaimTypes.Name, "112299"),
-                        new Claim(JwtClaimTypes.Role, "Player"),
+                        new Claim(JwtClaimTypes.Role, "player"),
                     }
                 },
                 // user with gamertag
@@ -49,7 +49,7 @@ namespace Nether.Web.Features.Identity.Configuration
                     Claims = new Claim[]
                     {
                         new Claim(JwtClaimTypes.Name, "112233"),
-                        new Claim(JwtClaimTypes.Role, "Player"),
+                        new Claim(JwtClaimTypes.Role, "player"),
                         new Claim(JwtClaimTypes.NickName, "testusertag") // gamertag
                     }
                 },
