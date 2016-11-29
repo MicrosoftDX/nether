@@ -1,8 +1,11 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using IdentityModel;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -34,22 +37,46 @@ namespace Nether.Web.IntegrationTests.Identity
             }
             Assert.NotNull(accessTokenResult.AccessToken);
 
-            // TODO - inspect the token to check that the gamertag is NOT set
+            // inspect the token to check that the gamertag is NOT set
+            var token = new JwtSecurityToken(accessTokenResult.AccessToken);
+            var claim = token.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.NickName);
+            Assert.Null(claim);
 
             // Set the Bearer token on subsequent requests
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessTokenResult.AccessToken);
 
-            // Should get a 404 NotFound for /player as there is no current player
-
+            // GET /api/player should get a 404 NotFound for /player as there is no current player
             var playerResponse = await client.GetAsync("api/player");
             Assert.Equal(HttpStatusCode.NotFound, playerResponse.StatusCode);
 
+            // PUT /api/players/{id}
             var player = new { gamertag = "testuser-notag", country = "UK", customTag = "testing" };
             playerResponse = await client.PutAsJsonAsync("api/players/foo", player);
             playerResponse.EnsureSuccessStatusCode();
 
+            // Reauthenticate
+            accessTokenResult = await GetAccessToken(client, username, password);
+            if (accessTokenResult.Error != null)
+            {
+                throw new Exception("error in auth:" + accessTokenResult.Error);
+            }
+            Assert.NotNull(accessTokenResult.AccessToken);
+
+            // inspect the token to check that the gamertag IS set now
+            token = new JwtSecurityToken(accessTokenResult.AccessToken);
+            claim = token.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.NickName);
+            Assert.NotNull(claim);
+            Assert.Equal("testuser-notag", claim.Value);
+
+            // Set the Bearer token on subsequent requests
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessTokenResult.AccessToken);
+
+            // GET /api/player
             playerResponse = await client.GetAsync("api/player");
             playerResponse.EnsureSuccessStatusCode();
+
+            // GET /api/player
+            var playerGroupsResponse = await client.GetAsync("api/player/groups");
         }
 
 
