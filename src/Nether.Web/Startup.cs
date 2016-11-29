@@ -67,18 +67,6 @@ namespace Nether.Web
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-
-            //app.UseCookieAuthentication(new CookieAuthenticationOptions()
-            //{
-            //    AuthenticationScheme = "NetherCookieAuth",
-            //    LoginPath = new PathString("/Account/Unauthorized/"),
-            //    AccessDeniedPath = new PathString("/Account/Forbidden/"),
-            //    AutomaticAuthenticate = true,
-            //    AutomaticChallenge = false
-            //});
-
-
-
             // TODO - this code was copied from Identity Server sample. Need to understand why the map is cleared!
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
