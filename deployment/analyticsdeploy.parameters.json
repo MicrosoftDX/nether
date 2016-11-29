@@ -25,6 +25,9 @@
         },
         "sqlServerAdminPassword": {
             "value": ""
+        },
+        "sharedStorageAccountSAS": {
+            "value": ""
         }
     }
 }
