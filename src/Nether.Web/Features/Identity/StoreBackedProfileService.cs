@@ -13,6 +13,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 
 using Nether.Data.Identity;
+using System.Net.Http;
 
 namespace Nether.Web.Features.Identity
 {
@@ -29,17 +30,35 @@ namespace Nether.Web.Features.Identity
             var user = await _userStore.GetUserByIdAsync(context.Subject.GetSubjectId());
 
             context.IssuedClaims.Add(new Claim(JwtClaimTypes.Subject, user.UserId));
-            context.AddFilteredClaims(GetUserClaims(user));
+            context.AddFilteredClaims(await GetUserClaimsAsync(user));
         }
 
-        public static IEnumerable<Claim> GetUserClaims(User user)
+
+        // TODO - Get URL from config!!
+        private static HttpClient HttpClient = new HttpClient { BaseAddress = new Uri("http://localhost:5000") };
+        public static async Task<IEnumerable<Claim>> GetUserClaimsAsync(User user)
         {
             // TODO create claims for user (look up gamer tag, ...)
-            yield return new Claim(ClaimTypes.Name, user.UserId);
-            yield return new Claim(JwtClaimTypes.Name, user.UserId);
-            yield return new Claim(JwtClaimTypes.Role, user.Role);
-        }
 
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.UserId),
+                new Claim(JwtClaimTypes.Name, user.UserId),
+                new Claim(JwtClaimTypes.Role, user.Role),
+            };
+
+            // TODO security...;-)
+            var response = await HttpClient.GetAsync($"/api/EVIL/HELPER/tagfromid/{user.UserId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var gamertag = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(gamertag))
+                {
+                    claims.Add(new Claim(JwtClaimTypes.NickName, gamertag));
+                }
+            }
+            return claims;
+        }
         public async Task IsActiveAsync(IsActiveContext context)
         {
             var user = await _userStore.GetUserByIdAsync(context.Subject.GetSubjectId());

@@ -26,7 +26,8 @@ namespace Nether.Web.Features.Identity
 
             if (user != null)
             {
-                context.Result = new GrantValidationResult(user.UserId, "password", StoreBackedProfileService.GetUserClaims(user)); // TODO move this helper to somewhere more sensible
+                var claims = await StoreBackedProfileService.GetUserClaimsAsync(user); // TODO move this helper to somewhere more sensible
+                context.Result = new GrantValidationResult(user.UserId, "password", claims);
             }
         }
     }
