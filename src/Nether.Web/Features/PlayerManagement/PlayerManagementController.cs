@@ -113,7 +113,7 @@ namespace Nether.Web.Features.PlayerManagement
             // Return result
             return Ok(resultModel);
         }
-        [Authorize]
+        [Authorize(Roles = "player")]
         [HttpGet("player/groups/")]
         public Task<ActionResult> GetPlayerGroups()
         {
@@ -157,7 +157,7 @@ namespace Nether.Web.Features.PlayerManagement
             return Created("GetPlayer", new { playername = player.Gamertag });
         }
 
-        [Authorize]
+        [Authorize(Roles = "player")]
         [Route("players/{player}")]
         [HttpPut]
         public async Task<ActionResult> Put([FromBody]PlayerPostRequestModel player)
