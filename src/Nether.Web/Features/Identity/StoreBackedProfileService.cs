@@ -35,7 +35,7 @@ namespace Nether.Web.Features.Identity
 
 
         // TODO - Get URL from config!!
-        private static HttpClient HttpClient = new HttpClient { BaseAddress = new Uri("http://localhost:5000") };
+        private static HttpClient s_httpClient = new HttpClient { BaseAddress = new Uri("http://localhost:5000") };
         public static async Task<IEnumerable<Claim>> GetUserClaimsAsync(User user)
         {
             // TODO create claims for user (look up gamer tag, ...)
@@ -48,7 +48,7 @@ namespace Nether.Web.Features.Identity
             };
 
             // TODO security...;-)
-            var response = await HttpClient.GetAsync($"/api/EVIL/HELPER/tagfromid/{user.UserId}");
+            var response = await s_httpClient.GetAsync($"/api/EVIL/HELPER/tagfromid/{user.UserId}");
             if (response.IsSuccessStatusCode)
             {
                 var gamertag = await response.Content.ReadAsStringAsync();
