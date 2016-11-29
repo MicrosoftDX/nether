@@ -39,7 +39,7 @@ namespace Nether.Web.Features.PlayerManagement
             // Format response model
             var resultModel = new PlayerListGetResponseModel
             {
-                Players = players.Cast<PlayerListGetResponseModel.PlayersEntry>().ToList()
+                Players = players.Select(p => (PlayerListGetResponseModel.PlayersEntry)p).ToList()
             };
 
             // Return result
@@ -67,6 +67,29 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(resultModel);
         }
 
+        [Authorize]
+        [HttpGet("player")]
+        public async Task<ActionResult> GetCurrentPlayer()
+        {
+            var playername = User.Identity.Name;
+
+            // Call data store
+            var player = await _store.GetPlayerDetailsByIdAsync(playername);
+
+            if (player == null)
+            {
+                return NotFound();
+            }
+
+            // Format response model
+            var resultModel = new PlayerGetResponseModel
+            {
+                Player = player
+            };
+
+            // Return result
+            return Ok(resultModel);
+        }
 
         [HttpGet("players/{playername}/groups/")]
         public async Task<ActionResult> GetPlayerGroups(string playername)
@@ -106,13 +129,14 @@ namespace Nether.Web.Features.PlayerManagement
             return Created("GetPlayer", new { playername = player.Gamertag });
         }
 
+        [Authorize]
         [Route("players/{player}")]
         [HttpPut]
         public async Task<ActionResult> Put([FromBody]PlayerPostRequestModel player)
         {
             // Update player
             await _store.SavePlayerAsync(
-                new Player { Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
+                new Player { PlayerId =User.Identity.Name,   Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
 
             // Return result
             return new NoContentResult();

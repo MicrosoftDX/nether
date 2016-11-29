@@ -5,7 +5,14 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solution Items", "{C3F7DE95-BCD3-4340-AE80-4848443F2B39}"
 	ProjectSection(SolutionItems) = preProject
+		build.ps1 = build.ps1
+		build.sh = build.sh
 		README.md = README.md
+		RunCodeFormatter.ps1 = RunCodeFormatter.ps1
+		rundev.ps1 = rundev.ps1
+		rundev.sh = rundev.sh
+		test.ps1 = test.ps1
+		test.sh = test.sh
 	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.Common.DependencyInjection", "src\Common\Nether.Common.DependencyInjection\Nether.Common.DependencyInjection.xproj", "{E1E066B4-EE70-4964-A541-B7B49A394317}"
@@ -41,6 +48,8 @@ EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Nether.Data.Sql.Schema", "src\Nether.Data.Sql.Schema\Nether.Data.Sql.Schema.sqlproj", "{E5428D02-EFC7-4313-BAE1-CF26D39C9939}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.Data.Sql", "src\Nether.Data.Sql\Nether.Data.Sql.xproj", "{A477AE37-4030-47D7-AD10-C80890359791}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Nether.Web.IntegrationTests", "tests\Nether.Web.IntegrationTests\Nether.Web.IntegrationTests.xproj", "{E8EA01ED-EAA3-4D76-B082-C2C147CD6CD4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,6 +107,10 @@ Global
 		{A477AE37-4030-47D7-AD10-C80890359791}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A477AE37-4030-47D7-AD10-C80890359791}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A477AE37-4030-47D7-AD10-C80890359791}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8EA01ED-EAA3-4D76-B082-C2C147CD6CD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8EA01ED-EAA3-4D76-B082-C2C147CD6CD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8EA01ED-EAA3-4D76-B082-C2C147CD6CD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8EA01ED-EAA3-4D76-B082-C2C147CD6CD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -118,5 +131,6 @@ Global
 		{93A6E0EC-DCD9-41EE-9DFA-565A0A3605E0} = {86942C3A-4907-4D51-BFC2-D551A85A335E}
 		{E5428D02-EFC7-4313-BAE1-CF26D39C9939} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
 		{A477AE37-4030-47D7-AD10-C80890359791} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
+		{E8EA01ED-EAA3-4D76-B082-C2C147CD6CD4} = {21460676-11E1-480F-B500-26499594BDC8}
 	EndGlobalSection
 EndGlobal
