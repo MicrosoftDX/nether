@@ -63,6 +63,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
                             orderby s.Gamertag descending
                             select new Player
                             {
+                                PlayerId = s.PlayerId,
                                 Gamertag = s.Gamertag,
                                 Country = s.Country,
                                 CustomTag = s.CustomTag,
@@ -71,6 +72,23 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
             return await getPlayer.FirstOrDefaultAsync();
         }
+        public async Task<Player> GetPlayerDetailsByIdAsync(string id)
+        {
+            var getPlayer = from s in PlayersCollection.AsQueryable()
+                            where s.PlayerId == id
+                            orderby s.PlayerId descending
+                            select new Player
+                            {
+                                PlayerId = s.PlayerId,
+                                Gamertag = s.Gamertag,
+                                Country = s.Country,
+                                CustomTag = s.CustomTag,
+                                PlayerImage = s.PlayerImage
+                            };
+
+            return await getPlayer.FirstOrDefaultAsync();
+        }
+
 
         public async Task RemovePlayerFromGroupAsync(Group group, Player player)
         {
@@ -115,6 +133,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
                             orderby s.Gamertag descending
                             select new Player
                             {
+                                PlayerId = s.PlayerId,
                                 Gamertag = s.Gamertag,
                                 Country = s.Country,
                                 CustomTag = s.CustomTag,
