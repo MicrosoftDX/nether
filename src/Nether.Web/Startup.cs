@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nether.Web.Features.Analytics;
+using Nether.Web.Features.Identity;
 using Nether.Web.Features.Leaderboard;
 using Nether.Web.Features.PlayerManagement;
 using Swashbuckle.Swagger.Model;

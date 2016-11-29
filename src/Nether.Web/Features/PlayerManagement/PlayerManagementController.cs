@@ -67,6 +67,28 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(resultModel);
         }
 
+
+
+        // EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL
+        // ********************************** THIS endpoint is a temporary measure to quickly unblock auth, but needs to be removed ***************************
+        [HttpGet("EVIL/HELPER/tagfromid/{playerid}")]
+        public async Task<ActionResult> EVIL_HELPER_GetTagFromPlayerId(string playerid)
+        {
+            // Call data store
+            var player = await _store.GetPlayerDetailsByIdAsync(playerid);
+
+            if (player == null)
+            {
+                return NotFound();
+            }
+
+            // Return result
+            return Ok(player.Gamertag);
+        }
+        // EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL
+
+
+
         [Authorize]
         [HttpGet("player")]
         public async Task<ActionResult> GetCurrentPlayer()
@@ -136,7 +158,7 @@ namespace Nether.Web.Features.PlayerManagement
         {
             // Update player
             await _store.SavePlayerAsync(
-                new Player { PlayerId =User.Identity.Name,   Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
+                new Player { PlayerId = User.Identity.Name, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
 
             // Return result
             return new NoContentResult();

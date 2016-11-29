@@ -26,7 +26,8 @@
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "System.Runtime.Serialization.Xml": "4.1.1",
     "Swashbuckle": "6.0.0-beta902",
-    "Nether.Data.Sql": "1.0.0-*"
+    "Nether.Data.Sql": "1.0.0-*",
+    "Microsoft.AspNetCore.Cryptography.KeyDerivation": "1.0.0"
   },
 
   "tools": {

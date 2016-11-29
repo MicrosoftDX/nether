@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -10,7 +13,7 @@ namespace Nether.Web.IntegrationTests.Identity
 {
     public class SignInTests
     {
-        const string BaseUrl = "http://localhost:5000/";
+        private const string BaseUrl = "http://localhost:5000/";
 
         [Fact]
         public async Task As_a_new_user_I_can_authenticate_and_create_a_gamertag()
@@ -41,13 +44,12 @@ namespace Nether.Web.IntegrationTests.Identity
             var playerResponse = await client.GetAsync("api/player");
             Assert.Equal(HttpStatusCode.NotFound, playerResponse.StatusCode);
 
-            var player = new { gamertag = "testuser-notag", country="UK", customTag = "testing" };
+            var player = new { gamertag = "testuser-notag", country = "UK", customTag = "testing" };
             playerResponse = await client.PutAsJsonAsync("api/players/foo", player);
             playerResponse.EnsureSuccessStatusCode();
 
             playerResponse = await client.GetAsync("api/player");
             playerResponse.EnsureSuccessStatusCode();
-
         }
 
 

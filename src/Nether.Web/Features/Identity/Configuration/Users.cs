@@ -53,8 +53,7 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.NickName, "testusertag") // gamertag
                     }
                 },
-
-            };
+};
         public static List<InMemoryUser> Get()
         {
             return Value;
