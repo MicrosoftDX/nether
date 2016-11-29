@@ -12,5 +12,7 @@ namespace Nether.Data.Identity
     {
         Task<User> GetUserByIdAsync(string userid);
         Task<User> GetUserByUsernameAsync(string username);
+        Task<User> GetUserByFacebookIdAsync(string facebookUserId);
+        Task SaveUserAsync(User user);
     }
 }

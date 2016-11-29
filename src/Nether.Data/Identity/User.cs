@@ -18,6 +18,7 @@ namespace Nether.Data.Identity
         public string UserName { get; set; }
         public string PasswordHash { get; set; }
 
-        // need to store facebook user id for lookup
+        // Going forward, FacebookUserId should be stored as a "login" for the "facebook" provider to allow generalisation to other identity types
+        public string FacebookUserId { get; set; }
     }
 }
