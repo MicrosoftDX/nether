@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 using Nether.Data.PlayerManagement;
+using Nether.Web.Utilities;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -112,7 +113,12 @@ namespace Nether.Web.Features.PlayerManagement
             // Return result
             return Ok(resultModel);
         }
-
+        [Authorize]
+        [HttpGet("player/groups/")]
+        public Task<ActionResult> GetPlayerGroups()
+        {
+            return GetPlayerGroups(User.GetGamerTag());
+        }
         [HttpGet("players/{playername}/groups/")]
         public async Task<ActionResult> GetPlayerGroups(string playername)
         {
