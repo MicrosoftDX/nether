@@ -33,6 +33,27 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.Role, "Admin"),
                     }
                 },
+
+
+                // Integration test users
+                // user without gamertag
+                new InMemoryUser{Subject = "112299", Username = "testuser-notag", Password = "password123",
+                    Claims = new Claim[]
+                    {
+                        new Claim(JwtClaimTypes.Name, "112299"),
+                        new Claim(JwtClaimTypes.Role, "Player"),
+                    }
+                },
+                // user with gamertag
+                new InMemoryUser{Subject = "112233", Username = "testuser", Password = "password123",
+                    Claims = new Claim[]
+                    {
+                        new Claim(JwtClaimTypes.Name, "112233"),
+                        new Claim(JwtClaimTypes.Role, "Player"),
+                        new Claim(JwtClaimTypes.NickName, "testusertag") // gamertag
+                    }
+                },
+
             };
         public static List<InMemoryUser> Get()
         {
