@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 using Nether.Data.PlayerManagement;
+using Nether.Web.Utilities;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -39,7 +40,7 @@ namespace Nether.Web.Features.PlayerManagement
             // Format response model
             var resultModel = new PlayerListGetResponseModel
             {
-                Players = players.Cast<PlayerListGetResponseModel.PlayersEntry>().ToList()
+                Players = players.Select(p => (PlayerListGetResponseModel.PlayersEntry)p).ToList()
             };
 
             // Return result
@@ -68,6 +69,56 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
 
+
+        // EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL
+        // ********************************** THIS endpoint is a temporary measure to quickly unblock auth, but needs to be removed ***************************
+        [HttpGet("EVIL/HELPER/tagfromid/{playerid}")]
+        public async Task<ActionResult> EVIL_HELPER_GetTagFromPlayerId(string playerid)
+        {
+            // Call data store
+            var player = await _store.GetPlayerDetailsByIdAsync(playerid);
+
+            if (player == null)
+            {
+                return NotFound();
+            }
+
+            // Return result
+            return Ok(player.Gamertag);
+        }
+        // EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL
+
+
+
+        [Authorize]
+        [HttpGet("player")]
+        public async Task<ActionResult> GetCurrentPlayer()
+        {
+            var playername = User.Identity.Name;
+
+            // Call data store
+            var player = await _store.GetPlayerDetailsByIdAsync(playername);
+
+            if (player == null)
+            {
+                return NotFound();
+            }
+
+            // Format response model
+            var resultModel = new PlayerGetResponseModel
+            {
+                Player = player
+            };
+
+            // Return result
+            return Ok(resultModel);
+        }
+        [Authorize(Roles = "player")]
+        [HttpGet("player/groups/")]
+        public Task<ActionResult> GetPlayerGroups()
+        {
+            return GetPlayerGroups(User.GetGamerTag());
+        }
         [HttpGet("players/{playername}/groups/")]
         public async Task<ActionResult> GetPlayerGroups(string playername)
         {
@@ -106,13 +157,14 @@ namespace Nether.Web.Features.PlayerManagement
             return Created("GetPlayer", new { playername = player.Gamertag });
         }
 
+        [Authorize(Roles = "player")]
         [Route("players/{player}")]
         [HttpPut]
         public async Task<ActionResult> Put([FromBody]PlayerPostRequestModel player)
         {
             // Update player
             await _store.SavePlayerAsync(
-                new Player { Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
+                new Player { PlayerId = User.Identity.Name, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
 
             // Return result
             return new NoContentResult();

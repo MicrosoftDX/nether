@@ -6,6 +6,7 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Nether.Data.Identity;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -23,11 +24,16 @@ namespace Nether.Web.Features.Identity
 
         private readonly IConfiguration _configuration;
         private readonly ILogger<FacebookUserAccessTokenExtensionGrantValidator> _logger;
+        private readonly IUserStore _userStore;
 
-        public FacebookUserAccessTokenExtensionGrantValidator(IConfiguration configuration, ILoggerFactory loggerFactory)
+        public FacebookUserAccessTokenExtensionGrantValidator(
+            IConfiguration configuration,
+            ILoggerFactory loggerFactory,
+            IUserStore userStore)
         {
             _configuration = configuration;
             _logger = loggerFactory.CreateLogger<FacebookUserAccessTokenExtensionGrantValidator>();
+            _userStore = userStore;
         }
 
         public async Task ValidateAsync(ExtensionGrantValidationContext context)
@@ -82,26 +88,21 @@ namespace Nether.Web.Features.Identity
 
             // Look up the user
             // TODO - fix this so not hard-coded to in-memory user list, not thread-safe, ...
-            var user = Configuration.Users.Value.FirstOrDefault(u => u.Provider == "facebook" && u.ProviderId == userId);
+            var user = await _userStore.GetUserByFacebookIdAsync(userId);
             if (user == null)
             {
-                user = new InMemoryUser
+                user = new User
                 {
-                    Subject = userId,
-                    Provider = "facebook",
-                    ProviderId = userId,
-                    Claims = new[]
-                    {
-                        new Claim(ClaimTypes.Name, $"fb-{userId}"), // TODO - need to figure out what user name should be. Gamertag? How to look up??
-                        new Claim(ClaimTypes.NameIdentifier, userId),
-                        new Claim(ClaimTypes.Role, "player"),
-                    },
-                    Username = $"fb-{userId}"
+                    UserId = Guid.NewGuid().ToString(),
+                    Role = "player",
+                    IsActive = true,
+                    FacebookUserId = userId
                 };
-                Configuration.Users.Value.Add(user);
+                await _userStore.SaveUserAsync(user);
             }
 
-            context.Result = new GrantValidationResult(user.Subject, "nether-facebook", user.Claims);
+            var claims = await StoreBackedProfileService.GetUserClaimsAsync(user); // TODO move this helper to somewhere more sensible
+            context.Result = new GrantValidationResult(user.UserId, "nether-facebook", claims);
 
             return;
         }

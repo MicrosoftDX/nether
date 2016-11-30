@@ -1,18 +1,18 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
-using Nether.Common.DependencyInjection;
-using Nether.Data.Leaderboard;
-using Nether.Data.MongoDB.Leaderboard;
-using Nether.Web.Features.Identity.Configuration;
-using Microsoft.AspNetCore.Hosting;
-using Nether.Web.Features.Identity;
 
-namespace Nether.Web.Features.Leaderboard
+using IdentityServer4.Services;
+using IdentityServer4.Validation;
+
+using Nether.Data.Identity;
+using Nether.Web.Features.Identity.Configuration;
+
+namespace Nether.Web.Features.Identity
 {
     public static class IdentityServiceExtensions
     {
@@ -31,9 +31,13 @@ namespace Nether.Web.Features.Leaderboard
                 .AddInMemoryStores()
                 .AddInMemoryClients(Clients.Get())
                 .AddInMemoryScopes(Scopes.Get())
-                .AddInMemoryUsers(Users.Get())
                 .AddExtensionGrantValidator<FacebookUserAccessTokenExtensionGrantValidator>()
             ;
+            services.AddTransient<IPasswordHasher, PasswordHasher>();
+            services.AddSingleton<IUserStore, InMemoryUserStore>();
+            services.AddTransient<IProfileService, StoreBackedProfileService>();
+            services.AddTransient<IResourceOwnerPasswordValidator, StoreBackedResourceOwnerPasswordValidator>();
+
             return services;
         }
     }

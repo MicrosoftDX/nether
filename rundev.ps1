@@ -4,7 +4,7 @@ $env:ASPNETCORE_ENVIRONMENT="Development" # Set ASP.NET Core environment to Deve
 Push-Location
 cd src/Nether.Web
 try{
-    dotnet run
+    dotnet watch run
 }
 finally{
     Pop-Location

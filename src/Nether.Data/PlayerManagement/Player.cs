@@ -11,6 +11,7 @@ namespace Nether.Data.PlayerManagement
 {
     public class Player
     {
+        public string PlayerId { get; set; }
         public string Gamertag { get; set; }
         public string Country { get; set; }
         public string CustomTag { get; set; }

@@ -26,11 +26,13 @@
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "System.Runtime.Serialization.Xml": "4.1.1",
     "Swashbuckle": "6.0.0-beta902",
-    "Nether.Data.Sql": "1.0.0-*"
+    "Nether.Data.Sql": "1.0.0-*",
+    "Microsoft.AspNetCore.Cryptography.KeyDerivation": "1.0.0"
   },
 
   "tools": {
-    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final"
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final",
+    "Microsoft.DotNet.Watcher.Tools" : "1.0.0-preview2-final"
   },
 
   "frameworks": {

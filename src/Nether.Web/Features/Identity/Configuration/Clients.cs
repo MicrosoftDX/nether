@@ -19,7 +19,9 @@ namespace Nether.Web.Features.Identity.Configuration
                 {
                     ClientId = "devclient",
                     ClientName = "Dev Client",
-                    AllowedGrantTypes = GrantTypes.Hybrid.Concat(new [] { "fb-usertoken" }),
+                    AllowedGrantTypes = GrantTypes.Hybrid
+                                            .Concat(GrantTypes.ResourceOwnerPassword)
+                                            .Concat(new [] { "fb-usertoken" }),
 
                     RedirectUris = new List<string>
                     {
