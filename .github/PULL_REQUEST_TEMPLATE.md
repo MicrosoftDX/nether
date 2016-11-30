@@ -1,5 +1,7 @@
 ###Issue: #PutYourIssueNumberHere
 
+ - [ ] Tick here to confirm that you have run RunCodeFormatter.ps1
+
 ###Description:
 Briefly describe the work that has been done and how that differ from what was there before. Only a few sentences since reviewer should be able to find more information in the issue linked at the top.
 
