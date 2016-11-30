@@ -43,7 +43,7 @@ namespace Nether.Data.Sql.Leaderboard
         {
             return Task.FromResult(_dbQuery.GetHighScoresAsync(n));
         }
-       
+
 
         public Task<List<GameScore>> GetScoresAroundMe(string gamerTag, int radius)
         {

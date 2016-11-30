@@ -36,7 +36,7 @@ namespace Nether.Web.Features.Leaderboard
 
         [HttpGet("{leaderboardname}")]
         public async Task<ActionResult> Get(string leaderboardname = "default") //TODO: add swagger annotations for response shape
-        {            
+        {
             //TODO
             var gamerTag = User.Claims
                 .FirstOrDefault(c => c.Type == "name") // For a quick implementation, assume that name is the gamertag - review later!
@@ -67,9 +67,9 @@ namespace Nether.Web.Features.Leaderboard
                     {
                         scores = await _store.GetAllHighScoresAsync();
                     }
-                }                
+                }
             }
-          
+
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
@@ -114,7 +114,7 @@ namespace Nether.Web.Features.Leaderboard
 
         [HttpGet("friends")]
         public async Task<ActionResult> GetLeaderboardWithFriendsAsync() //TODO: add swagger annotations for response shape
-        {            
+        {
             // Call data store
             var scores = await _store.GetAllHighScoresAsync();
 

@@ -34,22 +34,23 @@ namespace Nether.Data.Sql.Leaderboard
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
             builder.UseSqlServer(_connectionString);
-        }        
+        }
 
         public List<GameScore> GetHighScoresAsync(int n)
-        {            
+        {
             string baseSql = " score, gamertag, customtag, rank() over(order by score desc) as ranking " +
-                "from scores s1 where " + 
+                "from scores s1 where " +
                 "score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag)";
             string sql = n > 0 ? String.Concat("Select top ", n, baseSql) : String.Concat("Select ", baseSql);
 
-            return Scores.FromSql(sql).Select(s => 
-                new GameScore {
+            return Scores.FromSql(sql).Select(s =>
+                new GameScore
+                {
                     Score = s.Score,
                     Gamertag = s.Gamertag,
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
-                }).ToList();                       
+                }).ToList();
         }
 
         internal List<GameScore> GetScoresAroundMe(string gamerTag, long rank, int radius)

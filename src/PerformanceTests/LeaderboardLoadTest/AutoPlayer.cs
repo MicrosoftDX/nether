@@ -55,7 +55,7 @@ namespace LeaderboardLoadTest
                     delayTime = _random.Next(1000, 10000);
                     await Task.Delay(delayTime);
                 }
-                
+
                 // ask for leaderboard scores (GET)
                 _logger.WriteLine("Player({0}). Getting all scores", _playerInternalId);
                 var getScoresResponse = await client.GetScoresAsync();
@@ -77,7 +77,7 @@ namespace LeaderboardLoadTest
                 else
                 {
                     _logger.WriteLine("Player({0}). Failed to get scores: {1}", _playerInternalId, getTopScoresResponse.Message);
-                }                
+                }
 
                 _logger.WriteLine("Player({0}). Getting palyers aroundme", _playerInternalId);
                 var getAroundMeScoresResponse = await client.GetScoresAsync("AroundMe");

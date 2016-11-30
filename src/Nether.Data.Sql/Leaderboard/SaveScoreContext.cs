@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.EntityFrameworkCore;
 using Nether.Data.Leaderboard;
 using System;
 using System.Collections.Generic;
@@ -7,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Nether.Data.Sql.Leaderboard
 {
-
     public class SaveScoreContext : DbContext
     {
         private readonly string _connectionString;
