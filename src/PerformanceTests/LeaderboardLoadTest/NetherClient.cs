@@ -61,12 +61,12 @@ namespace LeaderboardLoadTest
         }
 
         // TODO - create result model rather than returning JSON string!
-        public async Task<OperationResult<string>> GetScoresAsync(int n)
+        public async Task<OperationResult<string>> GetScoresAsync(string leaderboardType = null)
         {
             string uri = "/api/leaderboard";
-            if (n > 0)
+            if (leaderboardType != null)
             {
-                uri = uri + "/top(" + n + ")";
+                uri += "/" + leaderboardType;
             }
 
             var response = await _httpClient.GetAsync(uri);

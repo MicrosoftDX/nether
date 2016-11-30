@@ -53,7 +53,43 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.NickName, "testusertag") // gamertag
                     }
                 },
-};
+                new InMemoryUser{Subject = "3333", Username = "testuser", Password = "testuser",
+                    Claims = new Claim[]
+                    {
+                        new Claim(JwtClaimTypes.Name, "testuser"),
+                        new Claim(JwtClaimTypes.GivenName, "Development"),
+                        new Claim(JwtClaimTypes.FamilyName, "User"),
+                        new Claim(JwtClaimTypes.Role, "Player"),
+                    }
+                },
+                new InMemoryUser{Subject = "4444", Username = "testuser1", Password = "testuser1",
+                    Claims = new Claim[]
+                    {
+                        new Claim(JwtClaimTypes.Name, "testuser1"),
+                        new Claim(JwtClaimTypes.GivenName, "Development"),
+                        new Claim(JwtClaimTypes.FamilyName, "User"),
+                        new Claim(JwtClaimTypes.Role, "Player"),
+                    }
+                },
+                new InMemoryUser{Subject = "5555", Username = "testuser2", Password = "testuser2",
+                    Claims = new Claim[]
+                    {
+                        new Claim(JwtClaimTypes.Name, "testuser2"),
+                        new Claim(JwtClaimTypes.GivenName, "Development"),
+                        new Claim(JwtClaimTypes.FamilyName, "User"),
+                        new Claim(JwtClaimTypes.Role, "Player"),
+                    }
+                },
+                new InMemoryUser{Subject = "6666", Username = "testuser3", Password = "testuser3",
+                    Claims = new Claim[]
+                    {
+                        new Claim(JwtClaimTypes.Name, "testuser3"),
+                        new Claim(JwtClaimTypes.GivenName, "Development"),
+                        new Claim(JwtClaimTypes.FamilyName, "User"),
+                        new Claim(JwtClaimTypes.Role, "Player"),
+                    }
+                }
+            };
         public static List<InMemoryUser> Get()
         {
             return Value;

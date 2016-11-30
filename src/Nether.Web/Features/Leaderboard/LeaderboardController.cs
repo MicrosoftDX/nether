@@ -11,6 +11,7 @@ using System.Linq;
 using Nether.Integration.Analytics;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.Collections.Generic;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,12 +33,42 @@ namespace Nether.Web.Features.Leaderboard
         //TODO: Add authentication
 
 
-        [HttpGet]
-        public async Task<ActionResult> Get() //TODO: add swagger annotations for response shape
+        [HttpGet("{leaderboardname}")]
+        public async Task<ActionResult> Get(string leaderboardname = "default") //TODO: add swagger annotations for response shape
         {
-            // Call data store
-            var scores = await _store.GetAllHighScoresAsync();
+            List<GameScore> scores = new List<GameScore>();
 
+            //TODO
+            var gamerTag = User.Claims
+                .FirstOrDefault(c => c.Type == "name") // For a quick implementation, assume that name is the gamertag - review later!
+                ?.Value;
+
+            // currently hard coded leaderboard types
+            if (String.IsNullOrEmpty(leaderboardname))
+            {
+                // default
+                scores = await _store.GetAllHighScoresAsync();
+            }
+            else
+            {
+                switch (leaderboardname)
+                {
+                    case "AroundMe":
+                        // around me
+                        scores = await _store.GetScoresAroundMe(gamerTag, 2);
+                        break;
+                    case "Top":
+                        // top
+                        scores = await _store.GetTopHighScoresAsync(3);
+                        break;
+                    default:
+                        // default
+                        scores = await _store.GetAllHighScoresAsync();
+                        break;
+
+                }
+            }
+          
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {

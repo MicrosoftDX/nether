@@ -12,24 +12,26 @@ namespace Nether.Data.Sql.Leaderboard
 {
     public class SqlLeaderboardStore : ILeaderboardStore
     {
-        private ScoreContext _db;
+        private QueryScoreContext _dbQuery;
+        private SaveScoreContext _dbSave;
         private readonly ILogger<SqlLeaderboardStore> _logger;
         private readonly string _table = "Scores";
 
         public SqlLeaderboardStore(string connectionString, ILoggerFactory loggerFactory)
         {
-            _db = new ScoreContext(connectionString, _table);
+            _dbQuery = new QueryScoreContext(connectionString, _table);
+            _dbSave = new SaveScoreContext(connectionString, _table);
             _logger = loggerFactory.CreateLogger<SqlLeaderboardStore>();
         }
 
         public async Task SaveScoreAsync(GameScore score)
         {
-            await _db.SaveSoreAsync(score);
+            await _dbSave.SaveSoreAsync(score);
         }
 
         public Task<List<GameScore>> GetAllHighScoresAsync()
         {
-            return Task.FromResult(_db.GetHighScoresAsync(0));
+            return Task.FromResult(_dbQuery.GetHighScoresAsync(0));
         }
 
         public Task<List<GameScore>> GetScoresAroundMe(int nBetter, int nWorse, string gamerTag)
@@ -39,7 +41,21 @@ namespace Nether.Data.Sql.Leaderboard
 
         public Task<List<GameScore>> GetTopHighScoresAsync(int n)
         {
-            return Task.FromResult(_db.GetHighScoresAsync(n));
+            return Task.FromResult(_dbQuery.GetHighScoresAsync(n));
+        }
+       
+
+        public Task<List<GameScore>> GetScoresAroundMe(string gamerTag, int radius)
+        {
+            var score = _dbQuery.GetGamerRankAsync(gamerTag).FirstOrDefault();
+            if (score != null)
+            {
+                var res = _dbQuery.GetScoresAroundMe(gamerTag, score.Rank, radius);
+                res.Add(score);
+                return Task.FromResult(res);
+            }
+
+            return null;
         }
     }
 }

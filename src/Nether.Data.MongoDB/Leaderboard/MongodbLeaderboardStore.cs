@@ -8,6 +8,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Nether.Data.Leaderboard;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Nether.Data.MongoDB.Leaderboard
 {
@@ -121,6 +122,16 @@ namespace Nether.Data.MongoDB.Leaderboard
                                  };
 
             return await getGamerScores.FirstOrDefaultAsync();
+        }
+
+        public Task<List<GameScore>> GetScoresAroundMe()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<GameScore>> GetScoresAroundMe(string gamerTag, int radius)
+        {
+            throw new NotImplementedException();
         }
     }
 }
