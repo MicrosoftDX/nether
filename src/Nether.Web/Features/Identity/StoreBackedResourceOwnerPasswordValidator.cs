@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Validation;
 
 using Nether.Data.Identity;
+using IdentityServer4.Models;
 
 namespace Nether.Web.Features.Identity
 {
@@ -22,13 +23,20 @@ namespace Nether.Web.Features.Identity
         public async Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
             var user = await _userStore.GetUserByUsernameAsync(context.UserName);
-            _passwordHasher.VerifyHashedPassword(user.PasswordHash, context.Password);
-
-            if (user != null)
+            if (user == null || !user.IsActive)
             {
-                var claims = await StoreBackedProfileService.GetUserClaimsAsync(user); // TODO move this helper to somewhere more sensible
-                context.Result = new GrantValidationResult(user.UserId, "password", claims);
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
+                return;
             }
+            bool valid = _passwordHasher.VerifyHashedPassword(user.PasswordHash, context.Password);
+            if (!valid)
+            {
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
+                return;
+            }
+
+            var claims = await StoreBackedProfileService.GetUserClaimsAsync(user); // TODO move this helper to somewhere more sensible
+            context.Result = new GrantValidationResult(user.UserId, "password", claims);
         }
     }
 }

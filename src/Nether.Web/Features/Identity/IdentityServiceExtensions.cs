@@ -27,10 +27,10 @@ namespace Nether.Web.Features.Identity
                     options.Endpoints.EnableAuthorizeEndpoint = true;
                     options.Endpoints.EnableTokenEndpoint = true;
                 })
-                .SetTemporarySigningCredential() // using inbuilt signing cert, but we are explicitly a dev-only service at this point ;-)
-                .AddInMemoryStores()
+                .AddTemporarySigningCredential() // using inbuilt signing cert, but we are explicitly a dev-only service at this point ;-)
                 .AddInMemoryClients(Clients.Get())
-                .AddInMemoryScopes(Scopes.Get())
+                .AddInMemoryIdentityResources(Scopes.GetIdentityResources())
+                .AddInMemoryApiResources(Scopes.GetApiResources())
                 .AddExtensionGrantValidator<FacebookUserAccessTokenExtensionGrantValidator>()
             ;
             services.AddTransient<IPasswordHasher, PasswordHasher>();
