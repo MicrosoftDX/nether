@@ -60,6 +60,12 @@
       "metadata": {
         "description": "Administrator password to the Azure SQL Server"
       }
+    },
+    "sharedStorageAccountSAS": {
+      "type": "string",
+      "metadata": {
+        "description": "SAS token of shared storage account"
+      }
     }
   },
   "variables": {
@@ -71,7 +77,6 @@
     "dfApiVersion": "2015-10-01",
     "uniqueIdentifier": "[uniqueString(resourceGroup().id)]",
     "storageAccountName": "[concat(resourceGroup().name, variables('uniqueIdentifier'))]",
-    "sharedStorageAccountSAS": "https://oldkpublic.blob.core.windows.net/nether?st=2016-11-14T14%3A46%3A00Z&se=2016-11-30T14%3A46%3A00Z&sp=rl&sv=2015-12-11&sr=c&sig=l%2ByIy4NKI%2FC6tZfo%2BmhMvIfcyGnxxGD2VRPHA0lg0l4%3D",
     "namespaceName": "[concat(resourceGroup().name, variables('uniqueIdentifier'), '-ns')]",
     "defaultSASKeyName": "RootManageSharedAccessKey",
     "authRuleResourceId": "[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('namespaceName'), variables('defaultSASKeyName'))]",
@@ -419,7 +424,7 @@
             "type": "AzureStorageSas",
             "description": "Azure Storage SAS linked service",
             "typeProperties": {
-              "sasUri": "[variables('sharedStorageAccountSAS')]"
+              "sasUri": "[parameters('sharedStorageAccountSAS')]"
             }
           }
         },
