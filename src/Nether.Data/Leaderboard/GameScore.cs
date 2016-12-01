@@ -5,11 +5,11 @@ namespace Nether.Data.Leaderboard
 {
     public class GameScore
     {
-        public string Gamertag { get; set; }
+        public string GamerTag { get; set; }
         public string Country { get; set; }
         public string CustomTag { get; set; }
         public int Score { get; set; }
-        public int Rank { get; set; }
+        public long Rank { get; set; }
     }
 }
 

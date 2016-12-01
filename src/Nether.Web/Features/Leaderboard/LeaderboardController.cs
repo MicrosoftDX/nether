@@ -11,6 +11,8 @@ using System.Linq;
 using Nether.Integration.Analytics;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.Collections.Generic;
+using Nether.Web.Features.Leaderboard.Configuration;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,16 +34,40 @@ namespace Nether.Web.Features.Leaderboard
         //TODO: Add authentication
 
 
-        [HttpGet]
-        public async Task<ActionResult> Get() //TODO: add swagger annotations for response shape
+        [HttpGet("{leaderboardname}")]
+        public async Task<ActionResult> Get(string leaderboardname) //TODO: add swagger annotations for response shape
         {
-            // Call data store
-            var scores = await _store.GetAllHighScoresAsync();
+            //TODO
+            var gamerTag = User.Claims
+                .FirstOrDefault(c => c.Type == "name") // For a quick implementation, assume that name is the gamertag - review later!
+                ?.Value;
+
+            List<GameScore> scores = new List<GameScore>();
+
+            // currently hard coded leaderboard types
+            if (String.IsNullOrEmpty(leaderboardname) || !Configuration.Configuration.LeaderboardConfiguration.ContainsKey(leaderboardname))
+            {
+                // default
+                scores = await _store.GetAllHighScoresAsync();
+            }
+            else
+            {
+                LeaderboardConfig config = Configuration.Configuration.LeaderboardConfiguration[leaderboardname];
+                if (config.AroundMe)
+                {
+                    scores = await _store.GetScoresAroundMeAsync(gamerTag, config.Radius);
+                }
+                else
+                {
+                    // in case top = 0, the implementation should lead to GetAllHighScores
+                    scores = await _store.GetTopHighScoresAsync(config.Top);
+                }
+            }
 
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Cast<LeaderboardGetResponseModel.LeaderboardEntry>().ToList()
+                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result
@@ -57,7 +83,7 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Cast<LeaderboardGetResponseModel.LeaderboardEntry>().ToList()
+                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result
@@ -73,7 +99,7 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Cast<LeaderboardGetResponseModel.LeaderboardEntry>().ToList()
+                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result
@@ -83,15 +109,13 @@ namespace Nether.Web.Features.Leaderboard
         [HttpGet("friends")]
         public async Task<ActionResult> GetLeaderboardWithFriendsAsync() //TODO: add swagger annotations for response shape
         {
-            throw new NotImplementedException();
-
             // Call data store
             var scores = await _store.GetAllHighScoresAsync();
 
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Cast<LeaderboardGetResponseModel.LeaderboardEntry>().ToList()
+                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result
@@ -128,7 +152,7 @@ namespace Nether.Web.Features.Leaderboard
             await Task.WhenAll(
                 _store.SaveScoreAsync(new GameScore
                 {
-                    Gamertag = gamerTag,
+                    GamerTag = gamerTag,
                     Country = score.Country,
                     CustomTag = score.CustomTag,
                     Score = score.Score

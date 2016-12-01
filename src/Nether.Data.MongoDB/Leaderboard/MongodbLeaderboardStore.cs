@@ -8,6 +8,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Nether.Data.Leaderboard;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Nether.Data.MongoDB.Leaderboard
 {
@@ -29,7 +30,7 @@ namespace Nether.Data.MongoDB.Leaderboard
 
         public async Task SaveScoreAsync(GameScore gameScore)
         {
-            _logger.LogDebug("Saving score {0} for gamertag '{1}", gameScore.Score, gameScore.Gamertag);
+            _logger.LogDebug("Saving score {0} for gamertag '{1}", gameScore.Score, gameScore.GamerTag);
             await ScoresCollection.InsertOneAsync(gameScore);
         }
 
@@ -37,12 +38,12 @@ namespace Nether.Data.MongoDB.Leaderboard
         public async Task<List<GameScore>> GetAllHighScoresAsync()
         {
             var query = from s in ScoresCollection.AsQueryable()
-                        group s by s.Gamertag
+                        group s by s.GamerTag
                         into g
                         orderby g.Max(s => s.Score) descending
                         select new GameScore
                         {
-                            Gamertag = g.Key,
+                            GamerTag = g.Key,
                             Score = g.Max(s => s.Score)
                         };
 
@@ -51,13 +52,15 @@ namespace Nether.Data.MongoDB.Leaderboard
 
         public async Task<List<GameScore>> GetTopHighScoresAsync(int n)
         {
+            if (n == 0) return await GetAllHighScoresAsync();
+
             var query = (from s in ScoresCollection.AsQueryable()
-                         group s by s.Gamertag
+                         group s by s.GamerTag
                         into g
                          orderby g.Max(s => s.Score) descending
                          select new GameScore
                          {
-                             Gamertag = g.Key,
+                             GamerTag = g.Key,
                              Score = g.Max(s => s.Score)
                          }).Take(n);
 
@@ -71,21 +74,21 @@ namespace Nether.Data.MongoDB.Leaderboard
 
             var betterScores = (from s in ScoresCollection.AsQueryable()
                                 where s.Score > highScore.Score
-                                group s by s.Gamertag into g
+                                group s by s.GamerTag into g
                                 orderby g.Max(s => s.Score)
                                 select new GameScore
                                 {
-                                    Gamertag = g.Key,
+                                    GamerTag = g.Key,
                                     Score = g.Max(s => s.Score)
                                 }).Take(nBetter);
 
             var lamerScores = (from s in ScoresCollection.AsQueryable()
-                               where s.Score <= highScore.Score && s.Gamertag != gamerTag
-                               group s by s.Gamertag into g
+                               where s.Score <= highScore.Score && s.GamerTag != gamerTag
+                               group s by s.GamerTag into g
                                orderby g.Max(s => s.Score) descending
                                select new GameScore
                                {
-                                   Gamertag = g.Key,
+                                   GamerTag = g.Key,
                                    Score = g.Max(s => s.Score)
                                }).Take(nWorse);
 
@@ -112,15 +115,30 @@ namespace Nether.Data.MongoDB.Leaderboard
         private async Task<GameScore> GetHighScoreAsync(string gamerTag)
         {
             var getGamerScores = from s in ScoresCollection.AsQueryable()
-                                 where s.Gamertag == gamerTag
+                                 where s.GamerTag == gamerTag
                                  orderby s.Score descending
                                  select new GameScore
                                  {
-                                     Gamertag = s.Gamertag,
+                                     GamerTag = s.GamerTag,
                                      Score = s.Score
                                  };
 
             return await getGamerScores.FirstOrDefaultAsync();
+        }
+
+        public Task<List<GameScore>> GetScoresAroundMe()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<GameScore>> GetScoresAroundMe(string gamerTag, int radius)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<GameScore>> GetScoresAroundMeAsync(string gamerTag, int radius)
+        {
+            throw new NotImplementedException();
         }
     }
 }

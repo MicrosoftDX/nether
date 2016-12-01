@@ -15,7 +15,8 @@ namespace Nether.Data.Sql.Leaderboard
         private readonly string _connectionString;
         private readonly string _table;
 
-        public DbSet<GamerScore> Scores { get; set; }
+        public DbSet<SavedGamerScore> Scores { get; set; }
+        public DbSet<QueriedGamerScore> Ranks { get; set; }
 
         public ScoreContext(string connectionString, string table)
         {
@@ -25,10 +26,13 @@ namespace Nether.Data.Sql.Leaderboard
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<GamerScore>()
-            .HasKey(c => c.Gamertag);
 
-            builder.Entity<GamerScore>().ToTable(_table);
+            builder.Entity<SavedGamerScore>()
+            .HasKey(c => c.GamerTag);
+            builder.Entity<SavedGamerScore>().ToTable(_table);
+
+            builder.Entity<QueriedGamerScore>()
+            .HasKey(c => c.GamerTag);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -38,28 +42,81 @@ namespace Nether.Data.Sql.Leaderboard
 
         public async Task SaveSoreAsync(GameScore score)
         {
-            await Scores.AddAsync(new GamerScore { Score = score.Score, CustomTag = score.CustomTag, Gamertag = score.Gamertag });
+            await Scores.AddAsync(new SavedGamerScore { Score = score.Score, CustomTag = score.CustomTag, GamerTag = score.GamerTag });
             await SaveChangesAsync();
         }
 
-        public async Task<List<GameScore>> GetHighScoresAsync()
+        public async Task<List<GameScore>> GetHighScoresAsync(int n)
         {
-            // currently returns default list of all players with their high score for the last 24H
-            DateTime now = DateTime.UtcNow; // the date in the table is utc
-            DateTime lastDay = now.AddHours(-24);
+            string baseSql = " score, gamertag, customtag, rank() over(order by score desc) as ranking " +
+                "from scores s1 where " +
+                "score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag)";
+            string sql = n > 0 ? String.Concat("Select top ", n, baseSql) : String.Concat("Select ", baseSql);
 
-            // TODO: consider swithiching to linq in DateAchieved will be part of the GamerScore record
-            var res = Scores.FromSql("select max(score) as score, gamertag , customtag from Scores where DateAchieved between {0} and {1} group by gamertag, customtag", lastDay.ToString(), now.ToString())
-                .ToList().Select(s => new GameScore { Gamertag = s.Gamertag, Score = s.Score })
-                .ToList();
-            return res;
+            return await Ranks.FromSql(sql).Select(s =>
+                new GameScore
+                {
+                    Score = s.Score,
+                    GamerTag = s.GamerTag,
+                    CustomTag = s.CustomTag,
+                    Rank = s.Ranking
+                }).ToListAsync();
+        }
+
+        public async Task<List<GameScore>> GetScoresAroundMeAsync(string gamerTag, long rank, int radius)
+        {
+            string sql = "select top " + radius + " * from (select score, gamertag, customtag, rank() over(order by score desc) as ranking " +
+                         " from scores s1 where " +
+                         " score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag) " +
+                         " ) as S where S.ranking >= {0} and S.gamertag != {1} " +
+                         " union all " +
+                         " select top " + radius + " * from(select score, gamertag, customtag, rank() over(order by score desc) as ranking " +
+                         " from scores s1 where " +
+                         " score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag) " +
+                         " ) as S where S.ranking < {0} ";
+
+            return await Ranks.FromSql(sql, rank, gamerTag).Select(s =>
+                new GameScore
+                {
+                    Score = s.Score,
+                    GamerTag = s.GamerTag,
+                    CustomTag = s.CustomTag,
+                    Rank = s.Ranking
+                }).ToListAsync();
+        }
+
+        public async Task<List<GameScore>> GetGamerRankAsync(string gamertag)
+        {
+            string sql = "select * from " +
+                         " (select score, gamertag, customtag, rank() over(order by score desc) as ranking " +
+                         " from scores s1 where " +
+                         " score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag) " +
+                         " ) as Ranks where Ranks.gamertag = {0}";
+
+            return await Ranks.FromSql(sql, gamertag).Select(s =>
+                new GameScore
+                {
+                    Score = s.Score,
+                    GamerTag = s.GamerTag,
+                    CustomTag = s.CustomTag,
+                    Rank = s.Ranking
+                }).ToListAsync();
         }
     }
 
-    public class GamerScore
+    public class SavedGamerScore
     {
         public int Score { get; set; }
-        public string Gamertag { get; set; }
+        public string GamerTag { get; set; }
         public string CustomTag { get; set; }
     }
+
+    public class QueriedGamerScore
+    {
+        public int Score { get; set; }
+        public string GamerTag { get; set; }
+        public string CustomTag { get; set; }
+        public long Ranking { get; set; }
+    }
 }
+

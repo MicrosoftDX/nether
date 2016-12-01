@@ -27,17 +27,32 @@ namespace Nether.Data.Sql.Leaderboard
             await _db.SaveSoreAsync(score);
         }
 
-        public Task<List<GameScore>> GetAllHighScoresAsync()
+        public async Task<List<GameScore>> GetAllHighScoresAsync()
         {
-            return _db.GetHighScoresAsync();
+            return await _db.GetHighScoresAsync(0);
+        }
+
+        public async Task<List<GameScore>> GetTopHighScoresAsync(int n)
+        {
+            return await _db.GetHighScoresAsync(n);
+        }
+
+
+        public async Task<List<GameScore>> GetScoresAroundMeAsync(string gamerTag, int radius)
+        {
+            var score = await _db.GetGamerRankAsync(gamerTag);
+
+            if (score != null)
+            {
+                var res = await _db.GetScoresAroundMeAsync(gamerTag, score.FirstOrDefault().Rank, radius);
+                res.Add(score.FirstOrDefault());
+                return res;
+            }
+
+            return null;
         }
 
         public Task<List<GameScore>> GetScoresAroundMe(int nBetter, int nWorse, string gamerTag)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<GameScore>> GetTopHighScoresAsync(int n)
         {
             throw new NotImplementedException();
         }

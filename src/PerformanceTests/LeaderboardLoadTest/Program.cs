@@ -15,7 +15,11 @@ namespace LeaderboardLoadTest
         public static Dictionary<string, string> users = new Dictionary<string, string>
         {
             {"devuser", "devuser"},
-            {"devadmin", "devadmin"}
+            {"devadmin", "devadmin"},
+            {"testuser", "testuser" },
+            {"testuser1", "testuser1" },
+            {"testuser2", "testuser2" },
+            {"testuser3", "testuser3" }
         };
 
         public static void Main(string[] args)
