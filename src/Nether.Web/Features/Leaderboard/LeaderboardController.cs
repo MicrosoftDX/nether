@@ -35,7 +35,7 @@ namespace Nether.Web.Features.Leaderboard
 
 
         [HttpGet("{leaderboardname}")]
-        public async Task<ActionResult> Get(string leaderboardname = "default") //TODO: add swagger annotations for response shape
+        public async Task<ActionResult> Get(string leaderboardname) //TODO: add swagger annotations for response shape
         {
             //TODO
             var gamerTag = User.Claims
@@ -55,25 +55,19 @@ namespace Nether.Web.Features.Leaderboard
                 LeaderboardConfig config = Configuration.Configuration.LeaderboardConfiguration[leaderboardname];
                 if (config.AroundMe)
                 {
-                    scores = await _store.GetScoresAroundMe(gamerTag, config.Radius);
+                    scores = await _store.GetScoresAroundMeAsync(gamerTag, config.Radius);
                 }
                 else
                 {
-                    if (config.Top > 0)
-                    {
-                        scores = await _store.GetTopHighScoresAsync(config.Top);
-                    }
-                    else
-                    {
-                        scores = await _store.GetAllHighScoresAsync();
-                    }
+                    // in case top = 0, the implementation should lead to GetAllHighScores
+                    scores = await _store.GetTopHighScoresAsync(config.Top);                    
                 }
             }
 
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Cast<LeaderboardGetResponseModel.LeaderboardEntry>().ToList()
+                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result
@@ -89,7 +83,7 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Cast<LeaderboardGetResponseModel.LeaderboardEntry>().ToList()
+                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result
@@ -105,7 +99,7 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Cast<LeaderboardGetResponseModel.LeaderboardEntry>().ToList()
+                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result
@@ -121,7 +115,7 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Cast<LeaderboardGetResponseModel.LeaderboardEntry>().ToList()
+                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result

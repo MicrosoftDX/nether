@@ -52,6 +52,8 @@ namespace Nether.Data.MongoDB.Leaderboard
 
         public async Task<List<GameScore>> GetTopHighScoresAsync(int n)
         {
+            if (n == 0) return await GetAllHighScoresAsync();
+
             var query = (from s in ScoresCollection.AsQueryable()
                          group s by s.Gamertag
                         into g
@@ -130,6 +132,11 @@ namespace Nether.Data.MongoDB.Leaderboard
         }
 
         public Task<List<GameScore>> GetScoresAroundMe(string gamerTag, int radius)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<GameScore>> GetScoresAroundMeAsync(string gamerTag, int radius)
         {
             throw new NotImplementedException();
         }

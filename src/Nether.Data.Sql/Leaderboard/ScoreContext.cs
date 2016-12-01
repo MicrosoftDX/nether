@@ -10,14 +10,15 @@ using System.Threading.Tasks;
 
 namespace Nether.Data.Sql.Leaderboard
 {
-    public class QueryScoreContext : DbContext
+    public class ScoreContext : DbContext
     {
         private readonly string _connectionString;
         private readonly string _table;
 
-        public DbSet<QueryResultGamerScore> Scores { get; set; }
+        public DbSet<SavedGamerScore> Scores { get; set; }
+        public DbSet<QueriedGamerScore> Ranks { get; set; }
 
-        public QueryScoreContext(string connectionString, string table)
+        public ScoreContext(string connectionString, string table)
         {
             _connectionString = connectionString;
             _table = table;
@@ -25,10 +26,13 @@ namespace Nether.Data.Sql.Leaderboard
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<QueryResultGamerScore>()
-            .HasKey(c => c.Gamertag);
 
-            builder.Entity<QueryResultGamerScore>().ToTable(_table);
+            builder.Entity<SavedGamerScore>()
+            .HasKey(c => c.Gamertag);
+            builder.Entity<SavedGamerScore>().ToTable(_table);
+
+            builder.Entity<QueriedGamerScore>()
+            .HasKey(c => c.Gamertag);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -36,24 +40,30 @@ namespace Nether.Data.Sql.Leaderboard
             builder.UseSqlServer(_connectionString);
         }
 
-        public List<GameScore> GetHighScoresAsync(int n)
+        public async Task SaveSoreAsync(GameScore score)
+        {
+            await Scores.AddAsync(new SavedGamerScore { Score = score.Score, CustomTag = score.CustomTag, Gamertag = score.Gamertag });
+            await SaveChangesAsync();
+        }
+
+        public async Task<List<GameScore>> GetHighScoresAsync(int n)
         {
             string baseSql = " score, gamertag, customtag, rank() over(order by score desc) as ranking " +
                 "from scores s1 where " +
                 "score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag)";
             string sql = n > 0 ? String.Concat("Select top ", n, baseSql) : String.Concat("Select ", baseSql);
 
-            return Scores.FromSql(sql).Select(s =>
+            return await Ranks.FromSql(sql).Select(s =>
                 new GameScore
                 {
                     Score = s.Score,
                     Gamertag = s.Gamertag,
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
-                }).ToList();
+                }).ToListAsync();
         }
 
-        internal List<GameScore> GetScoresAroundMe(string gamerTag, long rank, int radius)
+        public async Task<List<GameScore>> GetScoresAroundMeAsync(string gamerTag, long rank, int radius)
         {
             string sql = "select top " + radius + " * from (select score, gamertag, customtag, rank() over(order by score desc) as ranking " +
                          " from scores s1 where " +
@@ -65,19 +75,18 @@ namespace Nether.Data.Sql.Leaderboard
                          " score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag) " +
                          " ) as S where S.ranking < {0} ";
 
-            var res = Scores.FromSql(sql, rank, gamerTag).Select(s =>
+            return await Ranks.FromSql(sql, rank, gamerTag).Select(s =>
                 new GameScore
                 {
                     Score = s.Score,
                     Gamertag = s.Gamertag,
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
-                }).ToList();
-
-            return res;
+                }).ToListAsync();
+            
         }
 
-        public List<GameScore> GetGamerRankAsync(string gamertag)
+        public async Task<List<GameScore>> GetGamerRankAsync(string gamertag)
         {
             string sql = "select * from " +
                          " (select score, gamertag, customtag, rank() over(order by score desc) as ranking " +
@@ -85,19 +94,26 @@ namespace Nether.Data.Sql.Leaderboard
                          " score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag) " +
                          " ) as Ranks where Ranks.gamertag = {0}";
 
-            var res = Scores.FromSql(sql, gamertag).Select(s =>
+            return await Ranks.FromSql(sql, gamertag).Select(s =>
                 new GameScore
                 {
                     Score = s.Score,
                     Gamertag = s.Gamertag,
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
-                }).ToList();
-            return res;
+                }).ToListAsync();
+            
         }
     }
 
-    public class QueryResultGamerScore
+    public class SavedGamerScore
+    {
+        public int Score { get; set; }
+        public string Gamertag { get; set; }
+        public string CustomTag { get; set; }
+    }
+
+    public class QueriedGamerScore
     {
         public int Score { get; set; }
         public string Gamertag { get; set; }
@@ -105,3 +121,4 @@ namespace Nether.Data.Sql.Leaderboard
         public long Ranking { get; set; }
     }
 }
+
