@@ -152,7 +152,7 @@ namespace Nether.Web.Features.Leaderboard
             await Task.WhenAll(
                 _store.SaveScoreAsync(new GameScore
                 {
-                    Gamertag = gamerTag,
+                    GamerTag = gamerTag,
                     Country = score.Country,
                     CustomTag = score.CustomTag,
                     Score = score.Score

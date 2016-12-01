@@ -12,12 +12,12 @@ namespace Nether.Data.MongoDB.Leaderboard
         // Implicit operator allows GameScore objects to be used as MongoDbGameScore objects
         public static implicit operator MongoDBGameScore(GameScore value)
         {
-            return new MongoDBGameScore { Gamertag = value.Gamertag, Country = value.Country, CustomTag = value.CustomTag, Score = value.Score };
+            return new MongoDBGameScore { GamerTag = value.GamerTag, Country = value.Country, CustomTag = value.CustomTag, Score = value.Score };
         }
 
         [BsonId]
         public ObjectId TestId { get; set; }
-        public string Gamertag { get; set; }
+        public string GamerTag { get; set; }
         public string Country { get; set; }
         public string CustomTag { get; set; }
         public int Score { get; set; }

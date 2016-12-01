@@ -28,11 +28,11 @@ namespace Nether.Data.Sql.Leaderboard
             base.OnModelCreating(builder);
 
             builder.Entity<SavedGamerScore>()
-            .HasKey(c => c.Gamertag);
+            .HasKey(c => c.GamerTag);
             builder.Entity<SavedGamerScore>().ToTable(_table);
 
             builder.Entity<QueriedGamerScore>()
-            .HasKey(c => c.Gamertag);
+            .HasKey(c => c.GamerTag);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -42,7 +42,7 @@ namespace Nether.Data.Sql.Leaderboard
 
         public async Task SaveSoreAsync(GameScore score)
         {
-            await Scores.AddAsync(new SavedGamerScore { Score = score.Score, CustomTag = score.CustomTag, Gamertag = score.Gamertag });
+            await Scores.AddAsync(new SavedGamerScore { Score = score.Score, CustomTag = score.CustomTag, GamerTag = score.GamerTag });
             await SaveChangesAsync();
         }
 
@@ -57,7 +57,7 @@ namespace Nether.Data.Sql.Leaderboard
                 new GameScore
                 {
                     Score = s.Score,
-                    Gamertag = s.Gamertag,
+                    GamerTag = s.GamerTag,
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
                 }).ToListAsync();
@@ -79,7 +79,7 @@ namespace Nether.Data.Sql.Leaderboard
                 new GameScore
                 {
                     Score = s.Score,
-                    Gamertag = s.Gamertag,
+                    GamerTag = s.GamerTag,
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
                 }).ToListAsync();
@@ -97,7 +97,7 @@ namespace Nether.Data.Sql.Leaderboard
                 new GameScore
                 {
                     Score = s.Score,
-                    Gamertag = s.Gamertag,
+                    GamerTag = s.GamerTag,
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
                 }).ToListAsync();
@@ -107,14 +107,14 @@ namespace Nether.Data.Sql.Leaderboard
     public class SavedGamerScore
     {
         public int Score { get; set; }
-        public string Gamertag { get; set; }
+        public string GamerTag { get; set; }
         public string CustomTag { get; set; }
     }
 
     public class QueriedGamerScore
     {
         public int Score { get; set; }
-        public string Gamertag { get; set; }
+        public string GamerTag { get; set; }
         public string CustomTag { get; set; }
         public long Ranking { get; set; }
     }
