@@ -56,7 +56,7 @@ This sample was created to show the different flows that are currently implement
 * ResourceOwnerPassword - signs in with a user name and password
 * CustomGrant - signs in with a facebook user accesstoken
 
-For speed of coding, this project used the [IdentityModel](https://www.nuget.org/packages/IdentityModel/) clienbt library from IdentityServer, but this isn't a requirement for clients.  
+For speed of coding, this project used the [IdentityModel](https://www.nuget.org/packages/IdentityModel/) client library from IdentityServer, but this isn't a requirement for clients.  
 
 
 ## Game Sign in ##
