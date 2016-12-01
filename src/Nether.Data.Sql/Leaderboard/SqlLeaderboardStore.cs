@@ -12,13 +12,13 @@ namespace Nether.Data.Sql.Leaderboard
 {
     public class SqlLeaderboardStore : ILeaderboardStore
     {
-        private ScoreContext _db;        
+        private ScoreContext _db;
         private readonly ILogger<SqlLeaderboardStore> _logger;
         private readonly string _table = "Scores";
 
         public SqlLeaderboardStore(string connectionString, ILoggerFactory loggerFactory)
         {
-            _db = new ScoreContext(connectionString, _table);            
+            _db = new ScoreContext(connectionString, _table);
             _logger = loggerFactory.CreateLogger<SqlLeaderboardStore>();
         }
 
@@ -30,7 +30,7 @@ namespace Nether.Data.Sql.Leaderboard
         public async Task<List<GameScore>> GetAllHighScoresAsync()
         {
             return await _db.GetHighScoresAsync(0);
-        }        
+        }
 
         public async Task<List<GameScore>> GetTopHighScoresAsync(int n)
         {

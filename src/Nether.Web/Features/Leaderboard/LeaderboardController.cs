@@ -60,7 +60,7 @@ namespace Nether.Web.Features.Leaderboard
                 else
                 {
                     // in case top = 0, the implementation should lead to GetAllHighScores
-                    scores = await _store.GetTopHighScoresAsync(config.Top);                    
+                    scores = await _store.GetTopHighScoresAsync(config.Top);
                 }
             }
 

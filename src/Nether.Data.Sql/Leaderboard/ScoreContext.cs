@@ -83,7 +83,6 @@ namespace Nether.Data.Sql.Leaderboard
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
                 }).ToListAsync();
-            
         }
 
         public async Task<List<GameScore>> GetGamerRankAsync(string gamertag)
@@ -102,7 +101,6 @@ namespace Nether.Data.Sql.Leaderboard
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
                 }).ToListAsync();
-            
         }
     }
 
