@@ -94,7 +94,7 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpGet("player")]
         public async Task<ActionResult> GetCurrentPlayer()
         {
-            var playername = User.Identity.Name;
+            var playername = User.Identity.Name; // This is looking up by user id... mostly you will want User.GetGamerTag() 
 
             // Call data store
             var player = await _store.GetPlayerDetailsByIdAsync(playername);
@@ -135,15 +135,13 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(resultModel);
         }
 
-        [Authorize]
+        [Authorize(Roles = "player")]
         [Route("players")]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody]PlayerPostRequestModel player)
         {
             //TODO: Handle exceptions and retries
-            var gamerTag = User.Claims
-                .FirstOrDefault(c => c.Type == ClaimTypes.Name) // For a quick implementation, assume that name is the gamertag - review later!
-                ?.Value;
+            var gamerTag = User.GetGamerTag();
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
                 return BadRequest(); //TODO: return error info in body
