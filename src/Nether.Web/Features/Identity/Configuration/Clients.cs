@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using IdentityServer4.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+
+using IdentityServer4.Models;
+using static IdentityServer4.IdentityServerConstants;
 
 namespace Nether.Web.Features.Identity.Configuration
 {
@@ -39,8 +39,8 @@ namespace Nether.Web.Features.Identity.Configuration
 
                     AllowedScopes = new List<string>
                     {
-                        StandardScopes.OpenId.Name,
-                        StandardScopes.Profile.Name,
+                        StandardScopes.OpenId,
+                        StandardScopes.Profile,
                         "nether-all"
                     }
                 },
@@ -58,8 +58,8 @@ namespace Nether.Web.Features.Identity.Configuration
 
                     AllowedScopes = new List<string>
                     {
-                        StandardScopes.OpenId.Name,
-                        StandardScopes.Profile.Name,
+                        StandardScopes.OpenId,
+                        StandardScopes.Profile,
                         "nether-all"
                     }
                 },

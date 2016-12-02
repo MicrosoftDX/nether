@@ -12,6 +12,7 @@ using Nether.Web.Features.Identity;
 using Nether.Web.Features.Leaderboard;
 using Nether.Web.Features.PlayerManagement;
 using Swashbuckle.Swagger.Model;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace Nether.Web
@@ -76,8 +77,7 @@ namespace Nether.Web
             {
                 Authority = "http://localhost:5000",
                 RequireHttpsMetadata = false, // we're dev-only ;-)
-
-                ScopeName = "nether-all",
+                AllowedScopes = { "nether-all" },
                 //AutomaticAuthenticate = true // TODO - understand this setting!
             });
 
