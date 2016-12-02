@@ -35,12 +35,12 @@ namespace LeaderboardLoadTest
             _client = new NetherClient();
         }
 
-        public List<string> CallNames => _callTimes.Keys.ToList();                                            
+        public List<string> CallNames => _callTimes.Keys.ToList();
         public double GetAvgCallTime(string callName)
         {
             return _callTimes[callName].Average();
-        }                                                                                                     
-                     
+        }
+
         public double GetAvgCallsPerSecond(string callName)
         {
             List<long> lst = _callTimes[callName];
@@ -61,7 +61,7 @@ namespace LeaderboardLoadTest
 
             // simulate leaderboard activity
             int callsMade = 0;
-            while(!cancellationToken.IsCancellationRequested && callsMade++ < callsPerUser)
+            while (!cancellationToken.IsCancellationRequested && callsMade++ < callsPerUser)
             {
                 //_logger.WriteLine("{0}: call {1}/{2}...", _playerInternalId, callsMade, callsPerUser);
                 using (Measure("PostScore"))
@@ -101,7 +101,7 @@ namespace LeaderboardLoadTest
             await Task.Delay(s_rnd.Next(1000, 10000));
         }
 
-        class InternalMeasure : IDisposable
+        private class InternalMeasure : IDisposable
         {
             private string _callName;
             private AutoPlayer _master;
