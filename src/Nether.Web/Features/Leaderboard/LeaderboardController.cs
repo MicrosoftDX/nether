@@ -2,17 +2,16 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 using Nether.Data.Leaderboard;
-using System.Linq;
 using Nether.Integration.Analytics;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using System.Collections.Generic;
 using Nether.Web.Features.Leaderboard.Configuration;
+using Nether.Web.Utilities;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -34,13 +33,12 @@ namespace Nether.Web.Features.Leaderboard
         //TODO: Add authentication
 
 
+        [Authorize(Roles = "player")]
         [HttpGet("{leaderboardname}")]
         public async Task<ActionResult> Get(string leaderboardname) //TODO: add swagger annotations for response shape
         {
             //TODO
-            var gamerTag = User.Claims
-                .FirstOrDefault(c => c.Type == "name") // For a quick implementation, assume that name is the gamertag - review later!
-                ?.Value;
+            var gamerTag = User.GetGamerTag();
 
             List<GameScore> scores = new List<GameScore>();
 
@@ -138,10 +136,7 @@ namespace Nether.Web.Features.Leaderboard
             }
 
             //TODO: Handle exceptions and retries
-            // For a quick implementation, assume that name is the gamertag - review later!
-            var gamerTag = User.Identities
-                .FirstOrDefault()
-                ?.Name;
+            var gamerTag = User.GetGamerTag();
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
                 // TODO log

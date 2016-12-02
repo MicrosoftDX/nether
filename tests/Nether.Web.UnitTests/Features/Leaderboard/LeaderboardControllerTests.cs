@@ -16,6 +16,7 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using IdentityModel;
 
 namespace Nether.Web.UnitTests.Features.Leaderboard
 {
@@ -70,7 +71,7 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
 
 
         [Fact]
-        public async Task WhenPostedScoreIsValid_ThenTheApiDoesNotSavesScore()
+        public async Task WhenPostedScoreIsValid_ThenTheApiDoesSavesScore()
         {
             // Arrange
             var leaderboardStore = new Mock<ILeaderboardStore>();
@@ -81,7 +82,11 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
                     services.Setup(s => s.GetService(typeof(IAnalyticsIntegrationClient))).Returns(Mock.Of<IAnalyticsIntegrationClient>());
                 },
                 user: new ClaimsPrincipal(
-                        new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, "a-user") })
+                        new ClaimsIdentity(new[]
+                            {
+                                new Claim(ClaimTypes.Name, "a-user"),
+                                new Claim(JwtClaimTypes.NickName, "a-user")
+                            })
                 ));
 
 
