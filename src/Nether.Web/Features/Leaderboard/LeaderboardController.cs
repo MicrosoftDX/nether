@@ -17,6 +17,9 @@ using Nether.Web.Utilities;
 
 namespace Nether.Web.Features.Leaderboard
 {
+    /// <summary>
+    /// Leaderboard management
+    /// </summary>
     [Route("api/leaderboard")]
     public class LeaderboardController : Controller
     {
@@ -33,6 +36,11 @@ namespace Nether.Web.Features.Leaderboard
         //TODO: Add authentication
 
 
+        /// <summary>
+        /// Gets leaderboard by name
+        /// </summary>
+        /// <param name="leaderboardname"></param>
+        /// <returns></returns>
         [Authorize(Roles = "player")]
         [HttpGet("{leaderboardname}")]
         public async Task<ActionResult> Get(string leaderboardname) //TODO: add swagger annotations for response shape
