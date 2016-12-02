@@ -45,7 +45,6 @@ namespace Nether.Web
             // Add framework services.
             services.AddMvc();
 
-            services.AddSwaggerGen();
             services.ConfigureSwaggerGen(options =>
             {
                 string commentsPath = Path.Combine(
@@ -55,19 +54,27 @@ namespace Nether.Web
                 options.IncludeXmlComments(commentsPath);
             });
 
-            //services.ConfigureSwaggerGen(options =>
-            //{
-            //    options.SingleApiVersion(new Info
-            //    {
-            //        Version = "1.0.0-beta",
-            //        Title = "Project Nether",
-            //        Description = "Building blocks for gaming on Microsoft Azure",
-            //        License = new License { Name = "MIT", Url = "https://github.com/dx-ted-emea/nether/blob/master/LICENSE" }
-            //    });
-            //});
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v0.1", new Info
+                {
+                    Version = "v0.1",
+                    Title = "Project Nether",
+                    License = new License
+                    {
+                        Name = "MIT",
+                        Url = "https://github.com/dx-ted-emea/nether/blob/master/LICENSE"
+                    }
+                });
+                //options.AddSecurityDefinition("oauth2", new OAuth2Scheme
+                //{
+                //    Type = "oauth2",
+                //    Flow = "implicit",
+                //    AuthorizationUrl = ""
+                //});
+            });
 
             // TODO make this conditional with feature switches
-
             services.AddIdentityServices(Configuration, HostingEnvironment);
             services.AddLeaderboardServices(Configuration);
             services.AddPlayerManagementServices(Configuration);
@@ -94,8 +101,13 @@ namespace Nether.Web
 
             app.UseIdentityServer();
             app.UseMvc();
-            app.UseSwagger(routeTemplate: "api/swagger/{apiVersion}/swagger.json");
-            app.UseSwaggerUi(baseRoute: "api/swagger/ui", swaggerUrl: "/api/swagger/v1/swagger.json");
+
+            app.UseSwagger(routeTemplate: "api/swagger/{documentName}/swagger.json");
+            app.UseSwaggerUi(options =>
+            {
+                options.BaseRoute = "api/swagger/ui";
+                options.SwaggerEndpoint("/api/swagger/v0.1/swagger.json", "v0.1 Docs");
+            });
         }
     }
 }
