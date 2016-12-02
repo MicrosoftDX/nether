@@ -12,6 +12,8 @@ using Nether.Data.Leaderboard;
 using Nether.Integration.Analytics;
 using Nether.Web.Features.Leaderboard.Configuration;
 using Nether.Web.Utilities;
+using Swashbuckle.SwaggerGen.Annotations;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -41,9 +43,10 @@ namespace Nether.Web.Features.Leaderboard
         /// </summary>
         /// <param name="leaderboardname"></param>
         /// <returns></returns>
+        [SwaggerResponse(200, typeof(LeaderboardGetResponseModel))]
         [Authorize(Roles = "player")]
         [HttpGet("{leaderboardname}")]
-        public async Task<ActionResult> Get(string leaderboardname) //TODO: add swagger annotations for response shape
+        public async Task<ActionResult> Get(string leaderboardname)
         {
             //TODO
             var gamerTag = User.GetGamerTag();
@@ -130,14 +133,20 @@ namespace Nether.Web.Features.Leaderboard
 
 
 
-
+        /// <summary>
+        /// Posts a new score of currently logged in player
+        /// </summary>
+        /// <param name="request">Achieved score, must be positive</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "score posted successfully")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "score is negative or user does not have an associated gamertag")]
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody]LeaderboardPostRequestModel score)
+        public async Task<ActionResult> Post([FromBody]LeaderboardPostRequestModel request)
         {
             //TODO: Make validation more sophisticated, perhaps some games want/need negative scores
             // Validate input
-            if (score.Score < 0)
+            if (request.Score < 0)
             {
                 // TODO log
                 return BadRequest(); //TODO: return error info in body
@@ -156,15 +165,15 @@ namespace Nether.Web.Features.Leaderboard
                 _store.SaveScoreAsync(new GameScore
                 {
                     GamerTag = gamerTag,
-                    Country = score.Country,
-                    CustomTag = score.CustomTag,
-                    Score = score.Score
+                    Country = request.Country,
+                    CustomTag = request.CustomTag,
+                    Score = request.Score
                 }),
                 _analyticsIntegrationClient.SendGameEventAsync(new ScoreAchieved
                 {
                     GamerTag = gamerTag,
                     UtcDateTime = DateTime.UtcNow,
-                    Score = score.Score
+                    Score = request.Score
                 }));
 
             // Return result
