@@ -22,6 +22,7 @@ namespace LeaderboardLoadTest
         private readonly Stopwatch _sw = new Stopwatch();
         private readonly NetherClient _client;
         private readonly Dictionary<string, List<long>> _callTimes = new Dictionary<string, List<long>>();
+        private static readonly Random s_rnd = new Random(DateTime.UtcNow.Millisecond);
 
         public AutoPlayer(string username, string password, TextWriter logger)
         {
@@ -68,10 +69,14 @@ namespace LeaderboardLoadTest
                     var callResult = await _client.PostScoreAsync(_random.Next());
                 }
 
+                await RandomDelay();
+
                 using (Measure("GetScores"))
                 {
                     var callResult = await _client.GetScoresAsync();
                 }
+
+                await RandomDelay();
 
                 List<long> times;
                 if (!_callTimes.TryGetValue("PostScore", out times))
@@ -89,6 +94,11 @@ namespace LeaderboardLoadTest
         private IDisposable Measure(string callName)
         {
             return new InternalMeasure(callName, this);
+        }
+
+        private async Task RandomDelay()
+        {
+            await Task.Delay(s_rnd.Next(1000, 10000));
         }
 
         class InternalMeasure : IDisposable
