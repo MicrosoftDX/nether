@@ -1,12 +1,12 @@
 # Leaderboards
 
-Simple leaderboard functionalty, implementing Nether [leaderboard APIs](api/leaderboard), using SQL Database as a data store.
+Simple leaderboard functionality, implementing Nether [leaderboard APIs](api/leaderboard), using SQL Database as a data store.
 
 > WARNING: The leaderboard implementation in still under development
 
 ## Prerequisites
 * SQL Database - [learn how to create a SQL Database](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-get-started)
-  > To test localy, you may use an on prem installation of SQL Server database
+  > To test locally, you may use an on prem installation of SQL Server database
 * Microsoft SQL Server Management Studio or Visual Studio - to query against the SQL tables
 
 ## leaderboard Setup
@@ -46,7 +46,7 @@ Simple leaderboard functionalty, implementing Nether [leaderboard APIs](api/lead
 
 ## Leaderboards Configuration
 The leaderboard _GET_ API will return various leaderboards, based on pre-defined configurations - top ranks, all ranks, ranks around me and more.
-The current implemetaition is hard coded in [LeaderboardConfig](https://github.com/navalev/nether/blob/master/src/Nether.Web/Features/Leaderboard/Configuration/LeaderboardConfig.cs) class with spepefic implemetation in the [LeaderboardController](https://github.com/navalev/nether/blob/master/src/Nether.Web/Features/Leaderboard/LeaderboardController.cs) class.
+The current implementation is hard coded in [LeaderboardConfig](https://github.com/navalev/nether/blob/master/src/Nether.Web/Features/Leaderboard/Configuration/LeaderboardConfig.cs) class with specific implementation in the [LeaderboardController](https://github.com/navalev/nether/blob/master/src/Nether.Web/Features/Leaderboard/LeaderboardController.cs) class.
 
 **Usage:**
 1. Default (all ranks) leaderboard: /api/leaderboard or /api/leaderboard/Default
