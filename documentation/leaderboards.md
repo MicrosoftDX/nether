@@ -49,6 +49,7 @@ The leaderboard _GET_ API will return various leaderboards, based on pre-defined
 The current implementation is hard coded in [LeaderboardConfig](https://github.com/navalev/nether/blob/master/src/Nether.Web/Features/Leaderboard/Configuration/LeaderboardConfig.cs) class with specific implementation in the [LeaderboardController](https://github.com/navalev/nether/blob/master/src/Nether.Web/Features/Leaderboard/LeaderboardController.cs) class.
 
 **Usage:**
+
 1. Default (all ranks) leaderboard: /api/leaderboard or /api/leaderboard/Default
 2. Top 10 ranking players: /api/leaderboard/Top
 3. Players around me (5 below and 5 above the logged in player ranking): /api/leaderboard/AroundMe   
