@@ -95,7 +95,11 @@ The analytics functionality in Nether will allow a game to collect, analyze and 
 * As a game developer I can easily add additional historical, near real time and predictive analytical queries
 
 ###Overall requirements:
-* To be defined
+* Analytics should support thousands of simultaneous players, reporting game events
+* Data store should support millions of historically reported game events with no or little degradation of speed (as long as scaled properly, see below)
+* Should scale close to linearly by adding more resources
+* Should only allow authenticated requests
+* Leverages the power of Microsof Azure services like Azure Stream Analytics, Power BI, etc...
 
 ###Required Features/Methods
 * To be defined
