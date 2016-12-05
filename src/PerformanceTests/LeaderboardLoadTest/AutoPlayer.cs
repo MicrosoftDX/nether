@@ -49,7 +49,7 @@ namespace LeaderboardLoadTest
 
         public string Id => _playerInternalId;
 
-        public async Task PlayGameAsync(int callsPerUser, CancellationToken cancellationToken)
+        public async Task PlayGameAsync(int sessionsPerUser, CancellationToken cancellationToken)
         {
             var response = await _client.LoginUserNamePasswordAsync(_username, _password);
 
@@ -61,7 +61,7 @@ namespace LeaderboardLoadTest
 
             // simulate leaderboard activity
             int callsMade = 0;
-            while (!cancellationToken.IsCancellationRequested && callsMade++ < callsPerUser)
+            while (!cancellationToken.IsCancellationRequested && callsMade++ < sessionsPerUser)
             {
                 //_logger.WriteLine("{0}: call {1}/{2}...", _playerInternalId, callsMade, callsPerUser);
                 using (Measure("PostScore"))
