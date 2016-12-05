@@ -73,7 +73,6 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpPut]
         public async Task<ActionResult> PutPlayer([FromBody]PlayerPostRequestModel player)
         {
-
             // Update player
             await _store.SavePlayerAsync(
                 new Player { PlayerId = User.Identity.Name, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
