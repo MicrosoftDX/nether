@@ -29,8 +29,77 @@ namespace Nether.Web.Features.PlayerManagement
             _store = store;
         }
 
-        //Implementation of the player API
+        // Implementation of the player API
+        // There are two views:
+        //  1. By Player
+        //  2. Admininstration  
 
+
+
+        // Player APIs
+        [Authorize]
+        [HttpGet("player")]
+        public async Task<ActionResult> GetCurrentPlayer()
+        {
+            var playername = User.Identity.Name; // This is looking up by user id... mostly you will want User.GetGamerTag() 
+
+            // Call data store
+            var player = await _store.GetPlayerDetailsByIdAsync(playername);
+
+            if (player == null)
+            {
+                return NotFound();
+            }
+
+            // Format response model
+            var resultModel = new PlayerGetResponseModel
+            {
+                Player = player
+            };
+
+            // Return result
+            return Ok(resultModel);
+        }
+
+        [Authorize(Roles = "player")]
+        [HttpGet("player/groups/")]
+        public Task<ActionResult> GetPlayerGroups()
+        {
+            return GetPlayerGroups(User.GetGamerTag());
+        }
+
+        [Authorize]
+        [Route("player")]
+        [HttpPut]
+        public async Task<ActionResult> PutPlayer([FromBody]PlayerPostRequestModel player)
+        {
+
+            // Update player
+            await _store.SavePlayerAsync(
+                new Player { PlayerId = User.Identity.Name, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
+
+            // Return result
+            return new NoContentResult();
+        }
+
+        [Route("player/groups/{groupname}")]
+        [HttpPut]
+        public async Task<ActionResult> AddPlayerToAGroup([FromBody]PlayerPostRequestModel playerin, string groupname)
+        {
+            //Get Player
+            Player player = await _store.GetPlayerDetailsAsync(playerin.Gamertag);
+            Group group = await _store.GetGroupDetailsAsync(groupname);
+
+            // Save player
+            await _store.AddPlayerToGroupAsync(group, player);
+
+            // Return result
+            return Ok();
+        }
+
+
+
+        //Player Admin APIs
         [HttpGet("players")]
         public async Task<ActionResult> GetPlayers()
         {
@@ -41,6 +110,22 @@ namespace Nether.Web.Features.PlayerManagement
             var resultModel = new PlayerListGetResponseModel
             {
                 Players = players.Select(p => (PlayerListGetResponseModel.PlayersEntry)p).ToList()
+            };
+
+            // Return result
+            return Ok(resultModel);
+        }
+
+        [HttpGet("players/{playername}/groups/")]
+        public async Task<ActionResult> GetPlayerGroups(string playername)
+        {
+            // Call data store
+            var groups = await _store.GetPlayersGroupsAsync(playername);
+
+            // Format response model
+            var resultModel = new GroupListResponseModel
+            {
+                Groups = groups.Cast<GroupListResponseModel.GroupsEntry>().ToList()
             };
 
             // Return result
@@ -70,7 +155,9 @@ namespace Nether.Web.Features.PlayerManagement
 
 
 
-        // EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL
+
+
+
         // ********************************** THIS endpoint is a temporary measure to quickly unblock auth, but needs to be removed ***************************
         [HttpGet("EVIL/HELPER/tagfromid/{playerid}")]
         public async Task<ActionResult> EVIL_HELPER_GetTagFromPlayerId(string playerid)
@@ -86,54 +173,13 @@ namespace Nether.Web.Features.PlayerManagement
             // Return result
             return Ok(player.Gamertag);
         }
-        // EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL EVIL
 
 
 
-        [Authorize]
-        [HttpGet("player")]
-        public async Task<ActionResult> GetCurrentPlayer()
-        {
-            var playername = User.Identity.Name; // This is looking up by user id... mostly you will want User.GetGamerTag() 
 
-            // Call data store
-            var player = await _store.GetPlayerDetailsByIdAsync(playername);
 
-            if (player == null)
-            {
-                return NotFound();
-            }
 
-            // Format response model
-            var resultModel = new PlayerGetResponseModel
-            {
-                Player = player
-            };
 
-            // Return result
-            return Ok(resultModel);
-        }
-        [Authorize(Roles = "player")]
-        [HttpGet("player/groups/")]
-        public Task<ActionResult> GetPlayerGroups()
-        {
-            return GetPlayerGroups(User.GetGamerTag());
-        }
-        [HttpGet("players/{playername}/groups/")]
-        public async Task<ActionResult> GetPlayerGroups(string playername)
-        {
-            // Call data store
-            var groups = await _store.GetPlayersGroupsAsync(playername);
-
-            // Format response model
-            var resultModel = new GroupListResponseModel
-            {
-                Groups = groups.Cast<GroupListResponseModel.GroupsEntry>().ToList()
-            };
-
-            // Return result
-            return Ok(resultModel);
-        }
 
         [Authorize(Roles = "player")]
         [Route("players")]
