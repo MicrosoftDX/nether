@@ -71,58 +71,7 @@ namespace Nether.Web.Features.Leaderboard
             // Return result
             return Ok(resultModel);
         }
-
-        [HttpGet("top({n})")]
-        public async Task<ActionResult> GetTopAsync(int n, [FromQuery] string partitionedBy, [FromQuery] string country, [FromQuery] string customTag) //TODO: add swagger annotations for response shape
-        {
-            // Call data store
-            var scores = await _store.GetTopHighScoresAsync(n);
-
-            // Format response model
-            var resultModel = new LeaderboardGetResponseModel
-            {
-                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
-            };
-
-            // Return result
-            return Ok(resultModel);
-        }
-
-        [HttpGet("around({gamerTag},{nBetter},{nWorse})")]
-        public async Task<ActionResult> GetLeaderboardAroundMeAsync(string gamerTag, int nBetter, int nWorse, [FromQuery] string partitionedBy, [FromQuery] string country, [FromQuery] string customTag) //TODO: add swagger annotations for response shape
-        {
-            // Call data store
-            var scores = await _store.GetScoresAroundMe(nBetter, nWorse, gamerTag);
-
-            // Format response model
-            var resultModel = new LeaderboardGetResponseModel
-            {
-                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
-            };
-
-            // Return result
-            return Ok(resultModel);
-        }
-
-        [HttpGet("friends")]
-        public async Task<ActionResult> GetLeaderboardWithFriendsAsync() //TODO: add swagger annotations for response shape
-        {
-            // Call data store
-            var scores = await _store.GetAllHighScoresAsync();
-
-            // Format response model
-            var resultModel = new LeaderboardGetResponseModel
-            {
-                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
-            };
-
-            // Return result
-            return Ok(resultModel);
-        }
-
-
-
-
+        
         [Authorize]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody]LeaderboardPostRequestModel score)
