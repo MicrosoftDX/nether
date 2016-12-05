@@ -14,6 +14,7 @@ using Nether.Web.Features.Leaderboard.Configuration;
 using Nether.Web.Utilities;
 using Swashbuckle.SwaggerGen.Annotations;
 using System.Net;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,11 +28,14 @@ namespace Nether.Web.Features.Leaderboard
     {
         private readonly ILeaderboardStore _store;
         private readonly IAnalyticsIntegrationClient _analyticsIntegrationClient;
+        private readonly ILogger<LeaderboardController> _log;
 
-        public LeaderboardController(ILeaderboardStore store, IAnalyticsIntegrationClient analyticsIntegrationClient)
+        public LeaderboardController(ILeaderboardStore store, IAnalyticsIntegrationClient analyticsIntegrationClient,
+            ILogger<LeaderboardController> log)
         {
             _store = store;
             _analyticsIntegrationClient = analyticsIntegrationClient;
+            _log = log;
         }
 
         //TODO: Add versioning support
@@ -39,44 +43,39 @@ namespace Nether.Web.Features.Leaderboard
 
 
         /// <summary>
-        /// Gets leaderboard by name
+        /// Gets leaderboard by type
         /// </summary>
-        /// <param name="leaderboardname"></param>
-        /// <returns></returns>
-        [SwaggerResponse(200, typeof(LeaderboardGetResponseModel))]
-        [Authorize(Roles = "player")]
-        [HttpGet("{leaderboardname}")]
-        public async Task<ActionResult> Get(string leaderboardname)
+        /// <param name="type">Type of the leaderboard</param>
+        /// <returns>List of scores and gametags</returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(LeaderboardGetResponseModel))]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, Description = "not enough permissions to submit the score")]
+        [Authorize(Roles = "Player")]
+        [HttpGet("{type}")]
+        public async Task<ActionResult> Get(LeaderboardType type)
         {
             //TODO
             var gamerTag = User.GetGamerTag();
 
-            List<GameScore> scores = new List<GameScore>();
-
-            // currently hard coded leaderboard types
-            if (String.IsNullOrEmpty(leaderboardname) || !Configuration.Configuration.LeaderboardConfiguration.ContainsKey(leaderboardname))
+            LeaderboardConfig config;
+            List<GameScore> scores;
+            Configuration.Configuration.LeaderboardConfiguration.TryGetValue(type, out config);
+            switch(type)
             {
-                // default
-                scores = await _store.GetAllHighScoresAsync();
-            }
-            else
-            {
-                LeaderboardConfig config = Configuration.Configuration.LeaderboardConfiguration[leaderboardname];
-                if (config.AroundMe)
-                {
+                case LeaderboardType.AroundMe:
                     scores = await _store.GetScoresAroundMeAsync(gamerTag, config.Radius);
-                }
-                else
-                {
-                    // in case top = 0, the implementation should lead to GetAllHighScores
+                    break;
+                case LeaderboardType.Top:
                     scores = await _store.GetTopHighScoresAsync(config.Top);
-                }
+                    break;
+                default:
+                    scores = await _store.GetAllHighScoresAsync();
+                    break;
             }
 
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+                Entries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result
@@ -92,7 +91,7 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+                Entries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result
@@ -108,7 +107,7 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+                Entries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result
@@ -124,14 +123,12 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+                Entries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result
             return Ok(resultModel);
         }
-
-
 
         /// <summary>
         /// Posts a new score of currently logged in player
@@ -148,7 +145,7 @@ namespace Nether.Web.Features.Leaderboard
             // Validate input
             if (request.Score < 0)
             {
-                // TODO log
+                _log.LogError("score is negative ({0})", request.Score);
                 return BadRequest(); //TODO: return error info in body
             }
 
@@ -156,7 +153,12 @@ namespace Nether.Web.Features.Leaderboard
             var gamerTag = User.GetGamerTag();
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
-                // TODO log
+                foreach(var claim in User.Claims)
+                {
+                    _log.LogDebug("{0}: {1}", claim.Type, claim.Value);
+                }
+
+                _log.LogError("user has not gametag");
                 return BadRequest(); //TODO: return error info in body
             }
 

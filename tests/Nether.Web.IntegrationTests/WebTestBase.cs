@@ -18,7 +18,7 @@ namespace Nether.Web.IntegrationTests
         private const string ClientSecret = "devsecret";
         protected const string Username = "testuser";
         protected const string GamerTag = "testusertag";
-        private const string Password = "password123";
+        private const string Password = "testuser";
         private static HttpClient s_client; //create once to avoid authentication overhead for integration tests
 
         private static HttpClient CreateClient(string baseUrl)

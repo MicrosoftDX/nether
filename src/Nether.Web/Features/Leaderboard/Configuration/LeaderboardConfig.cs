@@ -10,11 +10,11 @@ namespace Nether.Web.Features.Leaderboard.Configuration
 {
     public class Configuration
     {
-        public static Dictionary<String, LeaderboardConfig> LeaderboardConfiguration = new Dictionary<string, LeaderboardConfig>()
+        public static Dictionary<LeaderboardType, LeaderboardConfig> LeaderboardConfiguration = new Dictionary<LeaderboardType, LeaderboardConfig>()
         {
-            {"Default",  new LeaderboardConfig { AroundMe = false, Radius = 0, Top = 0 } },
-            {"Top",  new LeaderboardConfig { AroundMe = false, Radius = 0, Top = 5 } },
-            {"AroundMe",  new LeaderboardConfig { AroundMe = true, Radius = 2, Top = 0 } }
+            {LeaderboardType.Default,  new LeaderboardConfig { AroundMe = false, Radius = 0, Top = 0 } },
+            {LeaderboardType.Top,  new LeaderboardConfig { AroundMe = false, Radius = 0, Top = 5 } },
+            {LeaderboardType.AroundMe,  new LeaderboardConfig { AroundMe = true, Radius = 2, Top = 0 } }
         };
     }
 
@@ -23,5 +23,20 @@ namespace Nether.Web.Features.Leaderboard.Configuration
         public bool AroundMe { get; set; }
         public int Radius { get; set; }
         public int Top { get; set; }
+    }
+
+    /// <summary>
+    /// Type of the leaderboard
+    /// </summary>
+    public enum LeaderboardType
+    {
+        /// <summary>
+        /// Default leaderboard
+        /// </summary>
+        Default,
+
+        Top,
+
+        AroundMe
     }
 }

@@ -17,8 +17,14 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Get_leaderboard_call_succeeds()
         {
-            HttpResponseMessage response = await Client.GetAsync(BaseUri);
+            HttpResponseMessage response = await Client.GetAsync(BaseUri + "/default");
             Assert.True(response.IsSuccessStatusCode);
+        }
+
+        [Fact]
+        public async Task Post_leaderboard_call_succeeds()
+        {
+            await PostScore(1);
         }
 
         [Fact]
@@ -26,17 +32,29 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         {
             LeaderboardGetResponse leaderboardBefore = await GetLeaderboard();
 
-            await PostScore(Username, 100);
+            await PostScore(100);
 
             LeaderboardGetResponse leaderboardAfter = await GetLeaderboard();
             
         }
 
+        [Fact]
+        public async Task Posting_negative_score_causes_bad_request()
+        {
+            await PostScore(-5, HttpStatusCode.BadRequest);
+        }
+
+        [Fact]
+        public async Task Cannot_post_score_if_im_not_in_Player_role()
+        {
+            await PostScore(50, HttpStatusCode.Forbidden);
+        }
+
         #region [ REST Wrappers ]
 
-        private async Task<LeaderboardGetResponse> GetLeaderboard()
+        private async Task<LeaderboardGetResponse> GetLeaderboard(string type = "default")
         {
-            HttpResponseMessage response = await Client.GetAsync(BaseUri);
+            HttpResponseMessage response = await Client.GetAsync(BaseUri + "/" + type);
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -44,18 +62,17 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             return JsonConvert.DeserializeObject<LeaderboardGetResponse>(content);
         }
 
-        private async Task PostScore(string gamerTag, int score)
+        private async Task PostScore(int score,
+            HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
             HttpResponseMessage response = await Client.PostAsJsonAsync(BaseUri,
                 new
                 {
                     country = "UK",
-                    customTag = gamerTag,
                     score = score
                 });
 
-            Assert.True(response.IsSuccessStatusCode);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(expectedCode, response.StatusCode);
         }
 
         #endregion
@@ -64,7 +81,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
         public class LeaderboardGetResponse
         {
-            public LeaderboardEntry[] LeaderboardEntries { get; set; }
+            public LeaderboardEntry[] Entries { get; set; }
 
             public class LeaderboardEntry
             {

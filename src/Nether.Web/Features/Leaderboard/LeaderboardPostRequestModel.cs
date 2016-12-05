@@ -13,6 +13,9 @@ namespace Nether.Web.Features.Leaderboard
         [Required]
         public string Country { get; set; }
 
+        /// <summary>
+        /// Optional tag
+        /// </summary>
         public string CustomTag { get; set; }
 
         /// <summary>

@@ -8,7 +8,7 @@ namespace Nether.Web.Features.Leaderboard
 {
     public class LeaderboardGetResponseModel
     {
-        public List<LeaderboardEntry> LeaderboardEntries { get; set; }
+        public List<LeaderboardEntry> Entries { get; set; }
 
         public class LeaderboardEntry
         {
@@ -17,7 +17,14 @@ namespace Nether.Web.Features.Leaderboard
                 return new LeaderboardEntry { Gamertag = score.GamerTag, Score = score.Score };
             }
 
+            /// <summary>
+            /// Gamertag
+            /// </summary>
             public string Gamertag { get; set; }
+
+            /// <summary>
+            /// Scores
+            /// </summary>
             public int Score { get; set; }
         }
     }

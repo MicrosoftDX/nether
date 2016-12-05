@@ -45,14 +45,6 @@ namespace Nether.Web.Features.Identity.Configuration
                     }
                 },
                 // user with gamertag
-                new InMemoryUser{Subject = "112233", Username = "testuser", Password = "password123",
-                    Claims = new Claim[]
-                    {
-                        new Claim(JwtClaimTypes.Name, "112233"),
-                        new Claim(JwtClaimTypes.Role, "player"),
-                        new Claim(JwtClaimTypes.NickName, "testusertag") // gamertag
-                    }
-                },
                 new InMemoryUser{Subject = "3333", Username = "testuser", Password = "testuser",
                     Claims = new Claim[]
                     {
@@ -60,6 +52,7 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.GivenName, "Development"),
                         new Claim(JwtClaimTypes.FamilyName, "User"),
                         new Claim(JwtClaimTypes.Role, "Player"),
+                        new Claim(JwtClaimTypes.NickName, "testusertag")
                     }
                 },
                 new InMemoryUser{Subject = "4444", Username = "testuser1", Password = "testuser1",
