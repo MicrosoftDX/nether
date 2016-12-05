@@ -21,7 +21,9 @@ The player management functionality in Nether will allow a game to administrate,
 
 
 ###Overall requirements:
-* To be defined
+* Player Management should support thousands of simultaneous players and groups
+* Should scale close to linearly by adding more resources
+* Should only allow authenticated requests.
 
 ###Required Features/Methods
 * To be defined
