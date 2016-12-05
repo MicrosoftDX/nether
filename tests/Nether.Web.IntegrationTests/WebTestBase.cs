@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Authentication;
@@ -17,7 +18,7 @@ namespace Nether.Web.IntegrationTests
         private const string ClientId = "resourceowner-test";
         private const string ClientSecret = "devsecret";
         protected const string Username = "testuser";
-        protected const string GamerTag = "testusertag";
+        protected const string GamerTag = "testusertagWebTestBase";
         private const string Password = "testuser";
         private static HttpClient s_client; //create once to avoid authentication overhead for integration tests
 
@@ -50,13 +51,26 @@ namespace Nether.Web.IntegrationTests
 
                     var tokenClient = new TokenClient(disco.TokenEndpoint, ClientId, ClientSecret);
                     TokenResponse tokenResponse = tokenClient.RequestResourceOwnerPasswordAsync(Username, Password, "nether-all").Result;
-
-                    if(tokenResponse.IsError)
+                    if (tokenResponse.IsError)
                     {
                         throw new AuthenticationException("filed to authenticate");
                     }
-
                     s_client.SetBearerToken(tokenResponse.AccessToken);
+
+                    // todo: remove this gamertag dark magic
+                    var token = new JwtSecurityToken(tokenResponse.AccessToken);
+                    var player = new
+                    {
+                        gamertag = GamerTag,
+                        country = "UK",
+                        customTag = nameof(WebTestBase)
+                    };
+                    HttpResponseMessage response = s_client.PutAsJsonAsync("api/players/foo", player).Result;
+
+                    //get the token again as it will include the gamertag claim
+                    tokenResponse = tokenClient.RequestResourceOwnerPasswordAsync(Username, Password, "nether-all").Result;
+                    s_client.SetBearerToken(tokenResponse.AccessToken);
+                    token = new JwtSecurityToken(tokenResponse.AccessToken);
                 }
 
                 return s_client;
