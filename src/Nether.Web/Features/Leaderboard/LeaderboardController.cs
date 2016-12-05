@@ -153,11 +153,6 @@ namespace Nether.Web.Features.Leaderboard
             var gamerTag = User.GetGamerTag();
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
-                foreach(var claim in User.Claims)
-                {
-                    _log.LogDebug("{0}: {1}", claim.Type, claim.Value);
-                }
-
                 _log.LogError("user has not gametag");
                 return BadRequest(); //TODO: return error info in body
             }

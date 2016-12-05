@@ -17,10 +17,14 @@ namespace Nether.Web.IntegrationTests
         private const string BaseUrl = "http://localhost:5000/";
         private const string ClientId = "resourceowner-test";
         private const string ClientSecret = "devsecret";
-        protected const string Username = "testuser";
         protected const string GamerTag = "testusertagWebTestBase";
-        private const string Password = "testuser";
-        private static HttpClient s_client; //create once to avoid authentication overhead for integration tests
+
+        private static readonly Dictionary<string, string> UserToPassword =
+            new Dictionary<string, string>
+            {
+                { "testuser", "testuser" },
+                { "devadmin", "devadmin" }
+            };
 
         private static HttpClient CreateClient(string baseUrl)
         {
@@ -34,47 +38,44 @@ namespace Nether.Web.IntegrationTests
             return new HttpClient(handler) { BaseAddress = new Uri(baseUrl) };
         }
 
-        protected static HttpClient Client
+        protected HttpClient GetClient(string username)
         {
-            get
+            HttpClient client = CreateClient(BaseUrl);
+            string password = UserToPassword[username];
+
+            //authenticate so it's ready for use
+            DiscoveryResponse disco = DiscoveryClient.GetAsync(BaseUrl).Result;
+            if (disco.TokenEndpoint == null)
             {
-                if(s_client == null)
-                {
-                    s_client = CreateClient(BaseUrl);
-
-                    //authenticate so it's ready for use
-                    DiscoveryResponse disco = DiscoveryClient.GetAsync(BaseUrl).Result;
-                    if (disco.TokenEndpoint == null)
-                    {
-                        throw new AuthenticationException("could not discover endpoint, server is offline?");
-                    }
-
-                    var tokenClient = new TokenClient(disco.TokenEndpoint, ClientId, ClientSecret);
-                    TokenResponse tokenResponse = tokenClient.RequestResourceOwnerPasswordAsync(Username, Password, "nether-all").Result;
-                    if (tokenResponse.IsError)
-                    {
-                        throw new AuthenticationException("filed to authenticate");
-                    }
-                    s_client.SetBearerToken(tokenResponse.AccessToken);
-
-                    // todo: remove this gamertag dark magic
-                    var token = new JwtSecurityToken(tokenResponse.AccessToken);
-                    var player = new
-                    {
-                        gamertag = GamerTag,
-                        country = "UK",
-                        customTag = nameof(WebTestBase)
-                    };
-                    HttpResponseMessage response = s_client.PutAsJsonAsync("api/players/foo", player).Result;
-
-                    //get the token again as it will include the gamertag claim
-                    tokenResponse = tokenClient.RequestResourceOwnerPasswordAsync(Username, Password, "nether-all").Result;
-                    s_client.SetBearerToken(tokenResponse.AccessToken);
-                    token = new JwtSecurityToken(tokenResponse.AccessToken);
-                }
-
-                return s_client;
+                throw new AuthenticationException("could not discover endpoint, server is offline?");
             }
+
+            var tokenClient = new TokenClient(disco.TokenEndpoint, ClientId, ClientSecret);
+
+
+            TokenResponse tokenResponse = tokenClient.RequestResourceOwnerPasswordAsync(username, password, "nether-all").Result;
+            if (tokenResponse.IsError)
+            {
+                throw new AuthenticationException("filed to authenticate");
+            }
+            client.SetBearerToken(tokenResponse.AccessToken);
+
+            // todo: remove this gamertag dark magic
+            var token = new JwtSecurityToken(tokenResponse.AccessToken);
+            var player = new
+            {
+                gamertag = GamerTag,
+                country = "UK",
+                customTag = nameof(WebTestBase)
+            };
+            HttpResponseMessage response = client.PutAsJsonAsync("api/players/foo", player).Result;
+
+            //get the token again as it will include the gamertag claim
+            tokenResponse = tokenClient.RequestResourceOwnerPasswordAsync(username, password, "nether-all").Result;
+            client.SetBearerToken(tokenResponse.AccessToken);
+            token = new JwtSecurityToken(tokenResponse.AccessToken);
+
+            return client;
         }
     }
 }

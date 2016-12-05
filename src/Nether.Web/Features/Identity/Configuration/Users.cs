@@ -34,7 +34,6 @@ namespace Nether.Web.Features.Identity.Configuration
                     }
                 },
 
-
                 // Integration test users
                 // user without gamertag
                 new InMemoryUser{Subject = "112299", Username = "testuser-notag", Password = "password123",
@@ -51,8 +50,7 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.Name, "testuser"),
                         new Claim(JwtClaimTypes.GivenName, "Development"),
                         new Claim(JwtClaimTypes.FamilyName, "User"),
-                        new Claim(JwtClaimTypes.Role, "Player"),
-                        new Claim(JwtClaimTypes.NickName, "testusertag")
+                        new Claim(JwtClaimTypes.Role, "Player")
                     }
                 },
                 new InMemoryUser{Subject = "4444", Username = "testuser1", Password = "testuser1",
