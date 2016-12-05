@@ -71,7 +71,7 @@ namespace Nether.Web.Features.Leaderboard
             // Return result
             return Ok(resultModel);
         }
-        
+
         [Authorize]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody]LeaderboardPostRequestModel score)
