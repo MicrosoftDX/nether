@@ -15,8 +15,8 @@ namespace Nether.Data.Sql.Leaderboard
         private readonly string _connectionString;
         private readonly string _table;
 
-        private static string s_defaultSql = "select Score, GamerTag, CustomTag, row_number() over(order by Score desc) as Ranking from (select GamerTag, max(Score) as Score, max(CustomTag) as CustomTag from scores group by GamerTag) as T order by Score desc";
-        private static string s_topSql = "select top {0} select Score, GamerTag, CustomTag, row_number() over(order by Score desc) as Ranking from (select GamerTag, max(Score) as Score, max(CustomTag) as CustomTag from scores group by GamerTag) as T order by Score desc";
+        private static string s_defaultSql = "select Score, GamerTag, CustomTag, row_number() over(order by Score desc) as Ranking from (select GamerTag, max(Score) as Score, max(CustomTag) as CustomTag from scores group by GamerTag) as T";
+        private static string s_topSql = "select top {0} select Score, GamerTag, CustomTag, row_number() over(order by Score desc) as Ranking from (select GamerTag, max(Score) as Score, max(CustomTag) as CustomTag from scores group by GamerTag) as T";
         private static string s_aroundMeSql = "select top {0} from (select score, gamertag, customtag, rank() over(order by score desc) as ranking from scores s1 where score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag)) as S where S.ranking >= {1} and S.gamertag != {2} union all select top {0} * from(select score, gamertag, customtag, rank() over(order by score desc) as ranking from scores s1 where score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag)) as S where S.ranking < {1} ";
         private static string s_gamerRankSql = "select* from (select score, gamertag, customtag, rank() over(order by score desc) as ranking from scores s1 where score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag)) as Ranks where Ranks.gamertag = {0}";
 
@@ -54,6 +54,8 @@ namespace Nether.Data.Sql.Leaderboard
         public async Task<List<GameScore>> GetHighScoresAsync(int n)
         {
             string sql = n == 0 ? s_defaultSql : String.Format(s_topSql, n);
+
+            Console.WriteLine("executing: [" + sql + "]");
 
             return await Ranks.FromSql(sql).Select(s =>
                 new GameScore

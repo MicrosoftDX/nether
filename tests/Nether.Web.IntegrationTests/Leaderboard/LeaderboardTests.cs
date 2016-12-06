@@ -37,12 +37,22 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         public async Task Posting_new_score_updates_default_leaderboard()
         {
             LeaderboardGetResponse leaderboardBefore = await GetLeaderboard();
-            var entries = leaderboardBefore.Entries.Where(e => e.Gamertag == GamerTag);
 
-            await PostScore(100);
+            List<LeaderboardGetResponse.LeaderboardEntry> entries =
+                leaderboardBefore.Entries.Where(e => e.Gamertag == GamerTag).ToList();
 
+            //check that there is only one or less (if score wasn't posted yet) entry per user
+            Assert.True(entries.Count <= 1);
+            int oldScore = entries.Count == 0 ? 0 : entries.First().Score;
+
+            //update the score posting a different (higher) result
+            int newScore = oldScore + 1;
+            await PostScore(newScore);
+
+            //check that leaderboard has the updated score
             LeaderboardGetResponse leaderboardAfter = await GetLeaderboard();
-            
+            int newFreshScore = leaderboardAfter.Entries.Where(e => e.Gamertag == GamerTag).Select(e => e.Score).First();
+            Assert.Equal(newFreshScore, newScore);
         }
 
         [Fact]
