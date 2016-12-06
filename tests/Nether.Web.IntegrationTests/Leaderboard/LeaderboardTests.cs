@@ -34,14 +34,27 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         }
 
         [Fact]
-        public async Task Posting_new_score_updates_leaderboard()
+        public async Task Posting_new_score_updates_default_leaderboard()
         {
             LeaderboardGetResponse leaderboardBefore = await GetLeaderboard();
+            var entries = leaderboardBefore.Entries.Where(e => e.Gamertag == GamerTag);
 
             await PostScore(100);
 
             LeaderboardGetResponse leaderboardAfter = await GetLeaderboard();
             
+        }
+
+        [Fact]
+        public async Task Posting_similar_score_gets_around_me()
+        {
+            //
+        }
+
+        [Fact]
+        public async Task Limiting_top_scores_returns_limited_numer_of_rows()
+        {
+            //
         }
 
         [Fact]
