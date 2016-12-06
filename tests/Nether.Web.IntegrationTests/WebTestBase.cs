@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 using IdentityModel.Client;
 
 namespace Nether.Web.IntegrationTests
@@ -22,8 +20,9 @@ namespace Nether.Web.IntegrationTests
         private static readonly Dictionary<string, string> UserToPassword =
             new Dictionary<string, string>
             {
-                { "testuser", "testuser" },
-                { "devadmin", "devadmin" }
+                { "testuser", "testuser" },     // in "Player" role
+                { "testuser1", "testuser1" },   // in "Player" role
+                { "devadmin", "devadmin" }      // not in "Player" role
             };
 
         private static HttpClient CreateClient(string baseUrl)

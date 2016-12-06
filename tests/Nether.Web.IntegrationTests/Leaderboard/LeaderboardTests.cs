@@ -64,7 +64,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Limiting_top_scores_returns_limited_numer_of_rows()
         {
-            //
+            LeaderboardGetResponse response = await GetLeaderboard("top", HttpStatusCode.OK);
         }
 
         [Fact]
