@@ -92,6 +92,13 @@ namespace Nether.Data.Sql.Leaderboard
 
             return score;
         }
+
+        public async Task DeleteScores(string gamerTag)
+        {
+            List<SavedGamerScore> scores = await Scores.Where(_ => _.GamerTag == gamerTag).ToListAsync();
+            this.RemoveRange(scores);
+            await SaveChangesAsync();
+        }
     }
 
     public class SavedGamerScore

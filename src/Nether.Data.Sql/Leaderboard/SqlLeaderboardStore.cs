@@ -52,5 +52,10 @@ namespace Nether.Data.Sql.Leaderboard
         {
             throw new NotImplementedException();
         }
+
+        public async Task DeleteAllScoresAsync(string gamerTag)
+        {
+            await _db.DeleteScores(gamerTag);
+        }
     }
 }

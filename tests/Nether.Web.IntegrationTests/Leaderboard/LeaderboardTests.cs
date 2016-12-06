@@ -70,10 +70,12 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             //todo: delete score entries before testing, this requires a separate http method
 
             //put me somewhere in the middle and push the other user in the bottom so he is not around me
+            await DeleteMyScores();
             await PostScore(int.MaxValue / 2);
             string myGamertag = gamertag;
             _client = GetClient("testuser1");
             string hisGamertag = gamertag;
+            await DeleteMyScores();
             await PostScore(1);
 
             //check he is not around me
@@ -114,6 +116,11 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         }
 
         #region [ REST Wrappers ]
+
+        private async Task DeleteMyScores()
+        {
+            await _client.DeleteAsync(BaseUri);
+        }
 
         private async Task<LeaderboardGetResponse> GetLeaderboard(string type = "default",
             HttpStatusCode expectedCode = HttpStatusCode.OK)

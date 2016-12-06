@@ -128,6 +128,27 @@ namespace Nether.Web.Features.Leaderboard
             // Return result
             return Ok();
         }
+
+        /// <summary>
+        /// Deletes all score achievements for the logged in user
+        /// </summary>
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "scores deleted successfully")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "user does not have an associated gamertag")]
+        [Authorize]
+        [HttpDelete("")]
+        public async Task<ActionResult> DropMyScores()
+        {
+            var gamerTag = User.GetGamerTag();
+            if (string.IsNullOrWhiteSpace(gamerTag))
+            {
+                _log.LogError("user has not gametag");
+                return BadRequest(); //TODO: return error info in body
+            }
+
+            await _store.DeleteAllScoresAsync(gamerTag);
+
+            return Ok();
+        }
     }
 }
 
