@@ -53,7 +53,7 @@ namespace Nether.Data.Sql.Leaderboard
 
         public async Task<List<GameScore>> GetHighScoresAsync(int n)
         {
-            string sql = n == 0 ? s_defaultSql : String.Format(s_topSql, n);            
+            string sql = n == 0 ? s_defaultSql : String.Format(s_topSql, n);
             return await Ranks.FromSql(sql).Select(s =>
                 new GameScore
                 {
@@ -61,7 +61,7 @@ namespace Nether.Data.Sql.Leaderboard
                     GamerTag = s.GamerTag,
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
-                }).ToListAsync();                            
+                }).ToListAsync();
         }
 
         public async Task<List<GameScore>> GetScoresAroundMeAsync(string gamerTag, long rank, int radius)
@@ -74,11 +74,11 @@ namespace Nether.Data.Sql.Leaderboard
                     GamerTag = s.GamerTag,
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
-                }).ToListAsync();           
+                }).ToListAsync();
         }
 
         public async Task<List<GameScore>> GetGamerRankAsync(string gamertag)
-        {                        
+        {
             return await Ranks.FromSql(s_gamerRankSql, gamertag).Select(s =>
                 new GameScore
                 {
@@ -86,7 +86,7 @@ namespace Nether.Data.Sql.Leaderboard
                     GamerTag = s.GamerTag,
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
-                }).ToListAsync();           
+                }).ToListAsync();
         }
     }
 
