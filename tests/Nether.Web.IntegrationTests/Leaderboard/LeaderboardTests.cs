@@ -39,7 +39,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             LeaderboardGetResponse leaderboardBefore = await GetLeaderboard();
 
             List<LeaderboardGetResponse.LeaderboardEntry> entries =
-                leaderboardBefore.Entries.Where(e => e.Gamertag == GamerTag).ToList();
+                leaderboardBefore.Entries.Where(e => e.Gamertag == gamertag).ToList();
 
             //check that there is only one or less (if score wasn't posted yet) entry per user
             Assert.True(entries.Count <= 1);
@@ -51,14 +51,42 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
             //check that leaderboard has the updated score
             LeaderboardGetResponse leaderboardAfter = await GetLeaderboard();
-            int newFreshScore = leaderboardAfter.Entries.Where(e => e.Gamertag == GamerTag).Select(e => e.Score).First();
+            int newFreshScore = leaderboardAfter.Entries.Where(e => e.Gamertag == gamertag).Select(e => e.Score).First();
             Assert.Equal(newFreshScore, newScore);
         }
 
         [Fact]
         public async Task Posting_similar_score_gets_around_me()
         {
-            //
+            //note: radius is 2 at the moment, meaning you get 2 players above and 2 below (4 elements in response in general)
+
+            //check there are at least 5 users
+            LeaderboardGetResponse response = await GetLeaderboard();
+            if(response.Entries.Length < 5)
+            {
+                throw new NotImplementedException();    //todo: post scores to get at least 5
+            }
+
+            //todo: delete score entries before testing, this requires a separate http method
+
+            //put me somewhere in the middle and push the other user in the bottom so he is not around me
+            await PostScore(int.MaxValue / 2);
+            string myGamertag = gamertag;
+            _client = GetClient("testuser1");
+            string hisGamertag = gamertag;
+            await PostScore(1);
+
+            //check he is not around me
+            _client = GetClient();
+            response = await GetLeaderboard("aroundMe");
+            Assert.False(response.Entries.Any(e => e.Gamertag == hisGamertag));
+
+            //make his score similar to mine and check he is around me
+            _client = GetClient("testuser1");
+            await PostScore(int.MaxValue / 2 + 1);
+            _client = GetClient();
+            response = await GetLeaderboard("aroundMe");
+            Assert.True(response.Entries.Any(e => e.Gamertag == hisGamertag));
         }
 
         [Fact]
@@ -123,6 +151,11 @@ namespace Nether.Web.IntegrationTests.Leaderboard
                 public string Gamertag { get; set; }
 
                 public int Score { get; set; }
+
+                public override string ToString()
+                {
+                    return $"{Gamertag}\t {Score}";
+                }
             }
         }
 

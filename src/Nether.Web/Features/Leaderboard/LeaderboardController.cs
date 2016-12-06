@@ -82,8 +82,6 @@ namespace Nether.Web.Features.Leaderboard
             return Ok(resultModel);
         }
 
-       
-
         /// <summary>
         /// Posts a new score of currently logged in player
         /// </summary>

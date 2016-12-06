@@ -15,7 +15,7 @@ namespace Nether.Web.IntegrationTests
         private const string BaseUrl = "http://localhost:5000/";
         private const string ClientId = "resourceowner-test";
         private const string ClientSecret = "devsecret";
-        protected const string GamerTag = "testusertagWebTestBase";
+        protected string gamertag;
 
         private static readonly Dictionary<string, string> UserToPassword =
             new Dictionary<string, string>
@@ -37,8 +37,9 @@ namespace Nether.Web.IntegrationTests
             return new HttpClient(handler) { BaseAddress = new Uri(baseUrl) };
         }
 
-        protected HttpClient GetClient(string username)
+        protected HttpClient GetClient(string username = "testuser")
         {
+            gamertag = username + "GamerTag";
             HttpClient client = CreateClient(BaseUrl);
             string password = UserToPassword[username];
 
@@ -63,7 +64,7 @@ namespace Nether.Web.IntegrationTests
             var token = new JwtSecurityToken(tokenResponse.AccessToken);
             var player = new
             {
-                gamertag = GamerTag,
+                gamertag = gamertag,
                 country = "UK",
                 customTag = nameof(WebTestBase)
             };

@@ -17,8 +17,8 @@ namespace Nether.Data.Sql.Leaderboard
 
         private static string s_defaultSql = "select Score, GamerTag, CustomTag, row_number() over(order by Score desc) as Ranking from (select GamerTag, max(Score) as Score, max(CustomTag) as CustomTag from scores group by GamerTag) as T ";
         private static string s_topSql = "select top {0} Score, GamerTag, CustomTag, row_number() over(order by Score desc) as Ranking from (select GamerTag, max(Score) as Score, max(CustomTag) as CustomTag from scores group by GamerTag) as T order by Score desc";
-        private static string s_aroundMeSql = "select top {0} * from(select score, gamertag, customtag, rank() over(order by score desc) as ranking from scores s1 where score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag)) as S where S.ranking >={1} and S.gamertag != '{2}' union all select top {0} * from(select score, gamertag, customtag, rank() over(order by score desc) as ranking from scores s1 where score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag)) as S where S.ranking< {1}";
-        private static string s_gamerRankSql = "select * from (select score, gamertag, customtag, rank() over(order by score desc) as ranking from scores s1 where score = (select max(score) from scores s2 where s1.gamertag = s2.gamertag)) as Ranks where Ranks.gamertag = {0}";
+        private static string s_aroundMeSql = "select * from (select GamerTag, max(Score) as Score, max(CustomTag) as CustomTag, row_number() over(order by max(Score) desc) as Ranking from scores group by GamerTag) as T where Ranking between {0} and {1}";
+        private static string s_gamerRankSql = "select Score, GamerTag, CustomTag, Ranking from (select GamerTag, max(Score) as Score, max(CustomTag) as CustomTag, row_number() over(order by max(Score) desc) as Ranking from scores group by GamerTag) as T where GamerTag = {0}";
 
         public DbSet<SavedGamerScore> Scores { get; set; }
         public DbSet<QueriedGamerScore> Ranks { get; set; }
@@ -66,7 +66,7 @@ namespace Nether.Data.Sql.Leaderboard
 
         public async Task<List<GameScore>> GetScoresAroundMeAsync(string gamerTag, long rank, int radius)
         {
-            string sql = String.Format(s_aroundMeSql, radius, radius, gamerTag);
+            string sql = string.Format(s_aroundMeSql, rank - radius, rank + radius);
             return await Ranks.FromSql(sql).Select(s =>
                 new GameScore
                 {
@@ -77,16 +77,20 @@ namespace Nether.Data.Sql.Leaderboard
                 }).ToListAsync();
         }
 
-        public async Task<List<GameScore>> GetGamerRankAsync(string gamertag)
+        public async Task<GameScore> GetGamerRankAsync(string gamertag)
         {
-            return await Ranks.FromSql(s_gamerRankSql, gamertag).Select(s =>
-                new GameScore
-                {
-                    Score = s.Score,
-                    GamerTag = s.GamerTag,
-                    CustomTag = s.CustomTag,
-                    Rank = s.Ranking
-                }).ToListAsync();
+            GameScore score = Ranks.FromSql(s_gamerRankSql, gamertag)
+                .Select(s =>
+                    new GameScore
+                    {
+                        Score = s.Score,
+                        GamerTag = s.GamerTag,
+                        CustomTag = s.CustomTag,
+                        Rank = s.Ranking
+                    })
+                .FirstOrDefault();
+
+            return score;
         }
     }
 
