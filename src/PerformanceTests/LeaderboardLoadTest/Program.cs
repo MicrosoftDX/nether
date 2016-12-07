@@ -22,12 +22,12 @@ namespace LeaderboardLoadTest
             //todo: add command line validation         
 
             int totalUsers = int.Parse(args[0]);
-            int callsPerUser = int.Parse(args[1]);
+            int sessionsPerUser = int.Parse(args[1]);
 
-            new Program().Run(totalUsers, callsPerUser);
+            new Program().Run(totalUsers, sessionsPerUser);
         }
 
-        private void Run(int totalUsers, int callsPerUser)
+        private void Run(int totalUsers, int sessionsPerUser)
         {
             InititialiseUsers(totalUsers);
 
@@ -37,14 +37,14 @@ namespace LeaderboardLoadTest
             var playerTasks = new List<PlayerTask>();
 
             var startTime = DateTime.UtcNow;
-            _log.WriteLine("load testing with {0} users, {1} calls per each...", totalUsers, callsPerUser);
+            _log.WriteLine("load testing with {0} users, {1} calls per each...", totalUsers, sessionsPerUser);
             foreach (var userEntry in _userNameToPassword)
             {
                 var player = new AutoPlayer(userEntry.Key, userEntry.Value, _log);
 
                 //_log.WriteLine("starting player '{0}'...", userEntry.Key);                                     
                 Task task = Task.Run(
-                   () => player.PlayGameAsync(callsPerUser, cancellationToken));
+                   () => player.PlayGameAsync(sessionsPerUser, cancellationToken));
 
 
 
