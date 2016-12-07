@@ -59,7 +59,7 @@ namespace Nether.Web.Features.Leaderboard
             LeaderboardConfig config;
             List<GameScore> scores;
             Configuration.Configuration.LeaderboardConfiguration.TryGetValue(type, out config);
-            switch(type)
+            switch (type)
             {
                 case LeaderboardType.AroundMe:
                     scores = await _store.GetScoresAroundMeAsync(gamerTag, config.Radius);

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
@@ -17,7 +20,7 @@ namespace Nether.Web.IntegrationTests
         private const string ClientSecret = "devsecret";
         protected string gamertag;
 
-        private static readonly Dictionary<string, string> UserToPassword =
+        private static readonly Dictionary<string, string> s_userToPassword =
             new Dictionary<string, string>
             {
                 { "testuser", "testuser" },     // in "Player" role
@@ -41,7 +44,7 @@ namespace Nether.Web.IntegrationTests
         {
             gamertag = username + "GamerTag";
             HttpClient client = CreateClient(BaseUrl);
-            string password = UserToPassword[username];
+            string password = s_userToPassword[username];
 
             //authenticate so it's ready for use
             DiscoveryResponse disco = DiscoveryClient.GetAsync(BaseUrl).Result;
