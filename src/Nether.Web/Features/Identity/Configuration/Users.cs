@@ -90,9 +90,33 @@ namespace Nether.Web.Features.Identity.Configuration
                     }
                 }
             };
+
+
         public static List<InMemoryUser> Get()
         {
-            return Value;
+            var result = new List<InMemoryUser>();
+            result.AddRange(Value);
+            result.AddRange(GenerateForLoadTest(10000));
+            return result;
+        }
+
+        private static List<InMemoryUser> GenerateForLoadTest(int count)
+        {
+            return Enumerable.Range(0, count)
+                .Select(i => new InMemoryUser
+                {
+                    Subject = $"subj{i}",
+                    Username = $"loadUser{i}",
+                    Password = $"loadUser{i}",
+                    Claims = new Claim[]
+                    {
+                        new Claim(JwtClaimTypes.Name, $"loadUser{i}"),
+                        new Claim(JwtClaimTypes.GivenName, "Load Test"),
+                        new Claim(JwtClaimTypes.FamilyName, $"User #{i}"),
+                        new Claim(JwtClaimTypes.Role, "Player"),
+                    }
+                })
+                .ToList();
         }
     }
 }
