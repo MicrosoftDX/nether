@@ -33,7 +33,7 @@ Empty body
 
 ```json
 {
-    entries: [
+    "entries": [
         {
         "gamertag": "krist00fer",
         "score": 900    
