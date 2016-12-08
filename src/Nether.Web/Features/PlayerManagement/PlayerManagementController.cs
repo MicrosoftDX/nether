@@ -200,7 +200,7 @@ namespace Nether.Web.Features.PlayerManagement
             return Created("GetPlayer", new { playername = player.Gamertag });
         }
 
-        [Authorize(Roles = "player")]
+        [Authorize(Roles = "Player")]
         [Route("players/{player}")]
         [HttpPut]
         public async Task<ActionResult> Put([FromBody]PlayerPostRequestModel player)

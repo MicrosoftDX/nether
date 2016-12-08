@@ -1,31 +1,42 @@
-# Post a Score
+# Post a new score to the Leaderboard
 
-Post a score
+Called after the game session has finished and user achieved a new score in the game.
 
 ## Request
 
 See Common parameters and headers that are used by all requests related to the Leaderboard Building Block
 
-Method  | Request URI
-------- | -----------
-POST    | /leaderboard/scores?api-version={api-version}
+Method  | Request URI |
+--------|-------------|
+POST    | `/api/leaderboard` |
 
-### JSON Body
+### Request parameters
+
+No parameters
+
+### Request body
+
 ```json
 {
-    "gamertag": "krist00fer",
-    "score": 4711    
+	"country": "US",
+	"customtag": "tag",
+	"score": 4711    
 }
 ```
 
-Element name        | Required  | Type      | Description
-------------------- | --------- | --------- | -----------
-gamertag            | Yes       | String    | Specifies the gamer playing the game. //TODO: Will be removed once authentication is in place
-score               | Yes       | Int       | The achieved score
+|  Name  | Required  | Type  | Description |
+|--------|-----------|-------|-------------|
+|country|yes|string|Country code (US, UK, etc.)|
+|customtag|no|string|Custom player tag, which is any additional information you would like to include with the score|
+|score|yes|number|Achieved score, must be positive|
 
 ### Response
 
-Status code: 201 - Created
+| Status Code | Description |
+|-------------|-------------|
+|200|Operation completed successfully|
+|400|Score is negative or user has no assigned `gamerTag`|
+|403|You dont' have permissions to sumbit the score|
 
 ### JSON Body
 

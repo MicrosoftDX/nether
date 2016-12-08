@@ -14,6 +14,10 @@ using Nether.Web.Features.PlayerManagement;
 using Swashbuckle.Swagger.Model;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
+using Microsoft.Extensions.PlatformAbstractions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Nether.Web
 {
@@ -41,7 +45,24 @@ namespace Nether.Web
 
 
             // Add framework services.
-            services.AddMvc();
+            services
+                .AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter
+                    {
+                        CamelCaseText = true
+                    });
+                });
+
+            services.ConfigureSwaggerGen(options =>
+            {
+                string commentsPath = Path.Combine(
+                    PlatformServices.Default.Application.ApplicationBasePath,
+                    "Nether.Web.xml");
+
+                options.IncludeXmlComments(commentsPath);
+            });
 
             services.AddSwaggerGen(options =>
             {

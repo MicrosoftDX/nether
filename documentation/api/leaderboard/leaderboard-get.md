@@ -1,4 +1,4 @@
-# Get leaderboard
+# Get Leaderboard
 
 Get a sorted list of scores and gamertags for a defined leaderboard. If {name} is omitted then the default leaderboard is returned.
 
@@ -8,13 +8,13 @@ See Common parameters and headers that are used by all requests related to the L
 
 Method  | Request URI
 ------- | -----------
-GET     | /leaderboard/{name}?api-version={api-version}
+GET     | `/api/leaderboard/{type}`
 
 ### Request Parameters
 
-Element name        | Required  | Type       | Description
-------------------- | --------- | ---------- | -----------
-name                | No        | string     | Name of defined leaderboard to retrieve, defaults to "default"
+Name        | Required |   Type   | Description
+------------|----------|----------|------------
+type|yes|enumeration|Type of the leaderboard to retrieve. The type can be `default`, `top` or `aroundMe`:<br>- `default` gets all the scores for all the players<br>-`top` gets top 5 scores for all the players<br>- `aroundMe` gets your score and 2 players above and below your score.
 
 ### Request Body
 
@@ -22,7 +22,10 @@ Empty body
 
 ## Response
 
-Status code: 201 - Created
+| Status Code | Description |
+|-------------|-------------|
+|200|Success|
+|403|You dont' have permissions to sumbit the score|
 
 ### Response Body
 
@@ -30,7 +33,7 @@ Status code: 201 - Created
 
 ```json
 {
-    leaderboard: [
+    "entries": [
         {
         "gamertag": "krist00fer",
         "score": 900    
@@ -48,4 +51,4 @@ Status code: 201 - Created
 
 Element name        | Required  | Type       | Description
 ------------------- | --------- | ---------- | -----------
-leaderboard         | Yes       | json array | A list of gamertags and their highest score
+entries         | Yes       | json array | A list of gamertags and their highest score

@@ -140,6 +140,11 @@ namespace Nether.Data.MongoDB.Leaderboard
         {
             throw new NotImplementedException();
         }
+
+        public Task DeleteAllScoresAsync(string gamerTag)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

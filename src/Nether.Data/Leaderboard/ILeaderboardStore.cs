@@ -13,6 +13,7 @@ namespace Nether.Data.Leaderboard
         Task<List<GameScore>> GetTopHighScoresAsync(int n);
         Task<List<GameScore>> GetScoresAroundMe(int nBetter, int nWorse, string gamerTag);
         Task<List<GameScore>> GetScoresAroundMeAsync(string gamerTag, int radius);
+        Task DeleteAllScoresAsync(string gamerTag);
     }
 }
 

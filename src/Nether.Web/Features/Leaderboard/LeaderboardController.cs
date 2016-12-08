@@ -12,75 +12,92 @@ using Nether.Data.Leaderboard;
 using Nether.Integration.Analytics;
 using Nether.Web.Features.Leaderboard.Configuration;
 using Nether.Web.Utilities;
+using Swashbuckle.SwaggerGen.Annotations;
+using System.Net;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Nether.Web.Features.Leaderboard
 {
+    /// <summary>
+    /// Leaderboard management
+    /// </summary>
     [Route("api/leaderboard")]
     public class LeaderboardController : Controller
     {
         private readonly ILeaderboardStore _store;
         private readonly IAnalyticsIntegrationClient _analyticsIntegrationClient;
+        private readonly ILogger<LeaderboardController> _log;
 
-        public LeaderboardController(ILeaderboardStore store, IAnalyticsIntegrationClient analyticsIntegrationClient)
+        public LeaderboardController(ILeaderboardStore store, IAnalyticsIntegrationClient analyticsIntegrationClient,
+            ILogger<LeaderboardController> log)
         {
             _store = store;
             _analyticsIntegrationClient = analyticsIntegrationClient;
+            _log = log;
         }
 
         //TODO: Add versioning support
         //TODO: Add authentication
 
 
-        [Authorize(Roles = "player")]
-        [HttpGet("{leaderboardname}")]
-        public async Task<ActionResult> Get(string leaderboardname) //TODO: add swagger annotations for response shape
+        /// <summary>
+        /// Gets leaderboard by type
+        /// </summary>
+        /// <param name="type">Type of the leaderboard</param>
+        /// <returns>List of scores and gametags</returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(LeaderboardGetResponseModel))]
+        [SwaggerResponse((int)HttpStatusCode.Forbidden, Description = "not enough permissions to submit the score")]
+        [Authorize(Roles = "Player")]
+        [HttpGet("{type}")]
+        public async Task<ActionResult> Get(LeaderboardType type)
         {
             //TODO
             var gamerTag = User.GetGamerTag();
 
-            List<GameScore> scores = new List<GameScore>();
-
-            // currently hard coded leaderboard types
-            if (String.IsNullOrEmpty(leaderboardname) || !Configuration.Configuration.LeaderboardConfiguration.ContainsKey(leaderboardname))
+            LeaderboardConfig config;
+            List<GameScore> scores;
+            Configuration.Configuration.LeaderboardConfiguration.TryGetValue(type, out config);
+            switch (type)
             {
-                // default
-                scores = await _store.GetAllHighScoresAsync();
-            }
-            else
-            {
-                LeaderboardConfig config = Configuration.Configuration.LeaderboardConfiguration[leaderboardname];
-                if (config.AroundMe)
-                {
+                case LeaderboardType.AroundMe:
                     scores = await _store.GetScoresAroundMeAsync(gamerTag, config.Radius);
-                }
-                else
-                {
-                    // in case top = 0, the implementation should lead to GetAllHighScores
+                    break;
+                case LeaderboardType.Top:
                     scores = await _store.GetTopHighScoresAsync(config.Top);
-                }
+                    break;
+                default:
+                    scores = await _store.GetAllHighScoresAsync();
+                    break;
             }
 
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                LeaderboardEntries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+                Entries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result
             return Ok(resultModel);
         }
 
+        /// <summary>
+        /// Posts a new score of currently logged in player
+        /// </summary>
+        /// <param name="request">Achieved score, must be positive</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "score posted successfully")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "score is negative or user does not have an associated gamertag")]
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody]LeaderboardPostRequestModel score)
+        public async Task<ActionResult> Post([FromBody]LeaderboardPostRequestModel request)
         {
             //TODO: Make validation more sophisticated, perhaps some games want/need negative scores
             // Validate input
-            if (score.Score < 0)
+            if (request.Score < 0)
             {
-                // TODO log
+                _log.LogError("score is negative ({0})", request.Score);
                 return BadRequest(); //TODO: return error info in body
             }
 
@@ -88,7 +105,7 @@ namespace Nether.Web.Features.Leaderboard
             var gamerTag = User.GetGamerTag();
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
-                // TODO log
+                _log.LogError("user has not gametag");
                 return BadRequest(); //TODO: return error info in body
             }
 
@@ -97,18 +114,39 @@ namespace Nether.Web.Features.Leaderboard
                 _store.SaveScoreAsync(new GameScore
                 {
                     GamerTag = gamerTag,
-                    Country = score.Country,
-                    CustomTag = score.CustomTag,
-                    Score = score.Score
+                    Country = request.Country,
+                    CustomTag = request.CustomTag,
+                    Score = request.Score
                 }),
                 _analyticsIntegrationClient.SendGameEventAsync(new ScoreAchieved
                 {
                     GamerTag = gamerTag,
                     UtcDateTime = DateTime.UtcNow,
-                    Score = score.Score
+                    Score = request.Score
                 }));
 
             // Return result
+            return Ok();
+        }
+
+        /// <summary>
+        /// Deletes all score achievements for the logged in user
+        /// </summary>
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "scores deleted successfully")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "user does not have an associated gamertag")]
+        [Authorize]
+        [HttpDelete("")]
+        public async Task<ActionResult> DropMyScores()
+        {
+            var gamerTag = User.GetGamerTag();
+            if (string.IsNullOrWhiteSpace(gamerTag))
+            {
+                _log.LogError("user has not gametag");
+                return BadRequest(); //TODO: return error info in body
+            }
+
+            await _store.DeleteAllScoresAsync(gamerTag);
+
             return Ok();
         }
     }

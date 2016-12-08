@@ -43,11 +43,13 @@
       ]
     }
   },
-  "buildOptions": {
-    "emitEntryPoint": true,
-    "preserveCompilationContext": true,
-    "debugType": "portable"
-  },
+   "buildOptions": {
+      "emitEntryPoint": true,
+      "preserveCompilationContext": true,
+      "debugType": "portable",
+      "xmlDoc": true,
+      "nowarn": [ "1591" ]
+   },
 
   "runtimeOptions": {
     "configProperties": {
