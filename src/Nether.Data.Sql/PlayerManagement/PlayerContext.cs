@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +30,7 @@ namespace Nether.Data.Sql.PlayerManagement
             builder.Entity<PlayerEntity>()
             .Property(p => p.Id)
             .ValueGeneratedOnAdd();
-            
+
             builder.Entity<PlayerEntity>().ForSqlServerToTable(_table)
                 .HasKey(p => p.PlayerId);
         }
@@ -52,12 +55,13 @@ namespace Nether.Data.Sql.PlayerManagement
                     PlayerImage = player.PlayerImage
                 });
                 await SaveChangesAsync();
-            }        
+            }
         }
 
         public async Task<List<Player>> GetPlayersAsync()
         {
-            return await Players.Select(p => new Player {
+            return await Players.Select(p => new Player
+            {
                 PlayerId = p.PlayerId,
                 Gamertag = p.Gamertag,
                 Country = p.Country,
@@ -100,9 +104,8 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task<string> GetPlayerIdForGamerTag(string gamertag)
         {
-            var player =  await Players.SingleAsync(p => p.Gamertag == gamertag);
+            var player = await Players.SingleAsync(p => p.Gamertag == gamertag);
             return player.PlayerId;
-            
         }
 
         public async Task UploadPlayerImageAsync(string gamertag, byte[] image)

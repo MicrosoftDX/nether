@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -97,7 +100,7 @@ namespace Nether.Data.Sql.PlayerManagement
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string CustomType { get; set; }
-        public string Description { get; set; }       
+        public string Description { get; set; }
         public byte[] Image { get; set; }
     }
 }

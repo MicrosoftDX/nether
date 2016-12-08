@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.Extensions.Logging;
 using Nether.Data.PlayerManagement;
 using System;
 using System.Collections.Generic;
@@ -9,15 +12,15 @@ namespace Nether.Data.Sql.PlayerManagement
 {
     public class SqlPlayerManagementStore : IPlayerManagementStore
     {
-        PlayerContext _playerDb;
+        private PlayerContext _playerDb;
         private readonly string _playerTable = "Players";
-        GroupContext _groupDb;
+        private GroupContext _groupDb;
         private readonly string _groupTable = "Groups";
-        FactContext _factDb;
+        private FactContext _factDb;
         private readonly string _factTable = "PlayerManagementFact";
 
         private readonly ILogger<SqlPlayerManagementStore> _logger;
-        
+
         public SqlPlayerManagementStore(String connectionString, ILoggerFactory loggerFactory)
         {
             _playerDb = new PlayerContext(connectionString, _playerTable);
@@ -45,8 +48,8 @@ namespace Nether.Data.Sql.PlayerManagement
         public async Task<List<Player>> GetGroupPlayersAsync(string groupname)
         {
             // get all the players for groupname
-            List<string> groupPlayers = await _factDb.getGroupPlayersAsync(groupname);            
-            return groupPlayers.Select(p => GetPlayerDetailsByIdAsync(p).Result).ToList();            
+            List<string> groupPlayers = await _factDb.getGroupPlayersAsync(groupname);
+            return groupPlayers.Select(p => GetPlayerDetailsByIdAsync(p).Result).ToList();
         }
 
         public async Task<List<Group>> GetGroupsAsync()
@@ -97,9 +100,9 @@ namespace Nether.Data.Sql.PlayerManagement
             {
                 await _playerDb.SavePlayerAsync(player);
                 await _factDb.AddPlayerToGroupAsync(group, player);
-            }                  
+            }
         }
-        
+
         public async Task SavePlayerAsync(Player player)
         {
             await _playerDb.SavePlayerAsync(player);

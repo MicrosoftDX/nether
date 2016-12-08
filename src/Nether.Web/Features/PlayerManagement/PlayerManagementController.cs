@@ -277,7 +277,7 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Format response model
             var resultModel = new GroupMemberResponseModel
-            {                
+            {
                 Members = players.Select(s => (GroupMemberResponseModel.PlayersEntry)s).ToList()
             };
 

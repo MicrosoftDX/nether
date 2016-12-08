@@ -26,7 +26,7 @@ namespace Nether.Web.Features.PlayerManagement
                 string connectionString = scopedConfiguration["ConnectionString"];
                 switch (wellKnownType)
                 {
-                    case "mongo":                        
+                    case "mongo":
                         string databaseName = scopedConfiguration["DatabaseName"];
 
                         services.AddTransient<IPlayerManagementStore>(serviceProvider =>

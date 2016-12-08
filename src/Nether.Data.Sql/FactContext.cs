@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.EntityFrameworkCore;
 using System;
 using Nether.Data.PlayerManagement;
 using System.Threading.Tasks;
@@ -53,7 +56,7 @@ namespace Nether.Data.Sql.PlayerManagement
         {
             string sql = String.Format(s_groupPlayersSql, _table, groupname);
             var players = await PlayerManagementFact.FromSql(sql).ToListAsync();
-            return players.Select(p => p.PlayerId).ToList();            
+            return players.Select(p => p.PlayerId).ToList();
         }
 
         public async Task<List<string>> GetPlayerGroupsAsync(string playerId)
