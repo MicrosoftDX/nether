@@ -1,0 +1,8 @@
+﻿CREATE TABLE [dbo].[Groups]
+(
+	[Id] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(), 
+    [Name] VARCHAR(50) PRIMARY KEY NOT NULL, 
+    [CustomType] VARCHAR(50) NULL, 
+    [Description] VARCHAR(50) NULL, 
+    [Image] VARBINARY(50) NULL
+)

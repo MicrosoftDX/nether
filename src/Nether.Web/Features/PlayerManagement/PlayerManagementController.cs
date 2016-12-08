@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System;
 
 using Nether.Data.PlayerManagement;
 using Nether.Web.Utilities;
@@ -124,9 +125,8 @@ namespace Nether.Web.Features.PlayerManagement
             // Format response model
             var resultModel = new GroupListResponseModel
             {
-                Groups = groups.Cast<GroupListResponseModel.GroupsEntry>().ToList()
+                Groups = groups.Select(s => (GroupListResponseModel.GroupsEntry)s).ToList()
             };
-
             // Return result
             return Ok(resultModel);
         }
@@ -193,7 +193,7 @@ namespace Nether.Web.Features.PlayerManagement
             }
 
             // Save player
-            await _store.SavePlayerAsync(new Player { Gamertag = gamerTag, Country = player.Country, CustomTag = player.CustomTag });
+            await _store.SavePlayerAsync(new Player { PlayerId = User.Identity.Name, Gamertag = gamerTag, Country = player.Country, CustomTag = player.CustomTag });
 
             // Return result
             var location = Url.Link("GetPlayer", new { playername = player.Gamertag });
@@ -234,10 +234,10 @@ namespace Nether.Web.Features.PlayerManagement
         //Implementation of the group API
 
         [HttpGet("groups")]
-        public async Task<ActionResult> GetGroups()
+        public async Task<ActionResult> GetGroupsAsync()
         {
             // Call data store
-            var groups = await _store.GetGroups();
+            var groups = await _store.GetGroupsAsync();
 
             // Format response model
             var resultModel = new GroupListResponseModel
@@ -277,8 +277,8 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Format response model
             var resultModel = new GroupMemberResponseModel
-            {
-                Members = players.Cast<GroupMemberResponseModel.PlayersEntry>().ToList()
+            {                
+                Members = players.Select(s => (GroupMemberResponseModel.PlayersEntry)s).ToList()
             };
 
             // Return result

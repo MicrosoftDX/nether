@@ -61,6 +61,9 @@
   <ItemGroup>
     <Build Include="Scores.sql" />
     <Build Include="Friends.sql" />
+    <Build Include="Players.sql" />
+    <Build Include="Groups.sql" />
+    <Build Include="PlayerManagementFact.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Nether.Data.Sql.Schema.refactorlog" />
