@@ -14,37 +14,7 @@ namespace Nether.Web.Features.Analytics
     {
         public static IServiceCollection AddAnalyticsServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // TODO - look at what can be extracted to generalise this
-            if (configuration.Exists("AnalyticsIntegrationClient:wellKnown"))
-            {
-                // register using well-known type
-                var wellKnownType = configuration["AnalyticsIntegrationClient:wellknown"];
-                switch (wellKnownType)
-                {
-                    case "null":
-                        services.AddSingleton<IAnalyticsIntegrationClient, AnalyticsIntegrationNullClient>();
-                        break;
-                    case "default":
-                        var scopedConfiguration = configuration.GetSection("AnalyticsIntegrationClient:properties");
-                        string baseUrl = scopedConfiguration["AnalyticsBaseUrl"];
-
-                        services.AddTransient<IAnalyticsIntegrationClient>(serviceProvider =>
-                        {
-                            return new AnalyticsIntegrationClient(baseUrl);
-                        });
-                        break;
-                    default:
-                        throw new Exception($"Unhandled 'wellKnown' type for AnalyticsIntegrationClient: '{wellKnownType}'");
-                }
-            }
-            else
-            {
-                // fall back to generic "factory"/"implementation" configuration
-                services.AddServiceFromConfiguration<IAnalyticsIntegrationClient>(configuration, "AnalyticsIntegrationClient");
-            }
-
-
-            services.AddEndpointInfo(configuration, "EventHub");
+            services.AddEndpointInfo(configuration, "Analytics:EventHub");
 
             return services;
         }

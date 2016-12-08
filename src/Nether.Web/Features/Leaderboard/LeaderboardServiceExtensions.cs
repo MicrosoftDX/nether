@@ -9,6 +9,8 @@ using Nether.Common.DependencyInjection;
 using Nether.Data.Leaderboard;
 using Nether.Data.MongoDB.Leaderboard;
 using Nether.Data.Sql.Leaderboard;
+using Nether.Integration.Analytics;
+using Nether.Integration.Default.Analytics;
 
 namespace Nether.Web.Features.Leaderboard
 {
@@ -16,12 +18,53 @@ namespace Nether.Web.Features.Leaderboard
     {
         public static IServiceCollection AddLeaderboardServices(this IServiceCollection services, IConfiguration configuration)
         {
+            AddLeaderboardStore(services, configuration);
+
+            AddAnalyticsIntegrationClient(services, configuration);
+
+            return services;
+        }
+
+        private static void AddAnalyticsIntegrationClient(IServiceCollection services, IConfiguration configuration)
+        {
             // TODO - look at what can be extracted to generalise this
-            if (configuration.Exists("LeaderboardStore:wellKnown"))
+            if (configuration.Exists("Leaderboard:AnalyticsIntegrationClient:wellKnown"))
             {
                 // register using well-known type
-                var wellKnownType = configuration["LeaderboardStore:wellknown"];
-                var scopedConfiguration = configuration.GetSection("LeaderboardStore:properties");
+                var wellKnownType = configuration["Leaderboard:AnalyticsIntegrationClient:wellknown"];
+                switch (wellKnownType)
+                {
+                    case "null":
+                        services.AddSingleton<IAnalyticsIntegrationClient, AnalyticsIntegrationNullClient>();
+                        break;
+                    case "default":
+                        var scopedConfiguration = configuration.GetSection("Leaderboard:AnalyticsIntegrationClient:properties");
+                        string baseUrl = scopedConfiguration["AnalyticsBaseUrl"];
+
+                        services.AddTransient<IAnalyticsIntegrationClient>(serviceProvider =>
+                        {
+                            return new AnalyticsIntegrationClient(baseUrl);
+                        });
+                        break;
+                    default:
+                        throw new Exception($"Unhandled 'wellKnown' type for AnalyticsIntegrationClient: '{wellKnownType}'");
+                }
+            }
+            else
+            {
+                // fall back to generic "factory"/"implementation" configuration
+                services.AddServiceFromConfiguration<IAnalyticsIntegrationClient>(configuration, "Leaderboard:AnalyticsIntegrationClient");
+            }
+        }
+
+        private static void AddLeaderboardStore(IServiceCollection services, IConfiguration configuration)
+        {
+            // TODO - look at what can be extracted to generalise this
+            if (configuration.Exists("Leaderboard:Store:wellKnown"))
+            {
+                // register using well-known type
+                var wellKnownType = configuration["Leaderboard:Store:wellknown"];
+                var scopedConfiguration = configuration.GetSection("Leaderboard:Store:properties");
                 string connectionString;
                 switch (wellKnownType)
                 {
@@ -45,15 +88,14 @@ namespace Nether.Web.Features.Leaderboard
                         });
                         break;
                     default:
-                        throw new Exception($"Unhandled 'wellKnown' type for LeaderboardStore: '{wellKnownType}'");
+                        throw new Exception($"Unhandled 'wellKnown' type for Leaderboard:Store: '{wellKnownType}'");
                 }
             }
             else
             {
                 // fall back to generic "factory"/"implementation" configuration
-                services.AddServiceFromConfiguration<ILeaderboardStore>(configuration, "LeaderboardStore");
+                services.AddServiceFromConfiguration<ILeaderboardStore>(configuration, "Leaderboard:Store");
             }
-            return services;
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Nether.Web.Features.Identity
 
             // TODO - refactor this code as there's a lot going on here!
 
-            var appToken = _configuration["Facebook:AppToken"];
+            var appToken = _configuration["Identity:Facebook:AppToken"];
 
             var token = context.Request.Raw["token"];
 
