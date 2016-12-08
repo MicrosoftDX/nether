@@ -35,7 +35,7 @@ namespace Nether.Common.DependencyInjection
             }
             else
             {
-                throw new ArgumentException("No valid configuration found for '{serviceName}'");
+                throw new ArgumentException($"No valid configuration found for '{serviceName}'");
             }
         }
 

@@ -17,14 +17,14 @@ namespace Nether.Web.Features.PlayerManagement
         public static IServiceCollection AddPlayerManagementServices(this IServiceCollection services, IConfiguration configuration)
         {
             // TODO - look at what can be extracted to generalise this
-            if (configuration.Exists("PlayerManagementStore:wellKnown"))
+            if (configuration.Exists("PlayerManagement:Store:wellKnown"))
             {
                 // register using well-known type
-                var wellKnownType = configuration["PlayerManagementStore:wellknown"];
+                var wellKnownType = configuration["PlayerManagement:Store:wellknown"];
                 switch (wellKnownType)
                 {
                     case "mongo":
-                        var scopedConfiguration = configuration.GetSection("PlayerManagementStore:properties");
+                        var scopedConfiguration = configuration.GetSection("PlayerManagement:Store:properties");
                         string connectionString = scopedConfiguration["ConnectionString"];
                         string databaseName = scopedConfiguration["DatabaseName"];
 
@@ -36,13 +36,13 @@ namespace Nether.Web.Features.PlayerManagement
                         });
                         break;
                     default:
-                        throw new Exception($"Unhandled 'wellKnown' type for PlayerManagementStore: '{wellKnownType}'");
+                        throw new Exception($"Unhandled 'wellKnown' type for PlayerManagement:Store: '{wellKnownType}'");
                 }
             }
             else
             {
                 // fall back to generic "factory"/"implementation" configuration
-                services.AddServiceFromConfiguration<IPlayerManagementStore>(configuration, "PlayerManagementStore");
+                services.AddServiceFromConfiguration<IPlayerManagementStore>(configuration, "PlayerManagement:Store");
             }
             return services;
         }
