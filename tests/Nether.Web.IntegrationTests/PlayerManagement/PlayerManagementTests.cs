@@ -47,7 +47,13 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_an_admin_i_can_add_new_players()
         {
+            _client = GetClient("devadmin");
 
+            string gamerTag = Guid.NewGuid().ToString();
+            var result = await AddNewPlayer(gamerTag, Guid.NewGuid().ToString(), null);
+
+            Assert.Equal("/api/players/" + gamerTag, result.Item1.Headers.GetValues("Location").First());
+            Assert.Equal($"{{\"gamerTag\":\"{gamerTag}\"}}", result.Item2);
         }
 
         #region [ REST helpers ]
@@ -73,11 +79,11 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             Assert.Equal(expectedCode, response.StatusCode);
         }
 
-        private async Task AddNewPlayer(
+        private async Task<Tuple<HttpResponseMessage, string>> AddNewPlayer(
             string gamerTag,
             string country,
             string customTag,
-            HttpStatusCode expectedCode = HttpStatusCode.OK)
+            HttpStatusCode expectedCode = HttpStatusCode.Created)
         {
             HttpResponseMessage response = await _client.PostAsJsonAsync(BaseUri + "players",
                 new PlayerPostRequest
@@ -90,7 +96,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
             string s = await response.Content.ReadAsStringAsync();
 
-
+            return Tuple.Create(response, s);
         }
 
         public class PlayerGetResponse

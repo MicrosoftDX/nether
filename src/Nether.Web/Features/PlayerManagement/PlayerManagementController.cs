@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Nether.Data.PlayerManagement;
 using Nether.Web.Utilities;
 using Swashbuckle.SwaggerGen.Annotations;
+using Microsoft.Extensions.Logging;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -24,10 +25,12 @@ namespace Nether.Web.Features.PlayerManagement
     public class PlayerManagementController : Controller
     {
         private readonly IPlayerManagementStore _store;
+        private readonly ILogger<PlayerManagementController> _log;
 
-        public PlayerManagementController(IPlayerManagementStore store)
+        public PlayerManagementController(IPlayerManagementStore store, ILogger<PlayerManagementController> log)
         {
             _store = store;
+            _log = log;
         }
 
         // Implementation of the player API
@@ -97,7 +100,10 @@ namespace Nether.Web.Features.PlayerManagement
             await _store.SavePlayerAsync(new Player { Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
 
             // Return result
-            string location = Url.Link(nameof(GetPlayer), new { gamerTag = player.Gamertag });
+            string location = Url.Action(
+                nameof(GetPlayer),
+                "PlayerManagement",
+                new { gamerTag = player.Gamertag });
             return Created(location, new { gamerTag = player.Gamertag });
         }
 
