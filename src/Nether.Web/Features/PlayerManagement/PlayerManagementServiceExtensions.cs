@@ -9,6 +9,7 @@ using System;
 using Nether.Common.DependencyInjection;
 using Nether.Data.PlayerManagement;
 using Nether.Data.MongoDB.PlayerManagement;
+using Nether.Data.Sql.PlayerManagement;
 
 namespace Nether.Web.Features.PlayerManagement
 {
@@ -21,11 +22,11 @@ namespace Nether.Web.Features.PlayerManagement
             {
                 // register using well-known type
                 var wellKnownType = configuration["PlayerManagement:Store:wellknown"];
+                var scopedConfiguration = configuration.GetSection("PlayerManagement:Store:properties");
+                string connectionString = scopedConfiguration["ConnectionString"];
                 switch (wellKnownType)
                 {
                     case "mongo":
-                        var scopedConfiguration = configuration.GetSection("PlayerManagement:Store:properties");
-                        string connectionString = scopedConfiguration["ConnectionString"];
                         string databaseName = scopedConfiguration["DatabaseName"];
 
                         services.AddTransient<IPlayerManagementStore>(serviceProvider =>
@@ -33,6 +34,14 @@ namespace Nether.Web.Features.PlayerManagement
                             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
                             // TODO - look at encapsulating the connection info and registering that so that we can just register the type without the factory
                             return new MongoDBPlayerManagementStore(connectionString, databaseName, loggerFactory);
+                        });
+                        break;
+                    case "sql":
+                        services.AddTransient<IPlayerManagementStore>(serviceProvider =>
+                        {
+                            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+                            // TODO - look at encapsulating the connection info and registering that so that we can just register the type without the factory
+                            return new SqlPlayerManagementStore(connectionString, loggerFactory);
                         });
                         break;
                     default:

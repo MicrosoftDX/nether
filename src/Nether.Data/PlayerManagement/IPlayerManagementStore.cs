@@ -25,7 +25,7 @@ namespace Nether.Data.PlayerManagement
         Task AddPlayerToGroupAsync(Group group, Player player);
         Task RemovePlayerFromGroupAsync(Group group, Player player);
         Task<List<Player>> GetGroupPlayersAsync(string groupname);
-        Task<List<Group>> GetGroups();
+        Task<List<Group>> GetGroupsAsync();
         Task UploadGroupImageAsync(string groupname, byte[] image);
         Task<byte[]> GetGroupImageAsync(string name);
     }
