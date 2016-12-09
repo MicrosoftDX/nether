@@ -37,6 +37,19 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             Assert.Equal(newCountry, afterUpdate.Player.Country);
         }
 
+        [Fact]
+        public async Task As_a_user_i_cannot_add_new_players()
+        {
+            await AddNewPlayer(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), null,
+                HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task As_an_admin_i_can_add_new_players()
+        {
+
+        }
+
         #region [ REST helpers ]
 
         private async Task<PlayerGetResponse> GetPlayerAsync(HttpStatusCode expectedCode = HttpStatusCode.OK)
@@ -58,6 +71,26 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
                     Gamertag = this.gamertag
                 });
             Assert.Equal(expectedCode, response.StatusCode);
+        }
+
+        private async Task AddNewPlayer(
+            string gamerTag,
+            string country,
+            string customTag,
+            HttpStatusCode expectedCode = HttpStatusCode.OK)
+        {
+            HttpResponseMessage response = await _client.PostAsJsonAsync(BaseUri + "players",
+                new PlayerPostRequest
+                {
+                    Gamertag = gamerTag,
+                    Country = country,
+                    CustomTag = customTag
+                });
+            Assert.Equal(expectedCode, response.StatusCode);
+
+            string s = await response.Content.ReadAsStringAsync();
+
+
         }
 
         public class PlayerGetResponse

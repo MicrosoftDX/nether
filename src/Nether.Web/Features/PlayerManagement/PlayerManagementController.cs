@@ -120,6 +120,27 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(PlayerGetResponseModel.FromPlayer(player));
         }
 
+        /// <summary>
+        /// Gets all players
+        /// </summary>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerListGetResponseModel))]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpGet("players")]
+        public async Task<ActionResult> GetPlayers()
+        {
+            // Call data store
+            var players = await _store.GetPlayersAsync();
+
+            // Format response model
+            var resultModel = new PlayerListGetResponseModel
+            {
+                Players = players.Select(p => (PlayerListGetResponseModel.PlayersEntry)p).ToList()
+            };
+
+            // Return result
+            return Ok(resultModel);
+        }
 
         [Authorize(Roles = RoleNames.Player)]
         [HttpGet("player/groups/")]
@@ -141,25 +162,6 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Return result
             return Ok();
-        }
-
-
-
-        //Player Admin APIs
-        [HttpGet("players")]
-        public async Task<ActionResult> GetPlayers()
-        {
-            // Call data store
-            var players = await _store.GetPlayersAsync();
-
-            // Format response model
-            var resultModel = new PlayerListGetResponseModel
-            {
-                Players = players.Select(p => (PlayerListGetResponseModel.PlayersEntry)p).ToList()
-            };
-
-            // Return result
-            return Ok(resultModel);
         }
 
         [HttpGet("players/{gamerTag}/groups/")]
