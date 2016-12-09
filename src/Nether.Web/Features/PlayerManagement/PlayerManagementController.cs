@@ -56,7 +56,7 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
-        /// Updates information about current player
+        /// Updates information about the current player
         /// </summary>
         /// <param name="player">Player data</param>
         /// <returns></returns>
@@ -64,14 +64,60 @@ namespace Nether.Web.Features.PlayerManagement
         [Authorize(Roles = RoleNames.Player)]
         [Route("player")]
         [HttpPut]
-        public async Task<ActionResult> Put([FromBody]PlayerPostRequestModel player)
+        public async Task<ActionResult> PutCurrentPlayer([FromBody]PlayerPostRequestModel player)
         {
+            string userId = User.GetId();
+
             // Update player
             await _store.SavePlayerAsync(
-                new Player { PlayerId = User.Identity.Name, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
+                new Player { PlayerId = userId, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
 
             // Return result
             return new NoContentResult();
+        }
+
+        /// <summary>
+        /// Creates or updates information about a player. You have to be an administrator to perform this action.
+        /// </summary>
+        /// <param name="player">Player data</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.Created, Description = "player created")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "user has no gamer")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [Route("players")]
+        [HttpPost]
+        public async Task<ActionResult> Post([FromBody]PlayerPostRequestModel player)
+        {
+            if (string.IsNullOrWhiteSpace(player.Gamertag))
+            {
+                return BadRequest(); //TODO: return error info in body
+            }
+
+            // Save player
+            await _store.SavePlayerAsync(new Player { Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
+
+            // Return result
+            string location = Url.Link(nameof(GetPlayer), new { gamerTag = player.Gamertag });
+            return Created(location, new { gamerTag = player.Gamertag });
+        }
+
+        /// <summary>
+        /// Gets player information by player's gamer tag. You have to be an administrator to perform this action.
+        /// </summary>
+        /// <param name="gamerTag">Gamer tag</param>
+        /// <returns>Player information</returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerGetResponseModel))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "player not found")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpGet("players/{gamerTag}")]
+        public async Task<ActionResult> GetPlayer(string gamerTag)
+        {
+            // Call data store
+            var player = await _store.GetPlayerDetailsAsync(gamerTag);
+            if (player == null) return NotFound();
+
+            // Return result
+            return Ok(PlayerGetResponseModel.FromPlayer(player));
         }
 
 
@@ -116,11 +162,11 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(resultModel);
         }
 
-        [HttpGet("players/{playername}/groups/")]
-        public async Task<ActionResult> GetPlayerGroups(string playername)
+        [HttpGet("players/{gamerTag}/groups/")]
+        public async Task<ActionResult> GetPlayerGroups(string gamerTag)
         {
             // Call data store
-            var groups = await _store.GetPlayersGroupsAsync(playername);
+            var groups = await _store.GetPlayersGroupsAsync(gamerTag);
 
             // Format response model
             var resultModel = new GroupListResponseModel
@@ -130,21 +176,6 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Return result
             return Ok(resultModel);
-        }
-
-        [HttpGet("players/{playername}/")]
-        public async Task<ActionResult> GetPlayer(string playername)
-        {
-            // Call data store
-            var player = await _store.GetPlayerDetailsAsync(playername);
-
-            if (player == null)
-            {
-                return NotFound();
-            }
-
-            // Return result
-            return Ok(PlayerGetResponseModel.FromPlayer(player));
         }
 
         // ********************************** THIS endpoint is a temporary measure to quickly unblock auth, but needs to be removed ***************************
@@ -161,33 +192,6 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Return result
             return Ok(player.Gamertag);
-        }
-
-
-
-
-
-
-
-
-        [Authorize(Roles = "player")]
-        [Route("players")]
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody]PlayerPostRequestModel player)
-        {
-            //TODO: Handle exceptions and retries
-            var gamerTag = User.GetGamerTag();
-            if (string.IsNullOrWhiteSpace(gamerTag))
-            {
-                return BadRequest(); //TODO: return error info in body
-            }
-
-            // Save player
-            await _store.SavePlayerAsync(new Player { Gamertag = gamerTag, Country = player.Country, CustomTag = player.CustomTag });
-
-            // Return result
-            var location = Url.Link("GetPlayer", new { playername = player.Gamertag });
-            return Created("GetPlayer", new { playername = player.Gamertag });
         }
 
         [Route("players/{playername}/groups/{groupname}")]
