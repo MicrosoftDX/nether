@@ -20,9 +20,21 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         }
 
         [Fact]
-        public async Task As_a_logged_in_player_i_can_get_my_info()
+        public async Task I_can_get_my_player_info()
         {
             PlayerGetResponse myPlayer = await GetPlayerAsync();
+        }
+
+        [Fact]
+        public async Task I_can_update_my_info()
+        {
+            PlayerGetResponse beforeUpdate = await GetPlayerAsync();
+
+            string newCountry = Guid.NewGuid().ToString();
+            await UpdatePlayerAsync(newCountry);
+
+            PlayerGetResponse afterUpdate = await GetPlayerAsync();
+            Assert.Equal(newCountry, afterUpdate.Player.Country);
         }
 
         #region [ REST helpers ]
@@ -34,6 +46,18 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
             string content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<PlayerGetResponse>(content);
+        }
+
+        private async Task UpdatePlayerAsync(string country, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
+        {
+            HttpResponseMessage response = await _client.PutAsJsonAsync(BaseUri + "player",
+                new PlayerPostRequest
+                {
+                    Country = country,
+                    CustomTag = null,
+                    Gamertag = this.gamertag
+                });
+            Assert.Equal(expectedCode, response.StatusCode);
         }
 
         public class PlayerGetResponse
@@ -48,7 +72,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             }
         }
 
-        public class PlayerPostRequestModel
+        public class PlayerPostRequest
         {
             public string Gamertag { get; set; }
             public string Country { get; set; }
