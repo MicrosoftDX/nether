@@ -10,6 +10,7 @@ using MongoDB.Driver.Linq;
 using Nether.Data.PlayerManagement;
 using Microsoft.Extensions.Logging;
 using System.Collections;
+using MongoDB.Bson;
 
 namespace Nether.Data.MongoDB.PlayerManagement
 {
@@ -24,12 +25,16 @@ namespace Nether.Data.MongoDB.PlayerManagement
         private IMongoCollection<MongoDBGroup> GroupsCollection
             => _database.GetCollection<MongoDBGroup>("groups");
 
+        private static readonly UpdateOptions s_upsertOptions = new UpdateOptions { IsUpsert = true };
 
         public MongoDBPlayerManagementStore(string connectionString, string dbName, ILoggerFactory loggerFactory)
         {
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase(dbName);
             _logger = loggerFactory.CreateLogger<MongoDBPlayerManagementStore>();
+
+            // ensure PlayerId is indexed as we query by this
+            PlayersCollection.Indexes.CreateOne(Builders<MongoDBPlayer>.IndexKeys.Ascending(_ => _.PlayerId));
         }
 
         public async Task AddPlayerToGroupAsync(Group group, Player player)
@@ -104,8 +109,10 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
         public async Task SavePlayerAsync(Player player)
         {
+            if (player.PlayerId == null) player.PlayerId = ObjectId.GenerateNewId().ToString();
+
             _logger.LogDebug("Saving Player {0}", player.Gamertag);
-            await PlayersCollection.InsertOneAsync(player);
+            await PlayersCollection.ReplaceOneAsync(p => p.PlayerId == player.PlayerId, player, s_upsertOptions);
         }
 
         public async Task<List<Player>> GetGroupPlayersAsync(string groupname)

@@ -71,7 +71,7 @@ namespace Nether.Web.IntegrationTests
                 country = "UK",
                 customTag = nameof(WebTestBase)
             };
-            HttpResponseMessage response = client.PutAsJsonAsync("api/players/foo", player).Result;
+            HttpResponseMessage response = client.PutAsJsonAsync("api/player", player).Result;
 
             //get the token again as it will include the gamertag claim
             tokenResponse = tokenClient.RequestResourceOwnerPasswordAsync(username, password, "nether-all").Result;

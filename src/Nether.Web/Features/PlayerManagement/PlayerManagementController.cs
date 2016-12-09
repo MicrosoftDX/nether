@@ -1,24 +1,25 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 using Nether.Data.PlayerManagement;
 using Nether.Web.Utilities;
+using Swashbuckle.SwaggerGen.Annotations;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
 //TODO: Add authentication
 
-
 namespace Nether.Web.Features.PlayerManagement
 {
+    /// <summary>
+    /// Player management
+    /// </summary>
     [Route("api")]
     public class PlayerManagementController : Controller
     {
@@ -34,44 +35,36 @@ namespace Nether.Web.Features.PlayerManagement
         //  1. By Player
         //  2. Admininstration  
 
-
-
-        // Player APIs
-        [Authorize]
+        /// <summary>
+        /// Gets the player information from currently logged in user
+        /// </summary>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerGetResponseModel))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "player not found")]
+        [Authorize(Roles = RoleNames.Player)]
         [HttpGet("player")]
         public async Task<ActionResult> GetCurrentPlayer()
         {
-            var playername = User.Identity.Name; // This is looking up by user id... mostly you will want User.GetGamerTag() 
+            string userId = User.GetId();
 
             // Call data store
-            var player = await _store.GetPlayerDetailsByIdAsync(playername);
-
-            if (player == null)
-            {
-                return NotFound();
-            }
-
-            // Format response model
-            var resultModel = new PlayerGetResponseModel
-            {
-                Player = player
-            };
+            var player = await _store.GetPlayerDetailsByIdAsync(userId);
+            if (player == null) return NotFound();
 
             // Return result
-            return Ok(resultModel);
+            return Ok(PlayerGetResponseModel.FromPlayer(player));
         }
 
-        [Authorize(Roles = "player")]
-        [HttpGet("player/groups/")]
-        public Task<ActionResult> GetPlayerGroups()
-        {
-            return GetPlayerGroups(User.GetGamerTag());
-        }
-
-        [Authorize]
+        /// <summary>
+        /// Updates information about current player
+        /// </summary>
+        /// <param name="player">Player data</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.NoContent, Description = "Player updated successfully")]
+        [Authorize(Roles = RoleNames.Player)]
         [Route("player")]
         [HttpPut]
-        public async Task<ActionResult> PutPlayer([FromBody]PlayerPostRequestModel player)
+        public async Task<ActionResult> Put([FromBody]PlayerPostRequestModel player)
         {
             // Update player
             await _store.SavePlayerAsync(
@@ -79,6 +72,14 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Return result
             return new NoContentResult();
+        }
+
+
+        [Authorize(Roles = RoleNames.Player)]
+        [HttpGet("player/groups/")]
+        public Task<ActionResult> GetPlayerGroups()
+        {
+            return GetPlayerGroups(User.GetGamerTag());
         }
 
         [Route("player/groups/{groupname}")]
@@ -142,20 +143,9 @@ namespace Nether.Web.Features.PlayerManagement
                 return NotFound();
             }
 
-            // Format response model
-            var resultModel = new PlayerGetResponseModel
-            {
-                Player = player
-            };
-
             // Return result
-            return Ok(resultModel);
+            return Ok(PlayerGetResponseModel.FromPlayer(player));
         }
-
-
-
-
-
 
         // ********************************** THIS endpoint is a temporary measure to quickly unblock auth, but needs to be removed ***************************
         [HttpGet("EVIL/HELPER/tagfromid/{playerid}")]
@@ -199,20 +189,6 @@ namespace Nether.Web.Features.PlayerManagement
             var location = Url.Link("GetPlayer", new { playername = player.Gamertag });
             return Created("GetPlayer", new { playername = player.Gamertag });
         }
-
-        [Authorize(Roles = "Player")]
-        [Route("players/{player}")]
-        [HttpPut]
-        public async Task<ActionResult> Put([FromBody]PlayerPostRequestModel player)
-        {
-            // Update player
-            await _store.SavePlayerAsync(
-                new Player { PlayerId = User.Identity.Name, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
-
-            // Return result
-            return new NoContentResult();
-        }
-
 
         [Route("players/{playername}/groups/{groupname}")]
         [HttpPost]

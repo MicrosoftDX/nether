@@ -16,7 +16,8 @@ namespace Nether.Data.MongoDB.PlayerManagement
         }
 
         [BsonId]
-        public ObjectId TestId { get; set; }
+        [BsonIgnoreIfDefault]
+        public ObjectId Id { get; set; }
         public string PlayerId { get; internal set; }
         public string Gamertag { get; set; }
         public string Country { get; set; }
