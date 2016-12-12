@@ -45,12 +45,14 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
         public async Task<Group> GetGroupDetailsAsync(string groupName)
         {
-            var getGroup = from s in GroupsCollection.AsQueryable()
+            var query = from s in GroupsCollection.AsQueryable()
                            where s.Name == groupName
                            orderby s.Name descending
-                           select s.ToGroup();
+                           select s;
 
-            return await getGroup.FirstOrDefaultAsync();
+            var group = await query.FirstOrDefaultAsync();
+
+            return group?.ToGroup();
         }
 
         public async Task<Player> GetPlayerDetailsAsync(string gamertag)
@@ -160,11 +162,12 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
         public async Task<List<Group>> GetGroupsAsync()
         {
-            var getGroup = from s in GroupsCollection.AsQueryable()
-                           orderby s.Name descending
-                           select s.ToGroup();
+            var query = from s in GroupsCollection.AsQueryable()
+                        orderby s.Name descending
+                        select s;
 
-            return await getGroup.ToListAsync();
+            var mGroups = await query.ToListAsync();
+            return mGroups.Select(m => m.ToGroup()).ToList();
         }
 
         public async Task UploadPlayerImageAsync(string gamertag, byte[] image)

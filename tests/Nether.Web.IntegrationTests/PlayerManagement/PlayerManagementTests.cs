@@ -78,23 +78,36 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         {
             _client = GetClient("devadmin");
 
+            string groupName = Guid.NewGuid().ToString();
+
             var g = new GroupEntry
             {
-                Name = nameof(As_an_admin_I_can_create_and_list_groups),
+                Name = groupName,
                 Description = "fake"
             };
 
-            await CreateGroup(g);
+            // validate group response
+            var groupResponse = await CreateGroup(g, HttpStatusCode.Created);
+            Assert.Equal("/api/groups/" + groupName, groupResponse.Item1.Headers.GetValues("Location").First());
+            Assert.Equal($"{{\"groupName\":\"{groupName}\"}}", groupResponse.Item2);
+
+            //list groups and check the created group is in the list
+            GroupListResponse allGroups = await GetAllGroups();
+            Assert.True(allGroups.Groups.Any(gr => gr.Name == groupName));
         }
 
 
         #region [ REST helpers ]
 
-        private async Task CreateGroup(GroupEntry group, HttpStatusCode expetectedCode = HttpStatusCode.OK)
+        private async Task<Tuple<HttpResponseMessage, string>> CreateGroup(GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
             HttpResponseMessage response = await _client.PostAsJsonAsync(BaseUri + "groups", group);
 
+            Assert.Equal(expectedCode, response.StatusCode);
 
+            string s = await response.Content.ReadAsStringAsync();
+
+            return Tuple.Create(response, s);
         }
 
         private async Task<GroupListResponse> GetAllGroups(HttpStatusCode expectedCode = HttpStatusCode.OK)
