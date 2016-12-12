@@ -73,7 +73,34 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             PlayerListGetResponse response = await GetPlayersAsync(HttpStatusCode.Forbidden);
         }
 
+        [Fact]
+        public async Task As_an_admin_I_can_create_and_list_groups()
+        {
+            _client = GetClient("devadmin");
+
+            var g = new GroupEntry
+            {
+                Name = nameof(As_an_admin_I_can_create_and_list_groups),
+                Description = "fake"
+            };
+
+            await CreateGroup(g);
+        }
+
+
         #region [ REST helpers ]
+
+        private async Task CreateGroup(GroupEntry group, HttpStatusCode expetectedCode = HttpStatusCode.OK)
+        {
+            HttpResponseMessage response = await _client.PostAsJsonAsync(BaseUri + "groups", group);
+
+
+        }
+
+        private async Task<GroupListResponse> GetAllGroups(HttpStatusCode expectedCode = HttpStatusCode.OK)
+        {
+            return await HttpGet<GroupListResponse>(_client, BaseUri + "groups", expectedCode);
+        }
 
         private async Task<PlayerListGetResponse> GetPlayersAsync(HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
@@ -82,11 +109,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
         private async Task<PlayerGetResponse> GetPlayerAsync(HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            HttpResponseMessage response = await _client.GetAsync(BaseUri + "player");
-            Assert.Equal(expectedCode, response.StatusCode);
-
-            string content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<PlayerGetResponse>(content);
+            return await HttpGet<PlayerGetResponse>(_client, BaseUri + "player");
         }
 
         private async Task UpdatePlayerAsync(string country, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
@@ -126,9 +149,19 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             public PlayerEntry[] Players { get; set; }
         }
 
+        public class GroupListResponse
+        {
+            public GroupEntry[] Groups { get; set; }
+        }
+
         public class PlayerGetResponse
         {
             public PlayerEntry Player { get; set; }
+        }
+
+        public class GroupGetResponse
+        {
+            public GroupEntry Group { get; set; }
         }
 
         public class PlayerEntry
@@ -143,6 +176,13 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             public string Gamertag { get; set; }
             public string Country { get; set; }
             public string CustomTag { get; set; }
+        }
+
+        public class GroupEntry
+        {
+            public string Name { get; set; }
+            public string CustomType { get; set; }
+            public string Description { get; set; }
         }
 
         #endregion

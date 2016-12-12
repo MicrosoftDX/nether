@@ -1,22 +1,28 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Nether.Data.PlayerManagement;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nether.Web.Features.PlayerManagement
 {
     public class GroupPostRequestModel
     {
+        /// <summary>
+        /// Group name
+        /// </summary>
+        [Required]
         public string Name { get; set; }
-        public string CustomType { get; set; }
+
+        /// <summary>
+        /// Group description
+        /// </summary>
         public string Description { get; set; }
 
-        // TO DO The Group Image get/set needs to be implemented
-        //public byte[] Image { get; set; }
-        public List<Player> Players { get; set; }
+        /// <summary>
+        /// Initial gamertag list of members of this group, not required and can be changed later.
+        /// </summary>
+        public List<string> Members { get; set; }
     }
 }

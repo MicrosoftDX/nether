@@ -25,6 +25,7 @@ namespace Nether.Web.Features.PlayerManagement
     [Route("api")]
     public class PlayerManagementController : Controller
     {
+        private const string ControllerName = "PlayerManagement";
         private readonly IPlayerManagementStore _store;
         private readonly ILogger<PlayerManagementController> _log;
 
@@ -103,7 +104,7 @@ namespace Nether.Web.Features.PlayerManagement
             // Return result
             string location = Url.Action(
                 nameof(GetPlayer),
-                "PlayerManagement",
+                ControllerName,
                 new { gamerTag = player.Gamertag });
             return Created(location, new { gamerTag = player.Gamertag });
         }
@@ -222,6 +223,41 @@ namespace Nether.Web.Features.PlayerManagement
 
         //Implementation of the group API
 
+        /// <summary>
+        /// Creates a new group. You must be an administrator to perform this action.
+        /// </summary>
+        /// <param name="group">Group object</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.Created, Description = "group created")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [Route("groups")]
+        [HttpPost]
+        public async Task<ActionResult> PostGroup([FromBody]GroupPostRequestModel group)
+        {
+            // Save group
+            await _store.SaveGroupAsync(
+                new Group
+                {
+                    Name = group.Name,
+                    Description = group.Description,
+                    Members = group.Members
+                }
+            );
+
+            // Return result
+            string location = Url.Action(
+                nameof(GetGroup),
+                ControllerName,
+                new { groupName = group.Name });
+            return Created(location, new { groupName = group.Name });
+        }
+
+        /// <summary>
+        /// Get list of all groups. You must be an administrator to perform this action.
+        /// </summary>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupListResponseModel))]
+        [Authorize(Roles = RoleNames.Admin)]
         [HttpGet("groups")]
         public async Task<ActionResult> GetGroupsAsync()
         {
@@ -238,11 +274,18 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(resultModel);
         }
 
-        [HttpGet("groups/{groupname}/", Name = "GetGroup")]
-        public async Task<ActionResult> GetGroup(string groupname)
+        /// <summary>
+        /// Gets the list of all groups
+        /// </summary>
+        /// <param name="groupName"></param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupGetResponseModel))]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpGet("groups/{groupName}", Name = "GetGroup")]
+        public async Task<ActionResult> GetGroup(string groupName)
         {
             // Call data store
-            var group = await _store.GetGroupDetailsAsync(groupname);
+            var group = await _store.GetGroupDetailsAsync(groupName);
             if (group == null)
             {
                 return NotFound();
@@ -272,26 +315,6 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Return result
             return Ok(resultModel);
-        }
-
-        [Route("groups")]
-        [HttpPost]
-        public async Task<ActionResult> PostGroup([FromBody]GroupPostRequestModel group)
-        {
-            // Save group
-            await _store.SaveGroupAsync(
-                new Group
-                {
-                    Name = group.Name,
-                    CustomType = group.CustomType,
-                    Description = group.Description,
-                    Players = group.Players
-                }
-            );
-
-            // Return result
-            var location = Url.Link("GetGroup", new { groupname = group.Name });
-            return Created(location, null);
         }
 
         [Route("groups/{groupname}/players/{playername}")]
@@ -331,9 +354,8 @@ namespace Nether.Web.Features.PlayerManagement
                     new Group
                     {
                         Name = group.Name,
-                        CustomType = group.CustomType,
                         Description = group.Description,
-                        Players = group.Players
+                        Members = group.Members
                     }
                 );
 

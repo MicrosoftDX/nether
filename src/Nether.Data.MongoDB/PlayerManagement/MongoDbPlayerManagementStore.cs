@@ -9,7 +9,6 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Nether.Data.PlayerManagement;
 using Microsoft.Extensions.Logging;
-using System.Collections;
 using MongoDB.Bson;
 
 namespace Nether.Data.MongoDB.PlayerManagement
@@ -40,23 +39,16 @@ namespace Nether.Data.MongoDB.PlayerManagement
         public async Task AddPlayerToGroupAsync(Group group, Player player)
         {
             _logger.LogDebug("Adding players to the group {0}", group.Name);
-            group.Players.Add(player);
+            group.Members.Add(player.Gamertag);
             await GroupsCollection.InsertOneAsync(group);
         }
 
-        public async Task<Group> GetGroupDetailsAsync(string groupname)
+        public async Task<Group> GetGroupDetailsAsync(string groupName)
         {
             var getGroup = from s in GroupsCollection.AsQueryable()
-                           where s.Name == groupname
+                           where s.Name == groupName
                            orderby s.Name descending
-                           select new Group
-                           {
-                               Name = s.Name,
-                               CustomType = s.CustomType,
-                               Description = s.Description,
-                               Image = s.Image,
-                               Players = s.Players
-                           };
+                           select s.ToGroup();
 
             return await getGroup.FirstOrDefaultAsync();
         }
@@ -104,13 +96,11 @@ namespace Nether.Data.MongoDB.PlayerManagement
         public async Task SaveGroupAsync(Group group)
         {
             _logger.LogDebug("Saving Group {0}", group.Name);
-            await GroupsCollection.InsertOneAsync(group);
+            await GroupsCollection.ReplaceOneAsync(g => g.Name == group.Name, group, s_upsertOptions);
         }
 
         public async Task SavePlayerAsync(Player player)
         {
-            if (player.PlayerId == null) player.PlayerId = ObjectId.GenerateNewId().ToString();
-
             _logger.LogDebug("Saving Player {0}", player.Gamertag);
             await PlayersCollection.ReplaceOneAsync(p => p.PlayerId == player.PlayerId, player, s_upsertOptions);
         }
@@ -120,18 +110,12 @@ namespace Nether.Data.MongoDB.PlayerManagement
             var query = from s in GroupsCollection.AsQueryable()
                         where s.Name == groupname
                         orderby s.Name descending
-                        select new Group
-                        {
-                            Name = s.Name,
-                            CustomType = s.CustomType,
-                            Description = s.Description,
-                            Image = s.Image,
-                            Players = s.Players
-                        };
+                        select s.ToGroup();
 
-            var groupplayers = await query.FirstOrDefaultAsync();
+            var groupPlayers = await query.FirstOrDefaultAsync();
 
-            return groupplayers.Players;
+            var tasks = groupPlayers.Members.Select(gt => GetPlayerDetailsAsync(gt)).ToList();
+            return (await Task.WhenAll(tasks)).ToList();
         }
 
         public async Task<List<Player>> GetPlayersAsync()
@@ -156,17 +140,12 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
             var getGroup = from s in GroupsCollection.AsQueryable()
                            orderby s.Name descending
-                           select new Group
-                           {
-                               Name = s.Name,
-                               CustomType = s.CustomType,
-                               Description = s.Description,
-                               Image = s.Image,
-                               Players = s.Players
-                           };
+                           select s.ToGroup();
+
+            /*
             await getGroup.ForEachAsync(g =>
             {
-                foreach (Player p in g.Players)
+                foreach (Player p in g.Members)
                 {
                     if (p.Gamertag == gamertag)
                     {
@@ -174,6 +153,8 @@ namespace Nether.Data.MongoDB.PlayerManagement
                     }
                 }
             });
+            */
+
             return result;
         }
 
@@ -181,14 +162,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
         {
             var getGroup = from s in GroupsCollection.AsQueryable()
                            orderby s.Name descending
-                           select new Group
-                           {
-                               Name = s.Name,
-                               CustomType = s.CustomType,
-                               Description = s.Description,
-                               Image = s.Image,
-                               Players = s.Players
-                           };
+                           select s.ToGroup();
 
             return await getGroup.ToListAsync();
         }
@@ -222,16 +196,20 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
         public async Task UploadGroupImageAsync(string groupname, byte[] image)
         {
-            _logger.LogDebug("Saving Group image {0}", groupname);
+            throw new NotImplementedException();
+
+            /*_logger.LogDebug("Saving Group image {0}", groupname);
 
             var filter = Builders<MongoDBGroup>.Filter.Eq(s => s.Name, groupname);
             var update = Builders<MongoDBGroup>.Update.Set(s => s.Image, image);
-            await GroupsCollection.UpdateOneAsync(filter, update);
+            await GroupsCollection.UpdateOneAsync(filter, update);*/
         }
 
         public async Task<byte[]> GetGroupImageAsync(string name)
         {
-            var getGroup = from s in GroupsCollection.AsQueryable()
+            throw new NotImplementedException();
+
+            /*var getGroup = from s in GroupsCollection.AsQueryable()
                            where s.Name == name
                            orderby s.Name descending
                            select new Group
@@ -239,13 +217,12 @@ namespace Nether.Data.MongoDB.PlayerManagement
                                Name = s.Name,
                                CustomType = s.CustomType,
                                Description = s.Description,
-                               Image = s.Image,
-                               Players = s.Players
+                               Members = s.Members
                            };
 
             Group g = await getGroup.FirstOrDefaultAsync();
 
-            return g.Image;
+            return g.Image;*/
         }
     }
 }

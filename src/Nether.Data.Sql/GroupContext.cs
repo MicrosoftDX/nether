@@ -46,8 +46,7 @@ namespace Nether.Data.Sql.PlayerManagement
             {
                 Name = g.Name,
                 CustomType = g.CustomType,
-                Description = g.Description,
-                Image = g.Image
+                Description = g.Description
             }).ToListAsync();
         }
 
@@ -64,8 +63,7 @@ namespace Nether.Data.Sql.PlayerManagement
             {
                 Name = group.Name,
                 CustomType = group.CustomType,
-                Description = group.Description,
-                Image = group.Image
+                Description = group.Description
             };
         }
 
@@ -79,8 +77,7 @@ namespace Nether.Data.Sql.PlayerManagement
                 {
                     Name = group.Name,
                     CustomType = group.CustomType,
-                    Description = group.Description,
-                    Image = group.Image
+                    Description = group.Description
                 });
                 await SaveChangesAsync();
             }

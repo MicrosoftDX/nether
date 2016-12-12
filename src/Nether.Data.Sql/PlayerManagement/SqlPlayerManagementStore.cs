@@ -95,11 +95,11 @@ namespace Nether.Data.Sql.PlayerManagement
         {
             // add a new group if does not exist
             await _groupDb.SaveGroupAsync(group);
+
             // add a new player if does not exist and update the fact table with the relation between player and group
-            foreach (Player player in group.Players)
+            foreach (string playerGamerTag in group.Members)
             {
-                await _playerDb.SavePlayerAsync(player);
-                await _factDb.AddPlayerToGroupAsync(group, player);
+                //await _factDb.AddPlayerToGroupAsync(group, playerGamerTag);
             }
         }
 
