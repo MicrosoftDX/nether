@@ -122,6 +122,23 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             Assert.Equal(name, g.Group.Name);
         }
 
+        [Fact]
+        public async Task Admin_can_update_groups()
+        {
+            _client = GetAdminClient();
+
+            string name = Guid.NewGuid().ToString();
+
+            await CreateGroup(new GroupEntry { Name = name, Description = "before change" });
+
+            await UpdateGroup(new GroupEntry { Name = name, Description = "after change" });
+
+            GroupGetResponse group = await GetGroupByName(name);
+
+            Assert.Equal("after change", group.Group.Description);
+
+        }
+
         #region [ REST helpers ]
 
         private async Task<Tuple<HttpResponseMessage, string>> CreateGroup(GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.Created)
@@ -133,6 +150,13 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             string s = await response.Content.ReadAsStringAsync();
 
             return Tuple.Create(response, s);
+        }
+
+        private async Task UpdateGroup(GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
+        {
+            HttpResponseMessage response =  await _client.PutAsJsonAsync(BaseUri + "groups/" + group.Name, group);
+
+            Assert.Equal(expectedCode, response.StatusCode);
         }
 
         private async Task<GroupListResponse> GetAllGroups(HttpStatusCode expectedCode = HttpStatusCode.OK)
