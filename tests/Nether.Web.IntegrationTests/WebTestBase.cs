@@ -44,6 +44,11 @@ namespace Nether.Web.IntegrationTests
             return new HttpClient(handler) { BaseAddress = new Uri(baseUrl) };
         }
 
+        protected HttpClient GetAdminClient()
+        {
+            return GetClient("devadmin");
+        }
+
         protected HttpClient GetClient(string username = "testuser")
         {
             gamertag = username + "GamerTag";

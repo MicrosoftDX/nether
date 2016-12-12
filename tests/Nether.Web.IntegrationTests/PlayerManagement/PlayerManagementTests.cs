@@ -47,7 +47,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_an_admin_i_can_add_new_players()
         {
-            _client = GetClient("devadmin");
+            _client = GetAdminClient();
 
             string gamerTag = Guid.NewGuid().ToString();
             var result = await AddNewPlayer(gamerTag, Guid.NewGuid().ToString(), null);
@@ -59,7 +59,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_an_admin_i_can_get_all_players()
         {
-            _client = GetClient("devadmin");
+            _client = GetAdminClient();
 
             PlayerListGetResponse response = await GetPlayersAsync();
 
@@ -76,7 +76,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_an_admin_I_can_create_and_list_groups()
         {
-            _client = GetClient("devadmin");
+            _client = GetAdminClient();
 
             string groupName = Guid.NewGuid().ToString();
 
@@ -105,9 +105,26 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             }, HttpStatusCode.Forbidden);
         }
 
+        [Fact]
+        public async Task I_can_get_a_group_by_name()
+        {
+            _client = GetAdminClient();
+
+            string name = Guid.NewGuid().ToString();
+
+            await CreateGroup(new GroupEntry
+            {
+                Name = name
+            });
+
+            GroupGetResponse g = await GetGroupByName(name);
+
+            Assert.Equal(name, g.Group.Name);
+        }
+
         #region [ REST helpers ]
 
-        private async Task<Tuple<HttpResponseMessage, string>> CreateGroup(GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.OK)
+        private async Task<Tuple<HttpResponseMessage, string>> CreateGroup(GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.Created)
         {
             HttpResponseMessage response = await _client.PostAsJsonAsync(BaseUri + "groups", group);
 
@@ -121,6 +138,11 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         private async Task<GroupListResponse> GetAllGroups(HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
             return await HttpGet<GroupListResponse>(_client, BaseUri + "groups", expectedCode);
+        }
+
+        private async Task<GroupGetResponse> GetGroupByName(string name, HttpStatusCode expectedCode = HttpStatusCode.OK)
+        {
+            return await HttpGet<GroupGetResponse>(_client, BaseUri + "groups/" + name, expectedCode);
         }
 
         private async Task<PlayerListGetResponse> GetPlayersAsync(HttpStatusCode expectedCode = HttpStatusCode.OK)
