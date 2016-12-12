@@ -177,7 +177,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
             return result;
         }
 
-        public async Task<List<Group>> GetGroups()
+        public async Task<List<Group>> GetGroupsAsync()
         {
             var getGroup = from s in GroupsCollection.AsQueryable()
                            orderby s.Name descending

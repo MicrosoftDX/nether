@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[PlayerManagementFact]
+(
+	[Id] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(), 
+    [PlayerId] NVARCHAR(50) NOT NULL, 
+    [GroupId] NVARCHAR(50) NOT NULL
+)

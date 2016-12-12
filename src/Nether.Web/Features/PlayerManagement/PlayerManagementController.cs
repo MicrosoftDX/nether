@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System;
 
 using Nether.Data.PlayerManagement;
 using Nether.Web.Utilities;
@@ -222,10 +223,10 @@ namespace Nether.Web.Features.PlayerManagement
         //Implementation of the group API
 
         [HttpGet("groups")]
-        public async Task<ActionResult> GetGroups()
+        public async Task<ActionResult> GetGroupsAsync()
         {
             // Call data store
-            var groups = await _store.GetGroups();
+            var groups = await _store.GetGroupsAsync();
 
             // Format response model
             var resultModel = new GroupListResponseModel
@@ -266,7 +267,7 @@ namespace Nether.Web.Features.PlayerManagement
             // Format response model
             var resultModel = new GroupMemberResponseModel
             {
-                Members = players.Cast<GroupMemberResponseModel.PlayersEntry>().ToList()
+                Members = players.Select(s => (GroupMemberResponseModel.PlayersEntry)s).ToList()
             };
 
             // Return result
