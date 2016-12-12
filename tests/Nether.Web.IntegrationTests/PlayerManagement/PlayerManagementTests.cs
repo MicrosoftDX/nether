@@ -56,7 +56,29 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             Assert.Equal($"{{\"gamerTag\":\"{gamerTag}\"}}", result.Item2);
         }
 
+        [Fact]
+        public async Task As_an_admin_i_can_get_all_players()
+        {
+            _client = GetClient("devadmin");
+
+            PlayerListGetResponse response = await GetPlayersAsync();
+
+            Assert.NotNull(response.Players);
+            Assert.True(response.Players.Length > 0);
+        }
+
+        [Fact]
+        public async Task As_a_normal_user_I_cant_get_player_list()
+        {
+            PlayerListGetResponse response = await GetPlayersAsync(HttpStatusCode.Forbidden);
+        }
+
         #region [ REST helpers ]
+
+        private async Task<PlayerListGetResponse> GetPlayersAsync(HttpStatusCode expectedCode = HttpStatusCode.OK)
+        {
+            return await HttpGet<PlayerListGetResponse>(_client, BaseUri + "players", expectedCode);
+        }
 
         private async Task<PlayerGetResponse> GetPlayerAsync(HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
@@ -99,16 +121,21 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             return Tuple.Create(response, s);
         }
 
+        public class PlayerListGetResponse
+        {
+            public PlayerEntry[] Players { get; set; }
+        }
+
         public class PlayerGetResponse
         {
             public PlayerEntry Player { get; set; }
+        }
 
-            public class PlayerEntry
-            {
-                public string Gamertag { get; set; }
-                public string Country { get; set; }
-                public string CustomTag { get; set; }
-            }
+        public class PlayerEntry
+        {
+            public string Gamertag { get; set; }
+            public string Country { get; set; }
+            public string CustomTag { get; set; }
         }
 
         public class PlayerPostRequest

@@ -7,6 +7,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Security.Authentication;
 using IdentityModel.Client;
+using System.Net;
+using System.Threading.Tasks;
+using Xunit;
+using Newtonsoft.Json;
 
 namespace Nether.Web.IntegrationTests
 {
@@ -79,6 +83,17 @@ namespace Nether.Web.IntegrationTests
             token = new JwtSecurityToken(tokenResponse.AccessToken);
 
             return client;
+        }
+
+        protected async Task<T> HttpGet<T>(HttpClient client, string url, HttpStatusCode expectedCode = HttpStatusCode.OK)
+        {
+            HttpResponseMessage response = await client.GetAsync(url);
+
+            Assert.Equal(expectedCode, response.StatusCode);
+
+            string content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<T>(content);
+
         }
     }
 }
