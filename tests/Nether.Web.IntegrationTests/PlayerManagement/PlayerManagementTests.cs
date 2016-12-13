@@ -25,7 +25,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             PlayerGetResponse myPlayer = await GetPlayerAsync();
         }
 
-        [Fact]
+        [Fact]//
         public async Task I_can_update_my_info()
         {
             PlayerGetResponse beforeUpdate = await GetPlayerAsync();

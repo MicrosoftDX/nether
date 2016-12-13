@@ -70,8 +70,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
                                 PlayerId = s.PlayerId,
                                 Gamertag = s.Gamertag,
                                 Country = s.Country,
-                                CustomTag = s.CustomTag,
-                                PlayerImage = s.PlayerImage
+                                CustomTag = s.CustomTag
                             };
 
             return await getPlayer.FirstOrDefaultAsync();
@@ -86,8 +85,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
                                 PlayerId = s.PlayerId,
                                 Gamertag = s.Gamertag,
                                 Country = s.Country,
-                                CustomTag = s.CustomTag,
-                                PlayerImage = s.PlayerImage
+                                CustomTag = s.CustomTag
                             };
 
             return await getPlayer.FirstOrDefaultAsync();
@@ -132,8 +130,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
                                 PlayerId = s.PlayerId,
                                 Gamertag = s.Gamertag,
                                 Country = s.Country,
-                                CustomTag = s.CustomTag,
-                                PlayerImage = s.PlayerImage
+                                CustomTag = s.CustomTag
                             };
 
             return await getPlayer.ToListAsync();
@@ -163,29 +160,12 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
         public async Task UploadPlayerImageAsync(string gamertag, byte[] image)
         {
-            _logger.LogDebug("Saving Player image {0}", gamertag);
-
-            var filter = Builders<MongoDBPlayer>.Filter.Eq(s => s.Gamertag, gamertag);
-            var update = Builders<MongoDBPlayer>.Update.Set(s => s.PlayerImage, image);
-            await PlayersCollection.UpdateOneAsync(filter, update);
+            throw new NotSupportedException();
         }
 
         public async Task<byte[]> GetPlayerImageAsync(string gamertag)
         {
-            var getPlayer = from s in PlayersCollection.AsQueryable()
-                            where s.Gamertag == gamertag
-                            orderby s.Gamertag descending
-                            select new Player
-                            {
-                                Gamertag = s.Gamertag,
-                                Country = s.Country,
-                                CustomTag = s.CustomTag,
-                                PlayerImage = s.PlayerImage
-                            };
-
-            Player p = await getPlayer.FirstOrDefaultAsync();
-
-            return p.PlayerImage;
+            throw new NotSupportedException();
         }
 
         public async Task UploadGroupImageAsync(string groupname, byte[] image)

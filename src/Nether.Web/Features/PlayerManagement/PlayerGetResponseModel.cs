@@ -13,7 +13,7 @@ namespace Nether.Web.Features.PlayerManagement
         {
             return new PlayerGetResponseModel
             {
-                Player = new PlayerEntry { Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag, PlayerImage = player.PlayerImage }
+                Player = new PlayerEntry { Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag }
             };
         }
 
@@ -33,10 +33,6 @@ namespace Nether.Web.Features.PlayerManagement
             /// Custom tag
             /// </summary>
             public string CustomTag { get; set; }
-
-            // TO DO The Player Image get/set needs to be implemented
-            //note: it might be better to have a separate call streaming out the picture
-            public byte[] PlayerImage { get; set; }
         }
     }
 }

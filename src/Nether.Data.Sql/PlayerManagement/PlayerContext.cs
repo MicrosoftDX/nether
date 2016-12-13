@@ -52,54 +52,38 @@ namespace Nether.Data.Sql.PlayerManagement
                     Gamertag = player.Gamertag,
                     Country = player.Country,
                     CustomTag = player.CustomTag,
-                    PlayerImage = player.PlayerImage
                 });
+                await SaveChangesAsync();
+            }
+            else
+            {
+                entity.Gamertag = player.Gamertag;
+                entity.Country = player.Country;
+                entity.CustomTag = player.CustomTag;
                 await SaveChangesAsync();
             }
         }
 
         public async Task<List<Player>> GetPlayersAsync()
         {
-            return await Players.Select(p => new Player
-            {
-                PlayerId = p.PlayerId,
-                Gamertag = p.Gamertag,
-                Country = p.Country,
-                CustomTag = p.CustomTag,
-                PlayerImage = p.PlayerImage
-            }).ToListAsync();
+            return await Players.Select(p => p.ToPlayer()).ToListAsync();
         }
 
         public async Task<Player> GetPlayerDetailsAsync(string gamertag)
         {
-            var player = await Players.SingleAsync(p => p.Gamertag.Equals(gamertag));
-            return new Player
-            {
-                PlayerId = player.PlayerId,
-                Gamertag = player.Gamertag,
-                Country = player.Country,
-                CustomTag = player.CustomTag,
-                PlayerImage = player.PlayerImage
-            };
+            PlayerEntity player = await Players.SingleAsync(p => p.Gamertag.Equals(gamertag));
+            return player?.ToPlayer();
         }
 
-        public async Task<byte[]> GetPlayerImageAsync(string gamertag)
+        public Task<byte[]> GetPlayerImageAsync(string gamertag)
         {
-            var player = await Players.SingleAsync(p => p.Gamertag.Equals(gamertag));
-            return player.PlayerImage;
+            throw new NotSupportedException();
         }
 
         public async Task<Player> GetPlayerDetailsByIdAsync(string id)
         {
-            var player = await Players.SingleAsync(p => p.PlayerId.Equals(id));
-            return new Player
-            {
-                PlayerId = player.PlayerId,
-                Gamertag = player.Gamertag,
-                Country = player.Country,
-                CustomTag = player.CustomTag,
-                PlayerImage = player.PlayerImage
-            };
+            PlayerEntity player = await Players.SingleAsync(p => p.PlayerId.Equals(id));
+            return player.ToPlayer();
         }
 
         public async Task<string> GetPlayerIdForGamerTag(string gamertag)
@@ -108,12 +92,9 @@ namespace Nether.Data.Sql.PlayerManagement
             return player.PlayerId;
         }
 
-        public async Task UploadPlayerImageAsync(string gamertag, byte[] image)
+        public Task UploadPlayerImageAsync(string gamertag, byte[] image)
         {
-            var player = await Players.SingleAsync(p => p.Gamertag.Equals(gamertag));
-            player.PlayerImage = image;
-            Players.Update(player);
-            await SaveChangesAsync();
+            throw new NotSupportedException();
         }
     }
 
@@ -124,6 +105,16 @@ namespace Nether.Data.Sql.PlayerManagement
         public string Gamertag { get; set; }
         public string Country { get; set; }
         public string CustomTag { get; set; }
-        public byte[] PlayerImage { get; set; }
+
+        public Player ToPlayer()
+        {
+            return new Player
+            {
+                PlayerId = PlayerId,
+                Gamertag = Gamertag,
+                Country = Country,
+                CustomTag = CustomTag
+            };
+        }
     }
 }
