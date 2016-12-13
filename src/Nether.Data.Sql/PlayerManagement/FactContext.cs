@@ -42,11 +42,11 @@ namespace Nether.Data.Sql.PlayerManagement
             builder.UseSqlServer(_connectionString);
         }
 
-        public async Task AddPlayerToGroupAsync(Group group, Player player)
+        public async Task AddPlayerToGroupAsync(Group group, string playerId)
         {
             await PlayerManagementFact.AddAsync(new FactEntity
             {
-                PlayerId = player.PlayerId,
+                PlayerId = playerId,
                 GroupId = group.Name
             });
             await SaveChangesAsync();

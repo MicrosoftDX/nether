@@ -69,6 +69,8 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task SaveGroupAsync(Group group)
         {
+            if (group == null) throw new ArgumentNullException(nameof(group));
+
             // add new group only if it does not exist
             GroupEntity entity = await Groups.FindAsync(group.Name);
             if (entity == null)
@@ -79,6 +81,12 @@ namespace Nether.Data.Sql.PlayerManagement
                     CustomType = group.CustomType,
                     Description = group.Description
                 });
+                await SaveChangesAsync();
+            }
+            else
+            {
+                entity.CustomType = group.CustomType;
+                entity.Description = group.Description;
                 await SaveChangesAsync();
             }
         }

@@ -37,7 +37,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             Assert.Equal(newCountry, afterUpdate.Player.Country);
         }
 
-        [Fact]//
+        [Fact]
         public async Task As_a_user_i_cannot_add_new_players()
         {
             await AddNewPlayer(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), null,
@@ -96,7 +96,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             Assert.True(allGroups.Groups.Any(gr => gr.Name == groupName));
         }
 
-        [Fact]
+        [Fact]//
         public async Task As_a_users_I_cannot_create_groups()
         {
             await CreateGroup(new GroupEntry

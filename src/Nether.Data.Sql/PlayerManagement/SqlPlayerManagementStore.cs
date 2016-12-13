@@ -32,7 +32,7 @@ namespace Nether.Data.Sql.PlayerManagement
         public async Task AddPlayerToGroupAsync(Group group, Player player)
         {
             // assuming that thhe player and the group already exist 
-            await _factDb.AddPlayerToGroupAsync(group, player);
+            await _factDb.AddPlayerToGroupAsync(group, player.PlayerId);
         }
 
         public async Task<Group> GetGroupDetailsAsync(string groupname)
@@ -97,9 +97,12 @@ namespace Nether.Data.Sql.PlayerManagement
             await _groupDb.SaveGroupAsync(group);
 
             // add a new player if does not exist and update the fact table with the relation between player and group
-            foreach (string playerGamerTag in group.Members)
+            if (group.Members != null)
             {
-                //await _factDb.AddPlayerToGroupAsync(group, playerGamerTag);
+                foreach (string playerGamerTag in group.Members)
+                {
+                    await _factDb.AddPlayerToGroupAsync(group, playerGamerTag);
+                }
             }
         }
 
