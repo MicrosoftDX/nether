@@ -45,11 +45,11 @@ namespace Nether.Data.Sql.PlayerManagement
             return await _groupDb.GetGroupImageAsync(name);
         }
 
-        public async Task<List<Player>> GetGroupPlayersAsync(string groupname)
+        public async Task<List<string>> GetGroupPlayersAsync(string groupname)
         {
             // get all the players for groupname
             List<string> groupPlayers = await _factDb.getGroupPlayersAsync(groupname);
-            return groupPlayers.Select(p => GetPlayerDetailsByIdAsync(p).Result).ToList();
+            return groupPlayers;
         }
 
         public async Task<List<Group>> GetGroupsAsync()

@@ -12,6 +12,7 @@ using Nether.Data.PlayerManagement;
 using Nether.Web.Utilities;
 using Swashbuckle.SwaggerGen.Annotations;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -338,20 +339,22 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
-        /// Gets the members of the group.
+        /// Gets the members of the group as player objects.
         /// </summary>
-        /// <param name="groupName"></param>
+        /// <param name="groupName">Name of the group</param>
         /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupMemberResponseModel))]
+        [Authorize(Roles = RoleNames.PlayerAndAdmin)]
         [HttpGet("groups/{groupName}/players")]
         public async Task<ActionResult> GetGroupPlayers(string groupName)
         {
             // Call data store
-            var players = await _store.GetGroupPlayersAsync(groupName);
+            List<string> gamertags = await _store.GetGroupPlayersAsync(groupName);
 
             // Format response model
             var resultModel = new GroupMemberResponseModel
             {
-                Members = players.Select(s => (GroupMemberResponseModel.PlayersEntry)s).ToList()
+                Gamertags = gamertags
             };
 
             // Return result

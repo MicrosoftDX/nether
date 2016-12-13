@@ -163,8 +163,25 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             Assert.True(!group.Group.Members.Any(m => m == gamertag));
         }
 
+        [Fact]
+        public async Task I_can_list_group_members()
+        {
+            _client = GetAdminClient();
+
+            string groupName = Guid.NewGuid().ToString();
+            await CreateGroup(new GroupEntry { Name = groupName, Members = new[] { "tag1", "tag2", "tag3" } });
+
+            GroupMembersResponseModel group = await GetGroupMembers(groupName);
+
+            Assert.Equal(3, group.Gamertags.Length);
+        }
 
         #region [ REST helpers ]
+
+        private async Task<GroupMembersResponseModel> GetGroupMembers(string groupName, HttpStatusCode expectedCode = HttpStatusCode.OK)
+        {
+            return await HttpGet<GroupMembersResponseModel>(_client, $"{BaseUri}groups/{groupName}/players", expectedCode);
+        }
 
         private async Task DeletePlayerFromGroup(string groupName, string playerName, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
         {
@@ -257,6 +274,11 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             string s = await response.Content.ReadAsStringAsync();
 
             return Tuple.Create(response, s);
+        }
+
+        public class GroupMembersResponseModel
+        {
+            public string[] Gamertags { get; set; }
         }
 
         public class PlayerListGetResponse

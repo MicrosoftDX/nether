@@ -117,17 +117,10 @@ namespace Nether.Data.MongoDB.PlayerManagement
             await PlayersCollection.ReplaceOneAsync(p => p.PlayerId == player.PlayerId, player, s_upsertOptions);
         }
 
-        public async Task<List<Player>> GetGroupPlayersAsync(string groupname)
+        public async Task<List<string>> GetGroupPlayersAsync(string groupName)
         {
-            var query = from s in GroupsCollection.AsQueryable()
-                        where s.Name == groupname
-                        orderby s.Name descending
-                        select s.ToGroup();
-
-            var groupPlayers = await query.FirstOrDefaultAsync();
-
-            var tasks = groupPlayers.Members.Select(gt => GetPlayerDetailsAsync(gt)).ToList();
-            return (await Task.WhenAll(tasks)).ToList();
+            Group g = await GetGroupDetailsAsync(groupName);
+            return g?.Members;
         }
 
         public async Task<List<Player>> GetPlayersAsync()
