@@ -25,7 +25,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             PlayerGetResponse myPlayer = await GetPlayerAsync();
         }
 
-        [Fact]//
+        [Fact]
         public async Task I_can_update_my_info()
         {
             PlayerGetResponse beforeUpdate = await GetPlayerAsync();
@@ -37,7 +37,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             Assert.Equal(newCountry, afterUpdate.Player.Country);
         }
 
-        [Fact]
+        [Fact]//
         public async Task As_a_user_i_cannot_add_new_players()
         {
             await AddNewPlayer(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), null,
