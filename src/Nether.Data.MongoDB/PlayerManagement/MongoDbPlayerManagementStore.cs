@@ -34,13 +34,18 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
             // ensure PlayerId is indexed as we query by this
             PlayersCollection.Indexes.CreateOne(Builders<MongoDBPlayer>.IndexKeys.Ascending(_ => _.PlayerId));
+
+            // ensure group name is indexed as we query by this too
+            GroupsCollection.Indexes.CreateOne(Builders<MongoDBGroup>.IndexKeys.Ascending(_ => _.Name));
         }
 
         public async Task AddPlayerToGroupAsync(Group group, Player player)
         {
             _logger.LogDebug("Adding players to the group {0}", group.Name);
+            if (group.Members == null) group.Members = new List<string>();
             group.Members.Add(player.Gamertag);
-            await GroupsCollection.InsertOneAsync(group);
+
+            await SaveGroupAsync(group);
         }
 
         public async Task<Group> GetGroupDetailsAsync(string groupName)
@@ -91,8 +96,13 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
         public async Task RemovePlayerFromGroupAsync(Group group, Player player)
         {
-            //Not implemented for now. The SaveGroupAsync method can be used to send an updated players list instead.
-            await SaveGroupAsync(group);
+            if (group.Members == null) return;
+            int removedCount = group.Members.RemoveAll(tag => tag == player.Gamertag);
+
+            if (removedCount > 0)
+            {
+                await SaveGroupAsync(group);
+            }
         }
 
         public async Task SaveGroupAsync(Group group)

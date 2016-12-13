@@ -66,7 +66,7 @@ namespace Nether.Web.Features.PlayerManagement
         /// <param name="player">Player data</param>
         /// <returns></returns>
         [SwaggerResponse((int)HttpStatusCode.NoContent, Description = "Player updated successfully")]
-        [Authorize(Roles = RoleNames.Player)]
+        [Authorize(Roles = RoleNames.PlayerAndAdmin)]
         [Route("player")]
         [HttpPut]
         public async Task<ActionResult> PutCurrentPlayer([FromBody]PlayerPostRequestModel player)
@@ -157,21 +157,6 @@ namespace Nether.Web.Features.PlayerManagement
             return GetPlayerGroups(User.GetGamerTag());
         }
 
-        [Route("player/groups/{groupname}")]
-        [HttpPut]
-        public async Task<ActionResult> AddPlayerToAGroup([FromBody]PlayerPostRequestModel playerin, string groupname)
-        {
-            //Get Player
-            Player player = await _store.GetPlayerDetailsAsync(playerin.Gamertag);
-            Group group = await _store.GetGroupDetailsAsync(groupname);
-
-            // Save player
-            await _store.AddPlayerToGroupAsync(group, player);
-
-            // Return result
-            return Ok();
-        }
-
         [HttpGet("players/{gamerTag}/groups/")]
         public async Task<ActionResult> GetPlayerGroups(string gamerTag)
         {
@@ -204,22 +189,73 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(player.Gamertag);
         }
 
-        [Route("players/{playername}/groups/{groupname}")]
-        [HttpPost]
-        public async Task<ActionResult> AddPlayerToGroup(string playername, string groupname)
+        /// <summary>
+        /// Adds player to a group.
+        /// </summary>
+        /// <param name="playerName">Player's gamer tag</param>
+        /// <param name="groupName">Group name.</param>
+        /// <returns></returns>
+        [Route("players/{playerName}/groups/{groupName}")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpPut]
+        public async Task<ActionResult> AddPlayerToGroup(string playerName, string groupName)
         {
-            //Get Player
-            Player player = await _store.GetPlayerDetailsAsync(playername);
-            Group group = await _store.GetGroupDetailsAsync(groupname);
+            return await AddPlayerToGroupImpl(playerName, groupName);
+        }
 
-            // Save player
+        /// <summary>
+        /// Adds currently logged in player to a group.
+        /// </summary>
+        /// <param name="groupName">Group name.</param>
+        /// <returns></returns>
+        [Route("player/groups/{groupName}")]
+        [Authorize(Roles = RoleNames.PlayerAndAdmin)]
+        [HttpPut]
+        public async Task<ActionResult> AddCurrentPlayerToGroup(string groupName)
+        {
+            return await AddPlayerToGroupImpl(User.GetGamerTag(), groupName);
+        }
+
+        private async Task<ActionResult> AddPlayerToGroupImpl(string playerName, string groupName)
+        {
+            Group group = await _store.GetGroupDetailsAsync(groupName);
+            if (group == null)
+            {
+                _log.LogDebug("group '{0}' not found", groupName);
+                return BadRequest();
+            }
+
+            Player player = await _store.GetPlayerDetailsAsync(playerName);
+            if (player == null)
+            {
+                _log.LogDebug("player '{0}' not found", playerName);
+                return BadRequest();
+            }
+
             await _store.AddPlayerToGroupAsync(group, player);
 
-            // Return result
             return Ok();
         }
 
+        /// <summary>
+        /// Removes a player from a group. 
+        /// </summary>
+        /// <param name="groupName">Group name</param>
+        /// <param name="playerName">Player name</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.NoContent, Description = "player is removed from the group successfully")]
+        [Route("groups/{groupName}/players/{playerName}")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpDelete]
+        public async Task<ActionResult> DeletePlayerFromGroup(string groupName, string playerName)
+        {
+            Player player = await _store.GetPlayerDetailsAsync(playerName);
+            Group group = await _store.GetGroupDetailsAsync(groupName);
 
+            await _store.RemovePlayerFromGroupAsync(group, player);
+
+            return new NoContentResult();
+        }
 
         //Implementation of the group API
 
@@ -301,11 +337,16 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(resultModel);
         }
 
-        [HttpGet("groups/{groupname}/players")]
-        public async Task<ActionResult> GetGroupPlayers(string groupname)
+        /// <summary>
+        /// Gets the members of the group.
+        /// </summary>
+        /// <param name="groupName"></param>
+        /// <returns></returns>
+        [HttpGet("groups/{groupName}/players")]
+        public async Task<ActionResult> GetGroupPlayers(string groupName)
         {
             // Call data store
-            var players = await _store.GetGroupPlayersAsync(groupname);
+            var players = await _store.GetGroupPlayersAsync(groupName);
 
             // Format response model
             var resultModel = new GroupMemberResponseModel
@@ -316,34 +357,6 @@ namespace Nether.Web.Features.PlayerManagement
             // Return result
             return Ok(resultModel);
         }
-
-        [Route("groups/{groupname}/players/{playername}")]
-        [HttpPost]
-        public async Task<ActionResult> PostAddPlayerToGroup(string groupname, string playername)
-        {
-            Player player = await _store.GetPlayerDetailsAsync(playername);
-            Group group = await _store.GetGroupDetailsAsync(groupname);
-
-            // Save group
-            await _store.AddPlayerToGroupAsync(group, player);
-
-            // Return result
-            return Ok();
-        }
-
-
-        [Route("groups/{groupname}/players/{playername}")]
-        [HttpDelete]
-        public async Task<ActionResult> DeletePlayerFromGroup(string groupname, string playername)
-        {
-            Player player = await _store.GetPlayerDetailsAsync(playername);
-            Group group = await _store.GetGroupDetailsAsync(groupname);
-
-            await _store.RemovePlayerFromGroupAsync(group, player);
-
-            return new NoContentResult();
-        }
-
 
         /// <summary>
         /// Updates group information

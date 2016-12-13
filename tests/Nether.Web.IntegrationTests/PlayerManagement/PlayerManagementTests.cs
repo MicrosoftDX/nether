@@ -139,7 +139,55 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
         }
 
+        [Fact]
+        public async Task Adding_and_removing_a_player_to_a_group()
+        {
+            _client = GetAdminClient();
+
+            //create test group
+            string groupName = Guid.NewGuid().ToString();
+            await CreateGroup(new GroupEntry { Name = groupName });
+
+            //add myself to this group
+            await AddPlayerToGroup(groupName, gamertag);
+
+            //check that i'm in the group now
+            GroupGetResponse group = await GetGroupByName(groupName);
+            Assert.True(group.Group.Members.Any(m => m == gamertag));
+
+            //remove me from this group
+            await DeletePlayerFromGroup(groupName, gamertag);
+
+            //check group has no gamertag of mine anymore
+            group = await GetGroupByName(groupName);
+            Assert.True(!group.Group.Members.Any(m => m == gamertag));
+        }
+
+
         #region [ REST helpers ]
+
+        private async Task DeletePlayerFromGroup(string groupName, string playerName, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
+        {
+            HttpResponseMessage response = await _client.DeleteAsync($"{BaseUri}groups/{groupName}/players/{playerName}");
+
+            Assert.Equal(expectedCode, response.StatusCode);
+        }
+
+        private async Task AddPlayerToGroup(string groupName, string playerName = null, HttpStatusCode expetectedCode = HttpStatusCode.OK)
+        {
+            HttpResponseMessage response;
+
+            if(playerName == null)
+            {
+                response = await _client.PutAsync($"{BaseUri}player/groups/{groupName}", null);
+            }
+            else
+            {
+                response = await _client.PutAsync($"{BaseUri}players/{playerName}/groups/{groupName}", null);
+            }
+
+            Assert.Equal(expetectedCode, response.StatusCode);
+        }
 
         private async Task<Tuple<HttpResponseMessage, string>> CreateGroup(GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.Created)
         {
@@ -250,6 +298,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             public string Name { get; set; }
             public string CustomType { get; set; }
             public string Description { get; set; }
+            public string[] Members { get; set; }
         }
 
         #endregion

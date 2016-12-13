@@ -5,5 +5,7 @@
         public const string Player = "Player";
 
         public const string Admin = "Admin";
+
+        public const string PlayerAndAdmin = "Player,Admin";
     }
 }

@@ -19,6 +19,9 @@ namespace Nether.Web.IntegrationTests
     /// </summary>
     public class WebTestBase
     {
+        public const string PlayerUser = "testuser";
+        public const string AdminUser = "devadmin";
+
         private const string BaseUrl = "http://localhost:5000/";
         private const string ClientId = "resourceowner-test";
         private const string ClientSecret = "devsecret";
@@ -81,6 +84,10 @@ namespace Nether.Web.IntegrationTests
                 customTag = nameof(WebTestBase)
             };
             HttpResponseMessage response = client.PutAsJsonAsync("api/player", player).Result;
+            if(!response.IsSuccessStatusCode)
+            {
+                throw new AuthenticationException("could not update player info");
+            }
 
             //get the token again as it will include the gamertag claim
             tokenResponse = tokenClient.RequestResourceOwnerPasswordAsync(username, password, "nether-all").Result;
