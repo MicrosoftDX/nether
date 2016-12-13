@@ -139,28 +139,16 @@ namespace Nether.Data.MongoDB.PlayerManagement
             return await getPlayer.ToListAsync();
         }
 
-        public async Task<List<Group>> GetPlayersGroupsAsync(string gamertag)
+        public async Task<List<Group>> GetPlayersGroupsAsync(string gamerTag)
         {
-            var result = new List<Group>();
+            var query = from g in GroupsCollection.AsQueryable()
+                        where g.Members.Any(m => m == gamerTag)
+                        select g;
+            var groups = await query.ToListAsync();
 
-            var getGroup = from s in GroupsCollection.AsQueryable()
-                           orderby s.Name descending
-                           select s.ToGroup();
+            _logger.LogDebug("found {0} groups", groups.Count);
 
-            /*
-            await getGroup.ForEachAsync(g =>
-            {
-                foreach (Player p in g.Members)
-                {
-                    if (p.Gamertag == gamertag)
-                    {
-                        result.Add(g);
-                    }
-                }
-            });
-            */
-
-            return result;
+            return groups.Select(g => g.ToGroup()).ToList();
         }
 
         public async Task<List<Group>> GetGroupsAsync()

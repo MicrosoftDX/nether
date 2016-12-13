@@ -176,7 +176,36 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             Assert.Equal(3, group.Gamertags.Length);
         }
 
+        [Fact]
+        public async Task I_can_find_out_which_groups_I_belong_to()
+        {
+            _client = GetAdminClient();
+
+            //first create two groups and add me to them
+            string g1 = Guid.NewGuid().ToString();
+            string g2 = Guid.NewGuid().ToString();
+            await CreateGroup(new GroupEntry { Name = g1, Members = new[] { gamertag } });
+            await CreateGroup(new GroupEntry { Name = g2, Members = new[] { gamertag } });
+
+            //get my groups
+            GroupListResponse groups = await GetPlayerGroups();
+            Assert.True(groups.Groups.Any(g => g.Name == g1));
+            Assert.True(groups.Groups.Any(g => g.Name == g2));
+        }
+
         #region [ REST helpers ]
+
+        private async Task<GroupListResponse> GetPlayerGroups(string gamerTag = null, HttpStatusCode expectedCode = HttpStatusCode.OK)
+        {
+            if (gamerTag == null)
+            {
+                return await HttpGet<GroupListResponse>(_client, BaseUri + "player/groups", expectedCode);
+            }
+            else
+            {
+                return await HttpGet<GroupListResponse>(_client, BaseUri + "players/" + gamerTag + "/groups", expectedCode);
+            }
+        }
 
         private async Task<GroupMembersResponseModel> GetGroupMembers(string groupName, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {

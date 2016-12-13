@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System;
-
 using Nether.Data.PlayerManagement;
 using Nether.Web.Utilities;
 using Swashbuckle.SwaggerGen.Annotations;
@@ -151,27 +149,39 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(resultModel);
         }
 
-        [Authorize(Roles = RoleNames.Player)]
-        [HttpGet("player/groups/")]
-        public Task<ActionResult> GetPlayerGroups()
+        /// <summary>
+        /// Gets the list of groups current player belongs to.
+        /// </summary>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupListResponseModel))]
+        [Authorize(Roles = RoleNames.PlayerAndAdmin)]
+        [HttpGet("player/groups")]
+        public async Task<ActionResult> GetPlayerGroups()
         {
-            return GetPlayerGroups(User.GetGamerTag());
+            return await GetPlayerGroupsImpl(User.GetGamerTag());
         }
 
-        [HttpGet("players/{gamerTag}/groups/")]
+        /// <summary>
+        /// Gets the list of group a player belongs to.
+        /// </summary>
+        /// <param name="gamerTag">Player's gamertag.</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupListResponseModel))]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpGet("players/{gamerTag}/groups")]
         public async Task<ActionResult> GetPlayerGroups(string gamerTag)
         {
-            // Call data store
-            var groups = await _store.GetPlayersGroupsAsync(gamerTag);
+            return await GetPlayerGroupsImpl(gamerTag);
+        }
 
-            // Format response model
-            var resultModel = new GroupListResponseModel
-            {
-                Groups = groups.Cast<GroupListResponseModel.GroupsEntry>().ToList()
-            };
+        public async Task<ActionResult> GetPlayerGroupsImpl(string playerGamerTag)
+        {
+            // Call data store
+            var groups = await _store.GetPlayersGroupsAsync(playerGamerTag);
 
             // Return result
-            return Ok(resultModel);
+            return Ok(GroupListResponseModel.FromGroups(groups));
+
         }
 
         // ********************************** THIS endpoint is a temporary measure to quickly unblock auth, but needs to be removed ***************************
@@ -301,14 +311,8 @@ namespace Nether.Web.Features.PlayerManagement
             // Call data store
             var groups = await _store.GetGroupsAsync();
 
-            // Format response model
-            var resultModel = new GroupListResponseModel
-            {
-                Groups = groups.Select(s => (GroupListResponseModel.GroupsEntry)s).ToList()
-            };
-
             // Return result
-            return Ok(resultModel);
+            return Ok(GroupListResponseModel.FromGroups(groups));
         }
 
         /// <summary>
