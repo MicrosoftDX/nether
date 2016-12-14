@@ -26,6 +26,7 @@ namespace Nether.Data.Sql.PlayerManagement
         {
             _connectionString = connectionString;
             _table = table;
+            _loggerFactory = loggerFactory;
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
