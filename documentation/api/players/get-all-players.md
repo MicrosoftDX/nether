@@ -1,14 +1,14 @@
-# Get Players
+# Get All Players
 
 Get a list of all registered players.
 
 ## Request
 
-See Common parameters and headers that are used by all requests related to the Leaderboard Building Block
+See Common parameters and headers that are used by all requests related to the Leaderboard Building Block.
 
 Method  | Request URI
 ------- | -----------
-GET     | /players?api-version={api-version}
+GET     | `/api/players`
 
 ### JSON Body
 

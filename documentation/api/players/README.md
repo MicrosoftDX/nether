@@ -16,10 +16,10 @@ The following information is common to all tasks that you might do related to pl
 
 |Method | Request URI   | Description |
 |-------|---------------|-------------|
-|GET|/api/player|Gets the player information from currently logged in user.|
-|PUT|/api/player|Updates information about the current player.|
-|GET|/api/players|Gets all players.|
-|POST|/api/players|Creates or updates information about a player.|
+|GET|[`/api/player`](get-current-player.md)|Gets the player information from currently logged in user.|
+|PUT|[`/api/player`](put-current-player.md)|Updates information about the current player.|
+|GET|[`/api/players`](get-all-players.md)|Gets all players.|
+|POST|[`/api/players`](add-new-player.md)|Creates or updates information about a player.|
 |GET|/api/players{gamerTag}|Gets player information by player's gamer tag.|
 |GET|/api/player/groups|Gets the list of groups current player belongs to.|
 |GET|/api/groups|Get list of all groups.|
