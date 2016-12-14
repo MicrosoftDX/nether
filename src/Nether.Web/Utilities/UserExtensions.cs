@@ -12,9 +12,24 @@ namespace Nether.Web.Utilities
 {
     public static class UserExtensions
     {
+        /// <summary>
+        /// Gets user gametag from current principal
+        /// </summary>
+        /// <param name="user">User object</param>
+        /// <returns>Gametag or null if no gametag assigned</returns>
         public static string GetGamerTag(this ClaimsPrincipal user)
         {
-            return user.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.NickName)?.Value;
+            return user?.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.NickName)?.Value;
+        }
+
+        /// <summary>
+        /// Gets user ID from current principal
+        /// </summary>
+        /// <param name="user">User object</param>
+        /// <returns>User id</returns>
+        public static string GetId(this ClaimsPrincipal user)
+        {
+            return user?.Identity.Name;
         }
     }
 }

@@ -9,7 +9,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Nether.Data.PlayerManagement;
 using Microsoft.Extensions.Logging;
-using System.Collections;
+using MongoDB.Bson;
 
 namespace Nether.Data.MongoDB.PlayerManagement
 {
@@ -24,36 +24,40 @@ namespace Nether.Data.MongoDB.PlayerManagement
         private IMongoCollection<MongoDBGroup> GroupsCollection
             => _database.GetCollection<MongoDBGroup>("groups");
 
+        private static readonly UpdateOptions s_upsertOptions = new UpdateOptions { IsUpsert = true };
 
         public MongoDBPlayerManagementStore(string connectionString, string dbName, ILoggerFactory loggerFactory)
         {
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase(dbName);
             _logger = loggerFactory.CreateLogger<MongoDBPlayerManagementStore>();
+
+            // ensure PlayerId is indexed as we query by this
+            PlayersCollection.Indexes.CreateOne(Builders<MongoDBPlayer>.IndexKeys.Ascending(_ => _.PlayerId));
+
+            // ensure group name is indexed as we query by this too
+            GroupsCollection.Indexes.CreateOne(Builders<MongoDBGroup>.IndexKeys.Ascending(_ => _.Name));
         }
 
         public async Task AddPlayerToGroupAsync(Group group, Player player)
         {
             _logger.LogDebug("Adding players to the group {0}", group.Name);
-            group.Players.Add(player);
-            await GroupsCollection.InsertOneAsync(group);
+            if (group.Members == null) group.Members = new List<string>();
+            group.Members.Add(player.Gamertag);
+
+            await SaveGroupAsync(group);
         }
 
-        public async Task<Group> GetGroupDetailsAsync(string groupname)
+        public async Task<Group> GetGroupDetailsAsync(string groupName)
         {
-            var getGroup = from s in GroupsCollection.AsQueryable()
-                           where s.Name == groupname
-                           orderby s.Name descending
-                           select new Group
-                           {
-                               Name = s.Name,
-                               CustomType = s.CustomType,
-                               Description = s.Description,
-                               Image = s.Image,
-                               Players = s.Players
-                           };
+            var query = from s in GroupsCollection.AsQueryable()
+                        where s.Name == groupName
+                        orderby s.Name descending
+                        select s;
 
-            return await getGroup.FirstOrDefaultAsync();
+            var group = await query.FirstOrDefaultAsync();
+
+            return group?.ToGroup();
         }
 
         public async Task<Player> GetPlayerDetailsAsync(string gamertag)
@@ -66,8 +70,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
                                 PlayerId = s.PlayerId,
                                 Gamertag = s.Gamertag,
                                 Country = s.Country,
-                                CustomTag = s.CustomTag,
-                                PlayerImage = s.PlayerImage
+                                CustomTag = s.CustomTag
                             };
 
             return await getPlayer.FirstOrDefaultAsync();
@@ -82,8 +85,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
                                 PlayerId = s.PlayerId,
                                 Gamertag = s.Gamertag,
                                 Country = s.Country,
-                                CustomTag = s.CustomTag,
-                                PlayerImage = s.PlayerImage
+                                CustomTag = s.CustomTag
                             };
 
             return await getPlayer.FirstOrDefaultAsync();
@@ -92,39 +94,31 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
         public async Task RemovePlayerFromGroupAsync(Group group, Player player)
         {
-            //Not implemented for now. The SaveGroupAsync method can be used to send an updated players list instead.
-            await SaveGroupAsync(group);
+            if (group.Members == null) return;
+            int removedCount = group.Members.RemoveAll(tag => tag == player.Gamertag);
+
+            if (removedCount > 0)
+            {
+                await SaveGroupAsync(group);
+            }
         }
 
         public async Task SaveGroupAsync(Group group)
         {
             _logger.LogDebug("Saving Group {0}", group.Name);
-            await GroupsCollection.InsertOneAsync(group);
+            await GroupsCollection.ReplaceOneAsync(g => g.Name == group.Name, group, s_upsertOptions);
         }
 
         public async Task SavePlayerAsync(Player player)
         {
             _logger.LogDebug("Saving Player {0}", player.Gamertag);
-            await PlayersCollection.InsertOneAsync(player);
+            await PlayersCollection.ReplaceOneAsync(p => p.PlayerId == player.PlayerId, player, s_upsertOptions);
         }
 
-        public async Task<List<Player>> GetGroupPlayersAsync(string groupname)
+        public async Task<List<string>> GetGroupPlayersAsync(string groupName)
         {
-            var query = from s in GroupsCollection.AsQueryable()
-                        where s.Name == groupname
-                        orderby s.Name descending
-                        select new Group
-                        {
-                            Name = s.Name,
-                            CustomType = s.CustomType,
-                            Description = s.Description,
-                            Image = s.Image,
-                            Players = s.Players
-                        };
-
-            var groupplayers = await query.FirstOrDefaultAsync();
-
-            return groupplayers.Players;
+            Group g = await GetGroupDetailsAsync(groupName);
+            return g?.Members;
         }
 
         public async Task<List<Player>> GetPlayersAsync()
@@ -136,95 +130,60 @@ namespace Nether.Data.MongoDB.PlayerManagement
                                 PlayerId = s.PlayerId,
                                 Gamertag = s.Gamertag,
                                 Country = s.Country,
-                                CustomTag = s.CustomTag,
-                                PlayerImage = s.PlayerImage
+                                CustomTag = s.CustomTag
                             };
 
             return await getPlayer.ToListAsync();
         }
 
-        public async Task<List<Group>> GetPlayersGroupsAsync(string gamertag)
+        public async Task<List<Group>> GetPlayersGroupsAsync(string gamerTag)
         {
-            var result = new List<Group>();
+            var query = from g in GroupsCollection.AsQueryable()
+                        where g.Members.Any(m => m == gamerTag)
+                        select g;
+            var groups = await query.ToListAsync();
 
-            var getGroup = from s in GroupsCollection.AsQueryable()
-                           orderby s.Name descending
-                           select new Group
-                           {
-                               Name = s.Name,
-                               CustomType = s.CustomType,
-                               Description = s.Description,
-                               Image = s.Image,
-                               Players = s.Players
-                           };
-            await getGroup.ForEachAsync(g =>
-            {
-                foreach (Player p in g.Players)
-                {
-                    if (p.Gamertag == gamertag)
-                    {
-                        result.Add(g);
-                    }
-                }
-            });
-            return result;
+            _logger.LogDebug("found {0} groups", groups.Count);
+
+            return groups.Select(g => g.ToGroup()).ToList();
         }
 
         public async Task<List<Group>> GetGroupsAsync()
         {
-            var getGroup = from s in GroupsCollection.AsQueryable()
-                           orderby s.Name descending
-                           select new Group
-                           {
-                               Name = s.Name,
-                               CustomType = s.CustomType,
-                               Description = s.Description,
-                               Image = s.Image,
-                               Players = s.Players
-                           };
+            var query = from s in GroupsCollection.AsQueryable()
+                        orderby s.Name descending
+                        select s;
 
-            return await getGroup.ToListAsync();
+            var mGroups = await query.ToListAsync();
+            return mGroups.Select(m => m.ToGroup()).ToList();
         }
 
         public async Task UploadPlayerImageAsync(string gamertag, byte[] image)
         {
-            _logger.LogDebug("Saving Player image {0}", gamertag);
-
-            var filter = Builders<MongoDBPlayer>.Filter.Eq(s => s.Gamertag, gamertag);
-            var update = Builders<MongoDBPlayer>.Update.Set(s => s.PlayerImage, image);
-            await PlayersCollection.UpdateOneAsync(filter, update);
+            throw new NotSupportedException();
         }
 
         public async Task<byte[]> GetPlayerImageAsync(string gamertag)
         {
-            var getPlayer = from s in PlayersCollection.AsQueryable()
-                            where s.Gamertag == gamertag
-                            orderby s.Gamertag descending
-                            select new Player
-                            {
-                                Gamertag = s.Gamertag,
-                                Country = s.Country,
-                                CustomTag = s.CustomTag,
-                                PlayerImage = s.PlayerImage
-                            };
-
-            Player p = await getPlayer.FirstOrDefaultAsync();
-
-            return p.PlayerImage;
+            throw new NotSupportedException();
         }
 
         public async Task UploadGroupImageAsync(string groupname, byte[] image)
         {
-            _logger.LogDebug("Saving Group image {0}", groupname);
+            throw new NotImplementedException();
+
+            /*_logger.LogDebug("Saving Group image {0}", groupname);
 
             var filter = Builders<MongoDBGroup>.Filter.Eq(s => s.Name, groupname);
             var update = Builders<MongoDBGroup>.Update.Set(s => s.Image, image);
-            await GroupsCollection.UpdateOneAsync(filter, update);
+            await GroupsCollection.UpdateOneAsync(filter, update);*/
         }
 
         public async Task<byte[]> GetGroupImageAsync(string name)
         {
-            var getGroup = from s in GroupsCollection.AsQueryable()
+            throw new NotImplementedException();
+
+            /*var getGroup = from s in GroupsCollection.AsQueryable()
                            where s.Name == name
                            orderby s.Name descending
                            select new Group
@@ -232,13 +191,12 @@ namespace Nether.Data.MongoDB.PlayerManagement
                                Name = s.Name,
                                CustomType = s.CustomType,
                                Description = s.Description,
-                               Image = s.Image,
-                               Players = s.Players
+                               Members = s.Members
                            };
 
             Group g = await getGroup.FirstOrDefaultAsync();
 
-            return g.Image;
+            return g.Image;*/
         }
     }
 }

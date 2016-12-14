@@ -7,6 +7,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Security.Authentication;
 using IdentityModel.Client;
+using System.Net;
+using System.Threading.Tasks;
+using Xunit;
+using Newtonsoft.Json;
 
 namespace Nether.Web.IntegrationTests
 {
@@ -15,6 +19,9 @@ namespace Nether.Web.IntegrationTests
     /// </summary>
     public class WebTestBase
     {
+        public const string PlayerUser = "testuser";
+        public const string AdminUser = "devadmin";
+
         private const string BaseUrl = "http://localhost:5000/";
         private const string ClientId = "resourceowner-test";
         private const string ClientSecret = "devsecret";
@@ -38,6 +45,11 @@ namespace Nether.Web.IntegrationTests
             };
 
             return new HttpClient(handler) { BaseAddress = new Uri(baseUrl) };
+        }
+
+        protected HttpClient GetAdminClient()
+        {
+            return GetClient("devadmin");
         }
 
         protected HttpClient GetClient(string username = "testuser")
@@ -71,7 +83,11 @@ namespace Nether.Web.IntegrationTests
                 country = "UK",
                 customTag = nameof(WebTestBase)
             };
-            HttpResponseMessage response = client.PutAsJsonAsync("api/players/foo", player).Result;
+            HttpResponseMessage response = client.PutAsJsonAsync("api/player", player).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new AuthenticationException("could not update player info");
+            }
 
             //get the token again as it will include the gamertag claim
             tokenResponse = tokenClient.RequestResourceOwnerPasswordAsync(username, password, "nether-all").Result;
@@ -79,6 +95,16 @@ namespace Nether.Web.IntegrationTests
             token = new JwtSecurityToken(tokenResponse.AccessToken);
 
             return client;
+        }
+
+        protected async Task<T> HttpGet<T>(HttpClient client, string url, HttpStatusCode expectedCode = HttpStatusCode.OK)
+        {
+            HttpResponseMessage response = await client.GetAsync(url);
+
+            Assert.Equal(expectedCode, response.StatusCode);
+
+            string content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<T>(content);
         }
     }
 }

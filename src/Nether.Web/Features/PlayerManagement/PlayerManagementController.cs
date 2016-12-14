@@ -1,33 +1,37 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using System;
-
 using Nether.Data.PlayerManagement;
 using Nether.Web.Utilities;
+using Swashbuckle.SwaggerGen.Annotations;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
 //TODO: Add authentication
 
-
 namespace Nether.Web.Features.PlayerManagement
 {
+    /// <summary>
+    /// Player management
+    /// </summary>
     [Route("api")]
     public class PlayerManagementController : Controller
     {
+        private const string ControllerName = "PlayerManagement";
         private readonly IPlayerManagementStore _store;
+        private readonly ILogger<PlayerManagementController> _log;
 
-        public PlayerManagementController(IPlayerManagementStore store)
+        public PlayerManagementController(IPlayerManagementStore store, ILogger<PlayerManagementController> log)
         {
             _store = store;
+            _log = log;
         }
 
         // Implementation of the player API
@@ -35,71 +39,100 @@ namespace Nether.Web.Features.PlayerManagement
         //  1. By Player
         //  2. Admininstration  
 
-
-
-        // Player APIs
-        [Authorize]
+        /// <summary>
+        /// Gets the player information from currently logged in user
+        /// </summary>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerGetResponseModel))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "player not found")]
+        [Authorize(Roles = RoleNames.Player)]
         [HttpGet("player")]
         public async Task<ActionResult> GetCurrentPlayer()
         {
-            var playername = User.Identity.Name; // This is looking up by user id... mostly you will want User.GetGamerTag() 
+            string userId = User.GetId();
 
             // Call data store
-            var player = await _store.GetPlayerDetailsByIdAsync(playername);
-
-            if (player == null)
-            {
-                return NotFound();
-            }
-
-            // Format response model
-            var resultModel = new PlayerGetResponseModel
-            {
-                Player = player
-            };
+            var player = await _store.GetPlayerDetailsByIdAsync(userId);
+            if (player == null) return NotFound();
 
             // Return result
-            return Ok(resultModel);
+            return Ok(PlayerGetResponseModel.FromPlayer(player));
         }
 
-        [Authorize(Roles = "player")]
-        [HttpGet("player/groups/")]
-        public Task<ActionResult> GetPlayerGroups()
-        {
-            return GetPlayerGroups(User.GetGamerTag());
-        }
-
-        [Authorize]
+        /// <summary>
+        /// Updates information about the current player
+        /// </summary>
+        /// <param name="player">Player data</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.NoContent, Description = "Player updated successfully")]
+        [Authorize(Roles = RoleNames.PlayerAndAdmin)]
         [Route("player")]
         [HttpPut]
-        public async Task<ActionResult> PutPlayer([FromBody]PlayerPostRequestModel player)
+        public async Task<ActionResult> PutCurrentPlayer([FromBody]PlayerPostRequestModel player)
         {
+            string userId = User.GetId();
+
             // Update player
             await _store.SavePlayerAsync(
-                new Player { PlayerId = User.Identity.Name, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
+                new Player { PlayerId = userId, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
 
             // Return result
             return new NoContentResult();
         }
 
-        [Route("player/groups/{groupname}")]
-        [HttpPut]
-        public async Task<ActionResult> AddPlayerToAGroup([FromBody]PlayerPostRequestModel playerin, string groupname)
+        /// <summary>
+        /// Creates or updates information about a player. You have to be an administrator to perform this action.
+        /// </summary>
+        /// <param name="player">Player data</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.Created, Description = "player created")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "user has no gamertag")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [Route("players")]
+        [HttpPost]
+        public async Task<ActionResult> Post([FromBody]PlayerPostRequestModel player)
         {
-            //Get Player
-            Player player = await _store.GetPlayerDetailsAsync(playerin.Gamertag);
-            Group group = await _store.GetGroupDetailsAsync(groupname);
+            if (string.IsNullOrWhiteSpace(player.Gamertag))
+            {
+                return BadRequest(); //TODO: return error info in body
+            }
 
             // Save player
-            await _store.AddPlayerToGroupAsync(group, player);
+            await _store.SavePlayerAsync(new Player { Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
 
             // Return result
-            return Ok();
+            string location = Url.Action(
+                nameof(GetPlayer),
+                ControllerName,
+                new { gamerTag = player.Gamertag });
+            return Created(location, new { gamerTag = player.Gamertag });
         }
 
+        /// <summary>
+        /// Gets player information by player's gamer tag. You have to be an administrator to perform this action.
+        /// </summary>
+        /// <param name="gamerTag">Gamer tag</param>
+        /// <returns>Player information</returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerGetResponseModel))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "player not found")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpGet("players/{gamerTag}")]
+        public async Task<ActionResult> GetPlayer(string gamerTag)
+        {
+            // Call data store
+            var player = await _store.GetPlayerDetailsAsync(gamerTag);
+            if (player == null) return NotFound();
 
+            // Return result
+            return Ok(PlayerGetResponseModel.FromPlayer(player));
+        }
 
-        //Player Admin APIs
+        /// <summary>
+        /// Gets all players
+        /// </summary>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerListGetResponseModel))]
+        [Authorize(Roles = RoleNames.Admin)]
         [HttpGet("players")]
         public async Task<ActionResult> GetPlayers()
         {
@@ -116,48 +149,37 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(resultModel);
         }
 
-        [HttpGet("players/{playername}/groups/")]
-        public async Task<ActionResult> GetPlayerGroups(string playername)
+        /// <summary>
+        /// Gets the list of groups current player belongs to.
+        /// </summary>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupListResponseModel))]
+        [Authorize(Roles = RoleNames.PlayerAndAdmin)]
+        [HttpGet("player/groups")]
+        public async Task<ActionResult> GetPlayerGroups()
         {
-            // Call data store
-            var groups = await _store.GetPlayersGroupsAsync(playername);
-
-            // Format response model
-            var resultModel = new GroupListResponseModel
-            {
-                Groups = groups.Select(s => (GroupListResponseModel.GroupsEntry)s).ToList()
-            };
-            // Return result
-            return Ok(resultModel);
+            return await GetPlayerGroups(User.GetGamerTag());
         }
 
-        [HttpGet("players/{playername}/")]
-        public async Task<ActionResult> GetPlayer(string playername)
+        /// <summary>
+        /// Gets the list of group a player belongs to.
+        /// </summary>
+        /// <param name="gamerTag">Player's gamertag.</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupListResponseModel))]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpGet("players/{gamerTag}/groups")]
+        public async Task<ActionResult> GetPlayerGroups(string gamerTag)
         {
             // Call data store
-            var player = await _store.GetPlayerDetailsAsync(playername);
-
-            if (player == null)
-            {
-                return NotFound();
-            }
-
-            // Format response model
-            var resultModel = new PlayerGetResponseModel
-            {
-                Player = player
-            };
+            var groups = await _store.GetPlayersGroupsAsync(gamerTag);
 
             // Return result
-            return Ok(resultModel);
+            return Ok(GroupListResponseModel.FromGroups(groups));
         }
-
-
-
-
-
 
         // ********************************** THIS endpoint is a temporary measure to quickly unblock auth, but needs to be removed ***************************
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("EVIL/HELPER/tagfromid/{playerid}")]
         public async Task<ActionResult> EVIL_HELPER_GetTagFromPlayerId(string playerid)
         {
@@ -173,87 +195,128 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(player.Gamertag);
         }
 
-
-
-
-
-
-
-
-        [Authorize(Roles = "player")]
-        [Route("players")]
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody]PlayerPostRequestModel player)
+        /// <summary>
+        /// Adds player to a group.
+        /// </summary>
+        /// <param name="playerName">Player's gamer tag</param>
+        /// <param name="groupName">Group name.</param>
+        /// <returns></returns>
+        [Route("players/{playerName}/groups/{groupName}")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpPut]
+        public async Task<ActionResult> AddPlayerToGroup(string playerName, string groupName)
         {
-            //TODO: Handle exceptions and retries
-            var gamerTag = User.GetGamerTag();
-            if (string.IsNullOrWhiteSpace(gamerTag))
+            Group group = await _store.GetGroupDetailsAsync(groupName);
+            if (group == null)
             {
-                return BadRequest(); //TODO: return error info in body
+                _log.LogDebug("group '{0}' not found", groupName);
+                return BadRequest();
             }
 
-            // Save player
-            await _store.SavePlayerAsync(new Player { PlayerId = User.Identity.Name, Gamertag = gamerTag, Country = player.Country, CustomTag = player.CustomTag });
+            Player player = await _store.GetPlayerDetailsAsync(playerName);
+            if (player == null)
+            {
+                _log.LogDebug("player '{0}' not found", playerName);
+                return BadRequest();
+            }
 
-            // Return result
-            var location = Url.Link("GetPlayer", new { playername = player.Gamertag });
-            return Created("GetPlayer", new { playername = player.Gamertag });
-        }
-
-        [Authorize(Roles = "Player")]
-        [Route("players/{player}")]
-        [HttpPut]
-        public async Task<ActionResult> Put([FromBody]PlayerPostRequestModel player)
-        {
-            // Update player
-            await _store.SavePlayerAsync(
-                new Player { PlayerId = User.Identity.Name, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
-
-            // Return result
-            return new NoContentResult();
-        }
-
-
-        [Route("players/{playername}/groups/{groupname}")]
-        [HttpPost]
-        public async Task<ActionResult> AddPlayerToGroup(string playername, string groupname)
-        {
-            //Get Player
-            Player player = await _store.GetPlayerDetailsAsync(playername);
-            Group group = await _store.GetGroupDetailsAsync(groupname);
-
-            // Save player
             await _store.AddPlayerToGroupAsync(group, player);
 
-            // Return result
             return Ok();
         }
 
+        /// <summary>
+        /// Adds currently logged in player to a group.
+        /// </summary>
+        /// <param name="groupName">Group name.</param>
+        /// <returns></returns>
+        [Route("player/groups/{groupName}")]
+        [Authorize(Roles = RoleNames.PlayerAndAdmin)]
+        [HttpPut]
+        public async Task<ActionResult> AddCurrentPlayerToGroup(string groupName)
+        {
+            return await AddPlayerToGroup(User.GetGamerTag(), groupName);
+        }
 
+        /// <summary>
+        /// Removes a player from a group. 
+        /// </summary>
+        /// <param name="groupName">Group name</param>
+        /// <param name="playerName">Player name</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.NoContent, Description = "player is removed from the group successfully")]
+        [Route("groups/{groupName}/players/{playerName}")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpDelete]
+        public async Task<ActionResult> DeletePlayerFromGroup(string groupName, string playerName)
+        {
+            Player player = await _store.GetPlayerDetailsAsync(playerName);
+            Group group = await _store.GetGroupDetailsAsync(groupName);
+
+            await _store.RemovePlayerFromGroupAsync(group, player);
+
+            return new NoContentResult();
+        }
 
         //Implementation of the group API
 
+        /// <summary>
+        /// Creates a new group. You must be an administrator to perform this action.
+        /// </summary>
+        /// <param name="group">Group object</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.Created, Description = "group created")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [Route("groups")]
+        [HttpPost]
+        public async Task<ActionResult> PostGroup([FromBody]GroupPostRequestModel group)
+        {
+            // Save group
+            await _store.SaveGroupAsync(
+                new Group
+                {
+                    Name = group.Name,
+                    Description = group.Description,
+                    Members = group.Members
+                }
+            );
+
+            // Return result
+            string location = Url.Action(
+                nameof(GetGroup),
+                ControllerName,
+                new { groupName = group.Name });
+            return Created(location, new { groupName = group.Name });
+        }
+
+        /// <summary>
+        /// Get list of all groups. You must be an administrator to perform this action.
+        /// </summary>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupListResponseModel))]
+        [Authorize(Roles = RoleNames.Admin)]
         [HttpGet("groups")]
         public async Task<ActionResult> GetGroupsAsync()
         {
             // Call data store
             var groups = await _store.GetGroupsAsync();
 
-            // Format response model
-            var resultModel = new GroupListResponseModel
-            {
-                Groups = groups.Select(s => (GroupListResponseModel.GroupsEntry)s).ToList()
-            };
-
             // Return result
-            return Ok(resultModel);
+            return Ok(GroupListResponseModel.FromGroups(groups));
         }
 
-        [HttpGet("groups/{groupname}/", Name = "GetGroup")]
-        public async Task<ActionResult> GetGroup(string groupname)
+        /// <summary>
+        /// Gets group by name.
+        /// </summary>
+        /// <param name="groupName"></param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupGetResponseModel))]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpGet("groups/{groupName}", Name = "GetGroup")]
+        public async Task<ActionResult> GetGroup(string groupName)
         {
             // Call data store
-            var group = await _store.GetGroupDetailsAsync(groupname);
+            var group = await _store.GetGroupDetailsAsync(groupName);
             if (group == null)
             {
                 return NotFound();
@@ -269,71 +332,37 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(resultModel);
         }
 
-        [HttpGet("groups/{groupname}/players")]
-        public async Task<ActionResult> GetGroupPlayers(string groupname)
+        /// <summary>
+        /// Gets the members of the group as player objects.
+        /// </summary>
+        /// <param name="groupName">Name of the group</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupMemberResponseModel))]
+        [Authorize(Roles = RoleNames.PlayerAndAdmin)]
+        [HttpGet("groups/{groupName}/players")]
+        public async Task<ActionResult> GetGroupPlayers(string groupName)
         {
             // Call data store
-            var players = await _store.GetGroupPlayersAsync(groupname);
+            List<string> gamertags = await _store.GetGroupPlayersAsync(groupName);
 
             // Format response model
             var resultModel = new GroupMemberResponseModel
             {
-                Members = players.Select(s => (GroupMemberResponseModel.PlayersEntry)s).ToList()
+                Gamertags = gamertags
             };
 
             // Return result
             return Ok(resultModel);
         }
 
-        [Route("groups")]
-        [HttpPost]
-        public async Task<ActionResult> PostGroup([FromBody]GroupPostRequestModel group)
-        {
-            // Save group
-            await _store.SaveGroupAsync(
-                new Group
-                {
-                    Name = group.Name,
-                    CustomType = group.CustomType,
-                    Description = group.Description,
-                    Players = group.Players
-                }
-            );
-
-            // Return result
-            var location = Url.Link("GetGroup", new { groupname = group.Name });
-            return Created(location, null);
-        }
-
-        [Route("groups/{groupname}/players/{playername}")]
-        [HttpPost]
-        public async Task<ActionResult> PostAddPlayerToGroup(string groupname, string playername)
-        {
-            Player player = await _store.GetPlayerDetailsAsync(playername);
-            Group group = await _store.GetGroupDetailsAsync(groupname);
-
-            // Save group
-            await _store.AddPlayerToGroupAsync(group, player);
-
-            // Return result
-            return Ok();
-        }
-
-
-        [Route("groups/{groupname}/players/{playername}")]
-        [HttpDelete]
-        public async Task<ActionResult> DeletePlayerFromGroup(string groupname, string playername)
-        {
-            Player player = await _store.GetPlayerDetailsAsync(playername);
-            Group group = await _store.GetGroupDetailsAsync(groupname);
-
-            await _store.RemovePlayerFromGroupAsync(group, player);
-
-            return new NoContentResult();
-        }
-
-
+        /// <summary>
+        /// Updates group information
+        /// </summary>
+        /// <param name="group">Group object</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.NoContent, Description = "group updated successfully")]
         [Route("groups/{group}")]
+        [Authorize(Roles = RoleNames.Admin)]
         [HttpPut]
         public async Task<ActionResult> PutGroup([FromBody]GroupPostRequestModel group)
         {
@@ -342,9 +371,8 @@ namespace Nether.Web.Features.PlayerManagement
                     new Group
                     {
                         Name = group.Name,
-                        CustomType = group.CustomType,
                         Description = group.Description,
-                        Players = group.Players
+                        Members = group.Members
                     }
                 );
 

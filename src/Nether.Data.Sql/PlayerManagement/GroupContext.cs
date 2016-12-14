@@ -46,8 +46,7 @@ namespace Nether.Data.Sql.PlayerManagement
             {
                 Name = g.Name,
                 CustomType = g.CustomType,
-                Description = g.Description,
-                Image = g.Image
+                Description = g.Description
             }).ToListAsync();
         }
 
@@ -64,26 +63,37 @@ namespace Nether.Data.Sql.PlayerManagement
             {
                 Name = group.Name,
                 CustomType = group.CustomType,
-                Description = group.Description,
-                Image = group.Image
+                Description = group.Description
             };
         }
 
-        public async Task SaveGroupAsync(Group group)
+        public async Task<Guid> SaveGroupAsync(Group group)
         {
+            if (group == null) throw new ArgumentNullException(nameof(group));
+
             // add new group only if it does not exist
             GroupEntity entity = await Groups.FindAsync(group.Name);
             if (entity == null)
             {
-                await Groups.AddAsync(new GroupEntity
+                var newGroup = new GroupEntity
                 {
                     Name = group.Name,
                     CustomType = group.CustomType,
-                    Description = group.Description,
-                    Image = group.Image
-                });
+                    Description = group.Description
+                };
+
+                await Groups.AddAsync(newGroup);
+                await SaveChangesAsync();
+                entity = newGroup;
+            }
+            else
+            {
+                entity.CustomType = group.CustomType;
+                entity.Description = group.Description;
                 await SaveChangesAsync();
             }
+
+            return entity.Id;
         }
 
         public async Task UploadGroupImageAsync(string groupname, byte[] image)
@@ -93,14 +103,14 @@ namespace Nether.Data.Sql.PlayerManagement
             Groups.Update(group);
             await SaveChangesAsync();
         }
-    }
 
-    public class GroupEntity
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string CustomType { get; set; }
-        public string Description { get; set; }
-        public byte[] Image { get; set; }
+        public class GroupEntity
+        {
+            public Guid Id { get; set; }
+            public string Name { get; set; }
+            public string CustomType { get; set; }
+            public string Description { get; set; }
+            public byte[] Image { get; set; }
+        }
     }
 }

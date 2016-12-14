@@ -19,17 +19,27 @@ namespace Nether.Data.MongoDB.PlayerManagement
                 Name = value.Name,
                 CustomType = value.CustomType,
                 Description = value.Description,
-                Image = value.Image,
-                Players = value.Players
+                Members = value.Members
             };
         }
 
         [BsonId]
-        public ObjectId TestId { get; set; }
+        [BsonIgnoreIfDefault]
+        public ObjectId Id { get; set; }
         public string Name { get; set; }
         public string CustomType { get; set; }
         public string Description { get; set; }
-        public byte[] Image { get; set; }
-        public List<Player> Players { get; set; }
+        public List<string> Members { get; set; }
+
+        public Group ToGroup()
+        {
+            return new Group
+            {
+                Name = Name,
+                CustomType = CustomType,
+                Description = Description,
+                Members = Members
+            };
+        }
     }
 }

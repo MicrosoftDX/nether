@@ -20,7 +20,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
         public LeaderboardTests()
         {
-            _client = GetClient("testuser");
+            _client = GetClient();
         }
 
         [Fact]

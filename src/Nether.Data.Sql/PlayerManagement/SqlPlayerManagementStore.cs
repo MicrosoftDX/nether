@@ -25,14 +25,14 @@ namespace Nether.Data.Sql.PlayerManagement
         {
             _playerDb = new PlayerContext(connectionString, _playerTable);
             _groupDb = new GroupContext(connectionString, _groupTable);
-            _factDb = new FactContext(connectionString, _factTable);
+            _factDb = new FactContext(connectionString, _factTable, loggerFactory);
             _logger = loggerFactory.CreateLogger<SqlPlayerManagementStore>();
         }
 
         public async Task AddPlayerToGroupAsync(Group group, Player player)
         {
             // assuming that thhe player and the group already exist 
-            await _factDb.AddPlayerToGroupAsync(group, player);
+            await _factDb.AddPlayerToGroupAsync(group, player.Gamertag);
         }
 
         public async Task<Group> GetGroupDetailsAsync(string groupname)
@@ -45,11 +45,11 @@ namespace Nether.Data.Sql.PlayerManagement
             return await _groupDb.GetGroupImageAsync(name);
         }
 
-        public async Task<List<Player>> GetGroupPlayersAsync(string groupname)
+        public async Task<List<string>> GetGroupPlayersAsync(string groupname)
         {
             // get all the players for groupname
-            List<string> groupPlayers = await _factDb.getGroupPlayersAsync(groupname);
-            return groupPlayers.Select(p => GetPlayerDetailsByIdAsync(p).Result).ToList();
+            List<string> groupPlayers = await _factDb.GetGroupPlayersAsync(groupname);
+            return groupPlayers;
         }
 
         public async Task<List<Group>> GetGroupsAsync()
@@ -77,12 +77,13 @@ namespace Nether.Data.Sql.PlayerManagement
             return await _playerDb.GetPlayersAsync();
         }
 
-        public async Task<List<Group>> GetPlayersGroupsAsync(string gamertag)
+        public async Task<List<Group>> GetPlayersGroupsAsync(string gamerTag)
         {
-            // get the playerid for gamertag
-            string playerId = await _playerDb.GetPlayerIdForGamerTag(gamertag);
-            // get all the groups for player 
-            List<string> playerGroups = await _factDb.GetPlayerGroupsAsync(playerId);
+            if (gamerTag == null) throw new ArgumentNullException(nameof(gamerTag));
+
+            // get all the group names for player 
+            List<string> playerGroups = await _factDb.GetPlayerGroupsAsync(gamerTag);
+
             return playerGroups.Select(g => GetGroupDetailsAsync(g).Result).ToList();
         }
 
@@ -95,11 +96,14 @@ namespace Nether.Data.Sql.PlayerManagement
         {
             // add a new group if does not exist
             await _groupDb.SaveGroupAsync(group);
+
             // add a new player if does not exist and update the fact table with the relation between player and group
-            foreach (Player player in group.Players)
+            if (group.Members != null)
             {
-                await _playerDb.SavePlayerAsync(player);
-                await _factDb.AddPlayerToGroupAsync(group, player);
+                foreach (string playerGamerTag in group.Members)
+                {
+                    await _factDb.AddPlayerToGroupAsync(group, playerGamerTag);
+                }
             }
         }
 

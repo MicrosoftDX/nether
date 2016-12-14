@@ -21,7 +21,7 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.Name, "devuser"),
                         new Claim(JwtClaimTypes.GivenName, "Development"),
                         new Claim(JwtClaimTypes.FamilyName, "User"),
-                        new Claim(JwtClaimTypes.Role, "player"),
+                        new Claim(JwtClaimTypes.Role, RoleNames.Player),
                     }
                 },
                 new InMemoryUser{Subject = "2222", Username = "devadmin", Password = "devadmin",
@@ -30,7 +30,7 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.Name, "devadmin"),
                         new Claim(JwtClaimTypes.GivenName, "Development"),
                         new Claim(JwtClaimTypes.FamilyName, "Admin"),
-                        new Claim(JwtClaimTypes.Role, "admin"),
+                        new Claim(JwtClaimTypes.Role, RoleNames.Admin),
                     }
                 },
 
@@ -40,7 +40,7 @@ namespace Nether.Web.Features.Identity.Configuration
                     Claims = new Claim[]
                     {
                         new Claim(JwtClaimTypes.Name, "112299"),
-                        new Claim(JwtClaimTypes.Role, "player"),
+                        new Claim(JwtClaimTypes.Role, RoleNames.Player),
                     }
                 },
                 // user with gamertag
@@ -50,7 +50,7 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.Name, "testuser"),
                         new Claim(JwtClaimTypes.GivenName, "Development"),
                         new Claim(JwtClaimTypes.FamilyName, "User"),
-                        new Claim(JwtClaimTypes.Role, "Player")
+                        new Claim(JwtClaimTypes.Role, RoleNames.Player)
                     }
                 },
                 new InMemoryUser{Subject = "4444", Username = "testuser1", Password = "testuser1",
@@ -59,7 +59,7 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.Name, "testuser1"),
                         new Claim(JwtClaimTypes.GivenName, "Development"),
                         new Claim(JwtClaimTypes.FamilyName, "User"),
-                        new Claim(JwtClaimTypes.Role, "Player"),
+                        new Claim(JwtClaimTypes.Role, RoleNames.Player),
                     }
                 },
                 new InMemoryUser{Subject = "5555", Username = "testuser2", Password = "testuser2",
@@ -68,7 +68,7 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.Name, "testuser2"),
                         new Claim(JwtClaimTypes.GivenName, "Development"),
                         new Claim(JwtClaimTypes.FamilyName, "User"),
-                        new Claim(JwtClaimTypes.Role, "Player"),
+                        new Claim(JwtClaimTypes.Role, RoleNames.Player),
                     }
                 },
                 new InMemoryUser{Subject = "6666", Username = "testuser3", Password = "testuser3",
@@ -77,7 +77,7 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.Name, "testuser3"),
                         new Claim(JwtClaimTypes.GivenName, "Development"),
                         new Claim(JwtClaimTypes.FamilyName, "User"),
-                        new Claim(JwtClaimTypes.Role, "Player"),
+                        new Claim(JwtClaimTypes.Role, RoleNames.Player),
                     }
                 }
             };
@@ -104,7 +104,7 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Claim(JwtClaimTypes.Name, $"loadUser{i}"),
                         new Claim(JwtClaimTypes.GivenName, "Load Test"),
                         new Claim(JwtClaimTypes.FamilyName, $"User #{i}"),
-                        new Claim(JwtClaimTypes.Role, "Player"),
+                        new Claim(JwtClaimTypes.Role, RoleNames.Player),
                     }
                 })
                 .ToList();

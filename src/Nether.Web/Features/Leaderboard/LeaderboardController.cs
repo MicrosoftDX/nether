@@ -49,7 +49,7 @@ namespace Nether.Web.Features.Leaderboard
         /// <returns>List of scores and gametags</returns>
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(LeaderboardGetResponseModel))]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, Description = "not enough permissions to submit the score")]
-        [Authorize(Roles = "Player")]
+        [Authorize(Roles = RoleNames.Player)]
         [HttpGet("{type}")]
         public async Task<ActionResult> Get(LeaderboardType type)
         {
@@ -89,7 +89,7 @@ namespace Nether.Web.Features.Leaderboard
         /// <returns></returns>
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "score posted successfully")]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "score is negative or user does not have an associated gamertag")]
-        [Authorize]
+        [Authorize(Roles = RoleNames.Player)]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody]LeaderboardPostRequestModel request)
         {
@@ -134,7 +134,7 @@ namespace Nether.Web.Features.Leaderboard
         /// </summary>
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "scores deleted successfully")]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "user does not have an associated gamertag")]
-        [Authorize]
+        [Authorize(Roles = RoleNames.Player)]
         [HttpDelete("")]
         public async Task<ActionResult> DropMyScores()
         {
