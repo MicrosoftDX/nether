@@ -11,17 +11,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Nether.Data.Sql.PlayerManagement
 {
-    public class FactContext : DbContext
+    public class PlayerGroupContext : DbContext
     {
         private readonly string _connectionString;
         private readonly string _table;
         private readonly ILoggerFactory _loggerFactory;
 
-        public DbSet<FactEntity> PlayerManagementFact { get; set; }
+        public DbSet<PlayerGroupEntity> PlayerGroups { get; set; }
         public DbSet<PlayerEntity> Players { get; set; }
         public DbSet<GroupEntity> Groups { get; set; }
 
-        public FactContext(string connectionString, string table,
+        public PlayerGroupContext(string connectionString, string table,
             ILoggerFactory loggerFactory)
         {
             _connectionString = connectionString;
@@ -32,11 +32,11 @@ namespace Nether.Data.Sql.PlayerManagement
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<FactEntity>()
+            builder.Entity<PlayerGroupEntity>()
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
-            builder.Entity<FactEntity>().ForSqlServerToTable(_table);
+            builder.Entity<PlayerGroupEntity>().ForSqlServerToTable(_table);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -55,7 +55,7 @@ namespace Nether.Data.Sql.PlayerManagement
             GroupEntity dbGroup = await Groups.Where(g => g.Name == group.Name).FirstOrDefaultAsync();
             if (dbGroup == null) throw new ArgumentException($"group '{group.Name}' does not exist", nameof(group));
 
-            await PlayerManagementFact.AddAsync(new FactEntity
+            await PlayerGroups.AddAsync(new PlayerGroupEntity
             {
                 Player = dbPlayer,
                 Group = dbGroup
@@ -65,9 +65,9 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task<List<string>> GetGroupPlayersAsync(string groupName)
         {
-            List<string> groupPlayersGamertags = await PlayerManagementFact
-                .Where(fact => fact.Group.Name == groupName)
-                .Select(fact => fact.Player.Gamertag)
+            List<string> groupPlayersGamertags = await PlayerGroups
+                .Where(map => map.Group.Name == groupName)
+                .Select(map => map.Player.Gamertag)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -76,9 +76,9 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task<List<string>> GetPlayerGroupsAsync(string gamerTag)
         {
-            List<string> groupNames = await PlayerManagementFact
-                .Where(fact => fact.Player.Gamertag == gamerTag)
-                .Select(fact => fact.Group.Name)
+            List<string> groupNames = await PlayerGroups
+                .Where(map => map.Player.Gamertag == gamerTag)
+                .Select(map => map.Group.Name)
                 .ToListAsync();
 
             return groupNames;
@@ -86,15 +86,18 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task RemovePlayerFromGroupAsync(string groupName, string playerId)
         {
-            List<FactEntity> facts = await PlayerManagementFact
-                .Where(fact => fact.Group.Name == groupName && fact.Player.PlayerId == playerId)
+            List<PlayerGroupEntity> playerGroups = await PlayerGroups
+                .Where(map => map.Group.Name == groupName && map.Player.PlayerId == playerId)
                 .ToListAsync();
 
-            RemoveRange(facts);
+            RemoveRange(playerGroups);
             await SaveChangesAsync();
         }
 
-        public class FactEntity
+        /// <summary>
+        /// Maps a player to a group
+        /// </summary>
+        public class PlayerGroupEntity
         {
             public Guid Id { get; set; }
 
@@ -110,7 +113,7 @@ namespace Nether.Data.Sql.PlayerManagement
             public string CustomType { get; set; }
             public string Description { get; set; }
 
-            public List<FactEntity> Facts { get; set; }
+            public List<PlayerGroupEntity> PlayerGroups { get; set; }
         }
 
         public class PlayerEntity
@@ -121,7 +124,7 @@ namespace Nether.Data.Sql.PlayerManagement
             public string Country { get; set; }
             public string CustomTag { get; set; }
 
-            public List<FactEntity> Facts { get; set; }
+            public List<PlayerGroupEntity> PlayerGroups { get; set; }
 
             public Player ToPlayer()
             {
