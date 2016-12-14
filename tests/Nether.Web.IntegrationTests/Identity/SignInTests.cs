@@ -49,9 +49,9 @@ namespace Nether.Web.IntegrationTests.Identity
             var playerResponse = await client.GetAsync("api/player");
             Assert.Equal(HttpStatusCode.NotFound, playerResponse.StatusCode);
 
-            // PUT /api/players/{id}
+            // PUT /api/players
             var player = new { gamertag = "testuser-notag", country = "UK", customTag = "testing" };
-            playerResponse = await client.PutAsJsonAsync("api/players/foo", player);
+            playerResponse = await client.PutAsJsonAsync("api/player", player);
             playerResponse.EnsureSuccessStatusCode();
 
             // Reauthenticate

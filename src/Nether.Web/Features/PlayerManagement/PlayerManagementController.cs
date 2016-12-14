@@ -86,7 +86,7 @@ namespace Nether.Web.Features.PlayerManagement
         /// <param name="player">Player data</param>
         /// <returns></returns>
         [SwaggerResponse((int)HttpStatusCode.Created, Description = "player created")]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "user has no gamer")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "user has no gamertag")]
         [Authorize(Roles = RoleNames.Admin)]
         [Route("players")]
         [HttpPost]

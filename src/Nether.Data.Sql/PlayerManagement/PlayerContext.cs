@@ -71,7 +71,7 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task<Player> GetPlayerDetailsAsync(string gamertag)
         {
-            PlayerEntity player = await Players.SingleAsync(p => p.Gamertag.Equals(gamertag));
+            PlayerEntity player = await Players.SingleOrDefaultAsync(p => p.Gamertag.Equals(gamertag));
             return player?.ToPlayer();
         }
 
@@ -82,14 +82,14 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task<Player> GetPlayerDetailsByIdAsync(string id)
         {
-            PlayerEntity player = await Players.SingleAsync(p => p.PlayerId.Equals(id));
-            return player.ToPlayer();
+            PlayerEntity player = await Players.SingleOrDefaultAsync(p => p.PlayerId.Equals(id));
+            return player?.ToPlayer();
         }
 
         public async Task<string> GetPlayerIdForGamerTag(string gamertag)
         {
-            var player = await Players.SingleAsync(p => p.Gamertag == gamertag);
-            return player.PlayerId;
+            var player = await Players.SingleOrDefaultAsync(p => p.Gamertag == gamertag);
+            return player?.PlayerId;
         }
 
         public Task UploadPlayerImageAsync(string gamertag, byte[] image)
