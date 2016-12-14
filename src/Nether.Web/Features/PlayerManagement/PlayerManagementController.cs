@@ -176,7 +176,6 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Return result
             return Ok(GroupListResponseModel.FromGroups(groups));
-
         }
 
         // ********************************** THIS endpoint is a temporary measure to quickly unblock auth, but needs to be removed ***************************
