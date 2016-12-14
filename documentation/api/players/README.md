@@ -23,7 +23,7 @@ The following information is common to all tasks that you might do related to pl
 |GET|[`/api/players/{gamerTag}`](get-player-by-gamertag.md)|Gets player information by player's gamer tag.|
 |GET|/api/player/groups|Gets the list of groups current player belongs to.|
 |GET|/api/groups|Get list of all groups.|
-|POST|/api/groups|Creates a new group.|
+|POST|[`/api/groups`](add-new-group.md)|Creates a new group.|
 |GET|/api/groups/`{groupName}`|Gets a group by name.|
 |PUT|/api/group|Updates group information.|
 |GET|/api/groups/`{groupName}`/players|Gets the members of the group as player objects.|
