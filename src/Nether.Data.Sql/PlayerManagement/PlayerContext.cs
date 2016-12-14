@@ -96,25 +96,5 @@ namespace Nether.Data.Sql.PlayerManagement
         {
             throw new NotSupportedException();
         }
-
-        public class PlayerEntity
-        {
-            public Guid Id { get; set; }
-            public string PlayerId { get; set; }
-            public string Gamertag { get; set; }
-            public string Country { get; set; }
-            public string CustomTag { get; set; }
-
-            public Player ToPlayer()
-            {
-                return new Player
-                {
-                    PlayerId = PlayerId,
-                    Gamertag = Gamertag,
-                    Country = Country,
-                    CustomTag = CustomTag
-                };
-            }
-        }
     }
 }

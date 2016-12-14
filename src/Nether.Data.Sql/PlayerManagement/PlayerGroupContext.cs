@@ -93,49 +93,5 @@ namespace Nether.Data.Sql.PlayerManagement
             RemoveRange(playerGroups);
             await SaveChangesAsync();
         }
-
-        /// <summary>
-        /// Maps a player to a group
-        /// </summary>
-        public class PlayerGroupEntity
-        {
-            public Guid Id { get; set; }
-
-            public GroupEntity Group { get; set; }
-
-            public PlayerEntity Player { get; set; }
-        }
-
-        public class GroupEntity
-        {
-            public Guid Id { get; set; }
-            public string Name { get; set; }
-            public string CustomType { get; set; }
-            public string Description { get; set; }
-
-            public List<PlayerGroupEntity> PlayerGroups { get; set; }
-        }
-
-        public class PlayerEntity
-        {
-            public Guid Id { get; set; }
-            public string PlayerId { get; set; }
-            public string Gamertag { get; set; }
-            public string Country { get; set; }
-            public string CustomTag { get; set; }
-
-            public List<PlayerGroupEntity> PlayerGroups { get; set; }
-
-            public Player ToPlayer()
-            {
-                return new Player
-                {
-                    PlayerId = PlayerId,
-                    Gamertag = Gamertag,
-                    Country = Country,
-                    CustomTag = CustomTag
-                };
-            }
-        }
     }
 }
