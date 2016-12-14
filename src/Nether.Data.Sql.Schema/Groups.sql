@@ -8,3 +8,7 @@
     PRIMARY KEY ([Id]), 
     CONSTRAINT [CK_Groups_Name] UNIQUE([Name])
 )
+
+GO
+
+CREATE INDEX [IX_Groups_Name] ON [dbo].[Groups] ([Name])

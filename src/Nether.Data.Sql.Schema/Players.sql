@@ -10,3 +10,11 @@
     CONSTRAINT [AK_Players_PlayerId] UNIQUE ([PlayerId])
 )
 
+
+GO
+
+CREATE INDEX [IX_Players_Gamertag] ON [dbo].[Players] ([Gamertag])
+
+GO
+
+CREATE INDEX [IX_Players_PlayerId] ON [dbo].[Players] ([PlayerId])
