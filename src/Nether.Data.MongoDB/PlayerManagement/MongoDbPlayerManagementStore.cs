@@ -51,9 +51,9 @@ namespace Nether.Data.MongoDB.PlayerManagement
         public async Task<Group> GetGroupDetailsAsync(string groupName)
         {
             var query = from s in GroupsCollection.AsQueryable()
-                           where s.Name == groupName
-                           orderby s.Name descending
-                           select s;
+                        where s.Name == groupName
+                        orderby s.Name descending
+                        select s;
 
             var group = await query.FirstOrDefaultAsync();
 

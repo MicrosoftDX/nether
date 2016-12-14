@@ -14,7 +14,7 @@ namespace Nether.Web.Features.PlayerManagement
         {
             public static implicit operator GroupEntry(Group group)
             {
-                return new GroupEntry { Name = group.Name, CustomType = group.CustomType, Description = group.Description, Members = group.Members};
+                return new GroupEntry { Name = group.Name, CustomType = group.CustomType, Description = group.Description, Members = group.Members };
             }
 
             public string Name { get; set; }

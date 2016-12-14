@@ -84,7 +84,7 @@ namespace Nether.Web.IntegrationTests
                 customTag = nameof(WebTestBase)
             };
             HttpResponseMessage response = client.PutAsJsonAsync("api/player", player).Result;
-            if(!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
                 throw new AuthenticationException("could not update player info");
             }
@@ -105,7 +105,6 @@ namespace Nether.Web.IntegrationTests
 
             string content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(content);
-
         }
     }
 }

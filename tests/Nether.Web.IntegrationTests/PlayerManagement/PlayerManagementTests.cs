@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -136,7 +139,6 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             GroupGetResponse group = await GetGroupByName(name);
 
             Assert.Equal("after change", group.Group.Description);
-
         }
 
         [Fact]
@@ -223,7 +225,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         {
             HttpResponseMessage response;
 
-            if(playerName == null)
+            if (playerName == null)
             {
                 response = await _client.PutAsync($"{BaseUri}player/groups/{groupName}", null);
             }
@@ -248,7 +250,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
         private async Task UpdateGroup(GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
         {
-            HttpResponseMessage response =  await _client.PutAsJsonAsync(BaseUri + "groups/" + group.Name, group);
+            HttpResponseMessage response = await _client.PutAsJsonAsync(BaseUri + "groups/" + group.Name, group);
 
             Assert.Equal(expectedCode, response.StatusCode);
         }

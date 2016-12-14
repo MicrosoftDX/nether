@@ -43,7 +43,7 @@ namespace Nether.Data.Sql.PlayerManagement
         public async Task SavePlayerAsync(Player player)
         {
             // add only of the player does not exist
-            PlayerEntity entity = player.PlayerId ==  null ? null : await Players.FindAsync(player.PlayerId);
+            PlayerEntity entity = player.PlayerId == null ? null : await Players.FindAsync(player.PlayerId);
             if (entity == null)
             {
                 await Players.AddAsync(new PlayerEntity
