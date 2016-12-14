@@ -96,7 +96,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             Assert.True(allGroups.Groups.Any(gr => gr.Name == groupName));
         }
 
-        [Fact]//
+        [Fact]
         public async Task As_a_users_I_cannot_create_groups()
         {
             await CreateGroup(new GroupEntry
@@ -152,15 +152,15 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             await AddPlayerToGroup(groupName, gamertag);
 
             //check that i'm in the group now
-            GroupGetResponse group = await GetGroupByName(groupName);
-            Assert.True(group.Group.Members.Any(m => m == gamertag));
+            GroupMembersResponseModel groupMembers = await GetGroupMembers(groupName);
+            Assert.True(groupMembers.Gamertags.Any(m => m == gamertag));
 
             //remove me from this group
             await DeletePlayerFromGroup(groupName, gamertag);
 
             //check group has no gamertag of mine anymore
-            group = await GetGroupByName(groupName);
-            Assert.True(!group.Group.Members.Any(m => m == gamertag));
+            groupMembers = await GetGroupMembers(groupName);
+            Assert.True(!groupMembers.Gamertags.Any(m => m == gamertag));
         }
 
         [Fact]
@@ -169,11 +169,11 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             _client = GetAdminClient();
 
             string groupName = Guid.NewGuid().ToString();
-            await CreateGroup(new GroupEntry { Name = groupName, Members = new[] { "tag1", "tag2", "tag3" } });
+            await CreateGroup(new GroupEntry { Name = groupName, Members = new[] { gamertag, "testUserGamerTag" } });
 
             GroupMembersResponseModel group = await GetGroupMembers(groupName);
 
-            Assert.Equal(3, group.Gamertags.Length);
+            Assert.Equal(2, group.Gamertags.Length);
         }
 
         [Fact]

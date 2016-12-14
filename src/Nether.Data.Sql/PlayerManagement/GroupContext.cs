@@ -67,7 +67,7 @@ namespace Nether.Data.Sql.PlayerManagement
             };
         }
 
-        public async Task SaveGroupAsync(Group group)
+        public async Task<Guid> SaveGroupAsync(Group group)
         {
             if (group == null) throw new ArgumentNullException(nameof(group));
 
@@ -75,13 +75,16 @@ namespace Nether.Data.Sql.PlayerManagement
             GroupEntity entity = await Groups.FindAsync(group.Name);
             if (entity == null)
             {
-                await Groups.AddAsync(new GroupEntity
+                var newGroup = new GroupEntity
                 {
                     Name = group.Name,
                     CustomType = group.CustomType,
                     Description = group.Description
-                });
+                };
+
+                await Groups.AddAsync(newGroup);
                 await SaveChangesAsync();
+                entity = newGroup;
             }
             else
             {
@@ -89,6 +92,8 @@ namespace Nether.Data.Sql.PlayerManagement
                 entity.Description = group.Description;
                 await SaveChangesAsync();
             }
+
+            return entity.Id;
         }
 
         public async Task UploadGroupImageAsync(string groupname, byte[] image)
@@ -98,14 +103,14 @@ namespace Nether.Data.Sql.PlayerManagement
             Groups.Update(group);
             await SaveChangesAsync();
         }
-    }
 
-    public class GroupEntity
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string CustomType { get; set; }
-        public string Description { get; set; }
-        public byte[] Image { get; set; }
+        public class GroupEntity
+        {
+            public Guid Id { get; set; }
+            public string Name { get; set; }
+            public string CustomType { get; set; }
+            public string Description { get; set; }
+            public byte[] Image { get; set; }
+        }
     }
 }

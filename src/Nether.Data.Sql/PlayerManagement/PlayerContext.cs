@@ -28,8 +28,8 @@ namespace Nether.Data.Sql.PlayerManagement
             base.OnModelCreating(builder);
 
             builder.Entity<PlayerEntity>()
-            .Property(p => p.Id)
-            .ValueGeneratedOnAdd();
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
 
             builder.Entity<PlayerEntity>().ForSqlServerToTable(_table)
                 .HasKey(p => p.PlayerId);
@@ -96,25 +96,25 @@ namespace Nether.Data.Sql.PlayerManagement
         {
             throw new NotSupportedException();
         }
-    }
 
-    public class PlayerEntity
-    {
-        public Guid Id { get; set; }
-        public string PlayerId { get; set; }
-        public string Gamertag { get; set; }
-        public string Country { get; set; }
-        public string CustomTag { get; set; }
-
-        public Player ToPlayer()
+        public class PlayerEntity
         {
-            return new Player
+            public Guid Id { get; set; }
+            public string PlayerId { get; set; }
+            public string Gamertag { get; set; }
+            public string Country { get; set; }
+            public string CustomTag { get; set; }
+
+            public Player ToPlayer()
             {
-                PlayerId = PlayerId,
-                Gamertag = Gamertag,
-                Country = Country,
-                CustomTag = CustomTag
-            };
+                return new Player
+                {
+                    PlayerId = PlayerId,
+                    Gamertag = Gamertag,
+                    Country = Country,
+                    CustomTag = CustomTag
+                };
+            }
         }
     }
 }

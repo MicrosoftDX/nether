@@ -7,6 +7,7 @@ using Nether.Data.PlayerManagement;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Nether.Data.Sql.PlayerManagement
 {
@@ -14,13 +15,14 @@ namespace Nether.Data.Sql.PlayerManagement
     {
         private readonly string _connectionString;
         private readonly string _table;
-
-        private static readonly string s_groupPlayersSql = "select * from {0} where GroupId = '{1}'";
-        private static readonly string s_playerGroupsSql = "select * from {0} where PlayerId = '{1}'";
+        private readonly ILoggerFactory _loggerFactory;
 
         public DbSet<FactEntity> PlayerManagementFact { get; set; }
+        public DbSet<PlayerEntity> Players { get; set; }
+        public DbSet<GroupEntity> Groups { get; set; }
 
-        public FactContext(string connectionString, string table)
+        public FactContext(string connectionString, string table,
+            ILoggerFactory loggerFactory)
         {
             _connectionString = connectionString;
             _table = table;
@@ -31,53 +33,106 @@ namespace Nether.Data.Sql.PlayerManagement
             base.OnModelCreating(builder);
 
             builder.Entity<FactEntity>()
-            .Property(f => f.Id)
-            .ValueGeneratedOnAdd();
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
 
             builder.Entity<FactEntity>().ForSqlServerToTable(_table);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
+            base.OnConfiguring(builder);
+
             builder.UseSqlServer(_connectionString);
+            builder.UseLoggerFactory(_loggerFactory);
         }
 
-        public async Task AddPlayerToGroupAsync(Group group, string playerId)
+        public async Task AddPlayerToGroupAsync(Group group, string gamerTag)
         {
+            PlayerEntity dbPlayer = await Players.Where(p => p.Gamertag == gamerTag).FirstOrDefaultAsync();
+            if (dbPlayer == null) throw new ArgumentException($"player '{gamerTag}' does not exist", nameof(gamerTag));
+
+            GroupEntity dbGroup = await Groups.Where(g => g.Name == group.Name).FirstOrDefaultAsync();
+            if (dbGroup == null) throw new ArgumentException($"group '{group.Name}' does not exist", nameof(group));
+
             await PlayerManagementFact.AddAsync(new FactEntity
             {
-                PlayerId = playerId,
-                GroupId = group.Name
+                Player = dbPlayer,
+                Group = dbGroup
             });
             await SaveChangesAsync();
         }
 
-        public async Task<List<string>> getGroupPlayersAsync(string groupname)
+        public async Task<List<string>> GetGroupPlayersAsync(string groupName)
         {
-            string sql = String.Format(s_groupPlayersSql, _table, groupname);
-            var players = await PlayerManagementFact.FromSql(sql).ToListAsync();
-            return players.Select(p => p.PlayerId).ToList();
+            List<string> groupPlayersGamertags = await PlayerManagementFact
+                .Where(fact => fact.Group.Name == groupName)
+                .Select(fact => fact.Player.Gamertag)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return groupPlayersGamertags;
         }
 
-        public async Task<List<string>> GetPlayerGroupsAsync(string playerId)
+        public async Task<List<string>> GetPlayerGroupsAsync(string gamerTag)
         {
-            string sql = String.Format(s_playerGroupsSql, _table, playerId);
-            var groups = await PlayerManagementFact.FromSql(sql).ToListAsync();
-            return groups.Select(g => g.GroupId).ToList();
+            List<string> groupNames = await PlayerManagementFact
+                .Where(fact => fact.Player.Gamertag == gamerTag)
+                .Select(fact => fact.Group.Name)
+                .ToListAsync();
+
+            return groupNames;
         }
 
         public async Task RemovePlayerFromGroupAsync(string groupName, string playerId)
         {
-            List<FactEntity> facts = await PlayerManagementFact.Where(f => (f.GroupId == groupName) && (f.PlayerId == playerId)).ToListAsync();
+            List<FactEntity> facts = await PlayerManagementFact
+                .Where(fact => fact.Group.Name == groupName && fact.Player.PlayerId == playerId)
+                .ToListAsync();
+
             RemoveRange(facts);
             await SaveChangesAsync();
         }
-    }
 
-    public class FactEntity
-    {
-        public Guid Id { get; set; }
-        public string PlayerId { get; set; }
-        public string GroupId { get; set; }
+        public class FactEntity
+        {
+            public Guid Id { get; set; }
+
+            public GroupEntity Group { get; set; }
+
+            public PlayerEntity Player { get; set; }
+        }
+
+        public class GroupEntity
+        {
+            public Guid Id { get; set; }
+            public string Name { get; set; }
+            public string CustomType { get; set; }
+            public string Description { get; set; }
+
+            public List<FactEntity> Facts { get; set; }
+        }
+
+        public class PlayerEntity
+        {
+            public Guid Id { get; set; }
+            public string PlayerId { get; set; }
+            public string Gamertag { get; set; }
+            public string Country { get; set; }
+            public string CustomTag { get; set; }
+
+            public List<FactEntity> Facts { get; set; }
+
+            public Player ToPlayer()
+            {
+                return new Player
+                {
+                    PlayerId = PlayerId,
+                    Gamertag = Gamertag,
+                    Country = Country,
+                    CustomTag = CustomTag
+                };
+            }
+        }
     }
 }
