@@ -11,7 +11,7 @@
              }
          },
          "availability": {
-             "frequency": "Hour",
+             "frequency": "Day",
              "interval": 1
          },
          "external": true,

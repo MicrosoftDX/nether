@@ -1,0 +1,45 @@
+{
+    "name": "copyMAU",
+    "properties": {
+        "description": "Copy DAU Hive tables into a csv file",
+        "activities": [
+            {
+                "type": "Copy",
+                "typeProperties": {
+                    "source": {
+                        "type": "BlobSource"
+                    },
+                    "sink": {
+                        "type": "BlobSink",
+                        "writeBatchSize": 0,
+                        "writeBatchTimeout": "00:00:00"
+                    }
+                },
+                "inputs": [
+                    {
+                        "name": "monthlyActiveUsers"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "monthlyActiveUsersCsv"
+                    }
+                ],
+                "policy": {
+                    "timeout": "01:00:00",
+                    "executionPriorityOrder": "OldestFirst",
+                    "concurrency": 1,
+                    "retry": 1
+                },
+                "scheduler": {
+                    "frequency": "Day",
+                    "interval": 1
+                },
+                "name": "RenameHiveOutput2CSVmauActivity"
+            }
+        ],
+        "start": "2016-12-14T08:00:00Z",
+        "end": "2017-11-19T00:00:00Z",
+        "isPaused": false
+    }
+}

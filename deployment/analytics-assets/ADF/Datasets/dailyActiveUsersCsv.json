@@ -1,18 +1,18 @@
 {
-    "name": "mauCsv",
+    "name": "dailyActiveUsersCsv",
     "properties": {
         "type": "AzureBlob",
         "linkedServiceName": "storageLinkedService",
         "typeProperties": {
             "fileName": "000000_0.csv",
-            "folderPath": "gamedata/monthlyactiveusersCsv",
+            "folderPath": "gamedata/dailyactiveusersCsv",
             "format": {
                 "type": "TextFormat",
                 "columnDelimiter": ","
             }
         },
         "availability": {
-            "frequency": "Hour",
+            "frequency": "Day",
             "interval": 1
         }
     }
