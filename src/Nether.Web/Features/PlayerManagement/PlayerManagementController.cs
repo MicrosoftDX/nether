@@ -158,7 +158,7 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpGet("player/groups")]
         public async Task<ActionResult> GetPlayerGroups()
         {
-            return await GetPlayerGroupsImpl(User.GetGamerTag());
+            return await GetPlayerGroups(User.GetGamerTag());
         }
 
         /// <summary>
@@ -171,19 +171,16 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpGet("players/{gamerTag}/groups")]
         public async Task<ActionResult> GetPlayerGroups(string gamerTag)
         {
-            return await GetPlayerGroupsImpl(gamerTag);
-        }
-
-        public async Task<ActionResult> GetPlayerGroupsImpl(string playerGamerTag)
-        {
             // Call data store
-            var groups = await _store.GetPlayersGroupsAsync(playerGamerTag);
+            var groups = await _store.GetPlayersGroupsAsync(gamerTag);
 
             // Return result
             return Ok(GroupListResponseModel.FromGroups(groups));
+
         }
 
         // ********************************** THIS endpoint is a temporary measure to quickly unblock auth, but needs to be removed ***************************
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("EVIL/HELPER/tagfromid/{playerid}")]
         public async Task<ActionResult> EVIL_HELPER_GetTagFromPlayerId(string playerid)
         {
@@ -210,24 +207,6 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpPut]
         public async Task<ActionResult> AddPlayerToGroup(string playerName, string groupName)
         {
-            return await AddPlayerToGroupImpl(playerName, groupName);
-        }
-
-        /// <summary>
-        /// Adds currently logged in player to a group.
-        /// </summary>
-        /// <param name="groupName">Group name.</param>
-        /// <returns></returns>
-        [Route("player/groups/{groupName}")]
-        [Authorize(Roles = RoleNames.PlayerAndAdmin)]
-        [HttpPut]
-        public async Task<ActionResult> AddCurrentPlayerToGroup(string groupName)
-        {
-            return await AddPlayerToGroupImpl(User.GetGamerTag(), groupName);
-        }
-
-        private async Task<ActionResult> AddPlayerToGroupImpl(string playerName, string groupName)
-        {
             Group group = await _store.GetGroupDetailsAsync(groupName);
             if (group == null)
             {
@@ -245,6 +224,19 @@ namespace Nether.Web.Features.PlayerManagement
             await _store.AddPlayerToGroupAsync(group, player);
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Adds currently logged in player to a group.
+        /// </summary>
+        /// <param name="groupName">Group name.</param>
+        /// <returns></returns>
+        [Route("player/groups/{groupName}")]
+        [Authorize(Roles = RoleNames.PlayerAndAdmin)]
+        [HttpPut]
+        public async Task<ActionResult> AddCurrentPlayerToGroup(string groupName)
+        {
+            return await AddPlayerToGroup(User.GetGamerTag(), groupName);
         }
 
         /// <summary>
@@ -315,7 +307,7 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
-        /// Gets the list of all groups
+        /// Gets group by name.
         /// </summary>
         /// <param name="groupName"></param>
         /// <returns></returns>
