@@ -1,0 +1,100 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": { 
+    "sqlServer":{
+        "type": "string",
+        "metadata": {
+            "description": "SQL Server name"
+        }
+    },  
+    "database":{
+        "type": "string",
+        "metadata": {
+            "description": "SQL database name"
+        }
+    },   
+    "sqlAdminLogin": {
+      "type": "string",
+      "defaultValue": "sqluser",
+      "metadata": {
+        "description": "These credentials can be used to access the Azure SQL database."
+      }
+    },
+    "sqlAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The password can be used to access the SQL database."
+      }
+    },    
+    "bacpacUri":{
+      "type":"string",      
+      "metadata": {
+        "description": "URI of player management database and tables bacpac file"
+      }
+    }
+  },
+  "variables": {    
+  },
+  "resources": [    
+    {
+      "name": "[parameters('sqlServer')]",
+      "type": "Microsoft.Sql/servers",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "SqlServer"        
+      },
+      "apiVersion": "2014-04-01",
+      "dependsOn": [ ],
+      "properties": {
+        "administratorLogin": "[parameters('sqlAdminLogin')]",
+        "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
+        "version": "12.0"
+      },
+      "resources": [
+        {
+          "name": "[parameters('database')]",
+          "type": "databases",
+          "location": "[resourceGroup().location]",
+          "tags": {
+            "displayName": "Database"
+          },
+          "apiVersion": "2015-01-01",
+          "dependsOn": [
+            "[parameters('sqlServer')]"
+          ],
+          "properties": {
+            "edition": "Basic",
+            "collation": "SQL_Latin1_General_CP1_CI_AS",
+            "maxSizeBytes": "1073741824",
+            "requestedServiceObjectiveName": "Basic"
+          },
+          "resources": [
+            {
+              "name": "Import",
+              "type": "extensions",
+              "apiVersion": "2014-04-01",
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServer'), parameters('database'))]"
+              ],
+              "properties": {
+                "operationMode": "Import",
+                "storageKey": "?",
+                "storageKeyType": "SharedAccessKey",
+                "administratorLogin": "[parameters('sqlAdminLogin')]",
+                "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
+                "storageUri": "[parameters('bacpacUri')]"
+              }
+            }
+          ]
+        }        
+      ]
+    }
+  ],
+  "outputs": {      
+    "sqlSvrFqdn": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Sql/servers/', parameters('sqlServer'))).fullyQualifiedDomainName]"
+    }
+  }
+}
