@@ -33,7 +33,30 @@ namespace Nether.Data.Sql.PlayerManagement
         public async Task AddPlayerToGroupAsync(Group group, Player player)
         {
             // assuming that thhe player and the group already exist 
-            await _playerGroupDb.AddPlayerToGroupAsync(group, player.Gamertag);
+            await AddPlayerToGroupAsync(group.Name, player.Gamertag);
+        }
+
+        private async Task AddPlayerToGroupAsync(string groupName, string gamerTag)
+        {
+            PlayerEntity dbPlayer = await _playerGroupDb.Players
+                                                .Where(p => p.Gamertag == gamerTag)
+                                                .FirstOrDefaultAsync();
+
+            if (dbPlayer == null)
+                throw new ArgumentException($"player '{gamerTag}' does not exist", nameof(gamerTag));
+
+            GroupEntity dbGroup = await _playerGroupDb.Groups
+                                            .Where(g => g.Name == groupName)
+                                            .FirstOrDefaultAsync();
+            if (dbGroup == null)
+                throw new ArgumentException($"group '{groupName}' does not exist", nameof(groupName));
+
+            await _playerGroupDb.PlayerGroups.AddAsync(new PlayerGroupEntity
+            {
+                Player = dbPlayer,
+                Group = dbGroup
+            });
+            await _playerGroupDb.SaveChangesAsync();
         }
 
         public async Task<Group> GetGroupDetailsAsync(string groupname)
@@ -46,11 +69,16 @@ namespace Nether.Data.Sql.PlayerManagement
             return await _groupDb.GetGroupImageAsync(name);
         }
 
-        public async Task<List<string>> GetGroupPlayersAsync(string groupname)
+        public async Task<List<string>> GetGroupPlayersAsync(string groupName)
         {
             // get all the players for groupname
-            List<string> groupPlayers = await _playerGroupDb.GetGroupPlayersAsync(groupname);
-            return groupPlayers;
+            List<string> groupPlayersGamertags = await _playerGroupDb.PlayerGroups
+                .Where(map => map.Group.Name == groupName)
+                .Select(map => map.Player.Gamertag)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return groupPlayersGamertags;
         }
 
         public async Task<List<Group>> GetGroupsAsync()
@@ -85,14 +113,29 @@ namespace Nether.Data.Sql.PlayerManagement
             if (gamerTag == null) throw new ArgumentNullException(nameof(gamerTag));
 
             // get all the group names for player 
-            List<string> playerGroups = await _playerGroupDb.GetPlayerGroupsAsync(gamerTag);
+            List<string> playerGroups = await GetPlayerGroupsAsync(gamerTag);
 
             return playerGroups.Select(g => GetGroupDetailsAsync(g).Result).ToList();
+        }
+        private async Task<List<string>> GetPlayerGroupsAsync(string gamerTag)
+        {
+            List<string> groupNames = await _playerGroupDb.PlayerGroups
+                .Where(map => map.Player.Gamertag == gamerTag)
+                .Select(map => map.Group.Name)
+                .ToListAsync();
+
+            return groupNames;
         }
 
         public async Task RemovePlayerFromGroupAsync(Group group, Player player)
         {
-            await _playerGroupDb.RemovePlayerFromGroupAsync(group.Name, player.PlayerId);
+
+            var playerGroups = await _playerGroupDb.PlayerGroups
+                                                .Where(map => map.Group.Name == group.Name && map.Player.PlayerId == player.PlayerId)
+                                                .ToListAsync();
+
+            _playerGroupDb.RemoveRange(playerGroups);
+            await _playerGroupDb.SaveChangesAsync();
         }
 
         public async Task SaveGroupAsync(Group group)
@@ -105,7 +148,7 @@ namespace Nether.Data.Sql.PlayerManagement
             {
                 foreach (string playerGamerTag in group.Members)
                 {
-                    await _playerGroupDb.AddPlayerToGroupAsync(group, playerGamerTag);
+                    await AddPlayerToGroupAsync(group.Name, playerGamerTag);
                 }
             }
         }
