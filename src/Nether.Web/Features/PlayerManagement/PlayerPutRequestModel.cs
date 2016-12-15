@@ -8,13 +8,8 @@ namespace Nether.Web.Features.PlayerManagement
     /// <summary>
     /// Player info request object
     /// </summary>
-    public class PlayerPostRequestModel
+    public class PlayerPutRequestModel
     {
-        /// <summary>
-        /// Gamertag
-        /// </summary>
-        [Required]
-        public string UserId { get; set; }
         /// <summary>
         /// Gamertag
         /// </summary>

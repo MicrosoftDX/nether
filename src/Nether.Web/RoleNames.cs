@@ -9,6 +9,6 @@ namespace Nether.Web
 
         public const string Admin = "Admin";
 
-        public const string PlayerAndAdmin = "Player,Admin";
+        public const string PlayerOrAdmin = "Player,Admin";
     }
 }

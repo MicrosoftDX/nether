@@ -67,7 +67,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
                             orderby s.Gamertag descending
                             select new Player
                             {
-                                PlayerId = s.PlayerId,
+                                UserId = s.PlayerId,
                                 Gamertag = s.Gamertag,
                                 Country = s.Country,
                                 CustomTag = s.CustomTag
@@ -75,14 +75,14 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
             return await getPlayer.FirstOrDefaultAsync();
         }
-        public async Task<Player> GetPlayerDetailsByIdAsync(string id)
+        public async Task<Player> GetPlayerDetailsByUserIdAsync(string id)
         {
             var getPlayer = from s in PlayersCollection.AsQueryable()
                             where s.PlayerId == id
                             orderby s.PlayerId descending
                             select new Player
                             {
-                                PlayerId = s.PlayerId,
+                                UserId = s.PlayerId,
                                 Gamertag = s.Gamertag,
                                 Country = s.Country,
                                 CustomTag = s.CustomTag
@@ -112,7 +112,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
         public async Task SavePlayerAsync(Player player)
         {
             _logger.LogDebug("Saving Player {0}", player.Gamertag);
-            await PlayersCollection.ReplaceOneAsync(p => p.PlayerId == player.PlayerId, player, s_upsertOptions);
+            await PlayersCollection.ReplaceOneAsync(p => p.PlayerId == player.UserId, player, s_upsertOptions);
         }
 
         public async Task<List<string>> GetGroupPlayersAsync(string groupName)
@@ -127,7 +127,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
                             orderby s.Gamertag descending
                             select new Player
                             {
-                                PlayerId = s.PlayerId,
+                                UserId = s.PlayerId,
                                 Gamertag = s.Gamertag,
                                 Country = s.Country,
                                 CustomTag = s.CustomTag
@@ -158,17 +158,17 @@ namespace Nether.Data.MongoDB.PlayerManagement
             return mGroups.Select(m => m.ToGroup()).ToList();
         }
 
-        public async Task UploadPlayerImageAsync(string gamertag, byte[] image)
+        public Task UploadPlayerImageAsync(string gamertag, byte[] image)
         {
             throw new NotSupportedException();
         }
 
-        public async Task<byte[]> GetPlayerImageAsync(string gamertag)
+        public Task<byte[]> GetPlayerImageAsync(string gamertag)
         {
             throw new NotSupportedException();
         }
 
-        public async Task UploadGroupImageAsync(string groupname, byte[] image)
+        public Task UploadGroupImageAsync(string groupname, byte[] image)
         {
             throw new NotImplementedException();
 
@@ -179,7 +179,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
             await GroupsCollection.UpdateOneAsync(filter, update);*/
         }
 
-        public async Task<byte[]> GetGroupImageAsync(string name)
+        public Task<byte[]> GetGroupImageAsync(string name)
         {
             throw new NotImplementedException();
 

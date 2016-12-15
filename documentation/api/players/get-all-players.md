@@ -22,7 +22,7 @@ Status code: 200 - Success
 
 ```json
 {
-    players: [
+    "players": [
         {
         "gamertag": "krist00fer",
         "country" : "Sweden",

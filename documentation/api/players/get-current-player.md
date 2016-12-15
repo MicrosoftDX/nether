@@ -25,7 +25,7 @@ Empty body
 
 ```json
 {
-    player: {
+    "player": {
         "gamertag": "krist00fer",
         "country" : "Sweden",
         "customtag" : "my tag",

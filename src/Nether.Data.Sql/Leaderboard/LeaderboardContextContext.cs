@@ -34,11 +34,14 @@ namespace Nether.Data.Sql.Leaderboard
             base.OnModelCreating(builder);
 
             builder.Entity<SavedGamerScore>()
-                .ForSqlServerToTable(_table)
                 .HasKey(c => c.Id);
 
             builder.Entity<QueriedGamerScore>()
                 .HasKey(c => c.GamerTag);
+
+
+            builder.Entity<SavedGamerScore>()
+                .ForSqlServerToTable(_table);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)

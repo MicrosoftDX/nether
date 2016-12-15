@@ -18,6 +18,7 @@ using System.IO;
 using Microsoft.Extensions.PlatformAbstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Nether.Web.Utilities;
 
 namespace Nether.Web
 {
@@ -46,7 +47,10 @@ namespace Nether.Web
 
             // Add framework services.
             services
-                .AddMvc()
+                .AddMvc(options =>
+                {
+                    options.Filters.AddService(typeof(ExceptionLoggingFilterAttribute));
+                })
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.Converters.Add(new StringEnumConverter
@@ -83,6 +87,8 @@ namespace Nether.Web
                 //    AuthorizationUrl = ""
                 //});
             });
+
+            services.AddSingleton<ExceptionLoggingFilterAttribute>();
 
             // TODO make this conditional with feature switches
             services.AddIdentityServices(Configuration, HostingEnvironment);
