@@ -42,7 +42,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             LeaderboardGetResponse leaderboardBefore = await GetLeaderboard();
 
             List<LeaderboardGetResponse.LeaderboardEntry> entries =
-                leaderboardBefore.Entries.Where(e => e.Gamertag == gamertag).ToList();
+                leaderboardBefore.Entries.Where(e => e.Gamertag == _gamertag).ToList();
 
             //check that there is only one or less (if score wasn't posted yet) entry per user
             Assert.True(entries.Count <= 1);
@@ -54,7 +54,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
             //check that leaderboard has the updated score
             LeaderboardGetResponse leaderboardAfter = await GetLeaderboard();
-            int newFreshScore = leaderboardAfter.Entries.Where(e => e.Gamertag == gamertag).Select(e => e.Score).First();
+            int newFreshScore = leaderboardAfter.Entries.Where(e => e.Gamertag == _gamertag).Select(e => e.Score).First();
             Assert.Equal(newFreshScore, newScore);
         }
 
@@ -75,9 +75,9 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             //put me somewhere in the middle and push the other user in the bottom so he is not around me
             await DeleteMyScores();
             await PostScore(int.MaxValue / 2);
-            string myGamertag = gamertag;
+            string myGamertag = _gamertag;
             _client = GetClient("testuser1");
-            string hisGamertag = gamertag;
+            string hisGamertag = _gamertag;
             await DeleteMyScores();
             await PostScore(1);
 
@@ -113,7 +113,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Cannot_get_leaderboard_if_im_not_in_Player_role()
         {
-            _client = GetClient("devadmin");    //login as devadmin who is not in "Player" role
+            _client = GetAdminClient();    //login as devadmin who is not in "Player" role
 
             await GetLeaderboard("default", HttpStatusCode.Forbidden);
         }

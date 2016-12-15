@@ -14,12 +14,12 @@ namespace Nether.Data.Sql.PlayerManagement
     /// <summary>
     /// Maps a player to a group
     /// </summary>
-    public class PlayerGroupEntity
+    public class PlayerGroupEntity // see https://docs.microsoft.com/en-us/ef/core/modeling/relationships#many-to-many
     {
-        public Guid Id { get; set; }
-
+        public string GroupName { get; set; }
         public GroupEntity Group { get; set; }
 
+        public string Gamertag { get; set; }
         public PlayerEntity Player { get; set; }
     }
 }

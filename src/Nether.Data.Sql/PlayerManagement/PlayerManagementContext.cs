@@ -11,21 +11,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Nether.Data.Sql.PlayerManagement
 {
-    public class PlayerGroupContext : DbContext
+    public class PlayerManagementContext : DbContext
     {
         private readonly string _connectionString;
-        private readonly string _table;
         private readonly ILoggerFactory _loggerFactory;
 
         public DbSet<PlayerGroupEntity> PlayerGroups { get; set; }
         public DbSet<PlayerEntity> Players { get; set; }
         public DbSet<GroupEntity> Groups { get; set; }
 
-        public PlayerGroupContext(string connectionString, string table,
-            ILoggerFactory loggerFactory)
+        public PlayerManagementContext(string connectionString, ILoggerFactory loggerFactory)
         {
             _connectionString = connectionString;
-            _table = table;
             _loggerFactory = loggerFactory;
         }
 
@@ -34,10 +31,26 @@ namespace Nether.Data.Sql.PlayerManagement
             base.OnModelCreating(builder);
 
             builder.Entity<PlayerGroupEntity>()
-                .Property(f => f.Id)
-                .ValueGeneratedOnAdd();
+                .HasKey(pg => new { pg.GroupName, pg.Gamertag });
+            builder.Entity<PlayerGroupEntity>()
+                .HasOne(pg => pg.Player)
+                .WithMany(p => p.PlayerGroups)
+                .HasForeignKey(pg => pg.Gamertag);
+            builder.Entity<PlayerGroupEntity>()
+                .HasOne(pg => pg.Group)
+                .WithMany(g => g.PlayerGroups)
+                .HasForeignKey(pg => pg.GroupName);
 
-            builder.Entity<PlayerGroupEntity>().ForSqlServerToTable(_table);
+            builder.Entity<PlayerEntity>()
+                .HasKey(p => p.Gamertag);
+
+            builder.Entity<GroupEntity>()
+                .HasKey(g => g.Name);
+
+
+            builder.Entity<PlayerGroupEntity>().ForSqlServerToTable("PlayerGroups");
+            builder.Entity<PlayerEntity>().ForSqlServerToTable("Players");
+            builder.Entity<GroupEntity>().ForSqlServerToTable("Groups");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)

@@ -13,7 +13,6 @@ namespace Nether.Data.Sql.PlayerManagement
 {
     public class GroupEntity
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string CustomType { get; set; }
         public string Description { get; set; }

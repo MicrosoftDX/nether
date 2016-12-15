@@ -12,7 +12,7 @@ namespace Nether.Data.PlayerManagement
     {
         //Players
         Task SavePlayerAsync(Player player);
-        Task<Player> GetPlayerDetailsByIdAsync(string id);
+        Task<Player> GetPlayerDetailsByUserIdAsync(string id);
         Task<Player> GetPlayerDetailsAsync(string gamertag);
         Task<List<Player>> GetPlayersAsync();
         Task<List<Group>> GetPlayersGroupsAsync(string gamertag);

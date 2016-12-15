@@ -13,20 +13,13 @@ namespace Nether.Data.Sql.PlayerManagement
 {
     public class SqlPlayerManagementStore : IPlayerManagementStore
     {
-        private PlayerContext _playerDb;
-        private readonly string _playerTable = "Players";
-        private GroupContext _groupDb;
-        private readonly string _groupTable = "Groups";
-        private PlayerGroupContext _playerGroupDb;
-        private readonly string _playerGroupTable = "PlayerGroups";
+        private PlayerManagementContext _context;
 
         private readonly ILogger<SqlPlayerManagementStore> _logger;
 
         public SqlPlayerManagementStore(string connectionString, ILoggerFactory loggerFactory)
         {
-            _playerDb = new PlayerContext(connectionString, _playerTable);
-            _groupDb = new GroupContext(connectionString, _groupTable);
-            _playerGroupDb = new PlayerGroupContext(connectionString, _playerGroupTable, loggerFactory);
+            _context = new PlayerManagementContext(connectionString, loggerFactory);
             _logger = loggerFactory.CreateLogger<SqlPlayerManagementStore>();
         }
 
@@ -38,30 +31,30 @@ namespace Nether.Data.Sql.PlayerManagement
 
         private async Task AddPlayerToGroupAsync(string groupName, string gamerTag)
         {
-            PlayerEntity dbPlayer = await _playerGroupDb.Players
+            PlayerEntity dbPlayer = await _context.Players
                                                 .Where(p => p.Gamertag == gamerTag)
                                                 .FirstOrDefaultAsync();
 
             if (dbPlayer == null)
                 throw new ArgumentException($"player '{gamerTag}' does not exist", nameof(gamerTag));
 
-            GroupEntity dbGroup = await _playerGroupDb.Groups
+            GroupEntity dbGroup = await _context.Groups
                                             .Where(g => g.Name == groupName)
                                             .FirstOrDefaultAsync();
             if (dbGroup == null)
                 throw new ArgumentException($"group '{groupName}' does not exist", nameof(groupName));
 
-            await _playerGroupDb.PlayerGroups.AddAsync(new PlayerGroupEntity
+            await _context.PlayerGroups.AddAsync(new PlayerGroupEntity
             {
-                Player = dbPlayer,
-                Group = dbGroup
+                Gamertag = gamerTag,
+                GroupName = groupName
             });
-            await _playerGroupDb.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public async Task<Group> GetGroupDetailsAsync(string groupname)
         {
-            var group = await _groupDb.Groups.SingleAsync(g => g.Name.Equals(groupname));
+            var group = await _context.Groups.SingleAsync(g => g.Name.Equals(groupname));
             return new Group
             {
                 Name = group.Name,
@@ -72,14 +65,14 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task<byte[]> GetGroupImageAsync(string name)
         {
-            var group = await _groupDb.Groups.SingleAsync(g => g.Name.Equals(name));
+            var group = await _context.Groups.SingleAsync(g => g.Name.Equals(name));
             return group.Image;
         }
 
         public async Task<List<string>> GetGroupPlayersAsync(string groupName)
         {
             // get all the players for groupname
-            List<string> groupPlayersGamertags = await _playerGroupDb.PlayerGroups
+            List<string> groupPlayersGamertags = await _context.PlayerGroups
                 .Where(map => map.Group.Name == groupName)
                 .Select(map => map.Player.Gamertag)
                 .AsNoTracking()
@@ -90,7 +83,7 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task<List<Group>> GetGroupsAsync()
         {
-            return await _groupDb.Groups.Select(g => new Group
+            return await _context.Groups.Select(g => new Group
             {
                 Name = g.Name,
                 CustomType = g.CustomType,
@@ -100,13 +93,13 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task<Player> GetPlayerDetailsAsync(string gamertag)
         {
-            PlayerEntity player = await _playerDb.Players.SingleOrDefaultAsync(p => p.Gamertag.Equals(gamertag));
+            PlayerEntity player = await _context.Players.SingleOrDefaultAsync(p => p.Gamertag.Equals(gamertag));
             return player?.ToPlayer();
         }
 
-        public async Task<Player> GetPlayerDetailsByIdAsync(string id)
+        public async Task<Player> GetPlayerDetailsByUserIdAsync(string userId)
         {
-            PlayerEntity player = await _playerDb.Players.SingleOrDefaultAsync(p => p.PlayerId.Equals(id));
+            PlayerEntity player = await _context.Players.SingleOrDefaultAsync(p => p.UserId.Equals(userId));
             return player?.ToPlayer();
         }
 
@@ -117,7 +110,7 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task<List<Player>> GetPlayersAsync()
         {
-            return await _playerDb.Players.Select(p => p.ToPlayer()).ToListAsync();
+            return await _context.Players.Select(p => p.ToPlayer()).ToListAsync();
         }
 
         public async Task<List<Group>> GetPlayersGroupsAsync(string gamerTag)
@@ -131,8 +124,8 @@ namespace Nether.Data.Sql.PlayerManagement
         }
         private async Task<List<string>> GetPlayerGroupsAsync(string gamerTag)
         {
-            List<string> groupNames = await _playerGroupDb.PlayerGroups
-                .Where(map => map.Player.Gamertag == gamerTag)
+            List<string> groupNames = await _context.PlayerGroups
+                .Where(map => map.Gamertag == gamerTag)
                 .Select(map => map.Group.Name)
                 .ToListAsync();
 
@@ -141,13 +134,12 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task RemovePlayerFromGroupAsync(Group group, Player player)
         {
-
-            var playerGroups = await _playerGroupDb.PlayerGroups
-                                                .Where(map => map.Group.Name == group.Name && map.Player.PlayerId == player.PlayerId)
+            var playerGroups = await _context.PlayerGroups
+                                                .Where(map => map.Group.Name == group.Name && map.Gamertag == player.Gamertag)
                                                 .ToListAsync();
 
-            _playerGroupDb.RemoveRange(playerGroups);
-            await _playerGroupDb.SaveChangesAsync();
+            _context.RemoveRange(playerGroups);
+            await _context.SaveChangesAsync();
         }
 
         public async Task SaveGroupAsync(Group group)
@@ -164,12 +156,12 @@ namespace Nether.Data.Sql.PlayerManagement
                 }
             }
         }
-        public async Task<Guid> SaveGroupEntityAsync(Group group)
+        public async Task SaveGroupEntityAsync(Group group)
         {
             if (group == null) throw new ArgumentNullException(nameof(group));
 
             // add new group only if it does not exist
-            GroupEntity entity = await _groupDb.Groups.FindAsync(group.Name);
+            GroupEntity entity = await _context.Groups.FindAsync(group.Name);
             if (entity == null)
             {
                 var newGroup = new GroupEntity
@@ -179,50 +171,48 @@ namespace Nether.Data.Sql.PlayerManagement
                     Description = group.Description
                 };
 
-                await _groupDb.Groups.AddAsync(newGroup);
-                await _groupDb.SaveChangesAsync();
+                await _context.Groups.AddAsync(newGroup);
+                await _context.SaveChangesAsync();
                 entity = newGroup;
             }
             else
             {
                 entity.CustomType = group.CustomType;
                 entity.Description = group.Description;
-                await _groupDb.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
-
-            return entity.Id;
         }
 
         public async Task SavePlayerAsync(Player player)
         {
             // add only of the player does not exist
-            PlayerEntity entity = player.PlayerId == null ? null : await _playerDb.Players.FindAsync(player.PlayerId);
+            PlayerEntity entity = player.UserId == null ? null : await _context.Players.FindAsync(player.Gamertag);
             if (entity == null)
             {
-                await _playerDb.Players.AddAsync(new PlayerEntity
+                await _context.Players.AddAsync(new PlayerEntity
                 {
-                    PlayerId = player.PlayerId,
+                    UserId = player.UserId,
                     Gamertag = player.Gamertag,
                     Country = player.Country,
                     CustomTag = player.CustomTag,
                 });
-                await _playerDb.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
             else
             {
                 entity.Gamertag = player.Gamertag;
                 entity.Country = player.Country;
                 entity.CustomTag = player.CustomTag;
-                await _playerDb.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
         }
 
         public async Task UploadGroupImageAsync(string groupname, byte[] image)
         {
-            var group = await _groupDb.Groups.SingleAsync(g => g.Name.Equals(groupname));
+            var group = await _context.Groups.SingleAsync(g => g.Name.Equals(groupname));
             group.Image = image;
-            _groupDb.Groups.Update(group);
-            await _groupDb.SaveChangesAsync();
+            _context.Groups.Update(group);
+            await _context.SaveChangesAsync();
         }
 
         public Task UploadPlayerImageAsync(string gamertag, byte[] image)

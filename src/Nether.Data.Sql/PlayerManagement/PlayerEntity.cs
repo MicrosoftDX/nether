@@ -13,8 +13,7 @@ namespace Nether.Data.Sql.PlayerManagement
 {
     public class PlayerEntity
     {
-        public Guid Id { get; set; }
-        public string PlayerId { get; set; }
+        public string UserId { get; set; }
         public string Gamertag { get; set; }
         public string Country { get; set; }
         public string CustomTag { get; set; }
@@ -25,7 +24,7 @@ namespace Nether.Data.Sql.PlayerManagement
         {
             return new Player
             {
-                PlayerId = PlayerId,
+                UserId = UserId,
                 Gamertag = Gamertag,
                 Country = Country,
                 CustomTag = CustomTag

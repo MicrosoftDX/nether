@@ -1,6 +1,6 @@
 # Add New Group
 
-Adds a new group. Administrator permissions are required to perform this action.
+Adds a new group.
 
 ## Request
 

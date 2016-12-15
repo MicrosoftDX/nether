@@ -25,7 +25,7 @@ namespace Nether.Web.IntegrationTests
         private const string BaseUrl = "http://localhost:5000/";
         private const string ClientId = "resourceowner-test";
         private const string ClientSecret = "devsecret";
-        protected string gamertag;
+        protected string _gamertag;
 
         private static readonly Dictionary<string, string> s_userToPassword =
             new Dictionary<string, string>
@@ -49,12 +49,11 @@ namespace Nether.Web.IntegrationTests
 
         protected HttpClient GetAdminClient()
         {
-            return GetClient("devadmin");
+            return GetClient("devadmin", isPlayer: false);
         }
 
-        protected HttpClient GetClient(string username = "testuser")
+        protected HttpClient GetClient(string username = "testuser", bool isPlayer = true)
         {
-            gamertag = username + "GamerTag";
             HttpClient client = CreateClient(BaseUrl);
             string password = s_userToPassword[username];
 
@@ -62,7 +61,7 @@ namespace Nether.Web.IntegrationTests
             DiscoveryResponse disco = DiscoveryClient.GetAsync(BaseUrl).Result;
             if (disco.TokenEndpoint == null)
             {
-                throw new AuthenticationException("could not discover endpoint, server is offline?");
+                throw new AuthenticationException("GetClient: could not discover endpoint, server is offline?");
             }
 
             var tokenClient = new TokenClient(disco.TokenEndpoint, ClientId, ClientSecret);
@@ -71,28 +70,32 @@ namespace Nether.Web.IntegrationTests
             TokenResponse tokenResponse = tokenClient.RequestResourceOwnerPasswordAsync(username, password, "nether-all").Result;
             if (tokenResponse.IsError)
             {
-                throw new AuthenticationException("filed to authenticate");
+                throw new AuthenticationException("GetClient: failed to authenticate");
             }
             client.SetBearerToken(tokenResponse.AccessToken);
 
-            // todo: remove this gamertag dark magic
-            var token = new JwtSecurityToken(tokenResponse.AccessToken);
-            var player = new
+            if (isPlayer)
             {
-                gamertag = gamertag,
-                country = "UK",
-                customTag = nameof(WebTestBase)
-            };
-            HttpResponseMessage response = client.PutAsJsonAsync("api/player", player).Result;
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new AuthenticationException("could not update player info");
-            }
+                // todo: remove this gamertag dark magic
+                var token = new JwtSecurityToken(tokenResponse.AccessToken);
+                _gamertag = username + "GamerTag";
+                var player = new
+                {
+                    gamertag = _gamertag,
+                    country = "UK",
+                    customTag = nameof(WebTestBase)
+                };
+                HttpResponseMessage response = client.PutAsJsonAsync("api/player", player).Result;
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new AuthenticationException("GetClient: could not update player info");
+                }
 
-            //get the token again as it will include the gamertag claim
-            tokenResponse = tokenClient.RequestResourceOwnerPasswordAsync(username, password, "nether-all").Result;
-            client.SetBearerToken(tokenResponse.AccessToken);
-            token = new JwtSecurityToken(tokenResponse.AccessToken);
+                //get the token again as it will include the gamertag claim
+                tokenResponse = tokenClient.RequestResourceOwnerPasswordAsync(username, password, "nether-all").Result;
+                client.SetBearerToken(tokenResponse.AccessToken);
+                token = new JwtSecurityToken(tokenResponse.AccessToken);
+            }
 
             return client;
         }
