@@ -61,12 +61,19 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task<Group> GetGroupDetailsAsync(string groupname)
         {
-            return await _groupDb.GetGroupDetailsAsync(groupname);
+            var group = await _groupDb.Groups.SingleAsync(g => g.Name.Equals(groupname));
+            return new Group
+            {
+                Name = group.Name,
+                CustomType = group.CustomType,
+                Description = group.Description
+            };
         }
 
         public async Task<byte[]> GetGroupImageAsync(string name)
         {
-            return await _groupDb.GetGroupImageAsync(name);
+            var group = await _groupDb.Groups.SingleAsync(g => g.Name.Equals(name));
+            return group.Image;
         }
 
         public async Task<List<string>> GetGroupPlayersAsync(string groupName)
@@ -83,7 +90,12 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task<List<Group>> GetGroupsAsync()
         {
-            return await _groupDb.GetGroupsAsync();
+            return await _groupDb.Groups.Select(g => new Group
+            {
+                Name = g.Name,
+                CustomType = g.CustomType,
+                Description = g.Description
+            }).ToListAsync();
         }
 
         public async Task<Player> GetPlayerDetailsAsync(string gamertag)
@@ -141,7 +153,7 @@ namespace Nether.Data.Sql.PlayerManagement
         public async Task SaveGroupAsync(Group group)
         {
             // add a new group if does not exist
-            await _groupDb.SaveGroupAsync(group);
+            await SaveGroupEntityAsync(group);
 
             // add a new player if does not exist and update the player<->group mapping table with the relation between player and group
             if (group.Members != null)
@@ -151,6 +163,34 @@ namespace Nether.Data.Sql.PlayerManagement
                     await AddPlayerToGroupAsync(group.Name, playerGamerTag);
                 }
             }
+        }
+        public async Task<Guid> SaveGroupEntityAsync(Group group)
+        {
+            if (group == null) throw new ArgumentNullException(nameof(group));
+
+            // add new group only if it does not exist
+            GroupEntity entity = await _groupDb.Groups.FindAsync(group.Name);
+            if (entity == null)
+            {
+                var newGroup = new GroupEntity
+                {
+                    Name = group.Name,
+                    CustomType = group.CustomType,
+                    Description = group.Description
+                };
+
+                await _groupDb.Groups.AddAsync(newGroup);
+                await _groupDb.SaveChangesAsync();
+                entity = newGroup;
+            }
+            else
+            {
+                entity.CustomType = group.CustomType;
+                entity.Description = group.Description;
+                await _groupDb.SaveChangesAsync();
+            }
+
+            return entity.Id;
         }
 
         public async Task SavePlayerAsync(Player player)
@@ -179,7 +219,10 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task UploadGroupImageAsync(string groupname, byte[] image)
         {
-            await _groupDb.UploadGroupImageAsync(groupname, image);
+            var group = await _groupDb.Groups.SingleAsync(g => g.Name.Equals(groupname));
+            group.Image = image;
+            _groupDb.Groups.Update(group);
+            await _groupDb.SaveChangesAsync();
         }
 
         public Task UploadPlayerImageAsync(string gamertag, byte[] image)
