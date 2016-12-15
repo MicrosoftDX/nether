@@ -4,6 +4,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -125,6 +126,10 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             var groupResponse = await CreateGroupAsync(g, HttpStatusCode.Created);
             Assert.Equal("/api/groups/" + groupName, groupResponse.Response.Headers.GetValues("Location").First());
             Assert.Equal(groupName, (string)groupResponse.ResponseBody.groupName);
+
+
+            await AddPlayerToGroupAsync(groupName);
+
 
             //list groups and check the created group is in the list
             GroupListResponse allGroups = await GetPlayerGroupsAsync();
@@ -363,6 +368,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             public GroupEntry Group { get; set; }
         }
 
+        [DebuggerDisplay("Player: {Gamertag}")]
         public class PlayerEntry
         {
             public string Gamertag { get; set; }
@@ -370,6 +376,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             public string CustomTag { get; set; }
         }
 
+        [DebuggerDisplay("Group: {Name}")]
         public class GroupEntry
         {
             public string Name { get; set; }
