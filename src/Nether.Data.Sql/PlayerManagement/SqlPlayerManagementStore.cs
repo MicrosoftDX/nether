@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nether.Data.PlayerManagement;
 using System;
@@ -21,7 +22,7 @@ namespace Nether.Data.Sql.PlayerManagement
 
         private readonly ILogger<SqlPlayerManagementStore> _logger;
 
-        public SqlPlayerManagementStore(String connectionString, ILoggerFactory loggerFactory)
+        public SqlPlayerManagementStore(string connectionString, ILoggerFactory loggerFactory)
         {
             _playerDb = new PlayerContext(connectionString, _playerTable);
             _groupDb = new GroupContext(connectionString, _groupTable);
@@ -59,22 +60,24 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task<Player> GetPlayerDetailsAsync(string gamertag)
         {
-            return await _playerDb.GetPlayerDetailsAsync(gamertag);
+            PlayerEntity player = await _playerDb.Players.SingleOrDefaultAsync(p => p.Gamertag.Equals(gamertag));
+            return player?.ToPlayer();
         }
 
         public async Task<Player> GetPlayerDetailsByIdAsync(string id)
         {
-            return await _playerDb.GetPlayerDetailsByIdAsync(id);
+            PlayerEntity player = await _playerDb.Players.SingleOrDefaultAsync(p => p.PlayerId.Equals(id));
+            return player?.ToPlayer();
         }
 
-        public async Task<byte[]> GetPlayerImageAsync(string gamertag)
+        public Task<byte[]> GetPlayerImageAsync(string gamertag)
         {
-            return await _playerDb.GetPlayerImageAsync(gamertag);
+            throw new NotSupportedException();
         }
 
         public async Task<List<Player>> GetPlayersAsync()
         {
-            return await _playerDb.GetPlayersAsync();
+            return await _playerDb.Players.Select(p => p.ToPlayer()).ToListAsync();
         }
 
         public async Task<List<Group>> GetPlayersGroupsAsync(string gamerTag)
@@ -109,7 +112,26 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task SavePlayerAsync(Player player)
         {
-            await _playerDb.SavePlayerAsync(player);
+            // add only of the player does not exist
+            PlayerEntity entity = player.PlayerId == null ? null : await _playerDb.Players.FindAsync(player.PlayerId);
+            if (entity == null)
+            {
+                await _playerDb.Players.AddAsync(new PlayerEntity
+                {
+                    PlayerId = player.PlayerId,
+                    Gamertag = player.Gamertag,
+                    Country = player.Country,
+                    CustomTag = player.CustomTag,
+                });
+                await _playerDb.SaveChangesAsync();
+            }
+            else
+            {
+                entity.Gamertag = player.Gamertag;
+                entity.Country = player.Country;
+                entity.CustomTag = player.CustomTag;
+                await _playerDb.SaveChangesAsync();
+            }
         }
 
         public async Task UploadGroupImageAsync(string groupname, byte[] image)
@@ -117,9 +139,9 @@ namespace Nether.Data.Sql.PlayerManagement
             await _groupDb.UploadGroupImageAsync(groupname, image);
         }
 
-        public async Task UploadPlayerImageAsync(string gamertag, byte[] image)
+        public Task UploadPlayerImageAsync(string gamertag, byte[] image)
         {
-            await _playerDb.UploadPlayerImageAsync(gamertag, image);
+            throw new NotSupportedException();
         }
     }
 }
