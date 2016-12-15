@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Nether.Data.Sql.Leaderboard
 {
-    public class LeaderboardContext : DbContext
+    public class ScoreContext : DbContext
     {
         private readonly string _connectionString;
         private readonly string _table;
@@ -23,7 +23,7 @@ namespace Nether.Data.Sql.Leaderboard
         public DbSet<SavedGamerScore> Scores { get; set; }
         public DbSet<QueriedGamerScore> Ranks { get; set; }
 
-        public LeaderboardContext(string connectionString, string table)
+        public ScoreContext(string connectionString, string table)
         {
             _connectionString = connectionString;
             _table = table;
@@ -34,11 +34,14 @@ namespace Nether.Data.Sql.Leaderboard
             base.OnModelCreating(builder);
 
             builder.Entity<SavedGamerScore>()
-                .ForSqlServerToTable(_table)
                 .HasKey(c => c.Id);
 
             builder.Entity<QueriedGamerScore>()
                 .HasKey(c => c.GamerTag);
+
+
+            builder.Entity<SavedGamerScore>()
+                .ForSqlServerToTable(_table);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)

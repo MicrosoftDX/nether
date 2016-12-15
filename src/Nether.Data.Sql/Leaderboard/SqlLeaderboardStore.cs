@@ -12,13 +12,13 @@ namespace Nether.Data.Sql.Leaderboard
 {
     public class SqlLeaderboardStore : ILeaderboardStore
     {
-        private LeaderboardContext _db;
+        private ScoreContext _db;
         private readonly ILogger<SqlLeaderboardStore> _logger;
         private readonly string _table = "Scores";
 
         public SqlLeaderboardStore(string connectionString, ILoggerFactory loggerFactory)
         {
-            _db = new LeaderboardContext(connectionString, _table);
+            _db = new ScoreContext(connectionString, _table);
             _logger = loggerFactory.CreateLogger<SqlLeaderboardStore>();
         }
 
