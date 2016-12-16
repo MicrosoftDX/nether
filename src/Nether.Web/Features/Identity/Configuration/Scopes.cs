@@ -40,10 +40,10 @@ namespace Nether.Web.Features.Identity.Configuration
                     },
                     UserClaims =
                     {
-                        new UserClaim { Type = JwtClaimTypes.Subject },
-                        new UserClaim { Type = JwtClaimTypes.Name },
-                        new UserClaim { Type = JwtClaimTypes.NickName },
-                        new UserClaim { Type = JwtClaimTypes.Role }
+                        JwtClaimTypes.Subject,
+                        JwtClaimTypes.Name,
+                        JwtClaimTypes.NickName,
+                        JwtClaimTypes.Role
                     }
                 }
             };
