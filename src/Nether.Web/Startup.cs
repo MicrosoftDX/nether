@@ -115,6 +115,31 @@ namespace Nether.Web
                 //AutomaticAuthenticate = true // TODO - understand this setting!
             });
 
+            #region [ Admin Web UI ]
+            // Create a custom route for Admin Web UI
+            // todo: make it nicer
+            const string adminFeaturePrefix = "/features/AdminWebUI";
+            app.Use(async (context, next) =>
+            {
+                await next();
+
+                string path = context.Request.Path.Value;
+                if(path.StartsWith(adminFeaturePrefix))
+                {
+                    string relPath = path.Substring(adminFeaturePrefix.Length).Trim();
+                    string redirectedPath = "Features/AdminWebUI/wwwroot/" +
+                        (relPath == string.Empty ? "index.html" : relPath);
+
+                    context.Request.Path = relPath;
+
+                    await next();
+                }
+
+            });
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            #endregion
+
             app.UseIdentityServer();
             app.UseMvc();
 
