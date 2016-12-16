@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 
 namespace LeaderboardLoadTest
@@ -68,8 +69,30 @@ namespace LeaderboardLoadTest
             {
                 _accessToken = tokenResponse.AccessToken;
                 _httpClient.SetBearerToken(_accessToken);
+
+                AssignGamertag(tokenClient, username, password);
+
                 return new OperationResult { IsSuccess = true };
             }
+        }
+
+        private void AssignGamertag(TokenClient client, string username, string password)
+        {
+            string gamertag = username + "GamerTag";
+            var player = new
+            {
+                gamertag = gamertag,
+                country = "UK"
+            };
+            HttpResponseMessage response = _httpClient.PutAsJsonAsync("api/player", player).Result;
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new AuthenticationException("GetClient: could not update player info");
+            }
+
+            //get the token again as it will include the gamertag claim
+            var tokenResponse = client.RequestResourceOwnerPasswordAsync(username, password, "nether-all").Result;
+            _httpClient.SetBearerToken(tokenResponse.AccessToken);
         }
 
         // TODO - create result model rather than returning JSON string!
