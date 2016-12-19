@@ -10,5 +10,8 @@
       "noImplicitAny": false
    },
    "compileOnSave": true,
-   "exclude": [ "lib", "node_modules" ]
+   "exclude": [
+      "node_modules",
+      "typings"
+   ]
 }

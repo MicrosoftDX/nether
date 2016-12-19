@@ -10,14 +10,18 @@ import "rxjs/add/observable/of";
 @Injectable()
 export class NetherApiService {
 
-   private _apiBase: string = "/api/";
-   private _headers: Headers = new Headers({ "Content-Type": "application/json" });
+  private _apiBase: string = "/api/";
+  private _headers: Headers = new Headers({ "Content-Type": "application/json" });
 
-   constructor(private _http: Http) {
-   }
+  constructor(private _http: Http) {
+  }
 
-   getCurrentPlayer(): Observable<Player> {
-      return this._http.get(this._apiBase + "player")
-         .map((response: Response) => response.json().player);
-   }
+  login(username: string, password: string): void {
+
+  }
+
+  getCurrentPlayer(): Observable<Player> {
+    return this._http.get(this._apiBase + "player")
+      .map((response: Response) => response.json().player);
+  }
 }

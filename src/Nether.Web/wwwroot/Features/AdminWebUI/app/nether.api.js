@@ -20,6 +20,8 @@ var NetherApiService = (function () {
         this._apiBase = "/api/";
         this._headers = new http_1.Headers({ "Content-Type": "application/json" });
     }
+    NetherApiService.prototype.login = function (username, password) {
+    };
     NetherApiService.prototype.getCurrentPlayer = function () {
         return this._http.get(this._apiBase + "player")
             .map(function (response) { return response.json().player; });

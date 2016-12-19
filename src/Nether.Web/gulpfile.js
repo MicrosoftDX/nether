@@ -14,7 +14,7 @@ gulp.task('default', function () {
    // place code for your default task here
 });
 
-gulp.task("npmwww", () => {
+gulp.task("npmtolib", () => {
    gulp.src([
       "systemjs/dist/*.js",
       "reflect-metadata/*.js",
