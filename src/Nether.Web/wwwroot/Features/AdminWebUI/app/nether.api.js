@@ -9,30 +9,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var platform_browser_1 = require("@angular/platform-browser");
-var forms_1 = require("@angular/forms");
 var http_1 = require("@angular/http");
-var app_component_1 = require("./app.component");
-var AppModule = (function () {
-    function AppModule() {
+require("rxjs/add/operator/catch");
+require("rxjs/add/operator/do");
+require("rxjs/add/operator/map");
+require("rxjs/add/observable/of");
+var NetherApiService = (function () {
+    function NetherApiService(_http) {
+        this._http = _http;
+        this._apiBase = "/api/";
+        this._headers = new http_1.Headers({ "Content-Type": "application/json" });
     }
-    return AppModule;
+    NetherApiService.prototype.getCurrentPlayer = function () {
+        return this._http.get(this._apiBase + "player")
+            .map(function (response) { return response.json().player; });
+    };
+    return NetherApiService;
 }());
-AppModule = __decorate([
-    core_1.NgModule({
-        imports: [
-            platform_browser_1.BrowserModule,
-            forms_1.FormsModule, forms_1.ReactiveFormsModule,
-            http_1.HttpModule
-        ],
-        declarations: [
-            app_component_1.AppComponent
-        ],
-        bootstrap: [
-            app_component_1.AppComponent
-        ]
-    }),
-    __metadata("design:paramtypes", [])
-], AppModule);
-exports.AppModule = AppModule;
-//# sourceMappingURL=app.module.js.map
+NetherApiService = __decorate([
+    core_1.Injectable(),
+    __metadata("design:paramtypes", [http_1.Http])
+], NetherApiService);
+exports.NetherApiService = NetherApiService;
+//# sourceMappingURL=nether.api.js.map

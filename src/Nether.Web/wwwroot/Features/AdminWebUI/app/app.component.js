@@ -9,17 +9,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
+var nether_api_1 = require("./nether.api");
 var AppComponent = (function () {
     function AppComponent() {
     }
-    AppComponent = __decorate([
-        core_1.Component({
-            selector: "nether-app",
-            templateUrl: "app/app.html"
-        }), 
-        __metadata('design:paramtypes', [])
-    ], AppComponent);
     return AppComponent;
 }());
+AppComponent = __decorate([
+    core_1.Component({
+        selector: "nether-app",
+        templateUrl: "app/app.html",
+        providers: [nether_api_1.NetherApiService]
+    }),
+    __metadata("design:paramtypes", [])
+], AppComponent);
 exports.AppComponent = AppComponent;
 //# sourceMappingURL=app.component.js.map
