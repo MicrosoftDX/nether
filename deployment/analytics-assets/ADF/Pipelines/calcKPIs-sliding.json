@@ -6,15 +6,15 @@
             {
                 "type": "HDInsightHive",
                 "typeProperties": {
-                    "scriptPath": "gamedata/scripts/kpis-sliding.hql",
+                    "scriptPath": "<script-container-name>/<script-file-path>",
                     "scriptLinkedService": "storageLinkedService",
                     "defines": {
-                        "rawevents": "wasbs://gamedata@oldknether.blob.core.windows.net/rawevents",
+                        "rawevents": "wasbs://<container-name>@<storage-account-name>.blob.core.windows.net/rawevents",
                         "year": "$$Text.Format('{0:yyyy}',SliceStart)",
                         "month": "$$Text.Format('{0:%M}',SliceStart)",
                         "day": "$$Text.Format('{0:%d}', Date.AddDays(SliceStart, -1))",
-                        "dau": "wasbs://gamedata@oldknether.blob.core.windows.net/dailyactiveusers",
-                        "mau": "wasbs://gamedata@oldknether.blob.core.windows.net/monthlyactiveusers"
+                        "dau": "wasbs://<container-name>@<storage-account-name>.blob.core.windows.net/dailyactiveusers",
+                        "mau": "wasbs://<container-name>@<storage-account-name>.blob.core.windows.net/monthlyactiveusers"
                     }
                 },
                 "inputs": [
@@ -35,7 +35,7 @@
                     "retry": 0
                 },
                 "scheduler": {
-                    "frequency": "Day",
+                    "frequency": "Hour",
                     "interval": 1
                 },
                 "name": "RunKPIActivitiy",

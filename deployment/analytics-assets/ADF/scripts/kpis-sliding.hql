@@ -16,6 +16,7 @@ CREATE TABLE dailyactiveusers(
   day INT,
   dau INT
 )
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' lines terminated by '\n'
 stored as textfile location '${hiveconf:dau}';
 INSERT INTO TABLE dailyactiveusers
 SELECT
@@ -36,6 +37,7 @@ CREATE TABLE montlyactiveusers(
   month INT,
   mau INT
 )
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' lines terminated by '\n'
 stored as textfile location '${hiveconf:mau}';
 INSERT INTO TABLE montlyactiveusers
 SELECT

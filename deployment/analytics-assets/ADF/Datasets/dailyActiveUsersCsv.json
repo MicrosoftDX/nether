@@ -8,11 +8,12 @@
             "folderPath": "gamedata/dailyactiveusersCsv",
             "format": {
                 "type": "TextFormat",
-                "columnDelimiter": ","
+                "columnDelimiter": ",",
+                "rowDelimiter": "\n"
             }
         },
         "availability": {
-            "frequency": "Day",
+            "frequency": "Hour",
             "interval": 1
         }
     }

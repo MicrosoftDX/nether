@@ -80,16 +80,17 @@ The blob storage stores all incoming raw game events (through Azure Stream Analy
 
 #### HDInsight: Hive Tables
 Goal: Create Hive tables on DAU (daily active users), MAU (monthly active users), DAS (daily active sessions).
-The Hive script that creates the before mentioned tables can be found [here](../deployment/analytics-assets/ADF/scripts/kpis.hql).
+The Hive script that creates the before mentioned tables can be found [here](../deployment/analytics-assets/ADF/scripts/kpis-sliding.hql).
 
 The hive script creates the following external tables:
 1. `rawevents`: external table that is supposed to include all date partitions except for the current one. If it were to include all date partitions, you would run into a storage exception since both a stream analytics job and and HDInsight cluster want to access the same folder path. Currently, the script adds each date partition manually - this is subject to change.
-2. `rawinfo`: external table that extends `rawevents` with columns eventtime (timestamp), eventdate (date). Might be redundant if partitioning is done correctly in `rawevents`.
-3. `dailyactiveusers`: external table of two columns - date and number of active users on given date.
-4. `dailyactivesessions`: external table of two columns - date and number of active sessions on given date.
-5. `monthlyactiveusers`: external table of two columns - month and number of active users in given month.
+2. `dailyactiveusers`: external table of two columns - date and number of active users on given date.
+3. `dailyactivesessions`: external table of two columns - date and number of active sessions on given date.
+4. `monthlyactiveusers`: external table of two columns - month and number of active users in given month.
 
 The hive tables will be stored in the same storage container as the raw event data.
+
+The on demand HDInsight cluster is configured to store the Hive metadata in the Azure SQL database. This allows for storing the metadata of hive tables, especially `rawevents`, such that for every day `rawevents` is extended by another partition of incoming raw data from the day before. This is configured in the HCatalog setting.
 
 #### Azure SQL database
 
@@ -108,10 +109,17 @@ The ADF here makes use of 3 types of components:
    * [HDIonDemandLinkedService](../deployment/analytics-assets/ADF/LinkedServices/HDIonDemandLinkedService.json)
    Note  that it is important that the HDIonDemandLinkedService is deployed **after** storageLinkedService since the HDInsight cluster is dependent on it.
 2. Datasets: data structures within the previously defined data stores (i.e. linked services), e.g. table in Azure SQL DB or in blob storage.
+   * rawData: incoming raw events
+   * dailyActiveUsers: hive table output from the hive script --> daily active users (DAU)
+   * dailyActiveUsersCsv: hive table as a csv file
+   * dailyActiveUsersSQL: output from the hive table stored in the Azure SQL DB
+   * monthlyActiveUsers: hive table output from the hive script --> monthly active users (MAU)
+   * monthlyActiveUsersCsv: hive table as a csv file
+   * monthlyActiveUsersSQL: output from the hive table stored in the Azure SQL DB
 3. Pipelines: logical grouping of activities in which actions are performed on your data. The activities in the ADF pipeline for the analytics part are as followed (in given order):
-   1. Run Hive script [kpis.hql](../deployment/analytics-assets/ADF/scripts/kpis.hql)
+   1. Run Hive script [kpis-sliding.hql](../deployment/analytics-assets/ADF/scripts/kpis-sliding.hql)
    2. Copy hive tables `dailyactiveusers`, `dailyactivesessions` and `monthlyactiveusers` into another folder in the blob storage with the csv file extension (these are 3 separate activities)
-   3. Copy csv files into Azure SQL Database. (Not covered in current ADF)
+   3. Copy csv files into Azure SQL Database. This currently has some issue in the current version, since the format of the hive table is unix based.
 
 ### 4. Visualisation
 
@@ -123,11 +131,28 @@ The ADF here makes use of 3 types of components:
 
 ## How do I deploy it?
 
-[To Do]
-
-## Configuration required for Azure Data Factory Pipeline
-
-Upload the Hive script dau.hql (under deployment/analytics-assets) onto another blob storage account. Configure the following parameters in analyticsdeploy.parameters.json accordingly:
-* hiveScriptFilePath, e.g. [container]/[file-path]
-* hiveScriptStorageAccountName
-* hiveScriptStorageAccountKey
+1. Upload the Hive script [kpis-sliding.hql](../deployment/analytics-assets/ADF/scripts/kpis-sliding.hql) into any blob storage account.
+2. Configure the following parameters in the parameters file [analyticsdeploy.parameters.json](../deployment/analyticsdeploy.parameters.json):
+   * hiveScriptStorageAccountName
+   * hiveScriptStorageAccountKey
+   * hiveScriptFilePath, e.g. [container]/[file-path]: file path 
+3. Deploy the ARM template [analyticsdeploy.json](../deployment/analyticsdeploy.json) with its parameters file [analyticsdeploy.parameters.json](../deployment/analyticsdeploy.parameters.json). This will deploy the following:
+   * Event hub to ingest the incoming raw game events
+   * Stream analytics jobs: ccu (concurrent users) and rawdata (raw data into blob)
+   * SQL DB for two purposes:
+      * storing final tables `dailyactiveusers` and `monthlyactiveusers`
+      * storing Hive metadata
+   * Storage account for raw data and hive tables.
+4. Deploy data factory that is not yet included in the ARM template:
+   1. Configure the linked services:
+      * storageLinkedService: replace &lt;storage-account-name&gt; and &lt;storage-account-key&gt; accordingly with the storage account created from the ARM template.
+      * sqlLinkedService: replace &lt;sql-server-name&gt;, &lt;sql-database-name&gt;, &lt;admin-name&gt; and &lt;password&gt; according to the Azure SQL DB provisioned by the ARM template.
+   2. Replace the following parameters in the pipeline file [calcKPIs-sliding.json](../deployment/analytics-assets/ADF/Pipelines/calcKPIs-sliding.json):
+      * script-container-name: name of container in which the Hive script is stored.
+      * script-file-path: path of hive script.
+      * container-name: name of container in which the raw data is stored. By default: gameevents
+      * storage-account-name: name of storage account that has been provisioned by the ARM template.
+   3. Replace the following parameters in the PowerShell script [deployADF.ps1](../deployment/analytics-assets/ADF/scripts/deployADF.ps1):
+      * resourceGrp: name of the resource group in which all resources have been provisioned to by the ARM template
+      * dfName: name for the data factory
+   4. Run the PowerShell script [deployADF.ps1](../deployment/analytics-assets/ADF/scripts/deployADF.ps1).

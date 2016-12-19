@@ -13,7 +13,7 @@
             }
         },
         "availability": {
-            "frequency": "Day",
+            "frequency": "Hour",
             "interval": 1
         }
     }
