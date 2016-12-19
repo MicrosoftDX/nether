@@ -1,0 +1,49 @@
+{
+    "name": "calcKPIs",
+    "properties": {
+        "description": "Calculates key game KPIs (e.g. daily active users)",
+        "activities": [
+            {
+                "type": "HDInsightHive",
+                "typeProperties": {
+                    "scriptPath": "gamedata/scripts/kpis-sliding.hql",
+                    "scriptLinkedService": "storageLinkedService",
+                    "defines": {
+                        "rawevents": "wasbs://gamedata@oldknether.blob.core.windows.net/rawevents",
+                        "year": "$$Text.Format('{0:yyyy}',SliceStart)",
+                        "month": "$$Text.Format('{0:%M}',SliceStart)",
+                        "day": "$$Text.Format('{0:%d}', Date.AddDays(SliceStart, -1))",
+                        "dau": "wasbs://gamedata@oldknether.blob.core.windows.net/dailyactiveusers",
+                        "mau": "wasbs://gamedata@oldknether.blob.core.windows.net/monthlyactiveusers"
+                    }
+                },
+                "inputs": [
+                    {
+                        "name": "rawData"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "dailyActiveUsers"
+                    },
+                    {
+                        "name": "monthlyActiveUsers"
+                    }
+                ],
+                "policy": {
+                    "concurrency": 1,
+                    "retry": 0
+                },
+                "scheduler": {
+                    "frequency": "Hour",
+                    "interval": 1
+                },
+                "name": "RunKPIActivitiy",
+                "linkedServiceName": "HDIonDemandLinkedService"
+            }
+        ],
+        "start": "2016-12-14T08:00:00Z",
+        "end": "2017-11-19T00:00:00Z",
+        "isPaused": false
+    }
+}

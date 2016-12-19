@@ -1,0 +1,48 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageAccountResourceGroupName": {
+            "value": "oldknether"
+        },
+        "storageAccountName": {
+            "value": "oldknether"
+        },
+        "storageAccountKey": {
+            "value": "Ida0xlElLOUEF2ZDXQnU1oO8ZrGBlcGT54rFA2FUPHh+4FmBWDrkoXd9PnzVh+ABH60OZbfQj1sNLGY/5WJQUg=="
+        },
+        "blobContainer": {
+            "value": "adftutorial"
+        },
+        "inputBlobFolder": {
+            "value": "input"
+        },
+        "inputBlobName": {
+            "value": "input.txt"
+        },
+        "outputBlobFolder": {
+            "value": "outputdata"
+        },
+        "hiveScriptFolder": {
+            "value": "scripts"
+        },
+        "hiveScriptFile": {
+            "value": "combinefirstandlast.hql"
+        },
+        "sqlServerName": {
+            "value": "oldknether"
+        },
+        "sqlDatabaseName": {
+            "value": "gameevents"
+        },
+        "sqlServerUserName": {
+            "value": "oliviak"
+        },
+        "sqlServerPassword": {
+            "value": "P@ssw0rd"
+        },
+        "targetSQLTable": {
+            "value": "Employees"
+        }
+    }
+}

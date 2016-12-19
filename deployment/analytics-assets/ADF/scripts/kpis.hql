@@ -18,6 +18,11 @@ partitioned by (`date` string)
 ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' lines terminated by '\n'
 STORED AS TEXTFILE
 TBLPROPERTIES("skip.header.line.count"="1");
+{hiveconf:currentDate}
+
+
+ALTER TABLE rawevents ADD PARTITION (date=${hiveconf:currentDate-1}) location 'wasbs://gamedata@oldknether.blob.core.windows.net/rawevents/date=2016-09-28';
+
 
 ALTER TABLE rawevents ADD PARTITION (date='2016-09-28') location 'wasbs://gamedata@oldknether.blob.core.windows.net/rawevents/date=2016-09-28';
 ALTER TABLE rawevents ADD PARTITION (date='2016-09-29') location 'wasbs://gamedata@oldknether.blob.core.windows.net/rawevents/date=2016-09-29';

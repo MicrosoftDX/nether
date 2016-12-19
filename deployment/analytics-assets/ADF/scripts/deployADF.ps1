@@ -20,6 +20,12 @@ foreach ($file in $files) {
     New-AzureRmDataFactoryDataset $df -File $file.FullName
 }
 
+New-AzureRmDataFactoryPipeline $df -File ..\Pipelines\calcKPIs-sliding-oldk.json
+New-AzureRmDataFactoryPipeline $df -File ..\Pipelines\copyDAU.json
+New-AzureRmDataFactoryPipeline $df -File ..\Pipelines\copyMAU.json
+New-AzureRmDataFactoryPipeline $df -File ..\Pipelines\copyDAUtoSQL.json
+New-AzureRmDataFactoryPipeline $df -File ..\Pipelines\copyMAUtoSQL.json
+
 #Pipelines
 $files = Get-ChildItem ..\Pipelines
 foreach ($file in $files) {
