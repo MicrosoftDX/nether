@@ -11,6 +11,8 @@ using Nether.Data.MongoDB.Leaderboard;
 using Nether.Data.Sql.Leaderboard;
 using Nether.Integration.Analytics;
 using Nether.Integration.Default.Analytics;
+using Nether.Web.Features.Leaderboard.Configuration;
+using System.Collections.Generic;
 
 namespace Nether.Web.Features.Leaderboard
 {
@@ -86,7 +88,11 @@ namespace Nether.Web.Features.Leaderboard
                             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
                             return new SqlLeaderboardStore(connectionString, loggerFactory);
                         });
-                        break;
+                        services.AddTransient<ILeaderboardConfiguration>(ServiceProviderServiceExtensions =>
+                        {
+                            return new LeaderboardConfiguration(GetLeaderboardconfiguraion(configuration.GetSection("Leaderboard:Leaderboards").GetChildren()));
+                        });
+                        break;                        
                     default:
                         throw new Exception($"Unhandled 'wellKnown' type for Leaderboard:Store: '{wellKnownType}'");
                 }
@@ -97,5 +103,26 @@ namespace Nether.Web.Features.Leaderboard
                 services.AddServiceFromConfiguration<ILeaderboardStore>(configuration, "Leaderboard:Store");
             }
         }
+
+        private static Dictionary<string, LeaderboardConfig> GetLeaderboardconfiguraion(IEnumerable<IConfigurationSection> enumerable)
+        {
+            Dictionary<string, LeaderboardConfig> leaderboards = new Dictionary<string, LeaderboardConfig>();
+            // go over all leaderboards under "Leaderboard:Leaderboards"
+            foreach (var config in enumerable)
+            {
+                string name = config["Name"];
+
+                leaderboards.Add(name, new LeaderboardConfig
+                {
+                    Name = name,
+                    Type = (LeaderboardType)Enum.Parse(typeof(LeaderboardType), config["Type"]),
+                    Radius = config["Radius"] != null? int.Parse(config["Radius"]) : 0,
+                    Top = config["Top"] != null ? int.Parse(config["Top"]) : 0,
+                });
+            }
+
+            return leaderboards;
+        }        
+       
     }
 }

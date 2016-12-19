@@ -26,7 +26,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Get_leaderboard_call_succeeds()
         {
-            HttpResponseMessage response = await _client.GetAsync(BaseUri + "/default");
+            HttpResponseMessage response = await _client.GetAsync(BaseUri + "/Default");
             Assert.True(response.IsSuccessStatusCode);
         }
 
@@ -83,21 +83,21 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
             //check he is not around me
             _client = GetClient();
-            response = await GetLeaderboard("aroundMe");
+            response = await GetLeaderboard("Around Me");
             Assert.False(response.Entries.Any(e => e.Gamertag == hisGamertag));
 
             //make his score similar to mine and check he is around me
             _client = GetClient("testuser1");
             await PostScore(int.MaxValue / 2 + 1);
             _client = GetClient();
-            response = await GetLeaderboard("aroundMe");
+            response = await GetLeaderboard("Around Me");
             Assert.True(response.Entries.Any(e => e.Gamertag == hisGamertag));
         }
 
         [Fact]
         public async Task Limiting_top_scores_returns_limited_numer_of_rows()
         {
-            LeaderboardGetResponse response = await GetLeaderboard("top", HttpStatusCode.OK);
+            LeaderboardGetResponse response = await GetLeaderboard("Top", HttpStatusCode.OK);
 
             Assert.True(response.Entries.Length <= 5);
         }
@@ -115,7 +115,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         {
             _client = GetAdminClient();    //login as devadmin who is not in "Player" role
 
-            await GetLeaderboard("default", HttpStatusCode.Forbidden);
+            await GetLeaderboard("Default", HttpStatusCode.Forbidden);
         }
 
         #region [ REST Wrappers ]
@@ -125,7 +125,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             await _client.DeleteAsync(BaseUri);
         }
 
-        private async Task<LeaderboardGetResponse> GetLeaderboard(string type = "default",
+        private async Task<LeaderboardGetResponse> GetLeaderboard(string type = "Default",
             HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
             HttpResponseMessage response = await _client.GetAsync(BaseUri + "/" + type);

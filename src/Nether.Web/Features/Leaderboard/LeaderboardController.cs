@@ -29,13 +29,15 @@ namespace Nether.Web.Features.Leaderboard
         private readonly ILeaderboardStore _store;
         private readonly IAnalyticsIntegrationClient _analyticsIntegrationClient;
         private readonly ILogger<LeaderboardController> _log;
+        private readonly ILeaderboardConfiguration _configuration;
 
         public LeaderboardController(ILeaderboardStore store, IAnalyticsIntegrationClient analyticsIntegrationClient,
-            ILogger<LeaderboardController> log)
+            ILogger<LeaderboardController> log, ILeaderboardConfiguration configuration)
         {
             _store = store;
             _analyticsIntegrationClient = analyticsIntegrationClient;
             _log = log;
+            _configuration = configuration;
         }
 
         //TODO: Add versioning support
@@ -43,22 +45,22 @@ namespace Nether.Web.Features.Leaderboard
 
 
         /// <summary>
-        /// Gets leaderboard by type
+        /// Gets leaderboard by leaderboard configured name
         /// </summary>
-        /// <param name="type">Type of the leaderboard</param>
+        /// <param name="name">Name of the leaderboard</param>
         /// <returns>List of scores and gametags</returns>
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(LeaderboardGetResponseModel))]
         [SwaggerResponse((int)HttpStatusCode.Forbidden, Description = "not enough permissions to submit the score")]
         [Authorize(Roles = RoleNames.Player)]
-        [HttpGet("{type}")]
-        public async Task<ActionResult> Get(LeaderboardType type)
+        [HttpGet("{name}")]
+        public async Task<ActionResult> Get(string name)
         {
             //TODO
             var gamerTag = User.GetGamerTag();
 
-            LeaderboardConfig config;
-            List<GameScore> scores;
-            Configuration.Configuration.LeaderboardConfiguration.TryGetValue(type, out config);
+            LeaderboardConfig config = _configuration.GetLeaderboardConfig(name);
+            LeaderboardType type = config.Type;
+            List<GameScore> scores;                        
             switch (type)
             {
                 case LeaderboardType.AroundMe:
