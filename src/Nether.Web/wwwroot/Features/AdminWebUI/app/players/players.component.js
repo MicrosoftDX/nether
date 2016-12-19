@@ -9,16 +9,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
+var nether_api_1 = require("./../nether.api");
 var PlayersComponent = (function () {
-    function PlayersComponent() {
+    function PlayersComponent(_api) {
+        this._api = _api;
     }
+    PlayersComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this._api.getCurrentPlayer().subscribe(function (p) { return _this.Player = p; });
+    };
     return PlayersComponent;
 }());
 PlayersComponent = __decorate([
     core_1.Component({
         templateUrl: "app/players/players.html"
     }),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [nether_api_1.NetherApiService])
 ], PlayersComponent);
 exports.PlayersComponent = PlayersComponent;
 //# sourceMappingURL=players.component.js.map
