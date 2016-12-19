@@ -60,7 +60,7 @@ namespace Nether.Web.Features.Leaderboard
 
             LeaderboardConfig config = _configuration.GetLeaderboardConfig(name);
             LeaderboardType type = config.Type;
-            List<GameScore> scores;                        
+            List<GameScore> scores;
             switch (type)
             {
                 case LeaderboardType.AroundMe:

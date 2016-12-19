@@ -92,7 +92,7 @@ namespace Nether.Web.Features.Leaderboard
                         {
                             return new LeaderboardConfiguration(GetLeaderboardconfiguraion(configuration.GetSection("Leaderboard:Leaderboards").GetChildren()));
                         });
-                        break;                        
+                        break;
                     default:
                         throw new Exception($"Unhandled 'wellKnown' type for Leaderboard:Store: '{wellKnownType}'");
                 }
@@ -116,13 +116,12 @@ namespace Nether.Web.Features.Leaderboard
                 {
                     Name = name,
                     Type = (LeaderboardType)Enum.Parse(typeof(LeaderboardType), config["Type"]),
-                    Radius = config["Radius"] != null? int.Parse(config["Radius"]) : 0,
+                    Radius = config["Radius"] != null ? int.Parse(config["Radius"]) : 0,
                     Top = config["Top"] != null ? int.Parse(config["Top"]) : 0,
                 });
             }
 
             return leaderboards;
-        }        
-       
+        }
     }
 }
