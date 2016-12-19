@@ -5,15 +5,23 @@ import { RouterModule } from "@angular/router";
 import { HttpModule } from "@angular/http";
 
 import { AppComponent } from "./app.component";
+import { PlayersComponent } from "./players/players.component";
 
 @NgModule({
-   imports: [
+  imports: [
       BrowserModule,
       FormsModule, ReactiveFormsModule,
-      HttpModule
+     HttpModule,
+     RouterModule.forRoot([
+       { path: "players", component: PlayersComponent },
+       { path: "", redirectTo: "players", pathMatch: "full" },
+       { path: "**", redirectTo: "players", pathMatch: "full" }
+     ])
+
    ],
    declarations: [
-      AppComponent
+     AppComponent,
+     PlayersComponent
    ],
    bootstrap: [
       AppComponent
