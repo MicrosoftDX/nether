@@ -12,7 +12,7 @@ All code should compile and work on both Windows and OSX hence we strive to use 
 
 ### .NET Core
 
-Nether is built on top of .NET Core. Install from https://dot.net/core
+Nether is built on top of .NET Core 1.1. Install from https://dot.net/core
 
 ### MongoDB
 The out-of-the-box configuration for nether requires MongoDB to be installed on your machine, and started listening on the default port.
