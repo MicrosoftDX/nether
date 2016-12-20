@@ -6,5 +6,7 @@ import { LeaderboardScore } from "./../model";
     templateUrl: "app/leaderboard/leaderboard-scores.html"
 })
 export class LeaderboardScoresComponent {
-    //@Input() scores: LeaderboardScore[];
+
+    @Input() scores: LeaderboardScore[];
+
 }

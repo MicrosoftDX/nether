@@ -15,6 +15,13 @@ var LeaderboardComponent = (function () {
         this._api = _api;
     }
     LeaderboardComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this._api.getLeaderboard("default")
+            .subscribe(function (s) { return _this.defaultScores = s; });
+        this._api.getLeaderboard("top")
+            .subscribe(function (s) { return _this.topScores = s; });
+        this._api.getLeaderboard("aroundMe")
+            .subscribe(function (s) { return _this.aroundMeScores = s; });
     };
     return LeaderboardComponent;
 }());

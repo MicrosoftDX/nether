@@ -54,6 +54,10 @@ var NetherApiService = (function () {
         return this._http.get(this._serverUrl + "api/players", this.getRequestOptions())
             .map(function (response) { return response.json().players; });
     };
+    NetherApiService.prototype.getLeaderboard = function (type) {
+        return this._http.get(this._serverUrl + "api/leaderboard/" + type, this.getRequestOptions())
+            .map(function (response) { return response.json().entries; });
+    };
     NetherApiService.prototype.getRequestOptions = function () {
         return new http_1.RequestOptions({
             headers: new http_1.Headers({

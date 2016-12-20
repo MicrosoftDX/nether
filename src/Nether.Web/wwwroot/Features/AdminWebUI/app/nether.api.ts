@@ -1,7 +1,7 @@
 ﻿import { Injectable } from "@angular/core";
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import { Observable } from "rxjs/Observable";
-import { Player, Group } from "./model";
+import { Player, Group, LeaderboardScore } from "./model";
 import "rxjs/add/operator/catch";
 import "rxjs/add/operator/do";
 import "rxjs/add/operator/map";
@@ -57,6 +57,10 @@ export class NetherApiService {
             .map(response => response.json().players);
     }
 
+    getLeaderboard(type: string): Observable<LeaderboardScore[]> {
+        return this._http.get(this._serverUrl + "api/leaderboard/" + type, this.getRequestOptions())
+            .map(response => response.json().entries);
+    }
 
 
     private getRequestOptions(): RequestOptions {

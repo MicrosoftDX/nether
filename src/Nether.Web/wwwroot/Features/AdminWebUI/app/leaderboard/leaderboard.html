@@ -11,13 +11,13 @@
     <!-- Tab panes -->
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="home">
-            <nether-leaderboard-scores></nether-leaderboard-scores>
+            <nether-leaderboard-scores [scores]="defaultScores"></nether-leaderboard-scores>
         </div>
         <div role="tabpanel" class="tab-pane" id="profile">
-            <nether-leaderboard-scores></nether-leaderboard-scores>
+            <nether-leaderboard-scores [scores]="topScores"></nether-leaderboard-scores>
         </div>
         <div role="tabpanel" class="tab-pane" id="messages">
-            <nether-leaderboard-scores></nether-leaderboard-scores>
+            <nether-leaderboard-scores [scores]="aroundMeScores"></nether-leaderboard-scores>
         </div>
     </div>
 </div>

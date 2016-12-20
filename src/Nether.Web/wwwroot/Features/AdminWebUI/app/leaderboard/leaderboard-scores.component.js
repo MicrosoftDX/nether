@@ -14,6 +14,10 @@ var LeaderboardScoresComponent = (function () {
     }
     return LeaderboardScoresComponent;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Array)
+], LeaderboardScoresComponent.prototype, "scores", void 0);
 LeaderboardScoresComponent = __decorate([
     core_1.Component({
         selector: "nether-leaderboard-scores",
