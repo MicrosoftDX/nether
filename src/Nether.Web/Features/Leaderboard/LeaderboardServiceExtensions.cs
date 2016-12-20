@@ -111,14 +111,40 @@ namespace Nether.Web.Features.Leaderboard
             foreach (var config in enumerable)
             {
                 string name = config["Name"];
-
-                leaderboards.Add(name, new LeaderboardConfig
-                {
+                LeaderboardType type = (LeaderboardType)Enum.Parse(typeof(LeaderboardType), config["Type"]);
+                LeaderboardConfig leaderboardConfig = new LeaderboardConfig {
                     Name = name,
-                    Type = (LeaderboardType)Enum.Parse(typeof(LeaderboardType), config["Type"]),
-                    Radius = config["Radius"] != null ? int.Parse(config["Radius"]) : 0,
-                    Top = config["Top"] != null ? int.Parse(config["Top"]) : 0,
-                });
+                    Type = type };
+
+                switch(type)
+                {                   
+                    case LeaderboardType.Top:
+                        string top = config["Top"];
+                        if (top == null)
+                        {
+                            throw new Exception($"Leaderboard type Top must have Top value set. Leaderboard name: '{name}'");
+                        }
+                        else
+                        {
+                            leaderboardConfig.Top = int.Parse(top);
+                        }
+                        break;
+                    case LeaderboardType.AroundMe:
+                        string radius = config["Radius"];
+                        if (radius == null)
+                        {
+                            throw new Exception($"Leaderboard type AroundMe must have Radius value set. Leaderboard name: '{name}'");
+                        }
+                        else
+                        {
+                            leaderboardConfig.Top = int.Parse(radius);
+                        }
+                        break;
+                    case LeaderboardType.All:
+                        break;
+                }
+
+                leaderboards.Add(name, leaderboardConfig);
             }
 
             return leaderboards;
