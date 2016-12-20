@@ -50,6 +50,10 @@ var NetherApiService = (function () {
         return this._http.get(this._serverUrl + "api/player", this.getRequestOptions())
             .map(function (response) { return response.json().player; });
     };
+    NetherApiService.prototype.getAllPlayers = function () {
+        return this._http.get(this._serverUrl + "api/players", this.getRequestOptions())
+            .map(function (response) { return response.json().players; });
+    };
     NetherApiService.prototype.getRequestOptions = function () {
         return new http_1.RequestOptions({
             headers: new http_1.Headers({

@@ -8,15 +8,13 @@ import { Player } from "./../model";
 
 export class PlayersComponent implements OnInit {
 
-    private _player: Player;
+    allPlayers: Player[];
 
     constructor(private _api: NetherApiService) {
     }
 
     ngOnInit(): void {
-        this._api.login("testuser", "testuser").subscribe();
-
-        //this._api.getCurrentPlayer().subscribe(p => this._player = p);
+        this._api.getAllPlayers().subscribe(all => this.allPlayers = all);
     }
 }
 

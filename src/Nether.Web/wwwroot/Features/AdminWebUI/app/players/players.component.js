@@ -15,8 +15,8 @@ var PlayersComponent = (function () {
         this._api = _api;
     }
     PlayersComponent.prototype.ngOnInit = function () {
-        this._api.login("testuser", "testuser").subscribe();
-        //this._api.getCurrentPlayer().subscribe(p => this._player = p);
+        var _this = this;
+        this._api.getAllPlayers().subscribe(function (all) { return _this.allPlayers = all; });
     };
     return PlayersComponent;
 }());

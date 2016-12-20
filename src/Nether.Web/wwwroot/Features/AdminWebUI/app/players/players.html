@@ -1,1 +1,17 @@
-﻿these are the players
+﻿<table class="table table-condensed table-hover table-striped">
+    <caption>All Players</caption>
+    <thead>
+        <tr>
+            <th>Tag</th>
+            <th>Country</th>
+            <th>Custom Tag</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let p of allPlayers">
+            <td>{{ p.gamertag }}</td>
+            <td>{{ p.country }}</td>
+            <td>{{ p.customTag }}</td>
+        </tr>
+    </tbody>
+</table>

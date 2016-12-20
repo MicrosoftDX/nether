@@ -1,7 +1,7 @@
 ﻿import { Injectable } from "@angular/core";
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import { Observable } from "rxjs/Observable";
-import { Player } from "./model";
+import { Player, Group } from "./model";
 import "rxjs/add/operator/catch";
 import "rxjs/add/operator/do";
 import "rxjs/add/operator/map";
@@ -51,6 +51,13 @@ export class NetherApiService {
         return this._http.get(this._serverUrl + "api/player", this.getRequestOptions())
             .map((response: Response) => response.json().player);
     }
+
+    getAllPlayers(): Observable<Player[]> {
+        return this._http.get(this._serverUrl + "api/players", this.getRequestOptions())
+            .map(response => response.json().players);
+    }
+
+
 
     private getRequestOptions(): RequestOptions {
         return new RequestOptions({
