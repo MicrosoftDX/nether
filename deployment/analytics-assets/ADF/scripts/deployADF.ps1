@@ -10,9 +10,9 @@ New-AzureRmDataFactory -ResourceGroupName $resourceGrp -Name $dfName -Location "
 $df = Get-AzureRmDataFactory -ResourceGroupName $resourceGrp -Name $dfName
 
 #Linked Services
-New-AzureRmDataFactoryLinkedService $df -File ..\LinkedServices-oldk\storageLinkedService.json
-New-AzureRmDataFactoryLinkedService $df -File ..\LinkedServices-oldk\sqlLinkedService.json
-New-AzureRmDataFactoryLinkedService $df -File ..\LinkedServices-oldk\HDIonDemandLinkedService.json
+New-AzureRmDataFactoryLinkedService $df -File ..\LinkedServices\storageLinkedService.json
+New-AzureRmDataFactoryLinkedService $df -File ..\LinkedServices\sqlLinkedService.json
+New-AzureRmDataFactoryLinkedService $df -File ..\LinkedServices\HDIonDemandLinkedService.json
 
 #Datasets
 $files = Get-ChildItem ..\Datasets
