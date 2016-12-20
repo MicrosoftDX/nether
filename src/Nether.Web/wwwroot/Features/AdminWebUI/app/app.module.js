@@ -17,6 +17,7 @@ var app_component_1 = require("./app.component");
 var players_component_1 = require("./players/players.component");
 var login_component_1 = require("./login/login.component");
 var leaderboard_component_1 = require("./leaderboard/leaderboard.component");
+var leaderboard_scores_component_1 = require("./leaderboard/leaderboard-scores.component");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -40,6 +41,7 @@ AppModule = __decorate([
             app_component_1.AppComponent,
             players_component_1.PlayersComponent,
             login_component_1.LoginComponent,
+            leaderboard_scores_component_1.LeaderboardScoresComponent,
             leaderboard_component_1.LeaderboardComponent
         ],
         bootstrap: [

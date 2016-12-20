@@ -11,4 +11,10 @@ var Group = (function () {
     return Group;
 }());
 exports.Group = Group;
+var LeaderboardScore = (function () {
+    function LeaderboardScore() {
+    }
+    return LeaderboardScore;
+}());
+exports.LeaderboardScore = LeaderboardScore;
 //# sourceMappingURL=model.js.map

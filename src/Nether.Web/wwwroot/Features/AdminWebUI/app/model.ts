@@ -9,3 +9,8 @@ export class Group {
     customType: string;
     description: string;
 }
+
+export class LeaderboardScore {
+    gamertag: string;
+    score: number;
+}

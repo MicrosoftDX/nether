@@ -8,6 +8,7 @@ import { AppComponent } from "./app.component";
 import { PlayersComponent } from "./players/players.component";
 import { LoginComponent } from "./login/login.component";
 import { LeaderboardComponent } from "./leaderboard/leaderboard.component";
+import { LeaderboardScoresComponent } from "./leaderboard/leaderboard-scores.component";
 
 @NgModule({
     imports: [
@@ -26,6 +27,7 @@ import { LeaderboardComponent } from "./leaderboard/leaderboard.component";
         AppComponent,
         PlayersComponent,
         LoginComponent,
+        LeaderboardScoresComponent,
         LeaderboardComponent
    ],
    bootstrap: [
