@@ -17,30 +17,14 @@ Player Management functionality, implementing Nether [Player Management APIs](ap
    
    Use the ARM template in this repository to deply a **new** SQL Azure Database and the schema from a bacpac file (located in this repository as well).
    All deployment templates and assest are located under the [deployment](https://github.com/dx-ted-emea/nether/tree/master/deployment) folder.
-   1. Currently, you will need to download the bacpac file, until this repo will be public. 
+   1. Currently, you will need to download the bacpac file, until this repo will be public. Please it in Azure Storage and take a note of the URI. You will need to privde it as an input to the template.
    For the player management store, bacpac files are located under [player-management-assets](https://github.com/dx-ted-emea/nether/tree/master/deployment/player-management-assets) folder.
    2. Deploy the [playerManagementSqlDeploy](https://github.com/dx-ted-emea/nether/blob/master/deployment/playerManagementSqlDeploy.json) template 
    
    **SQL Query:**
    
    ```sql
-	CREATE TABLE [dbo].[PlayerManagementFact]
-    (
-        [Id] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(), 
-        [PlayerId] UNIQUEIDENTIFIER NOT NULL, 
-        [GroupId] UNIQUEIDENTIFIER NOT NULL,
-        PRIMARY KEY ([Id])       
-    )
-    GO
-
-    CREATE INDEX [IX_PlayerManagementFact_PlayerId] ON [dbo].[PlayerManagementFact] ([PlayerId])
-
-    GO
-
-    CREATE INDEX [IX_PlayerManagementFact_GroupId] ON [dbo].[PlayerManagementFact] ([GroupId])
-
-    GO
-
+	
     CREATE TABLE [dbo].[Players]
     (
         [Id] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(), 
@@ -80,6 +64,22 @@ Player Management functionality, implementing Nether [Player Management APIs](ap
     CREATE INDEX [IX_Groups_Name] ON [dbo].[Groups] ([Name])
 
     GO
+
+    CREATE TABLE [dbo].[PlayerGroups]
+    (
+        [Gamertag] varchar(50) NOT NULL, 
+        [GroupName] varchar(50) NOT NULL, 
+        CONSTRAINT [FK_PlayerGroups_Players] FOREIGN KEY ([Gamertag]) REFERENCES [Players](Gamertag), 
+        CONSTRAINT [FK_PlayerGroups_Groups] FOREIGN KEY ([GroupName]) REFERENCES [Groups]([Name])
+    )
+    GO
+
+    CREATE INDEX [IX_PlayerGroups_Gamertag] ON [dbo].[PlayerGroups] ([Gamertag])
+
+    GO
+
+    CREATE INDEX [IX_PlayerGroups_GroupName] ON [dbo].[PlayerGroups] ([GroupName])
+
    ```
    **Deploy from Visual Studio**
    
