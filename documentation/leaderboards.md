@@ -9,21 +9,18 @@ Simple leaderboard functionality, implementing Nether [leaderboard APIs](api/lea
   > To test locally, you may use an on prem installation of SQL Server database
 * Microsoft SQL Server Management Studio or Visual Studio - to query against the SQL tables
 
-## leaderboard Setup
-1. Obtain connection string for the Azure portal:
-   ![Connection String](images/leaderboard/connstr.png)
-2. Update connection string in appsetting.json file:
-   ```json
-    "LeaderboardStore": {
-        "wellknown": "sql",
-        "properties": {
-            "ConnectionString": "<enter SQL Database connection string>"
-        }
-    }
-   ```     
-   Follow the [configuration](configuration.md) section in this repo for more details.
+## Setup
 
-3. Create the _Scores_ table:
+1. Create the Leaderboard schema:
+   
+   **ARM Template**
+   
+   Use the ARM template in this repository to deply a **new** SQL Azure Database and the schema from a bacpac file (located in this repository as well).
+   All deployment templates and assest are located under the [deployment](https://github.com/dx-ted-emea/nether/tree/master/deployment) folder.
+   1. Currently, you will need to download the bacpac file, until this repo will be public. Please it in Azure Storage and take a note of the URI. You will need to privde it as an input to the template.
+   For the leaderboard, bacpac files are located under [leaderboard-assets](https://github.com/dx-ted-emea/nether/tree/master/deployment/leaderboard-assets) folder.
+   2. Deploy the [leaderboardSqlDeploy](https://github.com/dx-ted-emea/nether/blob/master/deployment/leaderboardSqlDeploy.json) template
+   
    **SQL Query:**
    
    ```sql
@@ -41,8 +38,23 @@ Simple leaderboard functionality, implementing Nether [leaderboard APIs](api/lea
 	CREATE INDEX [IX_Scores_1] ON [dbo].[Scores] ([DateAchieved], [GamerTag], [Score] DESC)
    ```
    **Deploy from Visual Studio**
+   
     - Open Nether solution in Visual Studio
 	- Right click on project Nether.Data.Sql.Schema	and select **Publish** to the SQL Database
+
+2. Get connection string from Azure portal:
+   [How to get sql database connection string?](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-develop-dotnet-simple)
+
+3. Update connection string in appsetting.json file:
+   ```json
+    "LeaderboardStore": {
+        "wellknown": "sql",
+        "properties": {
+            "ConnectionString": "<enter SQL Database connection string>"
+        }
+    }
+   ```     
+   Follow the [configuration](configuration.md) section in this repo for more details.
 
 ## Leaderboards Configuration
 The leaderboard _GET_ API will return various leaderboards, based on pre-defined configurations - top ranks, all ranks, ranks around me and more.
