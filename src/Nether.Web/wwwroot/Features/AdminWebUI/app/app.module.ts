@@ -7,6 +7,7 @@ import { HttpModule } from "@angular/http";
 import { AppComponent } from "./app.component";
 import { PlayersComponent } from "./players/players.component";
 import { LoginComponent } from "./login/login.component";
+import { LeaderboardComponent } from "./leaderboard/leaderboard.component";
 
 @NgModule({
     imports: [
@@ -16,6 +17,7 @@ import { LoginComponent } from "./login/login.component";
         RouterModule.forRoot([
             { path: "players", component: PlayersComponent },
             { path: "login", component: LoginComponent },
+            { path: "leaderboard", component: LeaderboardComponent },
             { path: "", redirectTo: "login", pathMatch: "full" },
             { path: "**", redirectTo: "login", pathMatch: "full" }
         ])
@@ -23,7 +25,8 @@ import { LoginComponent } from "./login/login.component";
     declarations: [
         AppComponent,
         PlayersComponent,
-        LoginComponent
+        LoginComponent,
+        LeaderboardComponent
    ],
    bootstrap: [
       AppComponent

@@ -16,6 +16,7 @@ var http_1 = require("@angular/http");
 var app_component_1 = require("./app.component");
 var players_component_1 = require("./players/players.component");
 var login_component_1 = require("./login/login.component");
+var leaderboard_component_1 = require("./leaderboard/leaderboard.component");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -30,6 +31,7 @@ AppModule = __decorate([
             router_1.RouterModule.forRoot([
                 { path: "players", component: players_component_1.PlayersComponent },
                 { path: "login", component: login_component_1.LoginComponent },
+                { path: "leaderboard", component: leaderboard_component_1.LeaderboardComponent },
                 { path: "", redirectTo: "login", pathMatch: "full" },
                 { path: "**", redirectTo: "login", pathMatch: "full" }
             ])
@@ -37,7 +39,8 @@ AppModule = __decorate([
         declarations: [
             app_component_1.AppComponent,
             players_component_1.PlayersComponent,
-            login_component_1.LoginComponent
+            login_component_1.LoginComponent,
+            leaderboard_component_1.LeaderboardComponent
         ],
         bootstrap: [
             app_component_1.AppComponent
