@@ -1,1 +1,8 @@
-﻿scores here!
+﻿<table class="table table-hover table-striped">
+    <tbody>
+        <tr *ngFor="let s of scores">
+            <td>{{ s.gamertag }}</td>
+            <td>{{ s.score }}</td>
+        </tr>
+    </tbody>
+</table>
