@@ -1,0 +1,14 @@
+{
+    "name": "dailyActiveUsersSQL",
+    "properties": {
+        "type": "AzureSqlTable",
+        "linkedServiceName": "sqlLinkedService",
+        "typeProperties": {
+            "tableName": "DailyActiveUsers"
+        },
+        "availability": {
+            "frequency": "Hour",
+            "interval": 1
+        }
+    }
+}
