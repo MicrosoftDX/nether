@@ -5,3 +5,7 @@ root=true
 [*.cs]
 indent_style=space
 indent_size=4
+
+[*.ts]
+indent_style=space
+indent_size=4

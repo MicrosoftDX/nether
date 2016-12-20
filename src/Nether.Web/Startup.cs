@@ -118,19 +118,15 @@ namespace Nether.Web
             #region [ Admin Web UI ]
             // Create a custom route for Admin Web UI
             // todo: make it nicer
-            const string adminFeaturePrefix = "/features/AdminWebUI";
+            const string adminFeatureSubstringUrl = "/features/adminwebui";
             app.Use(async (context, next) =>
             {
                 await next();
 
                 string path = context.Request.Path.Value;
-                if(path.StartsWith(adminFeaturePrefix))
+                if(path.Contains(adminFeatureSubstringUrl))
                 {
-                    string relPath = path.Substring(adminFeaturePrefix.Length).Trim();
-                    string redirectedPath = "Features/AdminWebUI/wwwroot/" +
-                        (relPath == string.Empty ? "index.html" : relPath);
-
-                    context.Request.Path = relPath;
+                    context.Request.Path = adminFeatureSubstringUrl + "/index.html";
 
                     await next();
                 }
