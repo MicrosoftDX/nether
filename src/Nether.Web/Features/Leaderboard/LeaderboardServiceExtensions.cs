@@ -112,12 +112,14 @@ namespace Nether.Web.Features.Leaderboard
             {
                 string name = config["Name"];
                 LeaderboardType type = (LeaderboardType)Enum.Parse(typeof(LeaderboardType), config["Type"]);
-                LeaderboardConfig leaderboardConfig = new LeaderboardConfig {
+                LeaderboardConfig leaderboardConfig = new LeaderboardConfig
+                {
                     Name = name,
-                    Type = type };
+                    Type = type
+                };
 
-                switch(type)
-                {                   
+                switch (type)
+                {
                     case LeaderboardType.Top:
                         string top = config["Top"];
                         if (top == null)
