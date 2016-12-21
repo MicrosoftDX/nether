@@ -74,6 +74,9 @@ var NetherApiService = (function () {
             customTag: customTag
         }, this.getRequestOptions());
     };
+    NetherApiService.prototype.createPlayer = function (player) {
+        return this._http.post(this._serverUrl + "api/players", player, this.getRequestOptions());
+    };
     NetherApiService.prototype.cachePlayer = function () {
         var _this = this;
         this.getCurrentPlayer().subscribe(function (p) { return _this._currentPlayer = p; });

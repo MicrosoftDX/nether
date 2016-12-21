@@ -1,17 +1,49 @@
-﻿<table class="table table-condensed table-hover table-striped">
-    <caption>All Players</caption>
-    <thead>
-        <tr>
-            <th>Tag</th>
-            <th>Country</th>
-            <th>Custom Tag</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let p of allPlayers">
-            <td>{{ p.gamertag }}</td>
-            <td>{{ p.country }}</td>
-            <td>{{ p.customTag }}</td>
-        </tr>
-    </tbody>
-</table>
+﻿<div>
+    <table class="table table-condensed table-hover table-striped">
+        <caption>All Players</caption>
+        <thead>
+            <tr>
+                <th>Tag</th>
+                <th>Country</th>
+                <th>Custom Tag</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let p of allPlayers">
+                <td>{{ p.gamertag }}</td>
+                <td>{{ p.country }}</td>
+                <td>{{ p.customTag }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <h4>Post New Score</h4>
+
+    <form>
+        <div class="form-group">
+            <label for="postScoreGamertag">Gamertag</label>
+            <input type="text" class="form-control"
+                    id="postScoreGamertag" name="postScoreGamertag"
+                    placeholder="leave empty to post for current player"
+                    [(ngModel)]="newPlayer.gamertag">
+        </div>
+        <div class="form-group">
+            <label for="postScoreCountry">Country</label>
+            <input type="text" class="form-control"
+                    id="postScoreCountry" name="postScoreCountry"
+                    placeholder="country"
+                    [(ngModel)]="newPlayer.country">
+        </div>
+        <div class="form-group">
+            <label for="postScoreCustomTag">Custom Tag (optional)</label>
+            <input type="text" class="form-control"
+                    id="postScoreCustomTag" name="postScoreCustomTag"
+                    placeholder="custom tag"
+                    [(ngModel)]="newPlayer.customTag">
+        </div>
+
+        <button type="button" class="btn btn-default" (click)="createPlayer()">Post</button>
+    </form>
+</div>

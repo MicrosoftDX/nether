@@ -9,12 +9,29 @@ import { Player } from "./../model";
 export class PlayersComponent implements OnInit {
 
     allPlayers: Player[];
+    newPlayer: Player;
 
     constructor(private _api: NetherApiService) {
+        this.resetPlayer();
     }
 
     ngOnInit(): void {
-        this._api.getAllPlayers().subscribe(all => this.allPlayers = all);
+        this.refreshPlayers();
+    }
+
+    refreshPlayers(): void {
+        this._api.getAllPlayers().subscribe((all: Player[]) => this.allPlayers = all);
+    }
+
+    createPlayer(): void {
+        this._api.createPlayer(this.newPlayer).subscribe((r: any) => {
+            this.refreshPlayers();
+            this.resetPlayer();
+        });
+    }
+
+    private resetPlayer() {
+        this.newPlayer = new Player();
     }
 }
 

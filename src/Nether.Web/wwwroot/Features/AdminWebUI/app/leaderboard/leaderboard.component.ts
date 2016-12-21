@@ -25,13 +25,13 @@ export class LeaderboardComponent implements OnInit {
 
     private refreshLeaderboard(): void {
         this._api.getLeaderboard("default")
-            .subscribe(s => this.defaultScores = s);
+            .subscribe((s: LeaderboardScore[]) => this.defaultScores = s);
 
         this._api.getLeaderboard("top")
-            .subscribe(s => this.topScores = s);
+            .subscribe((s: LeaderboardScore[]) => this.topScores = s);
 
         this._api.getLeaderboard("aroundMe")
-            .subscribe(s => this.aroundMeScores = s);
+            .subscribe((s: LeaderboardScore[]) => this.aroundMeScores = s);
     }
 
     private clearScore(): void {
@@ -45,7 +45,7 @@ export class LeaderboardComponent implements OnInit {
         this._api.postScore(this.scoreToPost,
             this.countryToPost,
             this.customTagToPost)
-            .subscribe(r => {
+            .subscribe((r: any) => {
                 this.clearScore();
                 this.refreshLeaderboard();
             });

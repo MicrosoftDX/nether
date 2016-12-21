@@ -1,7 +1,8 @@
 ﻿export class Player {
-   gamertag: string;
-   country: string;
-   customTag: string;
+    userId: string;
+    gamertag: string;
+    country: string;
+    customTag: string;
 }
 
 export class Group {

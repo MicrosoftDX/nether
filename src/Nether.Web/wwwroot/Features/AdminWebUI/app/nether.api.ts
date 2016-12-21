@@ -22,7 +22,7 @@ export class NetherApiService {
     private _currentPlayer: Player;
 
     constructor(private _http: Http) {
-        let authCookie = Cookie.get(this.authCacheKey);
+        let authCookie: string = Cookie.get(this.authCacheKey);
         if (authCookie) {
             this._token = JSON.parse(authCookie);
             this.cachePlayer();
@@ -83,7 +83,11 @@ export class NetherApiService {
             customTag: customTag
         }, this.getRequestOptions());
     }
-    
+
+    createPlayer(player: Player): Observable<Response> {
+        return this._http.post(this._serverUrl + "api/players", player, this.getRequestOptions());
+    }
+
     private cachePlayer(): void {
         this.getCurrentPlayer().subscribe(p => this._currentPlayer = p);
     }

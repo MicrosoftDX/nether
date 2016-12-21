@@ -10,13 +10,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var nether_api_1 = require("./../nether.api");
+var model_1 = require("./../model");
 var PlayersComponent = (function () {
     function PlayersComponent(_api) {
         this._api = _api;
+        this.resetPlayer();
     }
     PlayersComponent.prototype.ngOnInit = function () {
+        this.refreshPlayers();
+    };
+    PlayersComponent.prototype.refreshPlayers = function () {
         var _this = this;
         this._api.getAllPlayers().subscribe(function (all) { return _this.allPlayers = all; });
+    };
+    PlayersComponent.prototype.createPlayer = function () {
+        var _this = this;
+        this._api.createPlayer(this.newPlayer).subscribe(function (r) {
+            _this.refreshPlayers();
+            _this.resetPlayer();
+        });
+    };
+    PlayersComponent.prototype.resetPlayer = function () {
+        this.newPlayer = new model_1.Player();
     };
     return PlayersComponent;
 }());
