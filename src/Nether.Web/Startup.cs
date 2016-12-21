@@ -124,13 +124,12 @@ namespace Nether.Web
                 await next();
 
                 string path = context.Request.Path.Value;
-                if(path.Contains(adminFeatureSubstringUrl))
+                if (path.Contains(adminFeatureSubstringUrl))
                 {
                     context.Request.Path = adminFeatureSubstringUrl + "/index.html";
 
                     await next();
                 }
-
             });
             app.UseDefaultFiles();
             app.UseStaticFiles();
