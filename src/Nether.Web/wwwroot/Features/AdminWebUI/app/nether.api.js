@@ -21,7 +21,6 @@ var NetherApiService = (function () {
         this._serverUrl = "http://localhost:5000/";
         this._clientId = "resourceowner-test";
         this._clientSecret = "devsecret";
-        this._headers = new http_1.Headers({ "Content-Type": "application/json" });
     }
     NetherApiService.prototype.login = function (username, password) {
         var _this = this;
@@ -72,13 +71,13 @@ NetherApiService = __decorate([
     __metadata("design:paramtypes", [http_1.Http])
 ], NetherApiService);
 exports.NetherApiService = NetherApiService;
-//subset of endpoint configuraiton
+// subset of endpoint configuraiton
 var EndpointConfiguration = (function () {
     function EndpointConfiguration() {
     }
     return EndpointConfiguration;
 }());
-//subset of token response
+// subset of token response
 var TokenResponse = (function () {
     function TokenResponse() {
     }

@@ -19,8 +19,9 @@
     "systemjs": "0.19.39",
     "zone.js": "^0.6.25"
   },
-   "devDependencies": {
-      "gulp": "^3.9.1",
-      "browser-sync": "^2.17.5"
-   }
+  "devDependencies": {
+    "@types/core-js": "^0.9.35",
+    "browser-sync": "^2.17.5",
+    "gulp": "^3.9.1"
+  }
 }

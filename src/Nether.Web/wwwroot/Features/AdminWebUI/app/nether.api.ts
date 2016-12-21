@@ -1,7 +1,7 @@
 ﻿import { Injectable } from "@angular/core";
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import { Observable } from "rxjs/Observable";
-import { Player, Group, LeaderboardScore } from "./model";
+import { Player, LeaderboardScore } from "./model";
 import "rxjs/add/operator/catch";
 import "rxjs/add/operator/do";
 import "rxjs/add/operator/map";
@@ -14,7 +14,7 @@ export class NetherApiService {
     private _serverUrl: string = "http://localhost:5000/";
     private _clientId: string = "resourceowner-test";
     private _clientSecret: string = "devsecret";
-    private _headers: Headers = new Headers({ "Content-Type": "application/json" });
+    // private _headers: Headers = new Headers({ "Content-Type": "application/json" });
     private _endpointConfig: EndpointConfiguration;
     private _token: TokenResponse;
 
@@ -72,7 +72,7 @@ export class NetherApiService {
     }
 }
 
-//subset of endpoint configuraiton
+// subset of endpoint configuraiton
 class EndpointConfiguration {
     issuer: string;
     jwks_uri: string;
@@ -82,7 +82,7 @@ class EndpointConfiguration {
     claims_supported: string[];
 }
 
-//subset of token response
+// subset of token response
 class TokenResponse {
     access_token: string;
     expires_in: number;
