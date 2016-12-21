@@ -26,6 +26,7 @@ var NetherApiService = (function () {
         var authCookie = ng2_cookies_1.Cookie.get(this.authCacheKey);
         if (authCookie) {
             this._token = JSON.parse(authCookie);
+            this.cachePlayer();
         }
     }
     NetherApiService.prototype.login = function (username, password) {
@@ -49,6 +50,7 @@ var NetherApiService = (function () {
                 _this._token = token;
                 // cache token
                 ng2_cookies_1.Cookie.set(_this.authCacheKey, JSON.stringify(token));
+                _this.cachePlayer();
                 return token.access_token;
             });
         });
@@ -64,6 +66,17 @@ var NetherApiService = (function () {
     NetherApiService.prototype.getLeaderboard = function (type) {
         return this._http.get(this._serverUrl + "api/leaderboard/" + type, this.getRequestOptions())
             .map(function (response) { return response.json().entries; });
+    };
+    NetherApiService.prototype.postScore = function (score, country, customTag, gamerTag) {
+        return this._http.post(this._serverUrl + "api/leaderboard", {
+            score: score,
+            country: country,
+            customTag: customTag
+        }, this.getRequestOptions());
+    };
+    NetherApiService.prototype.cachePlayer = function () {
+        var _this = this;
+        this.getCurrentPlayer().subscribe(function (p) { return _this._currentPlayer = p; });
     };
     NetherApiService.prototype.getRequestOptions = function () {
         return new http_1.RequestOptions({

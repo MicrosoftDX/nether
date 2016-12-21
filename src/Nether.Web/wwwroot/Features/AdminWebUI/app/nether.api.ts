@@ -19,11 +19,13 @@ export class NetherApiService {
     // private _headers: Headers = new Headers({ "Content-Type": "application/json" });
     private _endpointConfig: EndpointConfiguration;
     private _token: TokenResponse;
+    private _currentPlayer: Player;
 
     constructor(private _http: Http) {
         let authCookie = Cookie.get(this.authCacheKey);
         if (authCookie) {
             this._token = JSON.parse(authCookie);
+            this.cachePlayer();
         }
     }
 
@@ -52,6 +54,8 @@ export class NetherApiService {
                         // cache token
                         Cookie.set(this.authCacheKey, JSON.stringify(token));
 
+                        this.cachePlayer();
+
                         return token.access_token;
                     });
             });
@@ -72,6 +76,17 @@ export class NetherApiService {
             .map(response => response.json().entries);
     }
 
+    postScore(score: number, country: string, customTag: string, gamerTag?: string): Observable<Response> {
+        return this._http.post(this._serverUrl + "api/leaderboard", {
+            score: score,
+            country: country,
+            customTag: customTag
+        }, this.getRequestOptions());
+    }
+    
+    private cachePlayer(): void {
+        this.getCurrentPlayer().subscribe(p => this._currentPlayer = p);
+    }
 
     private getRequestOptions(): RequestOptions {
         return new RequestOptions({

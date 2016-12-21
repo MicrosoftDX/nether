@@ -13,8 +13,15 @@ var nether_api_1 = require("./../nether.api");
 var LeaderboardComponent = (function () {
     function LeaderboardComponent(_api) {
         this._api = _api;
+        this.scoreToPost = 0;
+        this.gamertagToPost = null;
+        this.countryToPost = "UK";
+        this.customTagToPost = null;
     }
     LeaderboardComponent.prototype.ngOnInit = function () {
+        this.refreshLeaderboard();
+    };
+    LeaderboardComponent.prototype.refreshLeaderboard = function () {
         var _this = this;
         this._api.getLeaderboard("default")
             .subscribe(function (s) { return _this.defaultScores = s; });
@@ -22,6 +29,20 @@ var LeaderboardComponent = (function () {
             .subscribe(function (s) { return _this.topScores = s; });
         this._api.getLeaderboard("aroundMe")
             .subscribe(function (s) { return _this.aroundMeScores = s; });
+    };
+    LeaderboardComponent.prototype.clearScore = function () {
+        this.scoreToPost = 0;
+        this.gamertagToPost = null;
+        this.countryToPost = "UK";
+        this.customTagToPost = null;
+    };
+    LeaderboardComponent.prototype.postScore = function () {
+        var _this = this;
+        this._api.postScore(this.scoreToPost, this.countryToPost, this.customTagToPost)
+            .subscribe(function (r) {
+            _this.clearScore();
+            _this.refreshLeaderboard();
+        });
     };
     return LeaderboardComponent;
 }());

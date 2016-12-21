@@ -23,5 +23,39 @@
 </div>
 
 <div>
-    post score
+    <h4>Post New Score</h4>
+
+    <form>
+        <div class="form-group">
+            <label for="postScoreScore">Score</label>
+            <input type="number" class="form-control"
+                   id="postScoreScore" name="postScoreScore"
+                   placeholder="score to post"
+                   [(ngModel)]="scoreToPost">
+        </div>
+        <div class="form-group">
+            <label for="postScoreGamertag">Gamertag (optional)</label>
+            <input type="text" class="form-control"
+                   id="postScoreGamertag" name="postScoreGamertag"
+                   placeholder="leave empty to post for current player"
+                   [(ngModel)]="gamertagToPost">
+        </div>
+        <div class="form-group">
+            <label for="postScoreCountry">Country</label>
+            <input type="text" class="form-control"
+                   id="postScoreCountry" name="postScoreCountry"
+                   placeholder="country"
+                   [(ngModel)]="countryToPost">
+        </div>
+        <div class="form-group">
+            <label for="postScoreCustomTag">Custom Tag (optional)</label>
+            <input type="text" class="form-control"
+                   id="postScoreCustomTag" name="postScoreCustomTag"
+                   placeholder="custom tag"
+                   [(ngModel)]="customTagToPost">
+        </div>
+
+
+        <button type="button" class="btn btn-default" (click)="postScore()">Post</button>
+    </form>
 </div>
