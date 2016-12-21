@@ -21,7 +21,8 @@ gulp.task("npmtolib", () => {
       "rxjs/**",
       "zone.js/dist/**",
       "@angular/**",
-      "core-js/client/*.min.js"
+      "core-js/client/*.min.js",
+      "ng2-cookies/**"
    ], {
       cwd: "node_modules/**"
    })

@@ -1,6 +1,7 @@
 ﻿import { Injectable } from "@angular/core";
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import { Observable } from "rxjs/Observable";
+import { Cookie } from "ng2-cookies/ng2-cookies";
 import { Player, LeaderboardScore } from "./model";
 import "rxjs/add/operator/catch";
 import "rxjs/add/operator/do";
@@ -12,6 +13,7 @@ import "rxjs/add/observable/of";
 export class NetherApiService {
 
     private _serverUrl: string = "http://localhost:5000/";
+    private authCacheKey: string = "tempAuth";
     private _clientId: string = "resourceowner-test";
     private _clientSecret: string = "devsecret";
     // private _headers: Headers = new Headers({ "Content-Type": "application/json" });
@@ -19,6 +21,10 @@ export class NetherApiService {
     private _token: TokenResponse;
 
     constructor(private _http: Http) {
+        let authCookie = Cookie.get(this.authCacheKey);
+        if (authCookie) {
+            this._token = JSON.parse(authCookie);
+        }
     }
 
     login(username: string, password: string): Observable<string> {
@@ -42,6 +48,10 @@ export class NetherApiService {
                         let token = <TokenResponse>response.json();
                         console.log(token);
                         this._token = token;
+
+                        // cache token
+                        Cookie.set(this.authCacheKey, JSON.stringify(token));
+
                         return token.access_token;
                     });
             });

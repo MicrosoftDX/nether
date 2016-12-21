@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var http_1 = require("@angular/http");
+var ng2_cookies_1 = require("ng2-cookies/ng2-cookies");
 require("rxjs/add/operator/catch");
 require("rxjs/add/operator/do");
 require("rxjs/add/operator/map");
@@ -19,8 +20,13 @@ var NetherApiService = (function () {
     function NetherApiService(_http) {
         this._http = _http;
         this._serverUrl = "http://localhost:5000/";
+        this.authCacheKey = "tempAuth";
         this._clientId = "resourceowner-test";
         this._clientSecret = "devsecret";
+        var authCookie = ng2_cookies_1.Cookie.get(this.authCacheKey);
+        if (authCookie) {
+            this._token = JSON.parse(authCookie);
+        }
     }
     NetherApiService.prototype.login = function (username, password) {
         var _this = this;
@@ -41,6 +47,8 @@ var NetherApiService = (function () {
                 var token = response.json();
                 console.log(token);
                 _this._token = token;
+                // cache token
+                ng2_cookies_1.Cookie.set(_this.authCacheKey, JSON.stringify(token));
                 return token.access_token;
             });
         });
