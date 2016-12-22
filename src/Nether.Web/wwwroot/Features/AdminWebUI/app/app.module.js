@@ -15,9 +15,18 @@ var router_1 = require("@angular/router");
 var http_1 = require("@angular/http");
 var app_component_1 = require("./app.component");
 var players_component_1 = require("./players/players.component");
+var player_details_component_1 = require("./players/player-details.component");
 var login_component_1 = require("./login/login.component");
 var leaderboard_component_1 = require("./leaderboard/leaderboard.component");
 var leaderboard_scores_component_1 = require("./leaderboard/leaderboard-scores.component");
+var appRoutes = [
+    { path: "players", component: players_component_1.PlayersComponent },
+    { path: "player/:tag", component: player_details_component_1.PlayerDetailsComponent },
+    { path: "login", component: login_component_1.LoginComponent },
+    { path: "leaderboard", component: leaderboard_component_1.LeaderboardComponent },
+    { path: "", redirectTo: "login", pathMatch: "full" },
+    { path: "**", redirectTo: "login", pathMatch: "full" }
+];
 var AppModule = (function () {
     function AppModule() {
     }
@@ -29,20 +38,13 @@ AppModule = __decorate([
             platform_browser_1.BrowserModule,
             forms_1.FormsModule, forms_1.ReactiveFormsModule,
             http_1.HttpModule,
-            router_1.RouterModule.forRoot([
-                { path: "players", component: players_component_1.PlayersComponent },
-                { path: "login", component: login_component_1.LoginComponent },
-                { path: "leaderboard", component: leaderboard_component_1.LeaderboardComponent },
-                { path: "", redirectTo: "login", pathMatch: "full" },
-                { path: "**", redirectTo: "login", pathMatch: "full" }
-            ])
+            router_1.RouterModule.forRoot(appRoutes)
         ],
         declarations: [
             app_component_1.AppComponent,
-            players_component_1.PlayersComponent,
+            players_component_1.PlayersComponent, player_details_component_1.PlayerDetailsComponent,
             login_component_1.LoginComponent,
-            leaderboard_scores_component_1.LeaderboardScoresComponent,
-            leaderboard_component_1.LeaderboardComponent
+            leaderboard_scores_component_1.LeaderboardScoresComponent, leaderboard_component_1.LeaderboardComponent
         ],
         bootstrap: [
             app_component_1.AppComponent

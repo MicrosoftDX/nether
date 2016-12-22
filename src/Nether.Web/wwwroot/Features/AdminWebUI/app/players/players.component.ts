@@ -1,6 +1,7 @@
 ﻿import { Component, OnInit } from "@angular/core";
 import { NetherApiService } from "./../nether.api";
 import { Player } from "./../model";
+import { Router } from "@angular/router";
 
 @Component({
     templateUrl: "app/players/players.html"
@@ -11,7 +12,7 @@ export class PlayersComponent implements OnInit {
     allPlayers: Player[];
     newPlayer: Player;
 
-    constructor(private _api: NetherApiService) {
+    constructor(private _api: NetherApiService, private _router: Router) {
         this.resetPlayer();
     }
 
@@ -28,6 +29,10 @@ export class PlayersComponent implements OnInit {
             this.refreshPlayers();
             this.resetPlayer();
         });
+    }
+
+    selectPlayer(player: Player): void {
+        this._router.navigate(["player", player.gamertag]);
     }
 
     private resetPlayer() {

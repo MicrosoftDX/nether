@@ -10,7 +10,11 @@
         </thead>
         <tbody>
             <tr *ngFor="let p of allPlayers">
-                <td>{{ p.gamertag }}</td>
+                <td>
+                    <a (click)="selectPlayer(p)" style="cursor:pointer;">
+                        {{ p.gamertag }}
+                    </a>
+                </td>
                 <td>{{ p.country }}</td>
                 <td>{{ p.customTag }}</td>
             </tr>

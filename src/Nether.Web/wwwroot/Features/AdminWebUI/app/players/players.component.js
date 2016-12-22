@@ -11,9 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require("@angular/core");
 var nether_api_1 = require("./../nether.api");
 var model_1 = require("./../model");
+var router_1 = require("@angular/router");
 var PlayersComponent = (function () {
-    function PlayersComponent(_api) {
+    function PlayersComponent(_api, _router) {
         this._api = _api;
+        this._router = _router;
         this.resetPlayer();
     }
     PlayersComponent.prototype.ngOnInit = function () {
@@ -30,6 +32,9 @@ var PlayersComponent = (function () {
             _this.resetPlayer();
         });
     };
+    PlayersComponent.prototype.selectPlayer = function (player) {
+        this._router.navigate(["player", player.gamertag]);
+    };
     PlayersComponent.prototype.resetPlayer = function () {
         this.newPlayer = new model_1.Player();
     };
@@ -39,7 +44,7 @@ PlayersComponent = __decorate([
     core_1.Component({
         templateUrl: "app/players/players.html"
     }),
-    __metadata("design:paramtypes", [nether_api_1.NetherApiService])
+    __metadata("design:paramtypes", [nether_api_1.NetherApiService, router_1.Router])
 ], PlayersComponent);
 exports.PlayersComponent = PlayersComponent;
 //# sourceMappingURL=players.component.js.map
