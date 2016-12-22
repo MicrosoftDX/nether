@@ -120,7 +120,7 @@ namespace Nether.Web.Features.Leaderboard
 
                 switch (type)
                 {
-                    case LeaderboardType.Top:                        
+                    case LeaderboardType.Top:
                         string top = config["Top"];
                         if (top == null)
                         {
@@ -151,6 +151,5 @@ namespace Nether.Web.Features.Leaderboard
 
             return leaderboards;
         }
-        
     }
 }
