@@ -59,6 +59,10 @@ var NetherApiService = (function () {
         return this._http.get(this._serverUrl + "api/player", this.getRequestOptions())
             .map(function (response) { return response.json().player; });
     };
+    NetherApiService.prototype.getPlayer = function (gamertag) {
+        return this._http.get(this._serverUrl + "api/players/" + gamertag, this.getRequestOptions())
+            .map(function (r) { return r.json().player; });
+    };
     NetherApiService.prototype.getAllPlayers = function () {
         return this._http.get(this._serverUrl + "api/players", this.getRequestOptions())
             .map(function (response) { return response.json().players; });

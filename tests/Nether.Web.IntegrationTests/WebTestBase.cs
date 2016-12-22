@@ -22,7 +22,7 @@ namespace Nether.Web.IntegrationTests
         public const string PlayerUser = "testuser";
         public const string AdminUser = "devadmin";
 
-        private const string BaseUrl = "http://localhost.charlesproxy.com:5000/";
+        private const string BaseUrl = "http://localhost:5000/";
         private const string ClientId = "resourceowner-test";
         private const string ClientSecret = "devsecret";
         protected string _gamertag;

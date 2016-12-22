@@ -35,7 +35,7 @@ export class PlayersComponent implements OnInit {
         this._router.navigate(["player", player.gamertag]);
     }
 
-    private resetPlayer() {
+    private resetPlayer(): void {
         this.newPlayer = new Player();
     }
 }

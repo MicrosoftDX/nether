@@ -31,13 +31,13 @@ export class NetherApiService {
 
     login(username: string, password: string): Observable<string> {
         return this._http.get(this._serverUrl + ".well-known/openid-configuration")
-            .map(response => <EndpointConfiguration>response.json())
+            .map((response: Response) => <EndpointConfiguration>response.json())
             .flatMap(config => {
 
                 this._endpointConfig = config;
                 console.log("token endpoint: " + config.token_endpoint);
-                let authHead = btoa(this._clientId + ":" + this._clientSecret);
-                let formData = `grant_type=password&username=${username}&password=${password}&scope=nether-all`;
+                let authHead: string = btoa(this._clientId + ":" + this._clientSecret);
+                let formData: string = `grant_type=password&username=${username}&password=${password}&scope=nether-all`;
 
                 return this._http.post(config.token_endpoint, formData,
                     new RequestOptions({
@@ -46,8 +46,8 @@ export class NetherApiService {
                             "Content-Type": "application/x-www-form-urlencoded"
                         })
                     }))
-                    .map(response => {
-                        let token = <TokenResponse>response.json();
+                    .map((response: Response) => {
+                        let token: TokenResponse = <TokenResponse>response.json();
                         console.log(token);
                         this._token = token;
 
@@ -66,14 +66,19 @@ export class NetherApiService {
             .map((response: Response) => response.json().player);
     }
 
+    getPlayer(gamertag: string): Observable<Player> {
+        return this._http.get(this._serverUrl + "api/players/" + gamertag, this.getRequestOptions())
+            .map((r: Response) => r.json().player);
+    }
+
     getAllPlayers(): Observable<Player[]> {
         return this._http.get(this._serverUrl + "api/players", this.getRequestOptions())
-            .map(response => response.json().players);
+            .map((response: Response) => response.json().players);
     }
 
     getLeaderboard(type: string): Observable<LeaderboardScore[]> {
         return this._http.get(this._serverUrl + "api/leaderboard/" + type, this.getRequestOptions())
-            .map(response => response.json().entries);
+            .map((response: Response) => response.json().entries);
     }
 
     postScore(score: number, country: string, customTag: string, gamerTag?: string): Observable<Response> {
@@ -89,7 +94,7 @@ export class NetherApiService {
     }
 
     private cachePlayer(): void {
-        this.getCurrentPlayer().subscribe(p => this._currentPlayer = p);
+        this.getCurrentPlayer().subscribe((p: Player) => this._currentPlayer = p);
     }
 
     private getRequestOptions(): RequestOptions {

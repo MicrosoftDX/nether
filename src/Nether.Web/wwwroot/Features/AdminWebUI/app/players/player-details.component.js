@@ -10,11 +10,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var nether_api_1 = require("./../nether.api");
+var router_1 = require("@angular/router");
+require("rxjs/add/operator/switchMap");
 var PlayerDetailsComponent = (function () {
-    function PlayerDetailsComponent(_api) {
+    function PlayerDetailsComponent(_api, _route) {
         this._api = _api;
+        this._route = _route;
     }
     PlayerDetailsComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        // call web service to get player frout the gamertag specified in the route
+        this._route.params
+            .switchMap(function (params) { return _this._api.getPlayer(params["tag"]); })
+            .subscribe(function (player) { return _this.player = player; });
     };
     return PlayerDetailsComponent;
 }());
@@ -22,7 +30,7 @@ PlayerDetailsComponent = __decorate([
     core_1.Component({
         templateUrl: "app/players/player-details.html"
     }),
-    __metadata("design:paramtypes", [nether_api_1.NetherApiService])
+    __metadata("design:paramtypes", [nether_api_1.NetherApiService, router_1.ActivatedRoute])
 ], PlayerDetailsComponent);
 exports.PlayerDetailsComponent = PlayerDetailsComponent;
 //# sourceMappingURL=player-details.component.js.map
