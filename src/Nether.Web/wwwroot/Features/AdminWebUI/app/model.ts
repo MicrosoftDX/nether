@@ -9,6 +9,7 @@ export class Group {
     name: string;
     customType: string;
     description: string;
+    members: string[];
 }
 
 export class LeaderboardScore {

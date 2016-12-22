@@ -19,9 +19,11 @@ var player_details_component_1 = require("./players/player-details.component");
 var login_component_1 = require("./login/login.component");
 var leaderboard_component_1 = require("./leaderboard/leaderboard.component");
 var leaderboard_scores_component_1 = require("./leaderboard/leaderboard-scores.component");
+var groups_component_1 = require("./groups/groups.component");
 var appRoutes = [
     { path: "players", component: players_component_1.PlayersComponent },
     { path: "player/:tag", component: player_details_component_1.PlayerDetailsComponent },
+    { path: "groups", component: groups_component_1.GroupsComponent },
     { path: "login", component: login_component_1.LoginComponent },
     { path: "leaderboard", component: leaderboard_component_1.LeaderboardComponent },
     { path: "", redirectTo: "login", pathMatch: "full" },
@@ -44,7 +46,8 @@ AppModule = __decorate([
             app_component_1.AppComponent,
             players_component_1.PlayersComponent, player_details_component_1.PlayerDetailsComponent,
             login_component_1.LoginComponent,
-            leaderboard_scores_component_1.LeaderboardScoresComponent, leaderboard_component_1.LeaderboardComponent
+            leaderboard_scores_component_1.LeaderboardScoresComponent, leaderboard_component_1.LeaderboardComponent,
+            groups_component_1.GroupsComponent
         ],
         bootstrap: [
             app_component_1.AppComponent

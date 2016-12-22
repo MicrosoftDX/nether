@@ -84,6 +84,13 @@ var NetherApiService = (function () {
     NetherApiService.prototype.updatePlayer = function (player) {
         return this._http.post(this._serverUrl + "api/players", player, this.getRequestOptions());
     };
+    NetherApiService.prototype.getAllGroups = function () {
+        return this._http.get(this._serverUrl + "api/groups", this.getRequestOptions())
+            .map(function (r) { return r.json().groups; });
+    };
+    NetherApiService.prototype.createGroup = function (group) {
+        return this._http.post(this._serverUrl + "api/groups", group, this.getRequestOptions());
+    };
     NetherApiService.prototype.cachePlayer = function () {
         var _this = this;
         this.getCurrentPlayer().subscribe(function (p) { return _this._currentPlayer = p; });

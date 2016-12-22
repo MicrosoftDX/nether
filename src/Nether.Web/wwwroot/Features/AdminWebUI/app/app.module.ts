@@ -10,10 +10,12 @@ import { PlayerDetailsComponent } from "./players/player-details.component";
 import { LoginComponent } from "./login/login.component";
 import { LeaderboardComponent } from "./leaderboard/leaderboard.component";
 import { LeaderboardScoresComponent } from "./leaderboard/leaderboard-scores.component";
+import { GroupsComponent } from "./groups/groups.component";
 
 const appRoutes: Routes = [
     { path: "players", component: PlayersComponent },
     { path: "player/:tag", component: PlayerDetailsComponent },
+    { path: "groups", component: GroupsComponent },
     { path: "login", component: LoginComponent },
     { path: "leaderboard", component: LeaderboardComponent },
     { path: "", redirectTo: "login", pathMatch: "full" },
@@ -31,7 +33,8 @@ const appRoutes: Routes = [
         AppComponent,
         PlayersComponent, PlayerDetailsComponent,
         LoginComponent,
-        LeaderboardScoresComponent, LeaderboardComponent
+        LeaderboardScoresComponent, LeaderboardComponent,
+        GroupsComponent
    ],
    bootstrap: [
       AppComponent

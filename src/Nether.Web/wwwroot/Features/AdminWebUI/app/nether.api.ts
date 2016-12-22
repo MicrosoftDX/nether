@@ -2,7 +2,7 @@
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import { Observable } from "rxjs/Observable";
 import { Cookie } from "ng2-cookies/ng2-cookies";
-import { Player, LeaderboardScore } from "./model";
+import { Player, LeaderboardScore, Group } from "./model";
 import "rxjs/add/operator/catch";
 import "rxjs/add/operator/do";
 import "rxjs/add/operator/map";
@@ -95,6 +95,15 @@ export class NetherApiService {
 
     updatePlayer(player: Player) {
         return this._http.post(this._serverUrl + "api/players", player, this.getRequestOptions());
+    }
+
+    getAllGroups(): Observable<Group[]> {
+        return this._http.get(this._serverUrl + "api/groups", this.getRequestOptions())
+            .map((r: Response) => <Group[]>r.json().groups);
+    }
+
+    createGroup(group: Group): Observable<Response> {
+        return this._http.post(this._serverUrl + "api/groups", group, this.getRequestOptions());
     }
 
     private cachePlayer(): void {
