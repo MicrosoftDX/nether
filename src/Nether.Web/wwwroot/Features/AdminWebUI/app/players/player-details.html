@@ -1,1 +1,32 @@
-﻿wow, got the the player {{ player | json }}
+﻿<div>
+    <h2>Player Details</h2>
+</div>
+<div *ngIf="player">
+    <form novalidate>
+        <div class="form-group">
+            <label for="gamertag">Gamertag</label>
+            <input type="text" class="form-control"
+                   id="gamertag" name="gamertag"
+                   [(ngModel)]="player.gamertag" readonly>
+        </div>
+        <div class="form-group">
+            <label for="country">Country</label>
+            <input type="text" class="form-control"
+                   id="country" name="country"
+                   placeholder="country"
+                   [(ngModel)]="player.country">
+        </div>
+        <div class="form-group">
+            <label for="customTag">Custom Tag (optional)</label>
+            <input type="text" class="form-control"
+                   id="customTag" name="customTag"
+                   placeholder="custom tag"
+                   [(ngModel)]="player.customTag">
+        </div>
+
+        <button type="button" class="btn btn-default" (click)="updatePlayer()">Update</button>
+    </form>
+</div>
+<div *ngIf="!player">
+    Loading...
+</div>

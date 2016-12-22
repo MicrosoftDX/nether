@@ -32,6 +32,7 @@ export class PlayersComponent implements OnInit {
     }
 
     selectPlayer(player: Player): void {
+        console.log(`navigating to player ${player.gamertag}`);
         this._router.navigate(["player", player.gamertag]);
     }
 

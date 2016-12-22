@@ -13,16 +13,32 @@ var nether_api_1 = require("./../nether.api");
 var router_1 = require("@angular/router");
 require("rxjs/add/operator/switchMap");
 var PlayerDetailsComponent = (function () {
-    function PlayerDetailsComponent(_api, _route) {
+    function PlayerDetailsComponent(_api, _route, _router) {
         this._api = _api;
         this._route = _route;
+        this._router = _router;
+        this.player = null;
     }
     PlayerDetailsComponent.prototype.ngOnInit = function () {
         var _this = this;
         // call web service to get player frout the gamertag specified in the route
+        console.log("loading player details");
         this._route.params
             .switchMap(function (params) { return _this._api.getPlayer(params["tag"]); })
-            .subscribe(function (player) { return _this.player = player; });
+            .subscribe(function (player) {
+            console.log("player loaded");
+            _this.player = player;
+            console.log(player);
+        });
+    };
+    PlayerDetailsComponent.prototype.updatePlayer = function () {
+        var _this = this;
+        console.log("updating...");
+        this._api.updatePlayer(this.player)
+            .subscribe(function (r) {
+            console.log("player updated, going back...");
+            _this._router.navigate(["players"]);
+        });
     };
     return PlayerDetailsComponent;
 }());
@@ -30,7 +46,7 @@ PlayerDetailsComponent = __decorate([
     core_1.Component({
         templateUrl: "app/players/player-details.html"
     }),
-    __metadata("design:paramtypes", [nether_api_1.NetherApiService, router_1.ActivatedRoute])
+    __metadata("design:paramtypes", [nether_api_1.NetherApiService, router_1.ActivatedRoute, router_1.Router])
 ], PlayerDetailsComponent);
 exports.PlayerDetailsComponent = PlayerDetailsComponent;
 //# sourceMappingURL=player-details.component.js.map

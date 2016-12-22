@@ -93,6 +93,10 @@ export class NetherApiService {
         return this._http.post(this._serverUrl + "api/players", player, this.getRequestOptions());
     }
 
+    updatePlayer(player: Player) {
+        return this._http.post(this._serverUrl + "api/players", player, this.getRequestOptions());
+    }
+
     private cachePlayer(): void {
         this.getCurrentPlayer().subscribe((p: Player) => this._currentPlayer = p);
     }

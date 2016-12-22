@@ -33,6 +33,7 @@ var PlayersComponent = (function () {
         });
     };
     PlayersComponent.prototype.selectPlayer = function (player) {
+        console.log("navigating to player " + player.gamertag);
         this._router.navigate(["player", player.gamertag]);
     };
     PlayersComponent.prototype.resetPlayer = function () {
