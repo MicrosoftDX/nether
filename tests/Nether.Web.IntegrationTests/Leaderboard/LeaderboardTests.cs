@@ -83,21 +83,21 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
             //check he is not around me
             _client = GetClient();
-            response = await GetLeaderboard("Around Me");
+            response = await GetLeaderboard("5-AroundMe");
             Assert.False(response.Entries.Any(e => e.Gamertag == hisGamertag));
 
             //make his score similar to mine and check he is around me
             _client = GetClient("testuser1");
             await PostScore(int.MaxValue / 2 + 1);
             _client = GetClient();
-            response = await GetLeaderboard("Around Me");
+            response = await GetLeaderboard("5-AroundMe");
             Assert.True(response.Entries.Any(e => e.Gamertag == hisGamertag));
         }
 
         [Fact]
         public async Task Limiting_top_scores_returns_limited_numer_of_rows()
         {
-            LeaderboardGetResponse response = await GetLeaderboard("Top", HttpStatusCode.OK);
+            LeaderboardGetResponse response = await GetLeaderboard("Top-5", HttpStatusCode.OK);
 
             Assert.True(response.Entries.Length <= 5);
         }
