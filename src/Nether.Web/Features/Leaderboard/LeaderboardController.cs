@@ -75,7 +75,7 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                Entries = scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+                Entries = scores == null ? null : scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
             };
 
             // Return result

@@ -67,6 +67,9 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
             Assert.Equal("/api/players/" + gamertag, result.Response.Headers.GetValues("Location").First());
             Assert.Equal(gamertag, (string)result.ResponseBody.gamertag);
+
+            //check that I can get player by gamertag
+            PlayerGetResponse response = await GetPlayerAsync(gamertag);
         }
 
         [Fact]
@@ -298,9 +301,14 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             return await HttpGet<PlayerListGetResponse>(_client, BaseUri + "players", expectedCode);
         }
 
-        private async Task<PlayerGetResponse> GetPlayerAsync(HttpStatusCode expectedCode = HttpStatusCode.OK)
+        private async Task<PlayerGetResponse> GetPlayerAsync(string gamerTag = null, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            return await HttpGet<PlayerGetResponse>(_client, BaseUri + "player");
+            if (gamerTag == null)
+            {
+                return await HttpGet<PlayerGetResponse>(_client, BaseUri + "player");
+            }
+
+            return await HttpGet<PlayerGetResponse>(_client, BaseUri + "players/" + gamerTag);
         }
 
         private async Task UpdatePlayerAsync(string country, HttpStatusCode expectedCode = HttpStatusCode.NoContent)

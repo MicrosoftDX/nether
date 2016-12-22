@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- base href is required here for routing to work on relative paths-->
+   <base href="/features/adminwebui/" />
+   <meta charset="utf-8">
+   <title>Nether Administration</title>
+   <link rel="stylesheet" type="text/css" media="screen" href="../../lib/bootstrap/dist/css/bootstrap.css">
+   <link rel="stylesheet" type="text/css" media="screen" href="css/site.css"></>
+</head>
+
+<body class="body">
+
+   <nether-app>
+      Loading <strong> Nether Web Admin...</strong>
+   </nether-app>
+
+   <!-- scripts -->
+
+   <script src="../../lib/jquery/dist/jquery.js"></script>
+   <script src="../../lib/jquery-ui/jquery-ui.js"></script>
+   <script src="../../lib/bootstrap/dist/js/bootstrap.js"></script>
+   <script src="../../lib/core-js/client/shim.min.js"></script>
+   <script src="../../lib/zone.js/dist/zone.js"></script>
+   <script src="../../lib/reflect-metadata/Reflect.js"></script>
+   <script src="../../lib/systemjs/dist/system.src.js"></script>
+   <script src="systemjs.config.js"></script>
+   <script>
+      System.import('app').catch(function(err){ console.error(err); });
+   </script>
+</body>
+</html>

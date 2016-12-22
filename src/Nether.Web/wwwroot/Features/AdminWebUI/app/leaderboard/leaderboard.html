@@ -1,0 +1,61 @@
+﻿<h2>Leaderboards</h2>
+
+<div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Default</a></li>
+        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Top</a></li>
+        <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Around Me</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="home">
+            <nether-leaderboard-scores [scores]="defaultScores"></nether-leaderboard-scores>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="profile">
+            <nether-leaderboard-scores [scores]="topScores"></nether-leaderboard-scores>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="messages">
+            <nether-leaderboard-scores [scores]="aroundMeScores"></nether-leaderboard-scores>
+        </div>
+    </div>
+</div>
+
+<div>
+    <h4>Post New Score</h4>
+
+    <form>
+        <div class="form-group">
+            <label for="postScoreScore">Score</label>
+            <input type="number" class="form-control"
+                   id="postScoreScore" name="postScoreScore"
+                   placeholder="score to post"
+                   [(ngModel)]="scoreToPost">
+        </div>
+        <div class="form-group">
+            <label for="postScoreGamertag">Gamertag (optional)</label>
+            <input type="text" class="form-control"
+                   id="postScoreGamertag" name="postScoreGamertag"
+                   placeholder="leave empty to post for current player"
+                   [(ngModel)]="gamertagToPost">
+        </div>
+        <div class="form-group">
+            <label for="postScoreCountry">Country</label>
+            <input type="text" class="form-control"
+                   id="postScoreCountry" name="postScoreCountry"
+                   placeholder="country"
+                   [(ngModel)]="countryToPost">
+        </div>
+        <div class="form-group">
+            <label for="postScoreCustomTag">Custom Tag (optional)</label>
+            <input type="text" class="form-control"
+                   id="postScoreCustomTag" name="postScoreCustomTag"
+                   placeholder="custom tag"
+                   [(ngModel)]="customTagToPost">
+        </div>
+
+
+        <button type="button" class="btn btn-default" (click)="postScore()">Post</button>
+    </form>
+</div>

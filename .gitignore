@@ -262,3 +262,6 @@ paket-files/
 
 # OS X
 .DS_Store
+
+# Web UI
+**/wwwroot/lib/**/*

@@ -1,0 +1,14 @@
+﻿<form [formGroup]="form" (ngSubmit)="onLogin()" novalidate>
+   <div class="form-group">
+      <label for="inputUsername">Username</label>
+      <input type="text" class="form-control" id="inputUsername" placeholder="Username" formControlName="inputUsername">
+   </div>
+   <div class="form-group">
+      <label for="inputPassword">Password</label>
+      <input type="password" class="form-control" id="inputPassword" placeholder="Password" formControlName="inputPassword">
+   </div>
+   <button type="submit" class="btn btn-default"
+           [disabled]="!form.valid">
+      Login
+   </button>
+</form>

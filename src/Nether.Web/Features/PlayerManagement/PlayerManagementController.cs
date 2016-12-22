@@ -11,6 +11,7 @@ using Nether.Web.Utilities;
 using Swashbuckle.SwaggerGen.Annotations;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -92,7 +93,7 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpPost]
         public async Task<ActionResult> Post([FromBody]PlayerPostRequestModel newPlayer)
         {
-            if (string.IsNullOrWhiteSpace((string)newPlayer.Gamertag))
+            if (string.IsNullOrWhiteSpace(newPlayer.Gamertag))
             {
                 return base.BadRequest(); //TODO: return error info in body
             }
@@ -100,7 +101,7 @@ namespace Nether.Web.Features.PlayerManagement
             // Save player
             var player = new Player
             {
-                UserId = newPlayer.UserId,
+                UserId = newPlayer.UserId ?? Guid.NewGuid().ToString(),
                 Gamertag = newPlayer.Gamertag,
                 Country = newPlayer.Country,
                 CustomTag = newPlayer.CustomTag
