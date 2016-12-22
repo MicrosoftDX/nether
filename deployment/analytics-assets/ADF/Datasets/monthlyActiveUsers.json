@@ -1,14 +1,15 @@
 {
-    "name": "nondist-DailyActiveUsers",
+    "name": "monthlyActiveUsers",
     "properties": {
         "type": "AzureBlob",
         "linkedServiceName": "storageLinkedService",
         "typeProperties": {
             "fileName": "000000_0",
-            "folderPath": "gamedata/nondistinct-dailyactiveusers",
+            "folderPath": "gamedata/monthlyactiveusers",
             "format": {
                 "type": "TextFormat",
-                "columnDelimiter": ","
+                "columnDelimiter": ",",
+                "rowDelimiter": "\n"
             }
         },
         "availability": {

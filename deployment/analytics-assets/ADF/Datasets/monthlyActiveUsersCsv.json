@@ -1,11 +1,11 @@
 {
-    "name": "dauCsv",
+    "name": "monthlyActiveUsersCsv",
     "properties": {
         "type": "AzureBlob",
         "linkedServiceName": "storageLinkedService",
         "typeProperties": {
             "fileName": "000000_0.csv",
-            "folderPath": "gamedata/dailyactiveusersCsv",
+            "folderPath": "gamedata/monthlyactiveusersCsv",
             "format": {
                 "type": "TextFormat",
                 "columnDelimiter": ","

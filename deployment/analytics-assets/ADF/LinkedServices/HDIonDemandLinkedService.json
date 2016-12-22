@@ -4,9 +4,11 @@
     "type": "HDInsightOnDemand",
     "typeProperties": {
       "version": "3.2",
-      "clusterSize": 8,
+      "clusterSize": 2,
+      "osType": "Windows",
       "timeToLive": "00:30:00",
-      "linkedServiceName": "storageLinkedService"
+      "linkedServiceName": "storageLinkedService",
+      "hcatalogLinkedServiceName": "sqlLinkedService"
     }
   }
 }

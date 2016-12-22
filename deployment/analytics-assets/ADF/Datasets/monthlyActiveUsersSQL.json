@@ -1,0 +1,14 @@
+{
+    "name": "monthlyActiveUsersSQL",
+    "properties": {
+        "type": "AzureSqlTable",
+        "linkedServiceName": "sqlLinkedService",
+        "typeProperties": {
+            "tableName": "MonthlyActiveUsers"
+        },
+        "availability": {
+            "frequency": "Hour",
+            "interval": 1
+        }
+    }
+}
