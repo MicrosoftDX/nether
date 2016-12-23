@@ -91,9 +91,18 @@ var NetherApiService = (function () {
     NetherApiService.prototype.createGroup = function (group) {
         return this._http.post(this._serverUrl + "api/groups", group, this.getRequestOptions());
     };
+    NetherApiService.prototype.getPlayerGroups = function (gamertag) {
+        return this._http.get(this._serverUrl + "api/players/" + gamertag + "/groups", this.getRequestOptions())
+            .map(function (r) { return r.json().groups; });
+    };
+    NetherApiService.prototype.addPlayerToGroup = function (gamertag, groupName) {
+        return this._http.put(this._serverUrl + "api/players/" + gamertag + "/groups/" + groupName, null, this.getRequestOptions());
+    };
+    NetherApiService.prototype.removePlayerFromGroup = function (gamertag, groupName) {
+        return this._http.delete(this._serverUrl + "api/groups/" + groupName + "/players/" + gamertag, this.getRequestOptions());
+    };
     NetherApiService.prototype.cachePlayer = function () {
-        var _this = this;
-        this.getCurrentPlayer().subscribe(function (p) { return _this._currentPlayer = p; });
+        // this.getCurrentPlayer().subscribe((p: Player) => this._currentPlayer = p);
     };
     NetherApiService.prototype.getRequestOptions = function () {
         return new http_1.RequestOptions({

@@ -17,14 +17,21 @@ var PlayerDetailsComponent = (function () {
         this._api = _api;
         this._route = _route;
         this._router = _router;
+        this.gamertag = null;
         this.player = null;
+        this.playerGroups = null;
+        this.allGroups = null;
     }
     PlayerDetailsComponent.prototype.ngOnInit = function () {
         var _this = this;
         // call web service to get player frout the gamertag specified in the route
-        console.log("loading player details");
         this._route.params
-            .switchMap(function (params) { return _this._api.getPlayer(params["tag"]); })
+            .switchMap(function (params) {
+            _this.gamertag = params["tag"];
+            console.log("loading player details, gamertag: " + _this.gamertag);
+            _this.reloadGroups();
+            return _this._api.getPlayer(_this.gamertag);
+        })
             .subscribe(function (player) {
             console.log("player loaded");
             _this.player = player;
@@ -39,6 +46,27 @@ var PlayerDetailsComponent = (function () {
             console.log("player updated, going back...");
             _this._router.navigate(["players"]);
         });
+    };
+    PlayerDetailsComponent.prototype.reloadGroups = function () {
+        var _this = this;
+        this._api.getPlayerGroups(this.gamertag).subscribe(function (gs) { return _this.playerGroups = gs; });
+        this._api.getAllGroups().subscribe(function (ag) { return _this.allGroups = ag; });
+    };
+    PlayerDetailsComponent.prototype.toggleGroupMembership = function (g) {
+        var _this = this;
+        var isMember = this.isMemberOf(g);
+        console.log("switching '" + g.name + "' " + isMember + "=>" + !isMember);
+        if (!isMember) {
+            this._api.addPlayerToGroup(this.player.gamertag, g.name)
+                .subscribe(function (r) { return _this.playerGroups.push(g); });
+        }
+        else {
+            this._api.removePlayerFromGroup(this.player.gamertag, g.name)
+                .subscribe(function (r) { return _this.playerGroups = _this.playerGroups.filter(function (g) { return g.name !== g.name; }); });
+        }
+    };
+    PlayerDetailsComponent.prototype.isMemberOf = function (g) {
+        return this.playerGroups.some(function (i) { return i.name === g.name; });
     };
     return PlayerDetailsComponent;
 }());

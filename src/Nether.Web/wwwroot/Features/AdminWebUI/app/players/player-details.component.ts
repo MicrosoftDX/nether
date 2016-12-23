@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit } from "@angular/core";
 import { NetherApiService } from "./../nether.api";
-import { Player } from "./../model";
+import { Player, Group } from "./../model";
 import { Router, ActivatedRoute, Params } from "@angular/router";
 import "rxjs/add/operator/switchMap";
 
@@ -10,16 +10,23 @@ import "rxjs/add/operator/switchMap";
 
 export class PlayerDetailsComponent implements OnInit {
 
+    gamertag: string = null;
     player: Player = null;
+    playerGroups: Group[] = null;
+    allGroups: Group[] = null;
 
     constructor(private _api: NetherApiService, private _route: ActivatedRoute, private _router: Router) {
     }
 
     ngOnInit(): void {
         // call web service to get player frout the gamertag specified in the route
-        console.log("loading player details");
         this._route.params
-            .switchMap((params: Params) => this._api.getPlayer(params["tag"]))
+            .switchMap((params: Params) => {
+                this.gamertag = params["tag"];
+                console.log("loading player details, gamertag: " + this.gamertag);
+                this.reloadGroups();
+                return this._api.getPlayer(this.gamertag);
+            })
             .subscribe((player: Player) => {
                 console.log("player loaded");
                 this.player = player;
@@ -34,5 +41,27 @@ export class PlayerDetailsComponent implements OnInit {
                 console.log("player updated, going back...");
                 this._router.navigate(["players"]);
             });
+    }
+
+    reloadGroups(): void {
+        this._api.getPlayerGroups(this.gamertag).subscribe(gs => this.playerGroups = gs);
+        this._api.getAllGroups().subscribe(ag => this.allGroups = ag);
+    }
+
+    toggleGroupMembership(g: Group): void {
+        let isMember: boolean = this.isMemberOf(g);
+        console.log(`switching '${g.name}' ${isMember}=>${!isMember}`);
+
+        if (!isMember) {
+            this._api.addPlayerToGroup(this.player.gamertag, g.name)
+                .subscribe((r: any) => this.playerGroups.push(g));
+        } else {
+            this._api.removePlayerFromGroup(this.player.gamertag, g.name)
+                .subscribe((r: any) => this.playerGroups = this.playerGroups.filter(g => g.name !== g.name));
+        }
+    }
+
+    isMemberOf(g: Group): boolean {
+        return this.playerGroups.some(i => i.name === g.name);
     }
 }

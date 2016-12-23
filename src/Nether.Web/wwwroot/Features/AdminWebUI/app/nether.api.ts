@@ -106,8 +106,21 @@ export class NetherApiService {
         return this._http.post(this._serverUrl + "api/groups", group, this.getRequestOptions());
     }
 
+    getPlayerGroups(gamertag: string): Observable<Group[]> {
+        return this._http.get(`${this._serverUrl}api/players/${gamertag}/groups`, this.getRequestOptions())
+            .map((r: Response) => <Group[]>r.json().groups);
+    }
+
+    addPlayerToGroup(gamertag: string, groupName: string): Observable<Response> {
+        return this._http.put(`${this._serverUrl}api/players/${gamertag}/groups/${groupName}`, null, this.getRequestOptions());
+    }
+
+    removePlayerFromGroup(gamertag: string, groupName: string): Observable<Response> {
+        return this._http.delete(`${this._serverUrl}api/groups/${groupName}/players/${gamertag}`, this.getRequestOptions());
+    }
+
     private cachePlayer(): void {
-        this.getCurrentPlayer().subscribe((p: Player) => this._currentPlayer = p);
+        // this.getCurrentPlayer().subscribe((p: Player) => this._currentPlayer = p);
     }
 
     private getRequestOptions(): RequestOptions {
