@@ -57,14 +57,39 @@ Simple leaderboard functionality, implementing Nether [leaderboard APIs](api/lea
    Follow the [configuration](configuration.md) section in this repo for more details.
 
 ## Leaderboards Configuration
-The leaderboard _GET_ API will return various leaderboards, based on pre-defined configurations - top ranks, all ranks, ranks around me and more.
-The current implementation is hard coded in [LeaderboardConfig](https://github.com/navalev/nether/blob/master/src/Nether.Web/Features/Leaderboard/Configuration/LeaderboardConfig.cs) class with specific implementation in the [LeaderboardController](https://github.com/navalev/nether/blob/master/src/Nether.Web/Features/Leaderboard/LeaderboardController.cs) class.
+The leaderboard _GET_ API will return various leaderboards, based on pre-defined configurations - top 10 ranks, all ranks, ranks around me and more.
+The different types of leaderboards are defined in the appsetting.json file under the **Leaderboards** section, and can be extended by simply adding an entry for a new leaderboard.
+In this configuration sample, we have 4 types of leaderboards:
+```json
+"Leaderboards": [
+      {
+        "Name": "Default",
+        "Type": "All"        
+      },
+      {
+        "Name": "5-AroundMe",
+        "Type": "AroundMe",
+        "Radius": 5
+      },
+      {
+        "Name": "Top-5",
+        "Type": "Top",
+        "Top" :  5
+      }
+      {
+        "Name": "Top-10",
+        "Type": "Top",
+        "Top" :  10
+      }
+    ]
+```
 
 **Usage:**
 
 1. Default (all ranks) leaderboard: /api/leaderboard or /api/leaderboard/Default
-2. Top 10 ranking players: /api/leaderboard/Top
-3. Players around me (5 below and 5 above the logged in player ranking): /api/leaderboard/AroundMe   
+2. Top 10 ranking players: /api/leaderboard/Top-10
+3. Top 5 ranking players: /api/Leaderboard/Top-5
+4. Players around me (5 below and 5 above the logged in player ranking): /api/leaderboard/5-AroundMe   
 
 
 

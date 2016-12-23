@@ -11,6 +11,8 @@ using Nether.Data.MongoDB.Leaderboard;
 using Nether.Data.Sql.Leaderboard;
 using Nether.Integration.Analytics;
 using Nether.Integration.Default.Analytics;
+using Nether.Web.Features.Leaderboard.Configuration;
+using System.Collections.Generic;
 
 namespace Nether.Web.Features.Leaderboard
 {
@@ -86,6 +88,10 @@ namespace Nether.Web.Features.Leaderboard
                             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
                             return new SqlLeaderboardStore(connectionString, loggerFactory);
                         });
+                        services.AddTransient<ILeaderboardConfiguration>(ServiceProviderServiceExtensions =>
+                        {
+                            return new LeaderboardConfiguration(GetLeaderboardconfiguraion(configuration.GetSection("Leaderboard:Leaderboards").GetChildren()));
+                        });
                         break;
                     default:
                         throw new Exception($"Unhandled 'wellKnown' type for Leaderboard:Store: '{wellKnownType}'");
@@ -96,6 +102,54 @@ namespace Nether.Web.Features.Leaderboard
                 // fall back to generic "factory"/"implementation" configuration
                 services.AddServiceFromConfiguration<ILeaderboardStore>(configuration, "Leaderboard:Store");
             }
+        }
+
+        private static Dictionary<string, LeaderboardConfig> GetLeaderboardconfiguraion(IEnumerable<IConfigurationSection> enumerable)
+        {
+            Dictionary<string, LeaderboardConfig> leaderboards = new Dictionary<string, LeaderboardConfig>();
+            // go over all leaderboards under "Leaderboard:Leaderboards"
+            foreach (var config in enumerable)
+            {
+                string name = config["Name"];
+                LeaderboardType type = (LeaderboardType)Enum.Parse(typeof(LeaderboardType), config["Type"]);
+                LeaderboardConfig leaderboardConfig = new LeaderboardConfig
+                {
+                    Name = name,
+                    Type = type
+                };
+
+                switch (type)
+                {
+                    case LeaderboardType.Top:
+                        string top = config["Top"];
+                        if (top == null)
+                        {
+                            throw new Exception($"Leaderboard type Top must have Top value set. Leaderboard name: '{name}'");
+                        }
+                        else
+                        {
+                            leaderboardConfig.Top = int.Parse(top);
+                        }
+                        break;
+                    case LeaderboardType.AroundMe:
+                        string radius = config["Radius"];
+                        if (radius == null)
+                        {
+                            throw new Exception($"Leaderboard type AroundMe must have Radius value set. Leaderboard name: '{name}'");
+                        }
+                        else
+                        {
+                            leaderboardConfig.Radius = int.Parse(radius);
+                        }
+                        break;
+                    case LeaderboardType.All:
+                        break;
+                }
+
+                leaderboards.Add(name, leaderboardConfig);
+            }
+
+            return leaderboards;
         }
     }
 }
