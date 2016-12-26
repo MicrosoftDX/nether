@@ -47,7 +47,7 @@ namespace Nether.Data.Sql.Leaderboard
 
             return res.OrderBy(s => s.Rank).ToList();
         }
-        
+
         public async Task DeleteAllScoresAsync(string gamerTag)
         {
             await _db.DeleteScores(gamerTag);

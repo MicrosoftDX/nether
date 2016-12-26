@@ -68,7 +68,7 @@ namespace Nether.Web.Features.Leaderboard
                 var scopedConfiguration = configuration.GetSection("Leaderboard:Store:properties");
                 string connectionString;
                 switch (wellKnownType)
-                {                    
+                {
                     case "sql":
                         connectionString = scopedConfiguration["ConnectionString"];
                         services.AddTransient<ILeaderboardStore>(serviceProvider =>
