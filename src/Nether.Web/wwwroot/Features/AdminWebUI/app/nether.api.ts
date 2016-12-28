@@ -1,7 +1,6 @@
 ﻿import { Injectable } from "@angular/core";
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import { Observable } from "rxjs/Observable";
-import { Cookie } from "ng2-cookies/ng2-cookies";
 import { Player, LeaderboardScore, Group } from "./model";
 import "rxjs/add/operator/catch";
 import "rxjs/add/operator/do";
@@ -13,26 +12,27 @@ import "rxjs/add/observable/of";
 export class NetherApiService {
 
     private _serverUrl: string = "http://localhost:5000/";
-    private authCacheKey: string = "tempAuth";
+    private authCacheKey: string = "cachedToken";
     private _clientId: string = "resourceowner-test";
     private _clientSecret: string = "devsecret";
-    // private _headers: Headers = new Headers({ "Content-Type": "application/json" });
     private _endpointConfig: EndpointConfiguration;
-    private _token: TokenResponse;
-    private _currentPlayer: Player;
 
     constructor(private _http: Http) {
-        let authCookie: string = Cookie.get(this.authCacheKey);
-        if (authCookie) {
-            this._token = JSON.parse(authCookie);
-            this.cachePlayer();
-        }
+    }
+
+    isLoggedIn(): boolean {
+        return this.getToken() !== null;
+    }
+
+    private getToken(): TokenResponse {
+        let s: string = localStorage.getItem(this.authCacheKey);
+        return s ? JSON.parse(s) : null;
     }
 
     login(username: string, password: string): Observable<string> {
         return this._http.get(this._serverUrl + ".well-known/openid-configuration")
             .map((response: Response) => <EndpointConfiguration>response.json())
-            .flatMap(config => {
+            .flatMap((config: EndpointConfiguration) => {
 
                 this._endpointConfig = config;
                 console.log("token endpoint: " + config.token_endpoint);
@@ -49,10 +49,9 @@ export class NetherApiService {
                     .map((response: Response) => {
                         let token: TokenResponse = <TokenResponse>response.json();
                         console.log(token);
-                        this._token = token;
 
                         // cache token
-                        Cookie.set(this.authCacheKey, JSON.stringify(token));
+                        localStorage.setItem(this.authCacheKey, JSON.stringify(token));
 
                         this.cachePlayer();
 
@@ -93,7 +92,7 @@ export class NetherApiService {
         return this._http.post(this._serverUrl + "api/players", player, this.getRequestOptions());
     }
 
-    updatePlayer(player: Player) {
+    updatePlayer(player: Player): Observable<Response> {
         return this._http.post(this._serverUrl + "api/players", player, this.getRequestOptions());
     }
 
@@ -124,9 +123,12 @@ export class NetherApiService {
     }
 
     private getRequestOptions(): RequestOptions {
+
+        let token: TokenResponse = this.getToken();
+
         return new RequestOptions({
             headers: new Headers({
-                "Authorization": this._token.token_type + " " + this._token.access_token
+                "Authorization": token.token_type + " " + token.access_token
                 })
         });
     }

@@ -10,7 +10,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var http_1 = require("@angular/http");
-var ng2_cookies_1 = require("ng2-cookies/ng2-cookies");
 require("rxjs/add/operator/catch");
 require("rxjs/add/operator/do");
 require("rxjs/add/operator/map");
@@ -20,15 +19,17 @@ var NetherApiService = (function () {
     function NetherApiService(_http) {
         this._http = _http;
         this._serverUrl = "http://localhost:5000/";
-        this.authCacheKey = "tempAuth";
+        this.authCacheKey = "cachedToken";
         this._clientId = "resourceowner-test";
         this._clientSecret = "devsecret";
-        var authCookie = ng2_cookies_1.Cookie.get(this.authCacheKey);
-        if (authCookie) {
-            this._token = JSON.parse(authCookie);
-            this.cachePlayer();
-        }
     }
+    NetherApiService.prototype.isLoggedIn = function () {
+        return this.getToken() !== null;
+    };
+    NetherApiService.prototype.getToken = function () {
+        var s = localStorage.getItem(this.authCacheKey);
+        return s ? JSON.parse(s) : null;
+    };
     NetherApiService.prototype.login = function (username, password) {
         var _this = this;
         return this._http.get(this._serverUrl + ".well-known/openid-configuration")
@@ -47,9 +48,8 @@ var NetherApiService = (function () {
                 .map(function (response) {
                 var token = response.json();
                 console.log(token);
-                _this._token = token;
                 // cache token
-                ng2_cookies_1.Cookie.set(_this.authCacheKey, JSON.stringify(token));
+                localStorage.setItem(_this.authCacheKey, JSON.stringify(token));
                 _this.cachePlayer();
                 return token.access_token;
             });
@@ -105,9 +105,10 @@ var NetherApiService = (function () {
         // this.getCurrentPlayer().subscribe((p: Player) => this._currentPlayer = p);
     };
     NetherApiService.prototype.getRequestOptions = function () {
+        var token = this.getToken();
         return new http_1.RequestOptions({
             headers: new http_1.Headers({
-                "Authorization": this._token.token_type + " " + this._token.access_token
+                "Authorization": token.token_type + " " + token.access_token
             })
         });
     };
