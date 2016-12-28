@@ -43,7 +43,13 @@ var GroupDetailsComponent = (function () {
         });
     };
     GroupDetailsComponent.prototype.removeMember = function (gamertag) {
+        var _this = this;
         console.log("removing " + gamertag + "...");
+        this._api.removePlayerFromGroup(gamertag, this.name)
+            .subscribe(function (r) {
+            console.log("removed");
+            _this.members = _this.members.filter(function (m) { return m !== gamertag; });
+        });
     };
     return GroupDetailsComponent;
 }());

@@ -45,5 +45,11 @@ export class GroupDetailsComponent implements OnInit {
 
     removeMember(gamertag: string) {
         console.log(`removing ${gamertag}...`);
+
+        this._api.removePlayerFromGroup(gamertag, this.name)
+            .subscribe((r: any) => {
+                console.log("removed");
+                this.members = this.members.filter(m => m !== gamertag);
+            });
     }
 }
