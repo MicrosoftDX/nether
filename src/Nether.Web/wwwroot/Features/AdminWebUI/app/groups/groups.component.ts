@@ -37,11 +37,6 @@ export class GroupsComponent implements OnInit {
         });
     }
 
-    selectGroup(group: Group): void {
-        console.log(`navigating to group ${group.name}`);
-        this._router.navigate(["group", group.name]);
-    }
-
     private resetGroup(): void {
         this.newGroup = new Group();
     }

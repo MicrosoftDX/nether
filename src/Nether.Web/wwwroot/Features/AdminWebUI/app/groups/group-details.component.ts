@@ -13,6 +13,7 @@ export class GroupDetailsComponent implements OnInit {
 
     name: string;
     group: Group;
+    members: string[];
 
     constructor(private _api: NetherApiService, private _route: ActivatedRoute, private _router: Router) {
 
@@ -27,7 +28,11 @@ export class GroupDetailsComponent implements OnInit {
             })
             .subscribe((group: Group) => {
                 console.log("group loaded");
+                console.log(group);
                 this.group = group;
+
+                this._api.getGroupPlayers(group.name)
+                    .subscribe((members: string[]) => this.members = members);
             });
     }
 
@@ -36,5 +41,9 @@ export class GroupDetailsComponent implements OnInit {
             console.log("group updated, going back...");
             this._router.navigate(["groups"]);
         });
+    }
+
+    removeMember(gamertag: string) {
+        console.log(`removing ${gamertag}...`);
     }
 }

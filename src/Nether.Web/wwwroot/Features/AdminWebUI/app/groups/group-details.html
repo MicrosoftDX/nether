@@ -27,16 +27,20 @@
 
             <button type="button" class="btn btn-default" (click)="updateGroup()">Update</button>
         </form>
+
+        <h4>Members</h4>
+        <ul class="list-group">
+            <li class="list-group-item" *ngFor="let m of members">
+                <button type="button" class="btn btn-default btn-xs pull-right"
+                        (click)="removeMember(m)">
+                    remove
+                </button>
+
+                <a [routerLink]="['/player', m]">{{ m }}</a>
+            </li>
+        </ul>
+
     </div>
-
-    <div class="row">
-        <h3>Members</h3>
-
-        <div>
-        </div>
-
-    </div>
-
 </div>
 
 <div *ngIf="!group">

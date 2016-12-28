@@ -38,10 +38,6 @@ var GroupsComponent = (function () {
             _this.resetGroup();
         });
     };
-    GroupsComponent.prototype.selectGroup = function (group) {
-        console.log("navigating to group " + group.name);
-        this._router.navigate(["group", group.name]);
-    };
     GroupsComponent.prototype.resetGroup = function () {
         this.newGroup = new model_1.Group();
     };

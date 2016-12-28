@@ -99,6 +99,10 @@ var NetherApiService = (function () {
             .map(function (r) { return r.json().group; })
             .catch(this.catchErrors);
     };
+    NetherApiService.prototype.getGroupPlayers = function (name) {
+        return this._http.get(this._serverUrl + "api/groups/" + name + "/players", this.getRequestOptions())
+            .map(function (r) { return r.json().gamertags; });
+    };
     NetherApiService.prototype.updateGroup = function (group) {
         return this._http.put(this._serverUrl + "api/groups/" + group.name, group, this.getRequestOptions());
     };

@@ -11,7 +11,7 @@
         <tbody>
             <tr *ngFor="let g of allGroups">
                 <td>
-                    <a (click)="selectGroup(g)" style="cursor:pointer;">
+                    <a [routerLink]="['/group', g.name]">
                         {{ g.name }}
                     </a>
                 </td>

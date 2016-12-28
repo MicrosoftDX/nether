@@ -29,7 +29,10 @@ var GroupDetailsComponent = (function () {
         })
             .subscribe(function (group) {
             console.log("group loaded");
+            console.log(group);
             _this.group = group;
+            _this._api.getGroupPlayers(group.name)
+                .subscribe(function (members) { return _this.members = members; });
         });
     };
     GroupDetailsComponent.prototype.updateGroup = function () {
@@ -38,6 +41,9 @@ var GroupDetailsComponent = (function () {
             console.log("group updated, going back...");
             _this._router.navigate(["groups"]);
         });
+    };
+    GroupDetailsComponent.prototype.removeMember = function (gamertag) {
+        console.log("removing " + gamertag + "...");
     };
     return GroupDetailsComponent;
 }());

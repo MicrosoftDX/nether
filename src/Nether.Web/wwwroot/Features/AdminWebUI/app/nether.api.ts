@@ -113,6 +113,11 @@ export class NetherApiService {
             .catch(this.catchErrors);
     }
 
+    getGroupPlayers(name: string): Observable<string[]> {
+        return this._http.get(this._serverUrl + "api/groups/" + name + "/players", this.getRequestOptions())
+            .map((r: Response) => <string[]>r.json().gamertags);
+    }
+
     updateGroup(group: Group): Observable<Response> {
         return this._http.put(this._serverUrl + "api/groups/" + group.name, group, this.getRequestOptions());
     }
