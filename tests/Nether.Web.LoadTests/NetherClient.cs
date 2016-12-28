@@ -22,7 +22,7 @@ namespace Nether.Web.LoadTests
 
         // TODO - figure out configuration to avoid these hard-coded strings
         public NetherClient(
-            string baseUrl = "http://localhost:5000", 
+            string baseUrl = "http://localhost:5000",
             string clientId = "resourceowner-test",
             string clientSecret = "devsecret")
         {

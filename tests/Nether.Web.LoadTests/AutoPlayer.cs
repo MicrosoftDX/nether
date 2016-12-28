@@ -13,14 +13,14 @@ namespace Nether.Web.LoadTests
 {
     public class AutoPlayer
     {
-        private static int s_counter;        
+        private static int s_counter;
         private readonly string _password;
         private readonly string _username;
         private readonly Random _random = new Random();
         private readonly string _playerInternalId;
         private readonly Stopwatch _sw = new Stopwatch();
         private readonly NetherClient _client;
-        private readonly Dictionary<string, List<long>> _callTimes = new Dictionary<string, List<long>>();        
+        private readonly Dictionary<string, List<long>> _callTimes = new Dictionary<string, List<long>>();
 
         private static readonly Random s_rnd = new Random(DateTime.UtcNow.Millisecond);
 
@@ -30,8 +30,8 @@ namespace Nether.Web.LoadTests
             _playerInternalId = _playerInternalId.PadLeft(5, '0');
 
             _username = username;
-            _password = password;            
-            _client = new NetherClient();            
+            _password = password;
+            _client = new NetherClient();
         }
 
         public List<string> CallNames => _callTimes.Keys.ToList();
@@ -75,7 +75,7 @@ namespace Nether.Web.LoadTests
             // simulate leaderboard activity
             int callsMade = 0;
             while (callsMade++ < sessionsPerUser)
-            {                
+            {
                 using (Measure("PostScore"))
                 {
                     var callResult = await _client.PostScoreAsync(_random.Next());
