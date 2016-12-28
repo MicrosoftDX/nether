@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var http_1 = require("@angular/http");
+var Observable_1 = require("rxjs/Observable");
 require("rxjs/add/operator/catch");
 require("rxjs/add/operator/do");
 require("rxjs/add/operator/map");
@@ -22,6 +23,7 @@ var NetherApiService = (function () {
         this.authCacheKey = "cachedToken";
         this._clientId = "resourceowner-test";
         this._clientSecret = "devsecret";
+        this.loggedInChanged = new core_1.EventEmitter();
     }
     NetherApiService.prototype.isLoggedIn = function () {
         return this.getToken() !== null;
@@ -50,8 +52,15 @@ var NetherApiService = (function () {
                 console.log("token obtained");
                 // cache token
                 localStorage.setItem(_this.authCacheKey, JSON.stringify(token));
+                _this.loggedInChanged.emit(true);
                 _this.cachePlayer();
                 return token.access_token;
+            })
+                .catch(function (err) {
+                console.error("failed to log in");
+                localStorage.removeItem(_this.authCacheKey);
+                _this.loggedInChanged.emit(false);
+                return Observable_1.Observable.throw(err);
             });
         });
     };
@@ -114,6 +123,10 @@ var NetherApiService = (function () {
     };
     return NetherApiService;
 }());
+__decorate([
+    core_1.Output(),
+    __metadata("design:type", Object)
+], NetherApiService.prototype, "loggedInChanged", void 0);
 NetherApiService = __decorate([
     core_1.Injectable(),
     __metadata("design:paramtypes", [http_1.Http])

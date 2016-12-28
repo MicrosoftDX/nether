@@ -8,4 +8,14 @@ import { NetherApiService } from "./nether.api";
 })
 
 export class AppComponent {
+
+    loggedIn: boolean;
+
+    constructor(private _api: NetherApiService) {
+        this.loggedIn = this._api.isLoggedIn();
+
+        this._api.loggedInChanged.subscribe((loggedIn: boolean) => {
+            this.loggedIn = loggedIn;
+        });
+    }
 }

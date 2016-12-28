@@ -11,7 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require("@angular/core");
 var nether_api_1 = require("./nether.api");
 var AppComponent = (function () {
-    function AppComponent() {
+    function AppComponent(_api) {
+        var _this = this;
+        this._api = _api;
+        this.loggedIn = this._api.isLoggedIn();
+        this._api.loggedInChanged.subscribe(function (loggedIn) {
+            _this.loggedIn = loggedIn;
+        });
     }
     return AppComponent;
 }());
@@ -21,7 +27,7 @@ AppComponent = __decorate([
         templateUrl: "app/app.html",
         providers: [nether_api_1.NetherApiService]
     }),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [nether_api_1.NetherApiService])
 ], AppComponent);
 exports.AppComponent = AppComponent;
 //# sourceMappingURL=app.component.js.map

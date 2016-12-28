@@ -1,4 +1,4 @@
-﻿import { Injectable } from "@angular/core";
+﻿import { Injectable, EventEmitter, Output } from "@angular/core";
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import { Observable } from "rxjs/Observable";
 import { Player, LeaderboardScore, Group } from "./model";
@@ -16,6 +16,8 @@ export class NetherApiService {
     private _clientId: string = "resourceowner-test";
     private _clientSecret: string = "devsecret";
     private _endpointConfig: EndpointConfiguration;
+
+    @Output() loggedInChanged = new EventEmitter<boolean>();
 
     constructor(private _http: Http) {
     }
@@ -52,10 +54,17 @@ export class NetherApiService {
 
                         // cache token
                         localStorage.setItem(this.authCacheKey, JSON.stringify(token));
+                        this.loggedInChanged.emit(true);
 
                         this.cachePlayer();
 
                         return token.access_token;
+                    })
+                    .catch((err: any) => {
+                        console.error("failed to log in");
+                        localStorage.removeItem(this.authCacheKey);
+                        this.loggedInChanged.emit(false);
+                        return Observable.throw(err);
                     });
             });
     }
