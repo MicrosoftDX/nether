@@ -8,6 +8,6 @@
     </AgentRule>
   </Execution>
   <Properties>
-    <Property name="TestSettingsUIType" value="UnitTest" />
+    <Property name="TestSettingsUIType" value="LoadTest" />
   </Properties>
 </TestSettings>
