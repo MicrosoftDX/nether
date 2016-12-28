@@ -9,6 +9,7 @@ import "rxjs/add/operator/switchMap";
 })
 
 export class PlayerDetailsComponent implements OnInit {
+    readonly playerTagParam: string = "tag";
 
     gamertag: string = null;
     player: Player = null;
@@ -22,7 +23,7 @@ export class PlayerDetailsComponent implements OnInit {
         // call web service to get player frout the gamertag specified in the route
         this._route.params
             .switchMap((params: Params) => {
-                this.gamertag = params["tag"];
+                this.gamertag = params[this.playerTagParam];
                 console.log("loading player details, gamertag: " + this.gamertag);
                 this.reloadGroups();
                 return this._api.getPlayer(this.gamertag);
@@ -44,8 +45,8 @@ export class PlayerDetailsComponent implements OnInit {
     }
 
     reloadGroups(): void {
-        this._api.getPlayerGroups(this.gamertag).subscribe(gs => this.playerGroups = gs);
-        this._api.getAllGroups().subscribe(ag => this.allGroups = ag);
+        this._api.getPlayerGroups(this.gamertag).subscribe((gs: Group[]) => this.playerGroups = gs);
+        this._api.getAllGroups().subscribe((ag: Group[]) => this.allGroups = ag);
     }
 
     toggleGroupMembership(g: Group): void {
@@ -57,11 +58,11 @@ export class PlayerDetailsComponent implements OnInit {
                 .subscribe((r: any) => this.playerGroups.push(g));
         } else {
             this._api.removePlayerFromGroup(this.player.gamertag, g.name)
-                .subscribe((r: any) => this.playerGroups = this.playerGroups.filter(g => g.name !== g.name));
+                .subscribe((r: any) => this.playerGroups = this.playerGroups.filter((g: Group) => g.name !== g.name));
         }
     }
 
     isMemberOf(g: Group): boolean {
-        return this.playerGroups.some(i => i.name === g.name);
+        return this.playerGroups.some((i: Group) => i.name === g.name);
     }
 }

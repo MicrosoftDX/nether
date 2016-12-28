@@ -366,10 +366,10 @@ namespace Nether.Web.Features.PlayerManagement
         /// <summary>
         /// Updates group information
         /// </summary>
-        /// <param name="group">Group object</param>
+        /// <param name="group">Group name</param>
         /// <returns></returns>
         [SwaggerResponse((int)HttpStatusCode.NoContent, Description = "group updated successfully")]
-        [Route("groups/{group}")]
+        [Route("groups/{name}")]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpPut]
         public async Task<ActionResult> PutGroup([FromBody]GroupPostRequestModel group)
@@ -379,6 +379,7 @@ namespace Nether.Web.Features.PlayerManagement
                     new Group
                     {
                         Name = group.Name,
+                        CustomType = group.CustomType,
                         Description = group.Description,
                         Members = group.Members
                     }

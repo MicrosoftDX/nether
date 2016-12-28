@@ -16,6 +16,11 @@ namespace Nether.Web.Features.PlayerManagement
         public string Name { get; set; }
 
         /// <summary>
+        /// Group custom type
+        /// </summary>
+        public string CustomType { get; set; }
+
+        /// <summary>
         /// Group description
         /// </summary>
         public string Description { get; set; }

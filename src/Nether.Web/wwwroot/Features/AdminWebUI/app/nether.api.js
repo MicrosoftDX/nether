@@ -97,6 +97,13 @@ var NetherApiService = (function () {
         return this._http.get(this._serverUrl + "api/groups", this.getRequestOptions())
             .map(function (r) { return r.json().groups; });
     };
+    NetherApiService.prototype.getGroup = function (name) {
+        return this._http.get(this._serverUrl + "api/groups/" + name, this.getRequestOptions())
+            .map(function (r) { return r.json().group; });
+    };
+    NetherApiService.prototype.updateGroup = function (group) {
+        return this._http.put(this._serverUrl + "api/groups/" + group.name, group, this.getRequestOptions());
+    };
     NetherApiService.prototype.createGroup = function (group) {
         return this._http.post(this._serverUrl + "api/groups", group, this.getRequestOptions());
     };

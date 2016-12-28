@@ -110,6 +110,15 @@ export class NetherApiService {
             .map((r: Response) => <Group[]>r.json().groups);
     }
 
+    getGroup(name: string): Observable<Group> {
+        return this._http.get(this._serverUrl + "api/groups/" + name, this.getRequestOptions())
+            .map((r: Response) => <Group>r.json().group);
+    }
+
+    updateGroup(group: Group): Observable<Response> {
+        return this._http.put(this._serverUrl + "api/groups/" + group.name, group, this.getRequestOptions());
+    }
+
     createGroup(group: Group): Observable<Response> {
         return this._http.post(this._serverUrl + "api/groups", group, this.getRequestOptions());
     }

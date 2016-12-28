@@ -17,6 +17,7 @@ var PlayerDetailsComponent = (function () {
         this._api = _api;
         this._route = _route;
         this._router = _router;
+        this.playerTagParam = "tag";
         this.gamertag = null;
         this.player = null;
         this.playerGroups = null;
@@ -27,7 +28,7 @@ var PlayerDetailsComponent = (function () {
         // call web service to get player frout the gamertag specified in the route
         this._route.params
             .switchMap(function (params) {
-            _this.gamertag = params["tag"];
+            _this.gamertag = params[_this.playerTagParam];
             console.log("loading player details, gamertag: " + _this.gamertag);
             _this.reloadGroups();
             return _this._api.getPlayer(_this.gamertag);
