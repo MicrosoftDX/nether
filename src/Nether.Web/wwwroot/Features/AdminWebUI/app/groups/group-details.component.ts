@@ -14,6 +14,9 @@ export class GroupDetailsComponent implements OnInit {
     name: string;
     group: Group;
     members: string[];
+    allPlayers: Player[];
+    leftPlayers: Player[];
+    selectedGamertag: string;
 
     constructor(private _api: NetherApiService, private _route: ActivatedRoute, private _router: Router) {
 
@@ -31,9 +34,23 @@ export class GroupDetailsComponent implements OnInit {
                 console.log(group);
                 this.group = group;
 
+                console.log("loading group members");
                 this._api.getGroupPlayers(group.name)
-                    .subscribe((members: string[]) => this.members = members);
+                    .subscribe((members: string[]) => {
+                        this.members = members;
+
+                        console.log("members loaded, getting all players");
+                        this._api.getAllPlayers()
+                            .subscribe((all: Player[]) => {
+                                this.allPlayers = all;
+                                console.log("loaded " + all.length + " players");
+                                this.leftPlayers = all.filter(a => members.indexOf(a.gamertag) === -1);
+                                console.log(`${this.leftPlayers.length} of them can be added to the group`);
+                            });
+                    });
             });
+
+        // todo: this won't work if you have too many players, probably need a search box with autocomplete instead
     }
 
     updateGroup(): void {
@@ -50,6 +67,19 @@ export class GroupDetailsComponent implements OnInit {
             .subscribe((r: any) => {
                 console.log("removed");
                 this.members = this.members.filter(m => m !== gamertag);
+                this.leftPlayers = this.allPlayers.filter(a => this.members.indexOf(a.gamertag) === -1);
+            });
+    }
+
+    addMember() {
+        console.log(`adding ${this.selectedGamertag} to group`);
+
+        this._api.addPlayerToGroup(this.selectedGamertag, this.name)
+            .subscribe((r: any) => {
+                console.log("player added");
+                this.members.push(this.selectedGamertag);
+                this.leftPlayers = this.allPlayers.filter(a => this.members.indexOf(a.gamertag) === -1);
+                this.selectedGamertag = null;
             });
     }
 }

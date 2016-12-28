@@ -40,6 +40,17 @@
             </li>
         </ul>
 
+        <div class="input-group" *ngIf="leftPlayers">
+            <select class="form-control" [(ngModel)]="selectedGamertag">
+                <option value="{{ p.gamertag }}" *ngFor="let p of leftPlayers">{{ p.gamertag }} ({{p.country}})</option>
+            </select>
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button"
+                        (click)="addMember()"
+                        [disabled]="!selectedGamertag">Add</button>
+            </span>
+        </div>
+
     </div>
 </div>
 

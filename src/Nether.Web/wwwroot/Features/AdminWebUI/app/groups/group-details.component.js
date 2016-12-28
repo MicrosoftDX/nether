@@ -31,9 +31,21 @@ var GroupDetailsComponent = (function () {
             console.log("group loaded");
             console.log(group);
             _this.group = group;
+            console.log("loading group members");
             _this._api.getGroupPlayers(group.name)
-                .subscribe(function (members) { return _this.members = members; });
+                .subscribe(function (members) {
+                _this.members = members;
+                console.log("members loaded, getting all players");
+                _this._api.getAllPlayers()
+                    .subscribe(function (all) {
+                    _this.allPlayers = all;
+                    console.log("loaded " + all.length + " players");
+                    _this.leftPlayers = all.filter(function (a) { return members.indexOf(a.gamertag) === -1; });
+                    console.log(_this.leftPlayers.length + " of them can be added to the group");
+                });
+            });
         });
+        // todo: this won't work if you have too many players, probably need a search box with autocomplete instead
     };
     GroupDetailsComponent.prototype.updateGroup = function () {
         var _this = this;
@@ -49,6 +61,18 @@ var GroupDetailsComponent = (function () {
             .subscribe(function (r) {
             console.log("removed");
             _this.members = _this.members.filter(function (m) { return m !== gamertag; });
+            _this.leftPlayers = _this.allPlayers.filter(function (a) { return _this.members.indexOf(a.gamertag) === -1; });
+        });
+    };
+    GroupDetailsComponent.prototype.addMember = function () {
+        var _this = this;
+        console.log("adding " + this.selectedGamertag + " to group");
+        this._api.addPlayerToGroup(this.selectedGamertag, this.name)
+            .subscribe(function (r) {
+            console.log("player added");
+            _this.members.push(_this.selectedGamertag);
+            _this.leftPlayers = _this.allPlayers.filter(function (a) { return _this.members.indexOf(a.gamertag) === -1; });
+            _this.selectedGamertag = null;
         });
     };
     return GroupDetailsComponent;
