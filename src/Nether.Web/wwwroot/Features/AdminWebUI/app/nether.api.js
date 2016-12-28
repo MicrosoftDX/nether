@@ -12,6 +12,7 @@ var core_1 = require("@angular/core");
 var http_1 = require("@angular/http");
 var Observable_1 = require("rxjs/Observable");
 require("rxjs/add/operator/catch");
+require("rxjs/add/observable/throw");
 require("rxjs/add/operator/do");
 require("rxjs/add/operator/map");
 require("rxjs/add/operator/mergeMap");
@@ -56,12 +57,7 @@ var NetherApiService = (function () {
                 _this.cachePlayer();
                 return token.access_token;
             })
-                .catch(function (err) {
-                console.error("failed to log in");
-                localStorage.removeItem(_this.authCacheKey);
-                _this.loggedInChanged.emit(false);
-                return Observable_1.Observable.throw(err);
-            });
+                .catch(_this.catchErrors);
         });
     };
     NetherApiService.prototype.getCurrentPlayer = function () {
@@ -95,11 +91,13 @@ var NetherApiService = (function () {
     };
     NetherApiService.prototype.getAllGroups = function () {
         return this._http.get(this._serverUrl + "api/groups", this.getRequestOptions())
-            .map(function (r) { return r.json().groups; });
+            .map(function (r) { return r.json().groups; })
+            .catch(this.catchErrors);
     };
     NetherApiService.prototype.getGroup = function (name) {
         return this._http.get(this._serverUrl + "api/groups/" + name, this.getRequestOptions())
-            .map(function (r) { return r.json().group; });
+            .map(function (r) { return r.json().group; })
+            .catch(this.catchErrors);
     };
     NetherApiService.prototype.updateGroup = function (group) {
         return this._http.put(this._serverUrl + "api/groups/" + group.name, group, this.getRequestOptions());
@@ -128,12 +126,17 @@ var NetherApiService = (function () {
             })
         });
     };
+    NetherApiService.prototype.catchErrors = function (err) {
+        console.error("call failed");
+        if (err.status === 401) {
+            console.error("auth failure");
+            localStorage.removeItem(this.authCacheKey);
+            this.loggedInChanged.emit(false);
+        }
+        return Observable_1.Observable.throw(err);
+    };
     return NetherApiService;
 }());
-__decorate([
-    core_1.Output(),
-    __metadata("design:type", Object)
-], NetherApiService.prototype, "loggedInChanged", void 0);
 NetherApiService = __decorate([
     core_1.Injectable(),
     __metadata("design:paramtypes", [http_1.Http])

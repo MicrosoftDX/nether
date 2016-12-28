@@ -32,6 +32,13 @@ var GroupDetailsComponent = (function () {
             _this.group = group;
         });
     };
+    GroupDetailsComponent.prototype.updateGroup = function () {
+        var _this = this;
+        this._api.updateGroup(this.group).subscribe(function (r) {
+            console.log("group updated, going back...");
+            _this._router.navigate(["groups"]);
+        });
+    };
     return GroupDetailsComponent;
 }());
 GroupDetailsComponent = __decorate([

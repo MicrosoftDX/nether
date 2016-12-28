@@ -4,7 +4,7 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Custom Tag</th>
+                <th>Custom Type</th>
                 <th>Description</th>
             </tr>
         </thead>
@@ -15,7 +15,7 @@
                         {{ g.name }}
                     </a>
                 </td>
-                <td>{{ g.customTag }}</td>
+                <td>{{ g.customType }}</td>
                 <td>{{ g.description }}</td>
             </tr>
         </tbody>
@@ -38,7 +38,7 @@
             <input type="text" class="form-control"
                    id="postCustomTag" name="postCustomTag"
                    placeholder="custom tag (optional)"
-                   [(ngModel)]="newGroup.customTag">
+                   [(ngModel)]="newGroup.customType">
         </div>
         <div class="form-group">
             <label for="postDescription">Description</label>

@@ -1,8 +1,9 @@
 ﻿import { Injectable, EventEmitter, Output } from "@angular/core";
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
-import { Observable } from "rxjs/Observable";
 import { Player, LeaderboardScore, Group } from "./model";
+import { Observable } from "rxjs/Observable";
 import "rxjs/add/operator/catch";
+import "rxjs/add/observable/throw";
 import "rxjs/add/operator/do";
 import "rxjs/add/operator/map";
 import "rxjs/add/operator/mergeMap";
@@ -17,7 +18,7 @@ export class NetherApiService {
     private _clientSecret: string = "devsecret";
     private _endpointConfig: EndpointConfiguration;
 
-    @Output() loggedInChanged = new EventEmitter<boolean>();
+    loggedInChanged = new EventEmitter<boolean>();
 
     constructor(private _http: Http) {
     }
@@ -60,12 +61,7 @@ export class NetherApiService {
 
                         return token.access_token;
                     })
-                    .catch((err: any) => {
-                        console.error("failed to log in");
-                        localStorage.removeItem(this.authCacheKey);
-                        this.loggedInChanged.emit(false);
-                        return Observable.throw(err);
-                    });
+                    .catch(this.catchErrors);
             });
     }
 
@@ -107,12 +103,14 @@ export class NetherApiService {
 
     getAllGroups(): Observable<Group[]> {
         return this._http.get(this._serverUrl + "api/groups", this.getRequestOptions())
-            .map((r: Response) => <Group[]>r.json().groups);
+            .map((r: Response) => <Group[]>r.json().groups)
+            .catch(this.catchErrors);
     }
 
     getGroup(name: string): Observable<Group> {
         return this._http.get(this._serverUrl + "api/groups/" + name, this.getRequestOptions())
-            .map((r: Response) => <Group>r.json().group);
+            .map((r: Response) => <Group>r.json().group)
+            .catch(this.catchErrors);
     }
 
     updateGroup(group: Group): Observable<Response> {
@@ -149,6 +147,16 @@ export class NetherApiService {
                 "Authorization": token.token_type + " " + token.access_token
                 })
         });
+    }
+
+    private catchErrors(err: any): Observable<any> {
+        console.error("call failed");
+        if (err.status === 401) {
+            console.error("auth failure");
+            localStorage.removeItem(this.authCacheKey);
+            this.loggedInChanged.emit(false);
+        }
+        return Observable.throw(err);
     }
 }
 

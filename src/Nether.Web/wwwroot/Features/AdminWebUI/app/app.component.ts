@@ -15,6 +15,7 @@ export class AppComponent {
         this.loggedIn = this._api.isLoggedIn();
 
         this._api.loggedInChanged.subscribe((loggedIn: boolean) => {
+            console.log("logged in: " + loggedIn);
             this.loggedIn = loggedIn;
         });
     }

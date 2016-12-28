@@ -16,6 +16,7 @@ var AppComponent = (function () {
         this._api = _api;
         this.loggedIn = this._api.isLoggedIn();
         this._api.loggedInChanged.subscribe(function (loggedIn) {
+            console.log("logged in: " + loggedIn);
             _this.loggedIn = loggedIn;
         });
     }

@@ -284,6 +284,7 @@ namespace Nether.Web.Features.PlayerManagement
                 new Group
                 {
                     Name = group.Name,
+                    CustomType = group.CustomType,
                     Description = group.Description,
                     Members = group.Members
                 }

@@ -30,4 +30,11 @@ export class GroupDetailsComponent implements OnInit {
                 this.group = group;
             });
     }
+
+    updateGroup(): void {
+        this._api.updateGroup(this.group).subscribe((r: any) => {
+            console.log("group updated, going back...");
+            this._router.navigate(["groups"]);
+        });
+    }
 }
