@@ -20,12 +20,14 @@ var login_component_1 = require("./login/login.component");
 var leaderboard_component_1 = require("./leaderboard/leaderboard.component");
 var leaderboard_scores_component_1 = require("./leaderboard/leaderboard-scores.component");
 var groups_component_1 = require("./groups/groups.component");
+var auth_guard_1 = require("./_guards/auth.guard");
+var nether_api_1 = require("./nether.api");
 var appRoutes = [
-    { path: "players", component: players_component_1.PlayersComponent },
-    { path: "player/:tag", component: player_details_component_1.PlayerDetailsComponent },
-    { path: "groups", component: groups_component_1.GroupsComponent },
+    { path: "players", component: players_component_1.PlayersComponent, canActivate: [auth_guard_1.AuthGuard] },
+    { path: "player/:tag", component: player_details_component_1.PlayerDetailsComponent, canActivate: [auth_guard_1.AuthGuard] },
+    { path: "groups", component: groups_component_1.GroupsComponent, canActivate: [auth_guard_1.AuthGuard] },
     { path: "login", component: login_component_1.LoginComponent },
-    { path: "leaderboard", component: leaderboard_component_1.LeaderboardComponent },
+    { path: "leaderboard", component: leaderboard_component_1.LeaderboardComponent, canActivate: [auth_guard_1.AuthGuard] },
     { path: "", redirectTo: "login", pathMatch: "full" },
     { path: "**", redirectTo: "login", pathMatch: "full" }
 ];
@@ -48,6 +50,9 @@ AppModule = __decorate([
             login_component_1.LoginComponent,
             leaderboard_scores_component_1.LeaderboardScoresComponent, leaderboard_component_1.LeaderboardComponent,
             groups_component_1.GroupsComponent
+        ],
+        providers: [
+            auth_guard_1.AuthGuard, nether_api_1.NetherApiService
         ],
         bootstrap: [
             app_component_1.AppComponent

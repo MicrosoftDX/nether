@@ -11,13 +11,15 @@ import { LoginComponent } from "./login/login.component";
 import { LeaderboardComponent } from "./leaderboard/leaderboard.component";
 import { LeaderboardScoresComponent } from "./leaderboard/leaderboard-scores.component";
 import { GroupsComponent } from "./groups/groups.component";
+import { AuthGuard } from "./_guards/auth.guard";
+import { NetherApiService } from "./nether.api";
 
 const appRoutes: Routes = [
-    { path: "players", component: PlayersComponent },
-    { path: "player/:tag", component: PlayerDetailsComponent },
-    { path: "groups", component: GroupsComponent },
+    { path: "players", component: PlayersComponent, canActivate: [AuthGuard] },
+    { path: "player/:tag", component: PlayerDetailsComponent, canActivate: [AuthGuard] },
+    { path: "groups", component: GroupsComponent, canActivate: [AuthGuard] },
     { path: "login", component: LoginComponent },
-    { path: "leaderboard", component: LeaderboardComponent },
+    { path: "leaderboard", component: LeaderboardComponent, canActivate: [AuthGuard] },
     { path: "", redirectTo: "login", pathMatch: "full" },
     { path: "**", redirectTo: "login", pathMatch: "full" }
 ];
@@ -35,8 +37,11 @@ const appRoutes: Routes = [
         LoginComponent,
         LeaderboardScoresComponent, LeaderboardComponent,
         GroupsComponent
-   ],
-   bootstrap: [
+    ],
+    providers: [
+        AuthGuard, NetherApiService
+    ],
+    bootstrap: [
       AppComponent
    ]
 })

@@ -47,7 +47,7 @@ var NetherApiService = (function () {
             }))
                 .map(function (response) {
                 var token = response.json();
-                console.log(token);
+                console.log("token obtained");
                 // cache token
                 localStorage.setItem(_this.authCacheKey, JSON.stringify(token));
                 _this.cachePlayer();

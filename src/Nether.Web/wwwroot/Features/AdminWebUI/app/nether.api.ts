@@ -48,7 +48,7 @@ export class NetherApiService {
                     }))
                     .map((response: Response) => {
                         let token: TokenResponse = <TokenResponse>response.json();
-                        console.log(token);
+                        console.log("token obtained");
 
                         // cache token
                         localStorage.setItem(this.authCacheKey, JSON.stringify(token));
