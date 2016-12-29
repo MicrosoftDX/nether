@@ -27,7 +27,8 @@ var AuthGuard = (function () {
 }());
 AuthGuard = __decorate([
     core_1.Injectable(),
-    __metadata("design:paramtypes", [router_1.Router, nether_api_1.NetherApiService])
+    __metadata("design:paramtypes", [typeof (_a = typeof router_1.Router !== "undefined" && router_1.Router) === "function" && _a || Object, nether_api_1.NetherApiService])
 ], AuthGuard);
 exports.AuthGuard = AuthGuard;
+var _a;
 //# sourceMappingURL=auth.guard.js.map

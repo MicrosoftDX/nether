@@ -37,7 +37,8 @@ LoginComponent = __decorate([
     core_1.Component({
         templateUrl: "app/login/login.html"
     }),
-    __metadata("design:paramtypes", [nether_api_1.NetherApiService, forms_1.FormBuilder, router_1.Router])
+    __metadata("design:paramtypes", [nether_api_1.NetherApiService, typeof (_a = typeof forms_1.FormBuilder !== "undefined" && forms_1.FormBuilder) === "function" && _a || Object, typeof (_b = typeof router_1.Router !== "undefined" && router_1.Router) === "function" && _b || Object])
 ], LoginComponent);
 exports.LoginComponent = LoginComponent;
+var _a, _b;
 //# sourceMappingURL=login.component.js.map

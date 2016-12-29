@@ -75,7 +75,8 @@ PlayerDetailsComponent = __decorate([
     core_1.Component({
         templateUrl: "app/players/player-details.html"
     }),
-    __metadata("design:paramtypes", [nether_api_1.NetherApiService, router_1.ActivatedRoute, router_1.Router])
+    __metadata("design:paramtypes", [nether_api_1.NetherApiService, typeof (_a = typeof router_1.ActivatedRoute !== "undefined" && router_1.ActivatedRoute) === "function" && _a || Object, typeof (_b = typeof router_1.Router !== "undefined" && router_1.Router) === "function" && _b || Object])
 ], PlayerDetailsComponent);
 exports.PlayerDetailsComponent = PlayerDetailsComponent;
+var _a, _b;
 //# sourceMappingURL=player-details.component.js.map

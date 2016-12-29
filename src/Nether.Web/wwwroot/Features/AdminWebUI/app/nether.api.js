@@ -143,7 +143,7 @@ var NetherApiService = (function () {
 }());
 NetherApiService = __decorate([
     core_1.Injectable(),
-    __metadata("design:paramtypes", [http_1.Http])
+    __metadata("design:paramtypes", [typeof (_a = typeof http_1.Http !== "undefined" && http_1.Http) === "function" && _a || Object])
 ], NetherApiService);
 exports.NetherApiService = NetherApiService;
 // subset of endpoint configuraiton
@@ -158,4 +158,5 @@ var TokenResponse = (function () {
     }
     return TokenResponse;
 }());
+var _a;
 //# sourceMappingURL=nether.api.js.map

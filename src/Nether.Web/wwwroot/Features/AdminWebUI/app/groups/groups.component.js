@@ -47,7 +47,8 @@ GroupsComponent = __decorate([
     core_1.Component({
         templateUrl: "app/groups/groups.html"
     }),
-    __metadata("design:paramtypes", [nether_api_1.NetherApiService, router_1.Router])
+    __metadata("design:paramtypes", [nether_api_1.NetherApiService, typeof (_a = typeof router_1.Router !== "undefined" && router_1.Router) === "function" && _a || Object])
 ], GroupsComponent);
 exports.GroupsComponent = GroupsComponent;
+var _a;
 //# sourceMappingURL=groups.component.js.map
