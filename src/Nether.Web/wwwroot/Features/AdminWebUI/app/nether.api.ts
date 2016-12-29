@@ -22,7 +22,7 @@ export class NetherApiService {
     loggedInChanged = new EventEmitter<boolean>();
 
     constructor(private _http: Http, private _config: Configuration) {
-        this._serverUrl = _config.ResourceServer;
+        this._serverUrl = _config.ResourceServerUrl;
     }
 
     isLoggedIn(): boolean {

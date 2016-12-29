@@ -109,6 +109,7 @@ namespace Nether.Web.Features.Identity.Configuration
                     },
                     AllowedScopes = new List<string>
                     {
+                        "openid",
                         "nether-all"
                     }
                 }
