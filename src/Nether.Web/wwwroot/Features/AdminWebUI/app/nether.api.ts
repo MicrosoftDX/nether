@@ -2,6 +2,7 @@
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import { Player, LeaderboardScore, Group } from "./model";
 import { Observable } from "rxjs/Observable";
+import { Configuration } from "./app.constants";
 import "rxjs/add/operator/catch";
 import "rxjs/add/observable/throw";
 import "rxjs/add/operator/do";
@@ -12,7 +13,7 @@ import "rxjs/add/observable/of";
 @Injectable()
 export class NetherApiService {
 
-    private _serverUrl: string = "http://localhost:5000/";
+    private _serverUrl: string;
     private authCacheKey: string = "cachedToken";
     private _clientId: string = "resourceowner-test";
     private _clientSecret: string = "devsecret";
@@ -20,7 +21,8 @@ export class NetherApiService {
 
     loggedInChanged = new EventEmitter<boolean>();
 
-    constructor(private _http: Http) {
+    constructor(private _http: Http, private _config: Configuration) {
+        this._serverUrl = _config.ResourceServer;
     }
 
     isLoggedIn(): boolean {

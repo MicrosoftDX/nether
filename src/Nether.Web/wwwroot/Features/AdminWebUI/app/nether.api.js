@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require("@angular/core");
 var http_1 = require("@angular/http");
 var Observable_1 = require("rxjs/Observable");
+var app_constants_1 = require("./app.constants");
 require("rxjs/add/operator/catch");
 require("rxjs/add/observable/throw");
 require("rxjs/add/operator/do");
@@ -18,13 +19,14 @@ require("rxjs/add/operator/map");
 require("rxjs/add/operator/mergeMap");
 require("rxjs/add/observable/of");
 var NetherApiService = (function () {
-    function NetherApiService(_http) {
+    function NetherApiService(_http, _config) {
         this._http = _http;
-        this._serverUrl = "http://localhost:5000/";
+        this._config = _config;
         this.authCacheKey = "cachedToken";
         this._clientId = "resourceowner-test";
         this._clientSecret = "devsecret";
         this.loggedInChanged = new core_1.EventEmitter();
+        this._serverUrl = _config.ResourceServer;
     }
     NetherApiService.prototype.isLoggedIn = function () {
         return this.getToken() !== null;
@@ -143,7 +145,7 @@ var NetherApiService = (function () {
 }());
 NetherApiService = __decorate([
     core_1.Injectable(),
-    __metadata("design:paramtypes", [typeof (_a = typeof http_1.Http !== "undefined" && http_1.Http) === "function" && _a || Object])
+    __metadata("design:paramtypes", [http_1.Http, app_constants_1.Configuration])
 ], NetherApiService);
 exports.NetherApiService = NetherApiService;
 // subset of endpoint configuraiton
@@ -158,5 +160,4 @@ var TokenResponse = (function () {
     }
     return TokenResponse;
 }());
-var _a;
 //# sourceMappingURL=nether.api.js.map

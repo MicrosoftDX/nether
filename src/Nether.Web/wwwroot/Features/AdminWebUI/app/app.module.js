@@ -13,6 +13,8 @@ var platform_browser_1 = require("@angular/platform-browser");
 var forms_1 = require("@angular/forms");
 var router_1 = require("@angular/router");
 var http_1 = require("@angular/http");
+var app_constants_1 = require("./app.constants");
+var security_1 = require("./services/security");
 var app_component_1 = require("./app.component");
 var players_component_1 = require("./players/players.component");
 var player_details_component_1 = require("./players/player-details.component");
@@ -54,7 +56,10 @@ AppModule = __decorate([
             groups_component_1.GroupsComponent, group_details_component_1.GroupDetailsComponent
         ],
         providers: [
-            auth_guard_1.AuthGuard, nether_api_1.NetherApiService
+            auth_guard_1.AuthGuard,
+            nether_api_1.NetherApiService,
+            app_constants_1.Configuration,
+            security_1.SecurityService
         ],
         bootstrap: [
             app_component_1.AppComponent

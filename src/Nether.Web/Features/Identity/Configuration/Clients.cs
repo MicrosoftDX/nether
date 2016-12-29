@@ -84,6 +84,33 @@ namespace Nether.Web.Features.Identity.Configuration
                         new Secret("devsecret".Sha256())
                     },
                     AllowedScopes = { "nether-all" }
+                },
+
+                //implicit flow client (angular 2 application)
+                new Client
+                {
+                    ClientName = "angular2client",
+                    ClientId = "angular2client",
+                    AccessTokenType = AccessTokenType.Reference,
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost:5000"
+                    },
+                    PostLogoutRedirectUris = new List<string>
+                    {
+                        "http://localhost:5000/login"
+                    },
+                    AllowedCorsOrigins = new List<string>
+                    {
+                        "http://localhost:5000",
+                        "https://localhost:5000"
+                    },
+                    AllowedScopes = new List<string>
+                    {
+                        "nether-all"
+                    }
                 }
             };
         }

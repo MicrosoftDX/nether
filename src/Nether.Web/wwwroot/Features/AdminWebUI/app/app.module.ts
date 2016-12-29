@@ -4,6 +4,8 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule, Routes } from "@angular/router";
 import { HttpModule } from "@angular/http";
 
+import { Configuration } from "./app.constants";
+import { SecurityService } from "./services/security";
 import { AppComponent } from "./app.component";
 import { PlayersComponent } from "./players/players.component";
 import { PlayerDetailsComponent } from "./players/player-details.component";
@@ -41,7 +43,10 @@ const appRoutes: Routes = [
         GroupsComponent, GroupDetailsComponent
     ],
     providers: [
-        AuthGuard, NetherApiService
+        AuthGuard,
+        NetherApiService,
+        Configuration,
+        SecurityService
     ],
     bootstrap: [
       AppComponent

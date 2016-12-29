@@ -9,25 +9,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var router_1 = require("@angular/router");
-var nether_api_1 = require("./../nether.api");
-var AuthGuard = (function () {
-    function AuthGuard(_router, _api) {
-        this._router = _router;
-        this._api = _api;
+var Configuration = (function () {
+    function Configuration() {
+        this.AuthServer = "http://localhost:5000/";
+        this.ResourceServer = "http://localhost:5000/";
     }
-    AuthGuard.prototype.canActivate = function (route, state) {
-        if (this._api.isLoggedIn()) {
-            return true;
-        }
-        this._router.navigate(["login"]);
-        return false;
-    };
-    return AuthGuard;
+    return Configuration;
 }());
-AuthGuard = __decorate([
+Configuration = __decorate([
     core_1.Injectable(),
-    __metadata("design:paramtypes", [router_1.Router, nether_api_1.NetherApiService])
-], AuthGuard);
-exports.AuthGuard = AuthGuard;
-//# sourceMappingURL=auth.guard.js.map
+    __metadata("design:paramtypes", [])
+], Configuration);
+exports.Configuration = Configuration;
+//# sourceMappingURL=app.constants.js.map
