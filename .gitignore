@@ -265,5 +265,5 @@ paket-files/
 
 # Web UI
 **/wwwroot/lib/**/*
-#**/wwwroot/**/app/**/*.js
-#**/wwwroot/**/app/**/*.js.map
+**/wwwroot/**/app/**/*.js
+**/wwwroot/**/app/**/*.js.map
