@@ -23,10 +23,11 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        if (window.location.hash) {
+        //todo: disabled as implicit flow is not implemented yet
+        /*if (window.location.hash) {
             // if there is a hash in URL request is coming from authorization server
             this.securityService.authorizedCallback();
-        }
+        }*/
     }
 
     logIn(): void {

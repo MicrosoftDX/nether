@@ -115,6 +115,23 @@ namespace Nether.Web
                 //AutomaticAuthenticate = true // TODO - understand this setting!
             });
 
+            //implicit flow authentication
+            /*IdentityServerAuthenticationOptions identityServerValidationOptions = new IdentityServerAuthenticationOptions
+            {
+                Authority = "http://localhost:5000/",
+                AllowedScopes = new List<string> { "nether-all" },
+                RequireHttpsMetadata = false,
+                ApiSecret = "dataEventRecordsSecret",
+                ApiName = "dataEventRecords",
+                AutomaticAuthenticate = true,
+                SupportedTokens = SupportedTokens.Both,
+                // TokenRetriever = _tokenRetriever,
+                // required if you want to return a 403 and not a 401 for forbidden responses
+                AutomaticChallenge = true,
+            };
+
+            app.UseIdentityServerAuthentication(identityServerValidationOptions);*/
+
             #region [ Admin Web UI ]
             // Create a custom route for Admin Web UI
             // todo: make it nicer
