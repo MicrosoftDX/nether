@@ -48,11 +48,6 @@ namespace Nether.Data.Sql.Leaderboard
             return res.OrderBy(s => s.Rank).ToList();
         }
 
-        public Task<List<GameScore>> GetScoresAroundMe(int nBetter, int nWorse, string gamerTag)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task DeleteAllScoresAsync(string gamerTag)
         {
             await _db.DeleteScores(gamerTag);

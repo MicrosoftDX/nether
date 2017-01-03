@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using Nether.Common.DependencyInjection;
 using Nether.Data.Leaderboard;
-using Nether.Data.MongoDB.Leaderboard;
 using Nether.Data.Sql.Leaderboard;
 using Nether.Integration.Analytics;
 using Nether.Integration.Default.Analytics;
@@ -70,17 +69,6 @@ namespace Nether.Web.Features.Leaderboard
                 string connectionString;
                 switch (wellKnownType)
                 {
-                    case "mongo":
-                        connectionString = scopedConfiguration["ConnectionString"];
-                        string databaseName = scopedConfiguration["DatabaseName"];
-
-                        services.AddTransient<ILeaderboardStore>(serviceProvider =>
-                        {
-                            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-                            // TODO - look at encapsulating the connection info and registering that so that we can just register the type without the factory
-                            return new MongoDBLeaderboardStore(connectionString, databaseName, loggerFactory);
-                        });
-                        break;
                     case "sql":
                         connectionString = scopedConfiguration["ConnectionString"];
                         services.AddTransient<ILeaderboardStore>(serviceProvider =>
