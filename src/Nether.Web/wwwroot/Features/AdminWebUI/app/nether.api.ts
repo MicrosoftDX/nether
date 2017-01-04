@@ -1,9 +1,10 @@
-﻿import { Injectable } from "@angular/core";
+﻿import { Injectable, EventEmitter, Output } from "@angular/core";
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
+import { Player, LeaderboardScore, Group } from "./model";
 import { Observable } from "rxjs/Observable";
-import { Cookie } from "ng2-cookies/ng2-cookies";
-import { Player, LeaderboardScore } from "./model";
+import { Configuration } from "./app.constants";
 import "rxjs/add/operator/catch";
+import "rxjs/add/observable/throw";
 import "rxjs/add/operator/do";
 import "rxjs/add/operator/map";
 import "rxjs/add/operator/mergeMap";
@@ -12,27 +13,31 @@ import "rxjs/add/observable/of";
 @Injectable()
 export class NetherApiService {
 
-    private _serverUrl: string = "http://localhost:5000/";
-    private authCacheKey: string = "tempAuth";
+    private _serverUrl: string;
+    private authCacheKey: string = "cachedToken";
     private _clientId: string = "resourceowner-test";
     private _clientSecret: string = "devsecret";
-    // private _headers: Headers = new Headers({ "Content-Type": "application/json" });
     private _endpointConfig: EndpointConfiguration;
-    private _token: TokenResponse;
-    private _currentPlayer: Player;
 
-    constructor(private _http: Http) {
-        let authCookie: string = Cookie.get(this.authCacheKey);
-        if (authCookie) {
-            this._token = JSON.parse(authCookie);
-            this.cachePlayer();
-        }
+    loggedInChanged = new EventEmitter<boolean>();
+
+    constructor(private _http: Http, private _config: Configuration) {
+        this._serverUrl = _config.ResourceServerUrl;
+    }
+
+    isLoggedIn(): boolean {
+        return this.getToken() !== null;
+    }
+
+    private getToken(): TokenResponse {
+        let s: string = localStorage.getItem(this.authCacheKey);
+        return s ? JSON.parse(s) : null;
     }
 
     login(username: string, password: string): Observable<string> {
         return this._http.get(this._serverUrl + ".well-known/openid-configuration")
             .map((response: Response) => <EndpointConfiguration>response.json())
-            .flatMap(config => {
+            .flatMap((config: EndpointConfiguration) => {
 
                 this._endpointConfig = config;
                 console.log("token endpoint: " + config.token_endpoint);
@@ -48,16 +53,17 @@ export class NetherApiService {
                     }))
                     .map((response: Response) => {
                         let token: TokenResponse = <TokenResponse>response.json();
-                        console.log(token);
-                        this._token = token;
+                        console.log("token obtained");
 
                         // cache token
-                        Cookie.set(this.authCacheKey, JSON.stringify(token));
+                        localStorage.setItem(this.authCacheKey, JSON.stringify(token));
+                        this.loggedInChanged.emit(true);
 
                         this.cachePlayer();
 
                         return token.access_token;
-                    });
+                    })
+                    .catch(this.catchErrors);
             });
     }
 
@@ -93,16 +99,71 @@ export class NetherApiService {
         return this._http.post(this._serverUrl + "api/players", player, this.getRequestOptions());
     }
 
+    updatePlayer(player: Player): Observable<Response> {
+        return this._http.post(this._serverUrl + "api/players", player, this.getRequestOptions());
+    }
+
+    getAllGroups(): Observable<Group[]> {
+        return this._http.get(this._serverUrl + "api/groups", this.getRequestOptions())
+            .map((r: Response) => <Group[]>r.json().groups)
+            .catch(this.catchErrors);
+    }
+
+    getGroup(name: string): Observable<Group> {
+        return this._http.get(this._serverUrl + "api/groups/" + name, this.getRequestOptions())
+            .map((r: Response) => <Group>r.json().group)
+            .catch(this.catchErrors);
+    }
+
+    getGroupPlayers(name: string): Observable<string[]> {
+        return this._http.get(this._serverUrl + "api/groups/" + name + "/players", this.getRequestOptions())
+            .map((r: Response) => <string[]>r.json().gamertags);
+    }
+
+    updateGroup(group: Group): Observable<Response> {
+        return this._http.put(this._serverUrl + "api/groups/" + group.name, group, this.getRequestOptions());
+    }
+
+    createGroup(group: Group): Observable<Response> {
+        return this._http.post(this._serverUrl + "api/groups", group, this.getRequestOptions());
+    }
+
+    getPlayerGroups(gamertag: string): Observable<Group[]> {
+        return this._http.get(`${this._serverUrl}api/players/${gamertag}/groups`, this.getRequestOptions())
+            .map((r: Response) => <Group[]>r.json().groups);
+    }
+
+    addPlayerToGroup(gamertag: string, groupName: string): Observable<Response> {
+        return this._http.put(`${this._serverUrl}api/players/${gamertag}/groups/${groupName}`, null, this.getRequestOptions());
+    }
+
+    removePlayerFromGroup(gamertag: string, groupName: string): Observable<Response> {
+        return this._http.delete(`${this._serverUrl}api/groups/${groupName}/players/${gamertag}`, this.getRequestOptions());
+    }
+
     private cachePlayer(): void {
-        this.getCurrentPlayer().subscribe((p: Player) => this._currentPlayer = p);
+        // this.getCurrentPlayer().subscribe((p: Player) => this._currentPlayer = p);
     }
 
     private getRequestOptions(): RequestOptions {
+
+        let token: TokenResponse = this.getToken();
+
         return new RequestOptions({
             headers: new Headers({
-                "Authorization": this._token.token_type + " " + this._token.access_token
+                "Authorization": token.token_type + " " + token.access_token
                 })
         });
+    }
+
+    private catchErrors(err: any): Observable<any> {
+        console.error("call failed");
+        if (err.status === 401) {
+            console.error("auth failure");
+            localStorage.removeItem(this.authCacheKey);
+            this.loggedInChanged.emit(false);
+        }
+        return Observable.throw(err);
     }
 }
 

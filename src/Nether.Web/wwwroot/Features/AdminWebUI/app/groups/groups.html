@@ -1,0 +1,53 @@
+﻿<div>
+    <table class="table table-condensed table-hover table-striped">
+        <caption>All Groups</caption>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Custom Type</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let g of allGroups">
+                <td>
+                    <a [routerLink]="['/group', g.name]">
+                        {{ g.name }}
+                    </a>
+                </td>
+                <td>{{ g.customType }}</td>
+                <td>{{ g.description }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <h4>Create New Group</h4>
+
+    <form>
+        <div class="form-group">
+            <label for="postName">Name</label>
+            <input type="text" class="form-control"
+                   id="postName" name="postName"
+                   placeholder="uniqueue group name"
+                   [(ngModel)]="newGroup.name">
+        </div>
+        <div class="form-group">
+            <label for="postCustomTag">Custom Tag</label>
+            <input type="text" class="form-control"
+                   id="postCustomTag" name="postCustomTag"
+                   placeholder="custom tag (optional)"
+                   [(ngModel)]="newGroup.customType">
+        </div>
+        <div class="form-group">
+            <label for="postDescription">Description</label>
+            <input type="text" class="form-control"
+                   id="postDescription" name="postDescription"
+                   placeholder="description (optional)"
+                   [(ngModel)]="newGroup.description">
+        </div>
+
+        <button type="button" class="btn btn-default" (click)="createGroup()">Create</button>
+    </form>
+</div>

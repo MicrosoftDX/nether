@@ -1,1 +1,54 @@
-﻿wow, got the the player {{ player | json }}
+﻿<div>
+    <h2>Player Details</h2>
+</div>
+<div *ngIf="player" class="row">
+    <div class="row">
+        <form novalidate>
+            <div class="form-group">
+                <label for="gamertag">Gamertag</label>
+                <input type="text" class="form-control"
+                       id="gamertag" name="gamertag"
+                       [(ngModel)]="player.gamertag" readonly>
+            </div>
+            <div class="form-group">
+                <label for="country">Country</label>
+                <input type="text" class="form-control"
+                       id="country" name="country"
+                       placeholder="country"
+                       [(ngModel)]="player.country">
+            </div>
+            <div class="form-group">
+                <label for="customTag">Custom Tag (optional)</label>
+                <input type="text" class="form-control"
+                       id="customTag" name="customTag"
+                       placeholder="custom tag"
+                       [(ngModel)]="player.customTag">
+            </div>
+
+            <button type="button" class="btn btn-default" (click)="updatePlayer()">Update</button>
+        </form>
+    </div>
+
+    <div class="row">
+        <h3>Groups</h3>
+
+        <div *ngIf="!playerGroups">
+            loading...
+        </div>
+
+        <div *ngIf="playerGroups && allGroups">
+            <label class="checkbox-inline" *ngFor="let g of allGroups"
+                   (click)="toggleGroupMembership(g)">
+                <input type="checkbox" id="g{{g.name}}" value="{{g.name}}"
+                       [checked]="isMemberOf(g)"/>
+                <span class="label label-default">{{ g.name }}</span>
+            </label>
+        </div>
+
+    </div>
+
+</div>
+
+<div *ngIf="!player">
+    Loading...
+</div>
