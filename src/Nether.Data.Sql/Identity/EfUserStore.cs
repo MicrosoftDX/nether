@@ -42,7 +42,7 @@ namespace Nether.Data.Sql.Identity
             return userEntity.Map();
         }
 
-        public async Task<User> SaveUserAsync(User user)
+        public async Task SaveUserAsync(User user)
         {
             var userEntity = user.Map();
             // assume that the user is new if UserId is null, and existing if it is set
@@ -56,7 +56,8 @@ namespace Nether.Data.Sql.Identity
                 _context.Update(userEntity);
             }
             await _context.SaveChangesAsync();
-            return userEntity.Map();
+            // update user with any changes from saving
+            userEntity.MapTo(user);
         }
     }
 }

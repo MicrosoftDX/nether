@@ -10,17 +10,24 @@ namespace Nether.Data.Sql.Identity
     {
         public static User Map(this UserEntity entity)
         {
-            return entity == null
-                ? null
-                : new User
-                {
-                    UserId = entity.UserId,
-                    UserName = entity.UserName,
-                    IsActive = entity.IsActive,
-                    FacebookUserId = entity.FacebookUserId,
-                    Role = entity.Role,
-                    PasswordHash = entity.PasswordHash
-                };
+            if (entity == null)
+                return null;
+
+            var user = new User();
+            entity.MapTo(user);
+            return user;
+        }
+        public static void MapTo(this UserEntity entity, User user)
+        {
+            if (entity != null)
+            {
+                user.UserId = entity.UserId;
+                user.UserName = entity.UserName;
+                user.IsActive = entity.IsActive;
+                user.FacebookUserId = entity.FacebookUserId;
+                user.Role = entity.Role;
+                user.PasswordHash = entity.PasswordHash;
+            }
         }
         public static UserEntity Map(this User user)
         {

@@ -94,11 +94,11 @@ namespace Nether.Web.Features.Identity
                 {
                     user = new User
                     {
-                        Role = "player",
+                        Role = RoleNames.Player,
                         IsActive = true,
                         FacebookUserId = userId
                     };
-                    user = await _userStore.SaveUserAsync(user);
+                    await _userStore.SaveUserAsync(user);
                 }
 
                 var claims = await StoreBackedProfileService.GetUserClaimsAsync(user); // TODO move this helper to somewhere more sensible
