@@ -107,7 +107,7 @@ namespace Nether.Web.Features.Leaderboard
             var gamerTag = User.GetGamerTag();
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
-                _log.LogError("user has not gametag");
+                _log.LogError("user has no gamertag: '{0}'", User.GetId());
                 return BadRequest(); //TODO: return error info in body
             }
 
@@ -143,7 +143,7 @@ namespace Nether.Web.Features.Leaderboard
             var gamerTag = User.GetGamerTag();
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
-                _log.LogError("user has not gametag");
+                _log.LogError("user has no gamertag: '{0}'", User.GetId());
                 return BadRequest(); //TODO: return error info in body
             }
 
