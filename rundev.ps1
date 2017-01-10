@@ -17,8 +17,7 @@ function CheckDependencies()
 
     if($missing.Length -gt 0)
     {
-        Write-Error "missing dependencides"
-        $missing
+        Write-Error "missing dependencides: $missing"
         exit
     }
 
