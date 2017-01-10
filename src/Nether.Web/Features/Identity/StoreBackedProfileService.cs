@@ -14,16 +14,23 @@ using IdentityServer4.Services;
 
 using Nether.Data.Identity;
 using System.Net.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Nether.Web.Features.Identity
 {
     public class StoreBackedProfileService : IProfileService
     {
-        private readonly IUserStore _userStore;
+        // TODO - Get URL from config!!
+        private static HttpClient s_httpClient = new HttpClient { BaseAddress = new Uri("http://localhost:5000") };
 
-        public StoreBackedProfileService(IUserStore userStore)
+        private readonly IUserStore _userStore;
+        private readonly ILogger _logger;
+
+
+        public StoreBackedProfileService(IUserStore userStore, ILoggerFactory loggerFactory)
         {
             _userStore = userStore;
+            _logger = loggerFactory.CreateLogger<StoreBackedProfileService>();
         }
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
@@ -33,13 +40,8 @@ namespace Nether.Web.Features.Identity
             context.AddFilteredClaims(await GetUserClaimsAsync(user));
         }
 
-
-        // TODO - Get URL from config!!
-        private static HttpClient s_httpClient = new HttpClient { BaseAddress = new Uri("http://localhost:5000") };
         public static async Task<IEnumerable<Claim>> GetUserClaimsAsync(User user)
         {
-            // TODO create claims for user (look up gamer tag, ...)
-
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserId),
@@ -61,9 +63,18 @@ namespace Nether.Web.Features.Identity
         }
         public async Task IsActiveAsync(IsActiveContext context)
         {
-            var user = await _userStore.GetUserByIdAsync(context.Subject.GetSubjectId());
+            var userId = context.Subject.GetSubjectId();
+            var user = await _userStore.GetUserByIdAsync(userId);
 
-            context.IsActive = user?.IsActive ?? false;
+            if (user == null)
+            {
+                _logger.LogError("StoreBackedProfileService.IsActiveAsync - no user found for id '{0}'", userId);
+                context.IsActive = false;
+            }
+            else
+            {
+                context.IsActive = user.IsActive;
+            }
         }
     }
 }

@@ -7,21 +7,32 @@ using System;
 using Nether.Common.DependencyInjection;
 using Nether.Integration.Analytics;
 using Nether.Integration.Default.Analytics;
+using Microsoft.Extensions.Logging;
 
 namespace Nether.Web.Features.Analytics
 {
     public static class AnalyticsServiceExtensions
     {
-        public static IServiceCollection AddAnalyticsServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAnalyticsServices(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ILogger logger)
         {
-            services.AddEndpointInfo(configuration, "Analytics:EventHub");
+            services.AddEndpointInfo(configuration, logger, "Analytics:EventHub");
 
             return services;
         }
 
-        public static IServiceCollection AddEndpointInfo(this IServiceCollection services, IConfiguration configuration, string key)
+        public static IServiceCollection AddEndpointInfo(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ILogger logger,
+            string key)
         {
             var endpointInfo = GetEndpointInfo(configuration.GetSection(key));
+
+            logger.LogInformation("Analytics:EventHub: using resource '{0}'", endpointInfo.Resource);
+
             services.AddSingleton(endpointInfo);
             return services;
         }

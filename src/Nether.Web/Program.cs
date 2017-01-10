@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Logging;
 
 namespace Nether.Web
 {
@@ -20,6 +21,10 @@ namespace Nether.Web
                 .UseUrls("http://*:5000")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
+                .ConfigureLogging(factory =>
+                {
+                    factory.AddConsole();
+                })
                 .UseStartup<Startup>()
                 .Build();
 

@@ -64,6 +64,7 @@
     <Build Include="Players.sql" />
     <Build Include="Groups.sql" />
     <Build Include="PlayerGroup.sql" />
+    <Build Include="Users.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Nether.Data.Sql.Schema.refactorlog" />
