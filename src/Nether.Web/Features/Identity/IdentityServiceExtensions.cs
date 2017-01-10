@@ -16,6 +16,8 @@ using Nether.Data.Sql.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using IdentityServer4.Models;
+using System.Collections.Generic;
 
 namespace Nether.Web.Features.Identity
 {
@@ -32,13 +34,18 @@ namespace Nether.Web.Features.Identity
             {
                 throw new NotSupportedException($"The Identity Server configuration is currently only intended for Development environments. Current environment: '{hostingEnvironment.EnvironmentName}'");
             }
+
+            var clientSource = new ConfigurationBasedClientSource(logger);
+            var clients = clientSource.LoadClients(configuration.GetSection("Identity:Clients"));
+
             services.AddIdentityServer(options =>
                 {
                     options.Endpoints.EnableAuthorizeEndpoint = true;
                     options.Endpoints.EnableTokenEndpoint = true;
                 })
                 .AddTemporarySigningCredential() // using inbuilt signing cert, but we are explicitly a dev-only service at this point ;-)
-                .AddInMemoryClients(Clients.Get()) // TODO - make configurable
+                //.AddInMemoryClients(Clients.Get()) // TODO - make configurable
+                .AddInMemoryClients(clients)
                 .AddInMemoryIdentityResources(Scopes.GetIdentityResources())
                 .AddInMemoryApiResources(Scopes.GetApiResources())
                 .AddExtensionGrantValidator<FacebookUserAccessTokenExtensionGrantValidator>()
@@ -118,5 +125,7 @@ namespace Nether.Web.Features.Identity
                 .LastOrDefault(d => d.ServiceType == typeof(T))
                 ?.ImplementationInstance;
         }
+
+        
     }
 }
