@@ -44,7 +44,7 @@ namespace IdentityServerTestClient
                     Console.WriteLine();
                     Console.WriteLine("New player... enter gamertag:");
                     var gamertag = Console.ReadLine();
-                    await SetPlayerInfo(accessToken, gamertag);
+                    await SetPlayerInfoAsync(accessToken, gamertag);
 
                     // refresh access token to include gamertag
                     Console.WriteLine("Getting token (after setting gamertag)...");
@@ -60,7 +60,7 @@ namespace IdentityServerTestClient
 
                 Console.WriteLine();
                 Console.WriteLine("Player info:");
-                var user = await GetPlayerInfo(accessToken);
+                var user = await GetPlayerInfoAsync(accessToken);
                 Console.WriteLine(user);
 
                 Console.WriteLine();
@@ -160,7 +160,7 @@ namespace IdentityServerTestClient
             Console.WriteLine(JArray.Parse(content));
         }
 
-        private static async Task<dynamic> GetPlayerInfo(string accessToken)
+        private static async Task<dynamic> GetPlayerInfoAsync(string accessToken)
         {
             // call api
             var client = new HttpClient();
@@ -182,7 +182,7 @@ namespace IdentityServerTestClient
             dynamic result = JToken.Parse(content);
             return result.player;
         }
-        private static async Task SetPlayerInfo(string accessToken, string gamertag)
+        private static async Task SetPlayerInfoAsync(string accessToken, string gamertag)
         {
             // call api
             var client = new HttpClient();
