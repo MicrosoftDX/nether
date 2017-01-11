@@ -48,12 +48,12 @@ namespace Nether.Web.Features.Identity
                 switch (wellKnownType)
                 {
                     case "default":
-                        logger.LogInformation("Identity:PlayerManagementClient: using 'default' client");
+                        var baseUri = scopedConfiguration["BaseUrl"];
+                        logger.LogInformation("Identity:PlayerManagementClient: using 'default' client with BaseUrl '{0}'", baseUri);
                         services.AddSingleton<IIdentityPlayerManagementClient, DefaultIdentityPlayerManagementClient>(serviceProvider =>
                         {
-                            var baseUri = scopedConfiguration["BaseUrl"];
                             return new DefaultIdentityPlayerManagementClient(
-                                "localhost...",
+                                baseUri,
                                 serviceProvider.GetService<ILoggerFactory>()
                                 );
                         });
@@ -93,6 +93,7 @@ namespace Nether.Web.Features.Identity
             services.AddTransient<IPasswordHasher, PasswordHasher>();
             services.AddTransient<IProfileService, StoreBackedProfileService>();
             services.AddTransient<IResourceOwnerPasswordValidator, StoreBackedResourceOwnerPasswordValidator>();
+            services.AddTransient<UserClaimsProvider>();
         }
 
         private static void ConfigureIdentityStore(IServiceCollection services, IConfiguration configuration, ILogger logger)
