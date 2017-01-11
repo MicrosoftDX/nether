@@ -21,13 +21,12 @@ namespace Nether.Web.Features.Identity
 {
     public class StoreBackedProfileService : IProfileService
     {
-
         private readonly IUserStore _userStore;
         private readonly UserClaimsProvider _userClaimsProvider;
         private readonly ILogger _logger;
 
         public StoreBackedProfileService(
-            IUserStore userStore, 
+            IUserStore userStore,
             UserClaimsProvider userClaimsProvider,
             ILoggerFactory loggerFactory)
         {

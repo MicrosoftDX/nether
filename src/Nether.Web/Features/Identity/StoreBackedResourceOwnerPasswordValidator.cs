@@ -17,7 +17,7 @@ namespace Nether.Web.Features.Identity
         private readonly IPasswordHasher _passwordHasher;
 
         public StoreBackedResourceOwnerPasswordValidator(
-            IUserStore userStore, 
+            IUserStore userStore,
             UserClaimsProvider userClaimsProvider,
             IPasswordHasher passwordHasher)
         {
