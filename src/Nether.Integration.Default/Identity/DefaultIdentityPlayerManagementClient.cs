@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -38,6 +39,10 @@ namespace Nether.Integration.Identity
             {
                 var gamertag = await response.Content.ReadAsStringAsync();
                 return gamertag;
+            }
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
             }
             _logger.LogError("Failed to look up gamertag for user '{0}', statuscode {1}", userId, response.StatusCode);
             return null; // TODO should we throw here?
