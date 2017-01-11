@@ -58,7 +58,7 @@ namespace Nether.Web.Features.Identity
 
 
             bool valid = _passwordHasher.VerifyHashedPassword(
-                hashedPassword: login.ProviderData, 
+                hashedPassword: login.ProviderData,
                 providedPassword: context.Password);
             if (!valid)
             {

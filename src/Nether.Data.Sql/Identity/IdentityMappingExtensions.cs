@@ -56,11 +56,11 @@ namespace Nether.Data.Sql.Identity
             if (user == null)
                 return null;
             var userEntity = new UserEntity
-                {
-                    UserId = user.UserId,
-                    IsActive = user.IsActive,
-                    Role = user.Role,
-                };
+            {
+                UserId = user.UserId,
+                IsActive = user.IsActive,
+                Role = user.Role,
+            };
             userEntity.Logins = user.Logins.Select(l => l.Map(userEntity)).ToList();
             return userEntity;
         }

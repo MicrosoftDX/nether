@@ -18,7 +18,7 @@ namespace Nether.Data.Sql.Identity
         private readonly IdentityContextOptions _options;
 
         public DbSet<UserEntity> Users { get; set; }
-        public DbSet<LoginEntity> Logins{ get; set; }
+        public DbSet<LoginEntity> Logins { get; set; }
 
         public IdentityContext(ILoggerFactory loggerFactory, IdentityContextOptions options)
         {
@@ -34,7 +34,7 @@ namespace Nether.Data.Sql.Identity
                 .HasKey(u => u.UserId);
 
             builder.Entity<LoginEntity>()
-                .HasKey(l => new { l.ProviderType, l.ProviderId});
+                .HasKey(l => new { l.ProviderType, l.ProviderId });
 
             _options?.OnModelCreating?.Invoke(builder);
         }

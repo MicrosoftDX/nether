@@ -26,7 +26,7 @@ namespace Nether.Data.Sql.Identity
         public async Task<User> GetUserByIdAsync(string userid)
         {
             var userEntity = await _context.Users
-                .Include(u=>u.Logins)
+                .Include(u => u.Logins)
                 .FirstOrDefaultAsync(u => u.UserId == userid);
             return userEntity.Map();
         }
@@ -35,7 +35,7 @@ namespace Nether.Data.Sql.Identity
         {
             var userEntity = await _context.Users
                 .Include(u => u.Logins)
-                .FirstOrDefaultAsync(u => 
+                .FirstOrDefaultAsync(u =>
                         u.Logins.Any(l => l.ProviderType == providerType && l.ProviderId == providerId));
             return userEntity.Map();
         }
