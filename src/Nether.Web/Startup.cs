@@ -25,7 +25,7 @@ namespace Nether.Web
     public class Startup
     {
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly ILogger _logger; 
+        private readonly ILogger _logger;
 
         public Startup(IHostingEnvironment env, ILoggerFactory loggerFactory)
         {

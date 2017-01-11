@@ -71,13 +71,13 @@ namespace Nether.Web.Features.Identity
                                 builder.UseInMemoryDatabase();
                             }
                         });
-                        services.AddSingleton<IdentityContext>(serviceProvider=>
+                        services.AddSingleton<IdentityContext>(serviceProvider =>
                         {
                             logger.LogInformation("Identity:Store: Adding in-memory seed users...");
 
                             // construct the singleton so that we can provide seeded users for testing
                             var context = new IdentityContext(
-                                    serviceProvider.GetService<ILoggerFactory>(), 
+                                    serviceProvider.GetService<ILoggerFactory>(),
                                     serviceProvider.GetService<IdentityContextOptions>());
                             var seedUsers = InMemoryUsersSeed.Get(serviceProvider.GetService<IPasswordHasher>());
                             context.Users.AddRange(seedUsers.Select(IdentityMappingExtensions.Map));
@@ -124,7 +124,5 @@ namespace Nether.Web.Features.Identity
                 .LastOrDefault(d => d.ServiceType == typeof(T))
                 ?.ImplementationInstance;
         }
-
-        
     }
 }

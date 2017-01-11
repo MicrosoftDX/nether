@@ -1,4 +1,7 @@
-﻿using IdentityServer4.Models;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -57,7 +60,7 @@ namespace Nether.Web.Features.Identity.Configuration
                         break;
                     case "ClientSecrets":
                         client.ClientSecrets = ParseStringArray(configValue)
-                                                    .Select(v=>new Secret(v.Sha256()))
+                                                    .Select(v => new Secret(v.Sha256()))
                                                     .ToList();
                         break;
                     case "RedirectUris":
@@ -72,7 +75,6 @@ namespace Nether.Web.Features.Identity.Configuration
                         // output a warning to the log for properties we don't recognise to aid debugging
                         _logger.LogWarning($"Identity:Clients - ignoring property '{configValue.Key}'");
                         break;
-
                 }
             }
 

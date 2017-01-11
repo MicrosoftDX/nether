@@ -1,4 +1,7 @@
-﻿using IdentityServer4.Models;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.FileProviders;
@@ -15,7 +18,6 @@ namespace Nether.Web.UnitTests.Features.Identity
 {
     public class ConfigurationBasedClientSourceTests : IDisposable
     {
-
         [Fact]
         public void ClientIdIsParsed()
         {
@@ -57,7 +59,6 @@ namespace Nether.Web.UnitTests.Features.Identity
 
             var client = clients[0];
             Assert.Equal("client-name", client.ClientName);
-
         }
 
 
@@ -83,7 +84,6 @@ namespace Nether.Web.UnitTests.Features.Identity
             Assert.Equal(
                 new[] { "grant1", "grant2" },
                 client.AllowedGrantTypes);
-
         }
 
 
@@ -108,7 +108,6 @@ namespace Nether.Web.UnitTests.Features.Identity
             Assert.Equal(
                 new[] { "http://localhost:12345", "http://example.com" },
                 client.RedirectUris);
-
         }
 
         [Fact]
@@ -132,7 +131,6 @@ namespace Nether.Web.UnitTests.Features.Identity
             Assert.Equal(
                 new[] { "http://localhost:12345/loggedout", "http://example.com/done" },
                 client.PostLogoutRedirectUris);
-
         }
 
         [Fact]
@@ -198,7 +196,6 @@ namespace Nether.Web.UnitTests.Features.Identity
             Assert.Equal(
                 new[] { "http://localhost:12345/", "http://example.com/" },
                 client.AllowedCorsOrigins);
-
         }
 
         [Fact]
@@ -251,7 +248,6 @@ namespace Nether.Web.UnitTests.Features.Identity
             Assert.Equal(
                 new[] { testHash, test2Hash },
                 client.ClientSecrets.Select(s => s.Value));
-
         }
 
         [Fact]
@@ -275,7 +271,6 @@ namespace Nether.Web.UnitTests.Features.Identity
             Assert.Equal(
                 new[] { "scope1", "scope2" },
                 client.AllowedScopes);
-
         }
 
 
@@ -331,7 +326,6 @@ namespace Nether.Web.UnitTests.Features.Identity
             var client2 = clients[1];
             Assert.Equal("client2", client2.ClientId);
             Assert.Equal("Client 2", client2.ClientName);
-
         }
 
 
@@ -380,6 +374,5 @@ namespace Nether.Web.UnitTests.Features.Identity
             if (File.Exists(_filename))
                 File.Delete(_filename);
         }
-
     }
 }

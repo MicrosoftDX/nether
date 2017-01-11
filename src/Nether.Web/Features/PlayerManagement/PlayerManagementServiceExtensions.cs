@@ -16,7 +16,7 @@ namespace Nether.Web.Features.PlayerManagement
     public static class PlayerManagementServiceExtensions
     {
         public static IServiceCollection AddPlayerManagementServices(
-            this IServiceCollection services, 
+            this IServiceCollection services,
             IConfiguration configuration,
             ILogger logger)
         {

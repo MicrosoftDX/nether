@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 namespace Nether.Data.Sql.Identity
 {
     public class UserEntity
@@ -12,6 +15,5 @@ namespace Nether.Data.Sql.Identity
 
         // Going forward, FacebookUserId should be stored as a "login" for the "facebook" provider to allow generalisation to other identity types
         public string FacebookUserId { get; set; }
-
     }
 }

@@ -18,7 +18,7 @@ namespace Nether.Web.Features.Leaderboard
     public static class LeaderboardServiceExtensions
     {
         public static IServiceCollection AddLeaderboardServices(
-            this IServiceCollection services, 
+            this IServiceCollection services,
             IConfiguration configuration,
             ILogger logger)
         {
@@ -30,7 +30,7 @@ namespace Nether.Web.Features.Leaderboard
         }
 
         private static void AddAnalyticsIntegrationClient(
-            IServiceCollection services, 
+            IServiceCollection services,
             IConfiguration configuration,
             ILogger logger)
         {
@@ -67,8 +67,8 @@ namespace Nether.Web.Features.Leaderboard
         }
 
         private static void AddLeaderboardStore(
-            IServiceCollection services, 
-            IConfiguration configuration, 
+            IServiceCollection services,
+            IConfiguration configuration,
             ILogger logger)
         {
             // TODO - look at what can be extracted to generalise this

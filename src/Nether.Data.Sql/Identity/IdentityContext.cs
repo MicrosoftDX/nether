@@ -30,7 +30,7 @@ namespace Nether.Data.Sql.Identity
             base.OnModelCreating(builder);
 
             builder.Entity<UserEntity>()
-                .HasKey(u=> u.UserId);
+                .HasKey(u => u.UserId);
 
             _options?.OnModelCreating?.Invoke(builder);
         }
