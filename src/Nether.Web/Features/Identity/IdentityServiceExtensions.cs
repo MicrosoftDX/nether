@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using IdentityServer4.Models;
 using System.Collections.Generic;
+using Nether.Integration.Identity;
 
 namespace Nether.Web.Features.Identity
 {
@@ -30,6 +31,46 @@ namespace Nether.Web.Features.Identity
 ,
             IHostingEnvironment hostingEnvironment)
         {
+            ConfigureIdentityPlayerMangementClient(services, configuration, logger);
+            ConfigureIdentityServer(services, configuration, logger, hostingEnvironment);
+            ConfigureIdentityStore(services, configuration, logger);
+
+            return services;
+        }
+
+        private static void ConfigureIdentityPlayerMangementClient(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        {
+            if (configuration.Exists("Identity:PlayerManagementClient:wellKnown"))
+            {
+                // register using well-known type
+                var wellKnownType = configuration["Identity:PlayerManagementClient:wellknown"];
+                var scopedConfiguration = configuration.GetSection("Identity:PlayerManagementClient:properties");
+                switch (wellKnownType)
+                {
+                    case "default":
+                        logger.LogInformation("Identity:PlayerManagementClient: using 'default' client");
+                        services.AddSingleton<IIdentityPlayerManagementClient, DefaultIdentityPlayerManagementClient>(serviceProvider =>
+                        {
+                            var baseUri = scopedConfiguration["BaseUrl"];
+                            return new DefaultIdentityPlayerManagementClient(
+                                "localhost...",
+                                serviceProvider.GetService<ILoggerFactory>()
+                                );
+                        });
+                        break;
+                    default:
+                        throw new Exception($"Unhandled 'wellKnown' type for Identity:PlayerManagementClient: '{wellKnownType}'");
+                }
+            }
+            else
+            {
+                // fall back to generic "factory"/"implementation" configuration
+                services.AddServiceFromConfiguration<IUserStore>(configuration, logger, "Identity:PlayerManagementClient");
+            }
+        }
+
+        private static void ConfigureIdentityServer(IServiceCollection services, IConfiguration configuration, ILogger logger, IHostingEnvironment hostingEnvironment)
+        {
             if (hostingEnvironment.EnvironmentName != "Development")
             {
                 throw new NotSupportedException($"The Identity Server configuration is currently only intended for Development environments. Current environment: '{hostingEnvironment.EnvironmentName}'");
@@ -39,10 +80,10 @@ namespace Nether.Web.Features.Identity
             var clients = clientSource.LoadClients(configuration.GetSection("Identity:Clients"));
 
             services.AddIdentityServer(options =>
-                {
-                    options.Endpoints.EnableAuthorizeEndpoint = true;
-                    options.Endpoints.EnableTokenEndpoint = true;
-                })
+            {
+                options.Endpoints.EnableAuthorizeEndpoint = true;
+                options.Endpoints.EnableTokenEndpoint = true;
+            })
                 .AddTemporarySigningCredential() // using inbuilt signing cert, but we are explicitly a dev-only service at this point ;-)
                 .AddInMemoryClients(clients)
                 .AddInMemoryIdentityResources(Scopes.GetIdentityResources())
@@ -52,7 +93,10 @@ namespace Nether.Web.Features.Identity
             services.AddTransient<IPasswordHasher, PasswordHasher>();
             services.AddTransient<IProfileService, StoreBackedProfileService>();
             services.AddTransient<IResourceOwnerPasswordValidator, StoreBackedResourceOwnerPasswordValidator>();
+        }
 
+        private static void ConfigureIdentityStore(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        {
             if (configuration.Exists("Identity:Store:wellKnown"))
             {
                 // register using well-known type
@@ -114,10 +158,8 @@ namespace Nether.Web.Features.Identity
                 // fall back to generic "factory"/"implementation" configuration
                 services.AddServiceFromConfiguration<IUserStore>(configuration, logger, "Identity:Store");
             }
-
-
-            return services;
         }
+
         private static T GetServiceFromCollection<T>(IServiceCollection services)
         {
             return (T)services

@@ -23,17 +23,20 @@ namespace Nether.Web.Features.Identity
         public string GrantType => "fb-usertoken";
 
         private readonly IConfiguration _configuration;
-        private readonly ILogger _logger;
+        private readonly UserClaimsProvider _userClaimsProvider;
         private readonly IUserStore _userStore;
+        private readonly ILogger _logger;
 
         public FacebookUserAccessTokenExtensionGrantValidator(
             IConfiguration configuration,
-            ILoggerFactory loggerFactory,
-            IUserStore userStore)
+            IUserStore userStore,
+            UserClaimsProvider userClaimsProvider,
+            ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
-            _logger = loggerFactory.CreateLogger<FacebookUserAccessTokenExtensionGrantValidator>();
+            _userClaimsProvider = userClaimsProvider;
             _userStore = userStore;
+            _logger = loggerFactory.CreateLogger<FacebookUserAccessTokenExtensionGrantValidator>();
         }
 
         public async Task ValidateAsync(ExtensionGrantValidationContext context)
@@ -73,7 +76,7 @@ namespace Nether.Web.Features.Identity
                     // Get here if (for example) the token is for a different application
                     var message = (string)body.error.message;
                     _logger.LogError("FacebookSignIn: error validating token: {0}", message);
-                    context.Result = new GrantValidationResult(IdentityServer4.Models.TokenRequestErrors.InvalidRequest);
+                    context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
                     return;
                 }
 
@@ -83,7 +86,7 @@ namespace Nether.Web.Features.Identity
                 {
                     var message = (string)body.data.error.message;
                     _logger.LogDebug("FacebookSignIn: invalid token: {0}", message);
-                    context.Result = new GrantValidationResult(IdentityServer4.Models.TokenRequestErrors.InvalidRequest);
+                    context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
                     return;
                 }
                 _logger.LogDebug("FacebookSignIn: Signing in: {0}", userId);
@@ -100,7 +103,7 @@ namespace Nether.Web.Features.Identity
                     await _userStore.SaveUserAsync(user);
                 }
 
-                var claims = await StoreBackedProfileService.GetUserClaimsAsync(user); // TODO move this helper to somewhere more sensible
+                var claims = await _userClaimsProvider.GetUserClaimsAsync(user);
                 context.Result = new GrantValidationResult(user.UserId, "nether-facebook", claims);
             }
             catch (Exception ex)

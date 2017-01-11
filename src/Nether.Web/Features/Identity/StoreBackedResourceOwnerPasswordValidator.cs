@@ -13,11 +13,16 @@ namespace Nether.Web.Features.Identity
     public class StoreBackedResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {
         private readonly IUserStore _userStore;
+        private readonly UserClaimsProvider _userClaimsProvider;
         private readonly IPasswordHasher _passwordHasher;
 
-        public StoreBackedResourceOwnerPasswordValidator(IUserStore userStore, IPasswordHasher passwordHasher)
+        public StoreBackedResourceOwnerPasswordValidator(
+            IUserStore userStore, 
+            UserClaimsProvider userClaimsProvider,
+            IPasswordHasher passwordHasher)
         {
             _userStore = userStore;
+            _userClaimsProvider = userClaimsProvider;
             _passwordHasher = passwordHasher;
         }
         public async Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
@@ -35,7 +40,7 @@ namespace Nether.Web.Features.Identity
                 return;
             }
 
-            var claims = await StoreBackedProfileService.GetUserClaimsAsync(user); // TODO move this helper to somewhere more sensible
+            var claims = await _userClaimsProvider.GetUserClaimsAsync(user);
             context.Result = new GrantValidationResult(user.UserId, "password", claims);
         }
     }
