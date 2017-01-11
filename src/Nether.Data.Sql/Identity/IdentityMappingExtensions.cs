@@ -25,26 +25,55 @@ namespace Nether.Data.Sql.Identity
             if (entity != null)
             {
                 user.UserId = entity.UserId;
-                user.UserName = entity.UserName;
                 user.IsActive = entity.IsActive;
-                user.FacebookUserId = entity.FacebookUserId;
                 user.Role = entity.Role;
-                user.PasswordHash = entity.PasswordHash;
+
+                // currently recreating the Login collection for simplicity
+                user.Logins = new List<Login>();
+                if (entity.Logins != null)
+                {
+                    foreach (var loginEntity in entity.Logins)
+                    {
+                        user.Logins.Add(loginEntity.Map());
+                    }
+                }
             }
+        }
+        public static Login Map(this LoginEntity entity)
+        {
+            if (entity == null)
+                return null;
+
+            return new Login
+            {
+                ProviderType = entity.ProviderType,
+                ProviderId = entity.ProviderId,
+                ProviderData = entity.ProviderData
+            };
         }
         public static UserEntity Map(this User user)
         {
-            return user == null
-                ? null
-                : new UserEntity
+            if (user == null)
+                return null;
+            var userEntity = new UserEntity
                 {
                     UserId = user.UserId,
-                    UserName = user.UserName,
                     IsActive = user.IsActive,
-                    FacebookUserId = user.FacebookUserId,
                     Role = user.Role,
-                    PasswordHash = user.PasswordHash
                 };
+            userEntity.Logins = user.Logins.Select(l => l.Map(userEntity)).ToList();
+            return userEntity;
+        }
+        public static LoginEntity Map(this Login login, UserEntity userEntity)
+        {
+            return new LoginEntity
+            {
+                User = userEntity,
+                UserId = userEntity.UserId,
+                ProviderType = login.ProviderType,
+                ProviderId = login.ProviderId,
+                ProviderData = login.ProviderData
+            };
         }
     }
 }

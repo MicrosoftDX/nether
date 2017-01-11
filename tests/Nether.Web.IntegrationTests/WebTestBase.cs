@@ -72,6 +72,10 @@ namespace Nether.Web.IntegrationTests
             {
                 throw new AuthenticationException("GetClient: failed to authenticate");
             }
+            if (string.IsNullOrEmpty(tokenResponse.AccessToken))
+            {
+
+            }
             client.SetBearerToken(tokenResponse.AccessToken);
 
             if (isPlayer)

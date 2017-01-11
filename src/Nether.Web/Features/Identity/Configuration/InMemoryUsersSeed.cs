@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Nether.Data.Identity;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,76 +13,136 @@ namespace Nether.Web.Features.Identity.Configuration
     //      - need to provide a way to initialise the users for an integration test
     public class InMemoryUsersSeed
     {
-        public static List<Data.Identity.User> Get(IPasswordHasher passwordHasher)
+        public static List<User> Get(IPasswordHasher passwordHasher, bool includeLoadTestUsers = true)
         {
-            var result = new List<Data.Identity.User>
+            var result = new List<User>
             {
-                new Data.Identity.User {
+                new User {
                     UserId = "1111",
-                    UserName =  "devuser",
-                    PasswordHash = passwordHasher.HashPassword("devuser"),
                     Role = RoleNames.Player,
-                    IsActive = true
+                    IsActive = true,
+                    Logins = new List<Login>
+                    {
+                        new Login
+                        {
+                            ProviderType = LoginProvider.UserNamePassword,
+                            ProviderId = "devuser",
+                            ProviderData = passwordHasher.HashPassword("devuser")
+                        }
+                    }
                 },
-                new Data.Identity.User {
+                new User {
                     UserId = "2222",
-                    UserName =  "devadmin",
-                    PasswordHash = passwordHasher.HashPassword("devadmin"),
                     Role = RoleNames.Admin,
-                    IsActive = true
+                    IsActive = true,
+                    Logins = new List<Login>
+                    {
+                        new Login
+                        {
+                            ProviderType = LoginProvider.UserNamePassword,
+                            ProviderId = "devadmin",
+                            ProviderData = passwordHasher.HashPassword("devadmin")
+                        }
+                    }
                 },
                 // Integration test users
                 // user without gamertag
-                new Data.Identity.User{
-                    UserId =  "112299", UserName =   "testuser-notag",
-                    PasswordHash = passwordHasher.HashPassword("password123"),
+                new User{
+                    UserId =  "112299",
                     Role = RoleNames.Player,
-                    IsActive = true
+                    IsActive = true,
+                    Logins = new List<Login>
+                    {
+                        new Login
+                        {
+                            ProviderType = LoginProvider.UserNamePassword,
+                            ProviderId = "testuser-notag",
+                            ProviderData = passwordHasher.HashPassword("password123")
+                        }
+                    }
                 },
                 // user with gamertag
-                new Data.Identity.User {
+                new User {
                     UserId =  "3333",
-                    UserName =  "testuser",
-                    PasswordHash = passwordHasher.HashPassword("testuser"),
                     Role = RoleNames.Player,
-                    IsActive = true
+                    IsActive = true,
+                    Logins = new List<Login>
+                    {
+                        new Login
+                        {
+                            ProviderType = LoginProvider.UserNamePassword,
+                            ProviderId = "testuser",
+                            ProviderData = passwordHasher.HashPassword("testuser")
+                        }
+                    }
                 },
-                new Data.Identity.User{
+                new User{
                     UserId =  "4444",
-                    UserName =  "testuser1",
-                    PasswordHash = passwordHasher.HashPassword("testuser1"),
                     Role = RoleNames.Player,
-                    IsActive = true
+                    IsActive = true,
+                    Logins = new List<Login>
+                    {
+                        new Login
+                        {
+                            ProviderType = LoginProvider.UserNamePassword,
+                            ProviderId = "testuser1",
+                            ProviderData = passwordHasher.HashPassword("testuser1")
+                        }
+                    }
                 },
-                new Data.Identity.User{
+                new User{
                     UserId =  "5555",
-                    UserName =  "testuser2",
-                    PasswordHash = passwordHasher.HashPassword("testuser2"),
                     Role = RoleNames.Player,
-                    IsActive = true
+                    IsActive = true,
+                    Logins = new List<Login>
+                    {
+                        new Login
+                        {
+                            ProviderType = LoginProvider.UserNamePassword,
+                            ProviderId = "testuser2",
+                            ProviderData = passwordHasher.HashPassword("testuser2")
+                        }
+                    }
                 },
-                new Data.Identity.User{
+                new User{
                     UserId =  "6666",
-                    UserName =  "testuser3",
-                    PasswordHash = passwordHasher.HashPassword("testuser3"),
                     Role = RoleNames.Player,
-                    IsActive = true
+                    IsActive = true,
+                    Logins = new List<Login>
+                    {
+                        new Login
+                        {
+                            ProviderType = LoginProvider.UserNamePassword,
+                            ProviderId = "testuser3",
+                            ProviderData = passwordHasher.HashPassword("testuser3")
+                        }
+                    }
                 }
             };
-            result.AddRange(GenerateForLoadTest(10000, passwordHasher));
+            if (includeLoadTestUsers)
+            {
+                result.AddRange(GenerateForLoadTest(10000, passwordHasher));
+            }
             return result;
         }
 
-        private static List<Data.Identity.User> GenerateForLoadTest(int count, IPasswordHasher passwordHasher)
+        private static List<User> GenerateForLoadTest(int count, IPasswordHasher passwordHasher)
         {
             return Enumerable.Range(0, count)
-                .Select(i => new Data.Identity.User
+                .Select(i => new User
                 {
                     UserId = $"subj{i}",
-                    UserName = $"loadUser{i}",
-                    PasswordHash = passwordHasher.HashPassword($"loadUser{i}"),
                     Role = RoleNames.Player,
-                    IsActive = true
+                    IsActive = true,
+                    Logins = new List<Login>
+                    {
+                        new Login
+                        {
+                            ProviderType = LoginProvider.UserNamePassword,
+                            ProviderId = $"loadUser{i}",
+                            ProviderData = passwordHasher.HashPassword($"loadUser{i}")
+                        }
+                    }
                 })
                 .ToList();
         }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nether.Data.Identity;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nether.Data.Sql.Identity
@@ -21,24 +22,21 @@ namespace Nether.Data.Sql.Identity
             _logger = loggerFactory.CreateLogger<EntityFrameworkUserStore>();
         }
 
-        public async Task<User> GetUserByFacebookIdAsync(string facebookUserId)
-        {
-            var userEntity = await _context.Users
-                .FirstOrDefaultAsync(u => u.FacebookUserId == facebookUserId);
-            return userEntity.Map();
-        }
 
         public async Task<User> GetUserByIdAsync(string userid)
         {
             var userEntity = await _context.Users
+                .Include(u=>u.Logins)
                 .FirstOrDefaultAsync(u => u.UserId == userid);
             return userEntity.Map();
         }
 
-        public async Task<User> GetUserByUsernameAsync(string username)
+        public async Task<User> GetUserByLoginAsync(string providerType, string providerId)
         {
             var userEntity = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserName == username);
+                .Include(u => u.Logins)
+                .FirstOrDefaultAsync(u => 
+                        u.Logins.Any(l => l.ProviderType == providerType && l.ProviderId == providerId));
             return userEntity.Map();
         }
 
