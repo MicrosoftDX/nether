@@ -38,6 +38,16 @@ namespace Nether.Web.Features.Identity.Configuration
                     case "Name":
                         client.ClientName = configValue.Value;
                         break;
+                    case "AllowAccessTokensViaBrowser":
+                        client.AllowAccessTokensViaBrowser = ParseBool(configValue.Value);
+                        break;
+                    case "AccessTokenType":
+                        client.AccessTokenType = ParseEnum<AccessTokenType>(configValue.Value);
+                        break;
+                    case "AllowedCorsOrigins":
+                        client.AllowedCorsOrigins = ParseStringArray(configValue)
+                                                        .ToList();
+                        break;
                     case "AllowedGrantTypes":
                         client.AllowedGrantTypes = ParseStringArray(configValue);
                         break;
@@ -67,6 +77,16 @@ namespace Nether.Web.Features.Identity.Configuration
             }
 
             return client;
+        }
+
+        private T ParseEnum<T>(string value)
+        {
+            return (T)Enum.Parse(typeof(T), value);
+        }
+
+        private bool ParseBool(string value)
+        {
+            return bool.Parse(value);
         }
 
         private IEnumerable<string> ParseStringArray(IConfigurationSection configSection)

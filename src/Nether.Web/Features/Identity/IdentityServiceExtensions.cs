@@ -44,7 +44,6 @@ namespace Nether.Web.Features.Identity
                     options.Endpoints.EnableTokenEndpoint = true;
                 })
                 .AddTemporarySigningCredential() // using inbuilt signing cert, but we are explicitly a dev-only service at this point ;-)
-                //.AddInMemoryClients(Clients.Get()) // TODO - make configurable
                 .AddInMemoryClients(clients)
                 .AddInMemoryIdentityResources(Scopes.GetIdentityResources())
                 .AddInMemoryApiResources(Scopes.GetApiResources())

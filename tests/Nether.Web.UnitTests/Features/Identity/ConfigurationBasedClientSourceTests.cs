@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using IdentityServer4.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -134,6 +135,71 @@ namespace Nether.Web.UnitTests.Features.Identity
 
         }
 
+        [Fact]
+        public void AccessTokenTypeIsParsed()
+        {
+            var json = @"
+{
+    'Identity': {
+        'Clients': [
+            {
+                'AccessTokenType': 'Reference'
+            }
+        ]
+    },
+}";
+            var clients = GetClientsFromJson(json);
+
+            Assert.Equal(1, clients.Count);
+
+            var client = clients[0];
+            Assert.Equal(AccessTokenType.Reference, client.AccessTokenType);
+        }
+
+        [Fact]
+        public void AllowAccessTokensViaBrowserIsParsed()
+        {
+            var json = @"
+{
+    'Identity': {
+        'Clients': [
+            {
+                'AllowAccessTokensViaBrowser': true
+            }
+        ]
+    },
+}";
+            var clients = GetClientsFromJson(json);
+
+            Assert.Equal(1, clients.Count);
+
+            var client = clients[0];
+            Assert.Equal(true, client.AllowAccessTokensViaBrowser);
+        }
+
+        [Fact]
+        public void AllowedCorsOriginsAreParsed()
+        {
+            var json = @"
+{
+    'Identity': {
+        'Clients': [
+            {
+                'AllowedCorsOrigins': ['http://localhost:12345/', 'http://example.com/']
+            }
+        ]
+    },
+}";
+            var clients = GetClientsFromJson(json);
+
+            Assert.Equal(1, clients.Count);
+
+            var client = clients[0];
+            Assert.Equal(
+                new[] { "http://localhost:12345/", "http://example.com/" },
+                client.AllowedCorsOrigins);
+
+        }
 
         [Fact]
         public void UnknownPropertyIsIgnored()
