@@ -11,8 +11,7 @@ namespace Nether.Data.Identity
     public interface IUserStore
     {
         Task<User> GetUserByIdAsync(string userid);
-        Task<User> GetUserByUsernameAsync(string username);
-        Task<User> GetUserByFacebookIdAsync(string facebookUserId);
+        Task<User> GetUserByLoginAsync(string providerType, string providerId);
         Task SaveUserAsync(User user);
     }
 }

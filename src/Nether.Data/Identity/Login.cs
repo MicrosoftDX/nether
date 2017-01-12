@@ -8,12 +8,10 @@ using System.Threading.Tasks;
 
 namespace Nether.Data.Identity
 {
-    public class User
+    public class Login
     {
-        public string UserId { get; set; }
-        public bool IsActive { get; set; }
-        public string Role { get; set; }
-
-        public ICollection<Login> Logins { get; set; }
+        public string ProviderType { get; set; }
+        public string ProviderId { get; set; }
+        public string ProviderData { get; set; }
     }
 }

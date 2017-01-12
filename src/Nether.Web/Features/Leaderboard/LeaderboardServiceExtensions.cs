@@ -17,16 +17,22 @@ namespace Nether.Web.Features.Leaderboard
 {
     public static class LeaderboardServiceExtensions
     {
-        public static IServiceCollection AddLeaderboardServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddLeaderboardServices(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ILogger logger)
         {
-            AddLeaderboardStore(services, configuration);
+            AddLeaderboardStore(services, configuration, logger);
 
-            AddAnalyticsIntegrationClient(services, configuration);
+            AddAnalyticsIntegrationClient(services, configuration, logger);
 
             return services;
         }
 
-        private static void AddAnalyticsIntegrationClient(IServiceCollection services, IConfiguration configuration)
+        private static void AddAnalyticsIntegrationClient(
+            IServiceCollection services,
+            IConfiguration configuration,
+            ILogger logger)
         {
             // TODO - look at what can be extracted to generalise this
             if (configuration.Exists("Leaderboard:AnalyticsIntegrationClient:wellKnown"))
@@ -36,9 +42,11 @@ namespace Nether.Web.Features.Leaderboard
                 switch (wellKnownType)
                 {
                     case "null":
+                        logger.LogInformation("Leaderboard:AnalyticsIntegrationClient: using 'null' client");
                         services.AddSingleton<IAnalyticsIntegrationClient, AnalyticsIntegrationNullClient>();
                         break;
                     case "default":
+                        logger.LogInformation("Leaderboard:AnalyticsIntegrationClient: using 'default' client");
                         var scopedConfiguration = configuration.GetSection("Leaderboard:AnalyticsIntegrationClient:properties");
                         string baseUrl = scopedConfiguration["AnalyticsBaseUrl"];
 
@@ -54,11 +62,14 @@ namespace Nether.Web.Features.Leaderboard
             else
             {
                 // fall back to generic "factory"/"implementation" configuration
-                services.AddServiceFromConfiguration<IAnalyticsIntegrationClient>(configuration, "Leaderboard:AnalyticsIntegrationClient");
+                services.AddServiceFromConfiguration<IAnalyticsIntegrationClient>(configuration, logger, "Leaderboard:AnalyticsIntegrationClient");
             }
         }
 
-        private static void AddLeaderboardStore(IServiceCollection services, IConfiguration configuration)
+        private static void AddLeaderboardStore(
+            IServiceCollection services,
+            IConfiguration configuration,
+            ILogger logger)
         {
             // TODO - look at what can be extracted to generalise this
             if (configuration.Exists("Leaderboard:Store:wellKnown"))
@@ -70,6 +81,7 @@ namespace Nether.Web.Features.Leaderboard
                 switch (wellKnownType)
                 {
                     case "sql":
+                        logger.LogInformation("Leaderboard:Store: using 'Sql' store");
                         connectionString = scopedConfiguration["ConnectionString"];
                         services.AddTransient<ILeaderboardStore>(serviceProvider =>
                         {
@@ -88,7 +100,7 @@ namespace Nether.Web.Features.Leaderboard
             else
             {
                 // fall back to generic "factory"/"implementation" configuration
-                services.AddServiceFromConfiguration<ILeaderboardStore>(configuration, "Leaderboard:Store");
+                services.AddServiceFromConfiguration<ILeaderboardStore>(configuration, logger, "Leaderboard:Store");
             }
         }
 

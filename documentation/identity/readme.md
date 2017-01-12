@@ -30,7 +30,7 @@ export Facebook__AppToken="<your token>"
 ```
 
 ### Configuring users
-To add/configure users, modify the `Nether.Web/Features/Identity/Configuration/Users.cs` file. This currently has an in-memory list of users. This will be moved to a proper store implementation with APIs for configuring users in future.
+There is currently no API to add users (other than through the facebook custom grant flow). To add users to test with using the in-memory store, update the `Nether.Web/Features/Identity/Configuration/Users.cs` file. For other stores the temporary workaround is to directly add the user in the data store.
 
 ## Authenticating with Nether Identity
 The Nether Identity endpoint currently supports two means of authenticating: facebook user token and resource owner password (i.e. user name and password).

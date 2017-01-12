@@ -35,4 +35,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="CustomTag" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="82852d3c-01fe-49f3-8932-9f74fa89be33" ChangeDateTime="01/11/2017 15:22:42">
+    <Property Name="ElementName" Value="[dbo].[UserLogins].[IsActive]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UserLogins]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProviderType" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e1e8b7c1-1b19-4a04-9a89-288a32e996f3" ChangeDateTime="01/11/2017 15:22:50">
+    <Property Name="ElementName" Value="[dbo].[UserLogins].[Role]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UserLogins]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProviderId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a2e6911a-7fef-46e4-9c25-02ac161db6da" ChangeDateTime="01/11/2017 15:22:59">
+    <Property Name="ElementName" Value="[dbo].[UserLogins].[UserName]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[UserLogins]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProviderdData" />
+  </Operation>
 </Operations>

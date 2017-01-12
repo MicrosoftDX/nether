@@ -1,0 +1,8 @@
+﻿CREATE TABLE [dbo].[Users]
+(
+	[UserId] NVARCHAR(50) NOT NULL PRIMARY KEY,
+	[IsActive] BIT NOT NULL,
+	[Role] NVARCHAR(50)
+)
+
+GO

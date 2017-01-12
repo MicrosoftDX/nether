@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using IdentityServer4.Services.InMemory;
+using IdentityServer4.Models;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.Configuration;
@@ -23,17 +23,20 @@ namespace Nether.Web.Features.Identity
         public string GrantType => "fb-usertoken";
 
         private readonly IConfiguration _configuration;
-        private readonly ILogger<FacebookUserAccessTokenExtensionGrantValidator> _logger;
+        private readonly UserClaimsProvider _userClaimsProvider;
         private readonly IUserStore _userStore;
+        private readonly ILogger _logger;
 
         public FacebookUserAccessTokenExtensionGrantValidator(
             IConfiguration configuration,
-            ILoggerFactory loggerFactory,
-            IUserStore userStore)
+            IUserStore userStore,
+            UserClaimsProvider userClaimsProvider,
+            ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
-            _logger = loggerFactory.CreateLogger<FacebookUserAccessTokenExtensionGrantValidator>();
+            _userClaimsProvider = userClaimsProvider;
             _userStore = userStore;
+            _logger = loggerFactory.CreateLogger<FacebookUserAccessTokenExtensionGrantValidator>();
         }
 
         public async Task ValidateAsync(ExtensionGrantValidationContext context)
@@ -42,69 +45,79 @@ namespace Nether.Web.Features.Identity
 
             // TODO - refactor this code as there's a lot going on here!
 
-            var appToken = _configuration["Identity:Facebook:AppToken"];
-
-            var token = context.Request.Raw["token"];
-
-            // Call facebook graph api to validate the token
-
-            // TODO - reuse HttpClient
-            var client = new HttpClient()
+            try
             {
-                BaseAddress = new Uri("https://graph.facebook.com/"),
-                DefaultRequestHeaders =
+                var appToken = _configuration["Identity:Facebook:AppToken"];
+
+                var token = context.Request.Raw["token"];
+
+                // Call facebook graph api to validate the token
+
+                // TODO - reuse HttpClient
+                var client = new HttpClient()
+                {
+                    BaseAddress = new Uri("https://graph.facebook.com/"),
+                    DefaultRequestHeaders =
                 {
                     Accept =
                     {
                         new MediaTypeWithQualityHeaderValue("application/json")
                     }
                 }
-            };
-
-            var response = await client.GetAsync($"/debug_token?input_token={token}&access_token={appToken}");
-
-            dynamic body = await response.Content.ReadAsAsync<dynamic>();
-
-
-            if (body.data == null)
-            {
-                // Get here if (for example) the token is for a different application
-                var message = (string)body.error.message;
-                _logger.LogError("FacebookSignIn: error validating token: {0}", message);
-                context.Result = new GrantValidationResult(IdentityServer4.Models.TokenRequestErrors.InvalidRequest);
-                return;
-            }
-
-            bool isValid = (bool)body.data.is_valid;
-            var userId = (string)body.data.user_id;
-            if (!isValid)
-            {
-                var message = (string)body.data.error.message;
-                _logger.LogDebug("FacebookSignIn: invalid token: {0}", message);
-                context.Result = new GrantValidationResult(IdentityServer4.Models.TokenRequestErrors.InvalidRequest);
-                return;
-            }
-            _logger.LogDebug("FacebookSignIn: Signing in: {0}", userId);
-
-            // Look up the user
-            // TODO - fix this so not hard-coded to in-memory user list, not thread-safe, ...
-            var user = await _userStore.GetUserByFacebookIdAsync(userId);
-            if (user == null)
-            {
-                user = new User
-                {
-                    UserId = Guid.NewGuid().ToString(),
-                    Role = "player",
-                    IsActive = true,
-                    FacebookUserId = userId
                 };
-                await _userStore.SaveUserAsync(user);
+
+                var response = await client.GetAsync($"/debug_token?input_token={token}&access_token={appToken}");
+
+                dynamic body = await response.Content.ReadAsAsync<dynamic>();
+
+
+                if (body.data == null)
+                {
+                    // Get here if (for example) the token is for a different application
+                    var message = (string)body.error.message;
+                    _logger.LogError("FacebookSignIn: error validating token: {0}", message);
+                    context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
+                    return;
+                }
+
+                bool isValid = (bool)body.data.is_valid;
+                var userId = (string)body.data.user_id;
+                if (!isValid)
+                {
+                    var message = (string)body.data.error.message;
+                    _logger.LogDebug("FacebookSignIn: invalid token: {0}", message);
+                    context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
+                    return;
+                }
+                _logger.LogDebug("FacebookSignIn: Signing in: {0}", userId);
+
+                var user = await _userStore.GetUserByLoginAsync(LoginProvider.Facebook, userId);
+                if (user == null)
+                {
+                    user = new User
+                    {
+                        Role = RoleNames.Player,
+                        IsActive = true,
+                        Logins = new List<Login>
+                        {
+                            new Login
+                            {
+                                ProviderType = LoginProvider.Facebook,
+                                ProviderId = userId
+                            }
+                        }
+                    };
+                    await _userStore.SaveUserAsync(user);
+                }
+
+                var claims = await _userClaimsProvider.GetUserClaimsAsync(user);
+                context.Result = new GrantValidationResult(user.UserId, "nether-facebook", claims);
             }
-
-            var claims = await StoreBackedProfileService.GetUserClaimsAsync(user); // TODO move this helper to somewhere more sensible
-            context.Result = new GrantValidationResult(user.UserId, "nether-facebook", claims);
-
-            return;
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in ValidateAsync: {0}", ex);
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest, ex.Message);
+            }
         }
     }
 }

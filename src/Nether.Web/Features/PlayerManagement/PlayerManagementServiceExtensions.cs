@@ -15,7 +15,10 @@ namespace Nether.Web.Features.PlayerManagement
 {
     public static class PlayerManagementServiceExtensions
     {
-        public static IServiceCollection AddPlayerManagementServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddPlayerManagementServices(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ILogger logger)
         {
             // TODO - look at what can be extracted to generalise this
             if (configuration.Exists("PlayerManagement:Store:wellKnown"))
@@ -27,6 +30,7 @@ namespace Nether.Web.Features.PlayerManagement
                 switch (wellKnownType)
                 {
                     case "mongo":
+                        logger.LogInformation("PlayerManagement:Store: using 'mongo' store");
                         string databaseName = scopedConfiguration["DatabaseName"];
 
                         services.AddTransient<IPlayerManagementStore>(serviceProvider =>
@@ -37,6 +41,7 @@ namespace Nether.Web.Features.PlayerManagement
                         });
                         break;
                     case "sql":
+                        logger.LogInformation("PlayerManagement:Store: using 'sql' store");
                         services.AddTransient<IPlayerManagementStore>(serviceProvider =>
                         {
                             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -51,7 +56,7 @@ namespace Nether.Web.Features.PlayerManagement
             else
             {
                 // fall back to generic "factory"/"implementation" configuration
-                services.AddServiceFromConfiguration<IPlayerManagementStore>(configuration, "PlayerManagement:Store");
+                services.AddServiceFromConfiguration<IPlayerManagementStore>(configuration, logger, "PlayerManagement:Store");
             }
             return services;
         }

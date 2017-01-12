@@ -24,17 +24,20 @@ namespace Nether.Web
 {
     public class Startup
     {
-        private IHostingEnvironment HostingEnvironment { get; set; }
+        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly ILogger _logger;
 
-        public Startup(IHostingEnvironment env)
+        public Startup(IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            _logger = loggerFactory.CreateLogger<Startup>();
+            _hostingEnvironment = env;
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            HostingEnvironment = env;
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -91,16 +94,15 @@ namespace Nether.Web
             services.AddSingleton<ExceptionLoggingFilterAttribute>();
 
             // TODO make this conditional with feature switches
-            services.AddIdentityServices(Configuration, HostingEnvironment);
-            services.AddLeaderboardServices(Configuration);
-            services.AddPlayerManagementServices(Configuration);
-            services.AddAnalyticsServices(Configuration);
+            services.AddIdentityServices(Configuration, _logger, _hostingEnvironment);
+            services.AddLeaderboardServices(Configuration, _logger);
+            services.AddPlayerManagementServices(Configuration, _logger);
+            services.AddAnalyticsServices(Configuration, _logger);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             // TODO - this code was copied from Identity Server sample. Need to understand why the map is cleared!
