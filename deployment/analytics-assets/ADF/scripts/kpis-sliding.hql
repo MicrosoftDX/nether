@@ -1,3 +1,5 @@
+set mapred.reduce.tasks=1;
+
 -- Very raw event data straight from Azure Stream Analytics
 CREATE EXTERNAL TABLE IF NOT EXISTS rawevents(event STRING, version STRING, clientUtc STRING, clientyear SMALLINT, clientMonth SMALLINT, clientDay TINYINT, clientHour TINYINT, gamertag STRING)
 PARTITIONED BY (year int, month int, day int)
@@ -5,7 +7,7 @@ ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' lines terminated by '\n'
 STORED AS TEXTFILE
 TBLPROPERTIES("skip.header.line.count"="1");
 
-ALTER TABLE rawevents ADD IF NOT EXISTS PARTITION (year='${hiveconf:year}', month='${hiveconf:month}', day='${hiveconf:day}') location '${hiveconf:rawevents}/${hiveconf:year}/${hiveconf:month}/${hiveconf:day}';
+ALTER TABLE rawevents ADD IF NOT EXISTS PARTITION (year='${hiveconf:year}', month='${hiveconf:month}', day='${hiveconf:day}') location '${hiveconf:raweventsloc}/${hiveconf:year}/${hiveconf:month}/${hiveconf:day}';
 
 
 -- daily active users

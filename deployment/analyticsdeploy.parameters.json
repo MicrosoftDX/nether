@@ -5,20 +5,14 @@
         "eventHubName": {
             "value": "gameevents"
         },
-        "blobContainer": {
-            "value": "gamedata"
-        },
-        "inputBlobFolder": {
-            "value": "rawevents"
-        },
-        "outputBlobFolder": {
-            "value": "dailyactiveusers"
-        },
         "hiveScriptStorageAccountName": {
             "value": ""
         },
         "hiveScriptStorageAccountKey": {
             "value": ""
+        },
+        "hiveScriptFilePath": {
+            "value": "scripts/calcKPIs.hql"
         },
         "sqlServerAdminName": {
             "value": ""
@@ -26,8 +20,14 @@
         "sqlServerAdminPassword": {
             "value": ""
         },
-        "sharedStorageAccountSAS": {
-            "value": ""
+        "dbnameCollation": {
+            "value": "SQL_Latin1_General_CP1_CI_AS"
+        },
+        "dbnameEdition": {
+            "value": "Standard"
+        },
+        "dbnameRequestedServiceObjectiveName": {
+            "value": "S0"
         }
     }
 }
