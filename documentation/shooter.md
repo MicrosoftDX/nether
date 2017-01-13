@@ -1,3 +1,0 @@
-# Shooter Game
-
-[to do]
