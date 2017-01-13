@@ -133,18 +133,36 @@ namespace Nether.Web.Features.Identity
                                 builder.UseInMemoryDatabase();
                             }
                         });
-                        services.AddSingleton<IdentityContext>(serviceProvider =>
+                        bool initialised = false;
+                        object synclock = new object();
+                        services.AddTransient<IdentityContext>(serviceProvider =>
                         {
-                            logger.LogInformation("Identity:Store: Adding in-memory seed users...");
+                            // one-off initialisation
+                            if (!initialised)
+                            {
+                                lock (synclock)
+                                {
+                                    if (!initialised)
+                                    {
+                                        logger.LogInformation("Identity:Store: Adding in-memory seed users...");
 
+                                        // construct the singleton so that we can provide seeded users for testing
+                                        var seedContext = new IdentityContext(
+                                                serviceProvider.GetService<ILoggerFactory>(),
+                                                serviceProvider.GetService<IdentityContextOptions>());
+                                        var seedUsers = InMemoryUsersSeed.Get(serviceProvider.GetService<IPasswordHasher>(), false);
+                                        seedContext.Users.AddRange(seedUsers.Select(IdentityMappingExtensions.Map));
+                                        seedContext.SaveChanges();
+                                        logger.LogInformation("Identity:Store: Adding in-memory seed users... complete");
+
+                                        initialised = true;
+                                    }
+                                }
+                            }
                             // construct the singleton so that we can provide seeded users for testing
                             var context = new IdentityContext(
                                     serviceProvider.GetService<ILoggerFactory>(),
                                     serviceProvider.GetService<IdentityContextOptions>());
-                            var seedUsers = InMemoryUsersSeed.Get(serviceProvider.GetService<IPasswordHasher>(), false);
-                            context.Users.AddRange(seedUsers.Select(IdentityMappingExtensions.Map));
-                            context.SaveChanges();
-                            logger.LogInformation("Identity:Store: Adding in-memory seed users... complete");
 
                             return context;
                         });
