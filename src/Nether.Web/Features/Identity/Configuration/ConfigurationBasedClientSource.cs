@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Nether.Web.Features.Identity.Configuration
@@ -25,6 +26,32 @@ namespace Nether.Web.Features.Identity.Configuration
             {
                 yield return ParseClient(clientConfig);
             }
+        }
+        /// <summary>
+        /// Look up the client secret for the specified clientId in config
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
+        public string GetClientSecret(IConfiguration configuration, string clientId)
+        {
+            foreach (var configClient in configuration.GetChildren())
+            {
+                var configClientId = configClient["Id"];
+                if (configClientId == clientId)
+                {
+                    var secrets = ParseStringArray(configClient.GetSection("ClientSecrets")).ToArray();
+                    if (secrets != null && secrets.Length > 0)
+                    {
+                        return secrets[0];
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            return null;
         }
 
         private Client ParseClient(IConfiguration clientConfig)
@@ -80,6 +107,7 @@ namespace Nether.Web.Features.Identity.Configuration
 
             return client;
         }
+
 
         private T ParseEnum<T>(string value)
         {

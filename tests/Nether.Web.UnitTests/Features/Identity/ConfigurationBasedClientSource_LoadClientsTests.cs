@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging.Abstractions;
 using Nether.Web.Features.Identity.Configuration;
+using Nether.Web.UnitTests.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,7 @@ using Xunit;
 
 namespace Nether.Web.UnitTests.Features.Identity
 {
-    public class ConfigurationBasedClientSourceTests : IDisposable
+    public class ConfigurationBasedClientSource_LoadClientsTests : JsonConfigTestBase
     {
         [Fact]
         public void ClientIdIsParsed()
@@ -346,7 +347,7 @@ namespace Nether.Web.UnitTests.Features.Identity
         //    },
         //}";
 
-        private List<IdentityServer4.Models.Client> GetClientsFromJson(string json)
+        private List<Client> GetClientsFromJson(string json)
         {
             var config = LoadConfig(json);
 
@@ -354,25 +355,6 @@ namespace Nether.Web.UnitTests.Features.Identity
             var clients = source.LoadClients(config.GetSection("Identity:Clients"))
                 .ToList();
             return clients;
-        }
-
-        private string _filename;
-        private IConfiguration LoadConfig(string json)
-        {
-            // TODO - need to clean this up!
-            _filename = Path.GetTempFileName();
-
-            File.WriteAllText(_filename, json);
-
-            return new ConfigurationBuilder()
-                .AddJsonFile(_filename)
-                .Build();
-        }
-        public void Dispose()
-        {
-            // clean up temporary config file
-            if (File.Exists(_filename))
-                File.Delete(_filename);
         }
     }
 }
