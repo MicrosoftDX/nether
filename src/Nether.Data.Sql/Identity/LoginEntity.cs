@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Nether.Data.Sql.Identity
 {
-    [DebuggerDisplay("Login (UserId '{UserId}', Type '{ProviderType}', Id '{ProviderId}')")]
+    [DebuggerDisplay("LoginEntity (UserId '{UserId}', Type '{ProviderType}', Id '{ProviderId}')")]
     public class LoginEntity
     {
         public string ProviderType { get; set; }

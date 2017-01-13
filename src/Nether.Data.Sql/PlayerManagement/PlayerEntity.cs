@@ -12,7 +12,7 @@ using System.Diagnostics;
 
 namespace Nether.Data.Sql.PlayerManagement
 {
-    [DebuggerDisplay("Player (tag '{Gamertag}', UserId '{UserId'})")]
+    [DebuggerDisplay("PlayerEntity (tag '{Gamertag}', UserId '{UserId'})")]
     public class PlayerEntity
     {
         public string UserId { get; set; }

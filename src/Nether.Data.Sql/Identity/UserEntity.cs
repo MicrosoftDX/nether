@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace Nether.Data.Sql.Identity
 {
-    [DebuggerDisplay("User ({UserId})")]
+    [DebuggerDisplay("UserEntity ({UserId})")]
     public class UserEntity
     {
         public string UserId { get; set; }
