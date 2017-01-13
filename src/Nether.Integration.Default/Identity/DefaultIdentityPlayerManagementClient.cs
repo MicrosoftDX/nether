@@ -25,6 +25,9 @@ namespace Nether.Integration.Identity
         private const string ClientId = "nether-identity";
         private readonly string _clientSecret;
 
+        private object _healthSyncObject = new object();
+        private bool _healthy = false;
+
         public DefaultIdentityPlayerManagementClient(
             string baseUri, // e.g. localhost:5000
             string clientSecret,
@@ -62,20 +65,23 @@ namespace Nether.Integration.Identity
                 _logger.LogInformation("Attempt to get gamertag from userid returned status code {0}", response.StatusCode);
                 if (retryAuth) // TODO - need to think about thread safety here...
                 {
-                    _logger.LogInformation("Retrying auth...");
+                    lock (_healthSyncObject)
+                    {
+                        _logger.LogInformation("Retrying auth...");
 
-                    var tokenResponse = await GetTokenAsync();
-                    if (tokenResponse.IsError)
-                    {
-                        _logger.LogCritical("Failed to get token to call PlayerManagement!");
-                        throw new Exception("Failed to get token to call PlayerManagement - unable to look up gamertags");
-                    }
-                    else
-                    {
-                        _logger.LogInformation("Success - retrying API call");
-                        _httpClient.SetBearerToken(tokenResponse.AccessToken);
-                        // retry the API call!
-                        return await GetGamertagForUserIdInternalAsync(userId, retryAuth: false); // set retryAuth to false to avoid infinite loop retrying
+                        var tokenResponse = await GetTokenAsync();
+                        if (tokenResponse.IsError)
+                        {
+                            _logger.LogCritical("Failed to get token to call PlayerManagement!");
+                            throw new Exception("Failed to get token to call PlayerManagement - unable to look up gamertags");
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Success - retrying API call");
+                            _httpClient.SetBearerToken(tokenResponse.AccessToken);
+                            // retry the API call!
+                            return await GetGamertagForUserIdInternalAsync(userId, retryAuth: false); // set retryAuth to false to avoid infinite loop retrying
+                        }
                     }
                 }
                 else
