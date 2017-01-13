@@ -162,6 +162,43 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
+        /// Adds/Update extend data to a player. You have to be an administrator to perform this action.
+        /// </summary>
+        /// <param name="newPlayer">Player data</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.Created, Description = "player extended information updated")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "user has no gamertag")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [Route("playersextended")]
+        [HttpPost]
+        public async Task<ActionResult> PostExtended([FromBody]PlayerPostRequestModel newPlayer)
+        {
+            if (string.IsNullOrWhiteSpace(newPlayer.Gamertag))
+            {
+                return base.BadRequest(); //TODO: return error info in body
+            }
+
+            // Save player
+            //var player = new Player
+            //{
+            //    UserId = newPlayer.UserId ?? Guid.NewGuid().ToString(),
+            //    Gamertag = newPlayer.Gamertag,
+            //    Country = newPlayer.Country,
+            //    CustomTag = newPlayer.CustomTag
+            //};
+            //await _store.SavePlayerAsync(player);
+
+            //// Return result
+            //string location = Url.Action(
+            //    nameof(GetPlayer),
+            //    ControllerName,
+            //    new { gamertag = player.Gamertag });
+            //return base.Created(location, new { gamertag = player.Gamertag });
+
+            return base.Ok();
+        }
+
+        /// <summary>
         /// Gets player information by player's gamer tag. You have to be an administrator to perform this action.
         /// </summary>
         /// <param name="gamertag">Gamer tag</param>
@@ -178,6 +215,26 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Return result
             return Ok(PlayerGetResponseModel.FromPlayer(player));
+        }
+
+        /// <summary>
+        /// Gets extended player information by player's gamer tag. You have to be an administrator to perform this action.
+        /// </summary>
+        /// <param name="gamertag">Gamer tag</param>
+        /// <returns>Player information</returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerGetResponseModel))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "player not found")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpGet("playersextended/{gamertag}")]
+        public async Task<ActionResult> GetPlayerExtended(string gamertag)
+        {
+            // Call data store
+            //var player = await _store.GetPlayerDetailsAsync(gamertag);
+            //if (player == null) return NotFound();
+
+            // Return result
+            //return Ok(PlayerGetResponseModel.FromPlayer(player));
+           return Ok();
         }
 
         /// <summary>
