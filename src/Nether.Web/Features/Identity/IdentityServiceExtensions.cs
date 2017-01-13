@@ -38,7 +38,7 @@ namespace Nether.Web.Features.Identity
         }
 
         private static void ConfigureIdentityPlayerMangementClient(
-            IServiceCollection services, 
+            IServiceCollection services,
             IConfiguration configuration,
             ILogger logger)
         {
@@ -55,7 +55,7 @@ namespace Nether.Web.Features.Identity
 
                         // could simplify this by requiring the client secret in the properties for PlayerManagementClient, but that duplicates config
                         var clientSource = new ConfigurationBasedClientSource(logger);
-                        var clientSecret = clientSource.GetClientSecret(configuration.GetSection("Identity:Clients"), "nether-identity"); 
+                        var clientSecret = clientSource.GetClientSecret(configuration.GetSection("Identity:Clients"), "nether-identity");
                         if (string.IsNullOrEmpty(clientSecret))
                         {
                             throw new Exception("Unable to determine the client secret for nether-identity");
@@ -82,9 +82,9 @@ namespace Nether.Web.Features.Identity
         }
 
         private static void ConfigureIdentityServer(
-            IServiceCollection services, 
-            IConfiguration configuration, 
-            ILogger logger, 
+            IServiceCollection services,
+            IConfiguration configuration,
+            ILogger logger,
             IHostingEnvironment hostingEnvironment)
         {
             if (hostingEnvironment.EnvironmentName != "Development")

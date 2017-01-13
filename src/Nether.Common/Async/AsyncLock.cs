@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -28,14 +31,14 @@ namespace Nether.Common.Async
         }
         public struct Releaser : IDisposable
         {
-            private readonly AsyncLock m_toRelease;
+            private readonly AsyncLock _toRelease;
 
-            internal Releaser(AsyncLock toRelease) { m_toRelease = toRelease; }
+            internal Releaser(AsyncLock toRelease) { _toRelease = toRelease; }
 
             public void Dispose()
             {
-                if (m_toRelease != null)
-                    m_toRelease._semaphore.Release();
+                if (_toRelease != null)
+                    _toRelease._semaphore.Release();
             }
         }
     }
