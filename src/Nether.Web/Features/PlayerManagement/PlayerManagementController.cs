@@ -61,7 +61,28 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
-        /// Updates information about the current player
+        /// Gets the extended player information from currently logged in user
+        /// </summary>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerGetResponseModel))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "Extend player information not found")]
+        [Authorize(Roles = RoleNames.Player)]
+        [HttpGet("playerextended")]
+        public async Task<ActionResult> GetCurrentPlayerExtended()
+        {
+            string userId = User.GetId();
+
+            // Call data store
+            //var player = await _store.GetPlayerDetailsByUserIdAsync(userId);
+            //if (player == null) return NotFound();
+
+            // Return result
+            //return Ok(PlayerGetResponseModel.FromPlayer(player));
+            return Ok();
+        }
+
+        /// <summary>
+        ///  Updates information about the current player
         /// </summary>
         /// <param name="player">Player data</param>
         /// <returns></returns>
@@ -80,6 +101,30 @@ namespace Nether.Web.Features.PlayerManagement
             // Return result
             return new NoContentResult();
         }
+
+        /// <summary>
+        /// Updates extended (e.g. JSON) information about the current player
+        /// </summary>
+        /// <param name="player">Player data</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.NoContent, Description = "Extend Player information (e.g. JSON) updated successfully")]
+        [Authorize(Roles = RoleNames.Player)]
+        [Route("playerextended")]
+        [HttpPut]
+        public async Task<ActionResult> PutCurrentPlayerExtended([FromBody]PlayerPutRequestModel player)
+        {
+            string userId = User.GetId();
+
+            // Update extended player information
+
+
+            // Return result
+            return new NoContentResult();
+        }
+
+        ////////////////////////////////////
+        // Implementation of the Admin API
+        ///////////////////////////////////
 
         /// <summary>
         /// Creates or updates information about a player. You have to be an administrator to perform this action.
