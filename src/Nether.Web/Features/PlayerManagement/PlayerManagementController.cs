@@ -35,6 +35,20 @@ namespace Nether.Web.Features.PlayerManagement
             _log = log;
         }
 
+
+        [ApiExplorerSettings(IgnoreApi = true)] // Suppress this from Swagger etc as it's designed to serve internal needs currently
+        [Authorize(Policy = PolicyName.NetherIdentityClientId)] // only allow this to be called from the 'nether-identity' client
+        [HttpGet("playertag/{playerid}")]
+        public async Task<ActionResult> GetGamertagFromPlayerId(string playerid)
+        {
+            // Call data store
+            var player = await _store.GetPlayerDetailsByUserIdAsync(playerid);
+
+            // Return result
+            return Ok(new { gamertag = player?.Gamertag });
+        }
+
+
         // Implementation of the player API
         // There are two views:
         //  1. By Player
@@ -186,22 +200,6 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(GroupListResponseModel.FromGroups(groups));
         }
 
-        // ********************************** THIS endpoint is a temporary measure to quickly unblock auth, but needs to be removed ***************************
-        [ApiExplorerSettings(IgnoreApi = true)]
-        [HttpGet("EVIL/HELPER/tagfromid/{playerid}")]
-        public async Task<ActionResult> EVIL_HELPER_GetTagFromPlayerId(string playerid)
-        {
-            // Call data store
-            var player = await _store.GetPlayerDetailsByUserIdAsync(playerid);
-
-            if (player == null)
-            {
-                return NotFound();
-            }
-
-            // Return result
-            return Ok(player.Gamertag);
-        }
 
         /// <summary>
         /// Adds player to a group.

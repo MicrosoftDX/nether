@@ -27,8 +27,7 @@ namespace Nether.Web.Features.Identity
         public static IServiceCollection AddIdentityServices(
             this IServiceCollection services,
             IConfiguration configuration,
-            ILogger logger
-,
+            ILogger logger,
             IHostingEnvironment hostingEnvironment)
         {
             ConfigureIdentityPlayerMangementClient(services, configuration, logger);
@@ -38,7 +37,10 @@ namespace Nether.Web.Features.Identity
             return services;
         }
 
-        private static void ConfigureIdentityPlayerMangementClient(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        private static void ConfigureIdentityPlayerMangementClient(
+            IServiceCollection services, 
+            IConfiguration configuration,
+            ILogger logger)
         {
             if (configuration.Exists("Identity:PlayerManagementClient:wellKnown"))
             {
@@ -50,10 +52,20 @@ namespace Nether.Web.Features.Identity
                     case "default":
                         var baseUri = scopedConfiguration["BaseUrl"];
                         logger.LogInformation("Identity:PlayerManagementClient: using 'default' client with BaseUrl '{0}'", baseUri);
+
+                        // could simplify this by requiring the client secret in the properties for PlayerManagementClient, but that duplicates config
+                        var clientSource = new ConfigurationBasedClientSource(logger);
+                        var clientSecret = clientSource.GetClientSecret(configuration.GetSection("Identity:Clients"), "nether-identity"); 
+                        if (string.IsNullOrEmpty(clientSecret))
+                        {
+                            throw new Exception("Unable to determine the client secret for nether-identity");
+                        }
+
                         services.AddSingleton<IIdentityPlayerManagementClient, DefaultIdentityPlayerManagementClient>(serviceProvider =>
                         {
                             return new DefaultIdentityPlayerManagementClient(
                                 baseUri,
+                                clientSecret,
                                 serviceProvider.GetService<ILoggerFactory>()
                                 );
                         });
@@ -69,7 +81,11 @@ namespace Nether.Web.Features.Identity
             }
         }
 
-        private static void ConfigureIdentityServer(IServiceCollection services, IConfiguration configuration, ILogger logger, IHostingEnvironment hostingEnvironment)
+        private static void ConfigureIdentityServer(
+            IServiceCollection services, 
+            IConfiguration configuration, 
+            ILogger logger, 
+            IHostingEnvironment hostingEnvironment)
         {
             if (hostingEnvironment.EnvironmentName != "Development")
             {
@@ -77,7 +93,8 @@ namespace Nether.Web.Features.Identity
             }
 
             var clientSource = new ConfigurationBasedClientSource(logger);
-            var clients = clientSource.LoadClients(configuration.GetSection("Identity:Clients"));
+            var clients = clientSource.LoadClients(configuration.GetSection("Identity:Clients"))
+                                .ToList();
 
             services.AddIdentityServer(options =>
             {
@@ -124,7 +141,7 @@ namespace Nether.Web.Features.Identity
                             var context = new IdentityContext(
                                     serviceProvider.GetService<ILoggerFactory>(),
                                     serviceProvider.GetService<IdentityContextOptions>());
-                            var seedUsers = InMemoryUsersSeed.Get(serviceProvider.GetService<IPasswordHasher>());
+                            var seedUsers = InMemoryUsersSeed.Get(serviceProvider.GetService<IPasswordHasher>(), false);
                             context.Users.AddRange(seedUsers.Select(IdentityMappingExtensions.Map));
                             context.SaveChanges();
                             logger.LogInformation("Identity:Store: Adding in-memory seed users... complete");

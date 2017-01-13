@@ -20,6 +20,7 @@ namespace Nether.Web.Features.Identity
         {
             _userStore = userStore;
         }
+
         [Authorize(Roles = RoleNames.Admin)]
         [HttpGet("user/{userid}")]
         public async Task<IActionResult> GetUser(string userid)
@@ -32,6 +33,5 @@ namespace Nether.Web.Features.Identity
 
             return Ok(UserResponseModel.MapFrom(user));
         }
-
     }
 }

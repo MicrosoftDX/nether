@@ -85,7 +85,7 @@ namespace Nether.Web.Features.Identity
                 if (!isValid)
                 {
                     var message = (string)body.data.error.message;
-                    _logger.LogDebug("FacebookSignIn: invalid token: {0}", message);
+                    _logger.LogError("FacebookSignIn: invalid token: {0}", message);
                     context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
                     return;
                 }

@@ -98,6 +98,17 @@ namespace Nether.Web
             services.AddLeaderboardServices(Configuration, _logger);
             services.AddPlayerManagementServices(Configuration, _logger);
             services.AddAnalyticsServices(Configuration, _logger);
+
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
+                    PolicyName.NetherIdentityClientId,
+                    policy => policy.RequireClaim(
+                        "client_id",
+                        "nether-identity"
+                        ));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -185,10 +185,13 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task SavePlayerAsync(Player player)
         {
-            // add only of the player does not exist
-            PlayerEntity entity = player.UserId == null ? null : await _context.Players.FindAsync(player.Gamertag);
+            // add only if the player does not exist
+            PlayerEntity entity = player.UserId == null 
+                ? null 
+                : await _context.Players.SingleOrDefaultAsync(p=>p.Gamertag == player.Gamertag);
             if (entity == null)
             {
+                _logger.LogDebug("Add player: UserId '{0}', Gamertag '{1}'", player.UserId, player.Gamertag);
                 await _context.Players.AddAsync(new PlayerEntity
                 {
                     UserId = player.UserId,
@@ -200,6 +203,7 @@ namespace Nether.Data.Sql.PlayerManagement
             }
             else
             {
+                _logger.LogDebug("Update player: UserId '{0}', Gamertag '{1}'", player.UserId, player.Gamertag);
                 entity.Gamertag = player.Gamertag;
                 entity.Country = player.Country;
                 entity.CustomTag = player.CustomTag;
