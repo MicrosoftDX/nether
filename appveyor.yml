@@ -3,4 +3,4 @@ build_script:
 - ps: ./RunCodeFormatter.ps1
 - ps: ./build.ps1
 test_script:
-- ps: ./test.ps1
+- ps: ./run-unit-tests.ps1

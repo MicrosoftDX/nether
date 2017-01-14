@@ -20,7 +20,7 @@ do
       testExitCode=$lastexit
     fi
   fi
-done < "build/test-order.txt"
+done < "build/integration-test-order.txt"
 
 if [ $testExitCode -ne 0 ]
 then

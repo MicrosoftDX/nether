@@ -21,7 +21,7 @@
             {
                 "taskName": "test",
                 "args": [
-                    "${workspaceRoot}\\test.ps1"
+                    "${workspaceRoot}\\run-unit-tests.ps1"
                 ],
                 "suppressTaskName": true,
                 "isTestCommand": true,
@@ -53,7 +53,7 @@
             {
                 "taskName": "test",
                 "args": [
-                    "${workspaceRoot}/test.sh"
+                    "${workspaceRoot}/run-unit-tests.sh"
                 ],
                 "suppressTaskName": true,
                 "isTestCommand": true,
@@ -84,7 +84,7 @@
             {
                 "taskName": "test",
                 "args": [
-                    "${workspaceRoot}/test.sh"
+                    "${workspaceRoot}/run-unit-tests.sh"
                 ],
                 "suppressTaskName": true,
                 "isTestCommand": true,
