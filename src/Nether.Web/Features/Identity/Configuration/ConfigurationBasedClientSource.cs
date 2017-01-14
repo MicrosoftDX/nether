@@ -35,36 +35,29 @@ namespace Nether.Web.Features.Identity.Configuration
         /// <returns></returns>
         public string GetClientSecret(IConfiguration configuration, string clientId)
         {
-            foreach (var configClient in configuration.GetChildren())
+            var configClient = configuration.GetSection(clientId);
+            if (configClient != null)
             {
-                var configClientId = configClient["Id"];
-                if (configClientId == clientId)
+                var secrets = ParseStringArray(configClient.GetSection("ClientSecrets")).ToArray();
+                if (secrets != null && secrets.Length > 0)
                 {
-                    var secrets = ParseStringArray(configClient.GetSection("ClientSecrets")).ToArray();
-                    if (secrets != null && secrets.Length > 0)
-                    {
-                        return secrets[0];
-                    }
-                    else
-                    {
-                        return null;
-                    }
+                    return secrets[0];
                 }
             }
             return null;
         }
 
-        private Client ParseClient(IConfiguration clientConfig)
+        private Client ParseClient(IConfigurationSection clientConfig)
         {
-            var client = new Client();
+            var client = new Client
+            {
+                ClientId = clientConfig.Key
+            };
 
             foreach (var configValue in clientConfig.GetChildren())
             {
                 switch (configValue.Key)
                 {
-                    case "Id":
-                        client.ClientId = configValue.Value;
-                        break;
                     case "Name":
                         client.ClientName = configValue.Value;
                         break;

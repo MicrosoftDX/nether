@@ -25,14 +25,14 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
-                'Id': 'an-id'
+        'Clients': {
+            'a-client' : {
+                'Name': 'A client'
             },
-            {
-                'Id': 'client-id'
+            'client-id' : {
+                'Name': 'Another Client'
             }
-        ]
+        }
     },
 }";
             var clientSecret = GetClientSecretFromJson(json, "random-id");
@@ -46,15 +46,15 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
-                'Id': 'an-id',
+        'Clients': {
+            'a-client' : {
+                'Name': 'A client',
                 'ClientSecrets': [ 'wibble' ]
             },
-            {
-                'Id': 'client-id'
+            'client-id' : {
+                'Name': 'Another Client'
             }
-        ]
+        }
     },
 }";
             var clientSecret = GetClientSecretFromJson(json, "client-id");
@@ -69,15 +69,15 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
-                'Id': 'an-id'
+        'Clients': {
+            'a-client' : {
+                'Name': 'A client'
             },
-            {
-                'Id': 'client-id',
+            'client-id' : {
+                'Name': 'Another Client',
                 'ClientSecrets': [ 'wibble' ]
             }
-        ]
+        }
     },
 }";
             var clientSecret = GetClientSecretFromJson(json, "client-id");

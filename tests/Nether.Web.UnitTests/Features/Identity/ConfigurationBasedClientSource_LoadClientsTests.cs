@@ -25,11 +25,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
-                'Id': 'client-id'
+        'Clients': {
+            'client-id': {
+                'Name' : 'wibble'
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -47,11 +47,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'Name': 'client-name'
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -70,11 +70,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'AllowedGrantTypes': ['grant1', 'grant2']
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -94,11 +94,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'RedirectUris': ['http://localhost:12345', 'http://example.com']
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -117,11 +117,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'PostLogoutRedirectUris': ['http://localhost:12345/loggedout', 'http://example.com/done']
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -140,11 +140,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'AccessTokenType': 'Reference'
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -161,11 +161,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'AllowAccessTokensViaBrowser': true
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -182,11 +182,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'AllowedCorsOrigins': ['http://localhost:12345/', 'http://example.com/']
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -208,12 +208,12 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'Id': 'client-id',
                 'SomeRandomProperty': 'wibble'
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -234,11 +234,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'ClientSecrets': ['test', 'test2']
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -257,11 +257,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'AllowedScopes': ['scope1', 'scope2']
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -283,9 +283,8 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
-                'Id': 'client1',
+        'Clients': {
+            'client1': {
                 'Name': 'Client 1',
                 'AllowedGrantTypes': [ 'hybrid', 'password', 'fb-usertoken' ],
                 'RedirectUris': [ 'http://localhost:5000/signin-oidc' ],
@@ -293,11 +292,10 @@ namespace Nether.Web.UnitTests.Features.Identity
                 'ClientSecrets': [ 'test' ], 
                 'AllowedScopes': [ 'openid', 'profile' ]
             },
-            {
-                'Id': 'client2',
+            'client2': {
                 'Name': 'Client 2',
             },
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -328,24 +326,6 @@ namespace Nether.Web.UnitTests.Features.Identity
             Assert.Equal("client2", client2.ClientId);
             Assert.Equal("Client 2", client2.ClientName);
         }
-
-
-        //        var json = @"
-        //{
-        //    'Identity': {
-        //        'Clients': [
-        //          {
-        //            'Id': 'devclient',
-        //            'Name': 'Dev Client',
-        //            'AllowedGrantTypes': [ 'hybrid', 'password', 'fb-usertoken' ],
-        //            'RedirectUris': [ 'http://localhost:5000/signin-oidc' ],
-        //            'PostLogoutRedirectUris': [ 'http://localhost:5000/' ],
-        //            'ClientSecrets': [ 'devsecret' ], // TODO: should this be plain, or Sha-hashed?
-        //            'AllowedScopes': [ 'openid', 'profile', 'nether-all' ]
-        //        }
-        //        ]
-        //    },
-        //}";
 
         private List<Client> GetClientsFromJson(string json)
         {
