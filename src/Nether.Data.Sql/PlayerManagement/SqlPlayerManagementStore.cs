@@ -219,5 +219,15 @@ namespace Nether.Data.Sql.PlayerManagement
         {
             throw new NotSupportedException();
         }
+
+        public Task SavePlayerExtendedAsync(PlayerExtended player)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PlayerExtended> GetPlayerDetailsExtendedAsync(string gamertag)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
