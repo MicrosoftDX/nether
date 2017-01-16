@@ -220,14 +220,33 @@ namespace Nether.Data.Sql.PlayerManagement
             throw new NotSupportedException();
         }
 
-        public Task SavePlayerExtendedAsync(PlayerExtended player)
+        public async Task SavePlayerExtendedAsync(PlayerExtended player)
         {
-            throw new NotImplementedException();
+            // add only of the playerextended does not exist
+            PlayerExtendedEntity entity = player.UserId == null ? null : await _context.PlayersExtended.FindAsync(player.Gamertag);
+            if (entity == null)
+            {
+                await _context.PlayersExtended.AddAsync(new PlayerExtendedEntity
+                {
+                    UserId = player.UserId,
+                    Gamertag = player.Gamertag,
+                    ExtendedInformation = player.ExtendedInformation
+                });
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                entity.Gamertag = player.Gamertag;
+                entity.ExtendedInformation = player.ExtendedInformation;
+                await _context.SaveChangesAsync();
+            }
+                  
         }
 
-        public Task<PlayerExtended> GetPlayerDetailsExtendedAsync(string gamertag)
+        public async Task<PlayerExtended> GetPlayerDetailsExtendedAsync(string gamertag)
         {
-            throw new NotImplementedException();
+            PlayerExtendedEntity player = await _context.PlayersExtended.SingleOrDefaultAsync(p => p.Gamertag.Equals(gamertag));
+            return player?.ToPlayerExtended();
         }
     }
 }

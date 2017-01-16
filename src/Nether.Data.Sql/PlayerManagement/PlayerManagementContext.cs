@@ -19,6 +19,7 @@ namespace Nether.Data.Sql.PlayerManagement
         public DbSet<PlayerGroupEntity> PlayerGroups { get; set; }
         public DbSet<PlayerEntity> Players { get; set; }
         public DbSet<GroupEntity> Groups { get; set; }
+        public DbSet<PlayerExtendedEntity> PlayersExtended { get; set; }
 
         public PlayerManagementContext(string connectionString, ILoggerFactory loggerFactory)
         {
@@ -44,6 +45,9 @@ namespace Nether.Data.Sql.PlayerManagement
             builder.Entity<PlayerEntity>()
                 .HasKey(p => p.Gamertag);
 
+            builder.Entity<PlayerExtendedEntity>()
+                .HasKey(p => p.Gamertag);
+
             builder.Entity<GroupEntity>()
                 .HasKey(g => g.Name);
 
@@ -51,6 +55,7 @@ namespace Nether.Data.Sql.PlayerManagement
             builder.Entity<PlayerGroupEntity>().ForSqlServerToTable("PlayerGroups");
             builder.Entity<PlayerEntity>().ForSqlServerToTable("Players");
             builder.Entity<GroupEntity>().ForSqlServerToTable("Groups");
+            builder.Entity<PlayerExtendedEntity>().ForSqlServerToTable("PlayersExtended");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
