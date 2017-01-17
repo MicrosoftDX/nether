@@ -22,7 +22,8 @@
                         "type": "BlobSource"
                     },
                     "sink": {
-                        "type": "SqlSink"
+                        "type": "SqlSink",
+                        "sqlWriterCleanupScript": "$$Text.Format('DELETE FROM DailyActiveUsers WHERE Year = \\'{0:yyyy}\\' AND Month = \\'{1:%M} AND Day < \\'{1:%d}\\'', WindowStart, WindowStart, Date.AddDays(WindowStart, -1))"
                     }
                 },
                 "scheduler": {

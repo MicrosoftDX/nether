@@ -133,26 +133,36 @@ The ADF here makes use of 3 types of components:
 
 1. Upload the Hive script [kpis-sliding.hql](../deployment/analytics-assets/ADF/scripts/kpis-sliding.hql) into any blob storage account.
 2. Configure the following parameters in the parameters file [analyticsdeploy.parameters.json](../deployment/analyticsdeploy.parameters.json):
-   * hiveScriptStorageAccountName
-   * hiveScriptStorageAccountKey
-   * hiveScriptFilePath, e.g. [container]/[file-path]: file path 
+   * eventHubName: by default set to `gameevents`
+   * hiveScriptStorageAccountName: name of storage account where you have uploaded the aforementioned Hive script kpis-sliding.hql
+   * hiveScriptStorageAccountKey: key of corresponding storage account
+   * hiveScriptFilePath, e.g. [container]/[file-path]: container and file path of hive script
+   * login credentials of the to-be-created Azure SQL DB
+   * further properties of the Azure SQL DB - still tbd
+
 3. Deploy the ARM template [analyticsdeploy.json](../deployment/analyticsdeploy.json) with its parameters file [analyticsdeploy.parameters.json](../deployment/analyticsdeploy.parameters.json). This will deploy the following:
+```
+azure group create -n <resource-group> -l <location>
+azure group deployment create -f "<path-to-ARM-template>\analyticsdeploy.json" -e "<path-to-ARM-parameters-file>\analyticsdeploy.parameters.json" -g <resource-group> -n <deployment-name>
+```
    * Event hub to ingest the incoming raw game events
    * Stream analytics jobs: ccu (concurrent users) and rawdata (raw data into blob)
    * SQL DB for two purposes:
       * storing final tables `dailyactiveusers` and `monthlyactiveusers`
       * storing Hive metadata
    * Storage account for raw data and hive tables.
-4. Deploy data factory that is not yet included in the ARM template:
-   1. Configure the linked services:
-      * storageLinkedService: replace &lt;storage-account-name&gt; and &lt;storage-account-key&gt; accordingly with the storage account created from the ARM template.
-      * sqlLinkedService: replace &lt;sql-server-name&gt;, &lt;sql-database-name&gt;, &lt;admin-name&gt; and &lt;password&gt; according to the Azure SQL DB provisioned by the ARM template.
-   2. Replace the following parameters in the pipeline file [calcKPIs-sliding.json](../deployment/analytics-assets/ADF/Pipelines/calcKPIs-sliding.json):
-      * script-container-name: name of container in which the Hive script is stored.
-      * script-file-path: path of hive script.
-      * container-name: name of container in which the raw data is stored. By default: gameevents
-      * storage-account-name: name of storage account that has been provisioned by the ARM template.
-   3. Replace the following parameters in the PowerShell script [deployADF.ps1](../deployment/analytics-assets/ADF/scripts/deployADF.ps1):
-      * resourceGrp: name of the resource group in which all resources have been provisioned to by the ARM template
-      * dfName: name for the data factory
-   4. Run the PowerShell script [deployADF.ps1](../deployment/analytics-assets/ADF/scripts/deployADF.ps1).
+   ![Resources deployed by the ARM template deployment](images/analytics/analytics-arm-deployment.jpg)
+
+4. Create tables in Azure SQL DB: Run [CreateTables.sql](../deployment/analytics-assets/ADF/scripts/CreateTables.sql) on the Azure SQL DB that has just been created by the ARM template.
+   * In Visual Studio Code, make sure that you have installed the [mssql extension](https://marketplace.visualstudio.com/items?itemName=ms-mssql.mssql). To install, launch VS Code Quick Open (Ctrl+P), paste the following command, and press enter:
+   ```ext install mssql```
+   * Press F1 --> type "sql" --> select **MS SQL: Connect**. Alternatively, hit Ctrl+Shift+C.
+   * Type in the required connection information, e.g. Azure SQL Server, database and login credentials.
+   * Open the sql query [CreateTables.sql](../deployment/analytics-assets/ADF/scripts/CreateTables.sql). Press F1 --> type "sql" --> select **MS SQL: Execute Query**. Alternatively, hit Ctrl+Shift+E.
+5. Start the stream analytics jobs `rawdata` and `ccu` as shown below:
+   ![Start the stream analytics job ccu](images/analytics/asa-ccus-start.jpg)
+
+6. Configure game events generator with the connection string of the event hub that has just been created by the deployment of the ARM template.
+   * Retrieve the connection string as followed:
+     ![Retrieve the connection string of the newly created event hub, step 1](images/analytics/eventhub-connection1.jpg)
+     ![Retrieve the connection string of the newly created event hub, step 2](images/analytics/eventhub-connection2.jpg)

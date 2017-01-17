@@ -1,0 +1,14 @@
+{
+  "name": "HDIonDemandLinkedService",
+  "properties": {
+    "type": "HDInsightOnDemand",
+    "typeProperties": {
+      "version": "3.2",
+      "clusterSize": 2,
+      "osType": "Windows",
+      "timeToLive": "00:30:00",
+      "linkedServiceName": "storageLinkedService",
+      "hcatalogLinkedServiceName": "sqlLinkedService"
+    }
+  }
+}
