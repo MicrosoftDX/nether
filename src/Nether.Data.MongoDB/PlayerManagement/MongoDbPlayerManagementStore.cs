@@ -210,15 +210,14 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
         public async Task<PlayerExtended> GetPlayerDetailsExtendedAsync(string userid)
         {
-
             var getPlayerExtended = from s in PlayersExtendedCollection.AsQueryable()
-                                    where s.PlayerId == userid 
+                                    where s.PlayerId == userid
                                     orderby s.Gamertag descending
                                     select new PlayerExtended
                                     {
                                         UserId = s.PlayerId,
                                         Gamertag = s.Gamertag,
-                                        ExtendedInformation= s.ExtendedInformation
+                                        ExtendedInformation = s.ExtendedInformation
                                     };
 
             return await getPlayerExtended.FirstOrDefaultAsync();

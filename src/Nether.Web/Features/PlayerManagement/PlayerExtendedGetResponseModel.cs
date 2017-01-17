@@ -28,8 +28,6 @@ namespace Nether.Web.Features.PlayerManagement
             /// Extended Information
             /// </summary>
             public string ExtendedInformation { get; set; }
-
-
         }
     }
 }

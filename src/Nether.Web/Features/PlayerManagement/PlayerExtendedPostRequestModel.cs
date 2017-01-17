@@ -29,7 +29,5 @@ namespace Nether.Web.Features.PlayerManagement
         /// Extended player information (e.g. JSON)
         /// </summary>
         public string ExtendedInformation { get; set; }
-
-  
     }
 }

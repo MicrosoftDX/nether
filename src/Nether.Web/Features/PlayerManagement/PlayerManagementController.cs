@@ -78,7 +78,6 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Return result
             return Ok(PlayerExtendedGetResponseModel.FromPlayer(player));
-
         }
 
         /// <summary>
@@ -185,7 +184,7 @@ namespace Nether.Web.Features.PlayerManagement
             {
                 UserId = Player.UserId ?? Guid.NewGuid().ToString(),
                 Gamertag = Player.Gamertag,
-                ExtendedInformation = Player.ExtendedInformation 
+                ExtendedInformation = Player.ExtendedInformation
             };
             await _store.SavePlayerExtendedAsync(player);
 
@@ -195,7 +194,6 @@ namespace Nether.Web.Features.PlayerManagement
                 ControllerName,
                 new { gamertag = player.Gamertag });
             return base.Created(location, new { gamertag = player.Gamertag });
-             
         }
 
         /// <summary>
@@ -234,7 +232,6 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Return result
             return Ok(PlayerExtendedGetResponseModel.FromPlayer(player));
-           
         }
 
         /// <summary>

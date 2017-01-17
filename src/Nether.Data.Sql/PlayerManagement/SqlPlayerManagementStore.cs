@@ -240,7 +240,6 @@ namespace Nether.Data.Sql.PlayerManagement
                 entity.ExtendedInformation = player.ExtendedInformation;
                 await _context.SaveChangesAsync();
             }
-                  
         }
 
         public async Task<PlayerExtended> GetPlayerDetailsExtendedAsync(string gamertag)
