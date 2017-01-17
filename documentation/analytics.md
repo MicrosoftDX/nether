@@ -142,8 +142,8 @@ The ADF here makes use of 3 types of components:
 
 3. Deploy the ARM template [analyticsdeploy.json](../deployment/analyticsdeploy.json) with its parameters file [analyticsdeploy.parameters.json](../deployment/analyticsdeploy.parameters.json). This will deploy the following:
 ```
-azure group create -n <resource-group> -l "North Europe"
-azure group deployment create -f "C:\Users\oliviak\Source\Repos\nether\deployment\analyticsdeploy.json" -e "C:\Users\oliviak\Source\Repos\nether\deployment\analyticsdeploy.parameters.json" -g <resource-group> -n <deployment-name>
+azure group create -n <resource-group> -l <location>
+azure group deployment create -f "<path-to-ARM-template>\analyticsdeploy.json" -e "<path-to-ARM-parameters-file>\analyticsdeploy.parameters.json" -g <resource-group> -n <deployment-name>
 ```
    * Event hub to ingest the incoming raw game events
    * Stream analytics jobs: ccu (concurrent users) and rawdata (raw data into blob)

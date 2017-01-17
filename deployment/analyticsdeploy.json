@@ -629,7 +629,7 @@
                   "defines": {
                     "raweventsloc": "[concat('wasbs://', variables('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/', variables('blobRawEventsFolder'), '/')]",
                     "year": "$$Text.Format('{0:yyyy}',WindowStart)",
-                    "month": "$$Text.Format('{0:%M}',WindowStart)",
+                    "month": "$$Text.Format('{0:MM}',WindowStart)",
                     "day": "$$Text.Format('{0:%d}', Date.AddDays(WindowStart, -1))",
                     "dau": "[concat('wasbs://', variables('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/', variables('blobDAUFolder'))]",
                     "mau": "[concat('wasbs://', variables('blobContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/', variables('blobMAUFolder'))]"
