@@ -81,21 +81,21 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             await PostScoreAsync(client, int.MaxValue / 2);
             string myGamertag = _gamertag;
             client = await GetClientAsync("testuser1");
-            string hisGamertag = _gamertag;
+            string theirGamertag = _gamertag;
             await DeleteMyScores(client);
             await PostScoreAsync(client, 1);
 
             //check they are not around me
             client = await GetClientAsync();
             response = await GetLeaderboardAsync(client, "5-AroundMe");
-            Assert.False(response.Entries.Any(e => e.Gamertag == hisGamertag));
+            Assert.False(response.Entries.Any(e => e.Gamertag == theirGamertag));
 
             //make their score similar to mine and check they are around me
             client = await GetClientAsync("testuser1");
             await PostScoreAsync(client, int.MaxValue / 2 + 1);
             client = await GetClientAsync();
             response = await GetLeaderboardAsync(client, "5-AroundMe");
-            Assert.True(response.Entries.Any(e => e.Gamertag == hisGamertag));
+            Assert.True(response.Entries.Any(e => e.Gamertag == theirGamertag));
         }
 
         [Fact]
