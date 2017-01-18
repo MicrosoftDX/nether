@@ -21,6 +21,34 @@ namespace Nether.Web.IntegrationTests.Identity
             await AsPlayerAsync();
             await ResponseForGetAsync("/api/identity/users", hasStatusCode: HttpStatusCode.Forbidden);
         }
+        [Fact]
+        public async Task As_a_player_I_get_Forbidden_response_calling_GetUser()
+        {
+            await AsPlayerAsync();
+            await ResponseForGetAsync("/api/identity/users/123", hasStatusCode: HttpStatusCode.Forbidden);
+        }
+        // ... should we fill out the other requests to check permissions, or not?
+
+
+        [Fact]
+        public async Task As_an_admin_I_can_list_users()
+        {
+            await AsPlayerAsync();
+            var response = await ResponseForGetAsync("/api/identity/users", hasStatusCode: HttpStatusCode.OK);
+            dynamic responseContent = response.Content.ReadAsAsync<dynamic>();
+
+            var users = ((IEnumerable<dynamic>)responseContent.users).ToList();
+            Assert.NotNull(users);
+            Assert.True(users.Count > 0);
+
+            dynamic user = users[0];
+            Assert.NotNull(user.userId);
+            Assert.NotNull(user.role);
+            Assert.NotNull(user._link);
+        }
+
+
+
 
         private async Task<HttpResponseMessage> ResponseForGetAsync(string path, HttpStatusCode hasStatusCode)
         {
