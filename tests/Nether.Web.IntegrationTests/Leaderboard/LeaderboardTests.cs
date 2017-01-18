@@ -72,7 +72,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
             //todo: delete score entries before testing, this requires a separate http method
 
-            //put me somewhere in the middle and push the other user in the bottom so he is not around me
+            //put me somewhere in the middle and push the other user in the bottom so they are not around me
             await DeleteMyScores();
             await PostScore(int.MaxValue / 2);
             string myGamertag = _gamertag;
@@ -81,12 +81,12 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             await DeleteMyScores();
             await PostScore(1);
 
-            //check he is not around me
+            //check they are not around me
             _client = GetClient();
             response = await GetLeaderboard("5-AroundMe");
             Assert.False(response.Entries.Any(e => e.Gamertag == hisGamertag));
 
-            //make his score similar to mine and check he is around me
+            //make their score similar to mine and check they are around me
             _client = GetClient("testuser1");
             await PostScore(int.MaxValue / 2 + 1);
             _client = GetClient();
