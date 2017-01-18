@@ -11,7 +11,7 @@ namespace Nether.Web.UnitTests.Utilities
     {
         private string _filename;
         protected IConfiguration LoadConfig(
-            string json, 
+            string json,
             bool addEnvironmentVariables = false,
             string environmentVariablePrefix = null)
         {

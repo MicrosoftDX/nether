@@ -343,13 +343,13 @@ namespace Nether.Web.UnitTests.Features.Identity
 }";
             Environment.SetEnvironmentVariable("UNITTEST_Identity:Clients:client-id2:AllowedGrantTypes", "mygrant1, mygrant2");
             var clients = GetClientsFromJson(
-                json, 
+                json,
                 addEnvironmentVariables: true,
                 environmentVariablePrefix: "UNITTEST_");
 
             Assert.Equal(2, clients.Count);
 
-            var client = clients.FirstOrDefault(c=>c.ClientId == "client-id2");
+            var client = clients.FirstOrDefault(c => c.ClientId == "client-id2");
             Assert.NotNull(client);
             Assert.Equal(
                 new[] { "mygrant1", "mygrant2" },
@@ -357,7 +357,7 @@ namespace Nether.Web.UnitTests.Features.Identity
         }
 
         private List<Client> GetClientsFromJson(
-            string json, 
+            string json,
             bool addEnvironmentVariables = false,
             string environmentVariablePrefix = null)
         {

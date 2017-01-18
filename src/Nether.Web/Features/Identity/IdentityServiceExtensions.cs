@@ -27,7 +27,7 @@ namespace Nether.Web.Features.Identity
     public static class IdentityServiceExtensions
     {
         public static IApplicationBuilder UseIdentityServices(
-            this IApplicationBuilder app, 
+            this IApplicationBuilder app,
             IConfiguration configuration
             )
         {
@@ -42,7 +42,7 @@ namespace Nether.Web.Features.Identity
             app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
             {
                 Authority = authority,
-                RequireHttpsMetadata = requireHttps, 
+                RequireHttpsMetadata = requireHttps,
                 AllowedScopes = { "nether-all" },
                 //AutomaticAuthenticate = true // TODO - understand this setting!
             });
