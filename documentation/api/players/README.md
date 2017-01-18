@@ -18,8 +18,11 @@ The following information is common to all tasks that you might do related to pl
 |-------|---------------|-------------|
 |GET|[`/api/player`](get-current-player.md)|Gets the player information from currently logged in user.|
 |PUT|[`/api/player`](put-current-player.md)|Updates information about the current player.|
+|GET|[`/api/playerextended`](get-current-playerextended.md)|Gets the extended player information from currently logged in user.|
+|PUT|[`/api/playerextended`](put-current-playerextended.md)|Updates extended (e.g. JSON) information about the current player.|
 |GET|[`/api/players`](get-all-players.md)|Gets all players.|
-|POST|[`/api/players`](add-new-player.md)|Creates or updates information about a player.|
+|POST|[`/api/players`](add-new-player.md)|Creates or updates extended information about a player.|
+|POST|[`/api/playersextended`](add-new-playerextended.md)|Creates or updates information about a player.|
 |GET|[`/api/players/{gamerTag}`](get-player-by-gamertag.md)|Gets player information by player's gamer tag.|
 |GET|[`/api/player/groups`](get-current-player-groups.md)|Gets the list of groups current player belongs to.|
 |GET|[`/api/players/{gamerTag}/groups`](get-player-groups.md)|Gets the list of groups a player belongs to.|
