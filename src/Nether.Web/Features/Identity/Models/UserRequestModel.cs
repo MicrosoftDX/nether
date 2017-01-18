@@ -9,27 +9,27 @@ using System.Threading.Tasks;
 
 namespace Nether.Web.Features.Identity.Models
 {
-    public class UserResponseModel
+    public class UserRequestModel
     {
-        public UserModel User { get; set; }
+        public bool Active { get; set; }
+        public string Role { get; set; }
+        public List<UserLoginModel> Logins { get; set; }
 
-        public static UserResponseModel MapFrom(User user)
+        public static User MapToUser(UserRequestModel userRequestModel, string userId)
         {
-            return new UserResponseModel
+            return new User
             {
-                User = new UserModel
-                {
-                    UserId = user.UserId,
-                    Role = user.Role,
-                    Active = user.IsActive,
-                    Logins = user.Logins.Select(l => new UserLoginModel
+                UserId = userId,
+                Role = userRequestModel.Role,
+                IsActive = userRequestModel.Active,
+                Logins = userRequestModel.Logins
+                    .Select(l => new Login
                     {
                         ProviderType = l.ProviderType,
                         ProviderId = l.ProviderId,
                         ProviderData = l.ProviderData
                     })
                     .ToList()
-                }
             };
         }
     }

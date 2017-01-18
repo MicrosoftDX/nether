@@ -13,5 +13,7 @@ namespace Nether.Data.Identity
         Task<User> GetUserByIdAsync(string userid);
         Task<User> GetUserByLoginAsync(string providerType, string providerId);
         Task SaveUserAsync(User user);
+        Task DeleteUserAsync(string userId);
+        Task<IEnumerable<User>> GetUsersAsync();
     }
 }
