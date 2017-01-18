@@ -28,6 +28,7 @@ fi
 
 # Set environment variables for development and testing__
 export ASPNETCORE_ENVIRONMENT=Development # Set ASP.NET Core environment to Development to enable dev logging, and other dev-only services
+export Identity__IdentityServer__RequireHttps="false";
 
 # The following settings configure the Identity clients for integration tests
 # They are also in the launchSettings.json for Nether.Web for the VS experience

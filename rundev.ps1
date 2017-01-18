@@ -43,6 +43,7 @@ function PrepareWebEnvironment
 
 # Set environment variables for development and testing:
 $env:ASPNETCORE_ENVIRONMENT="Development" # Set ASP.NET Core environment to Development to enable dev logging, and other dev-only services
+${env:Identity:IdentityServer:RequireHttps} = "false"
 
 # The following settings configure the Identity clients for integration tests
 # They are also in the launchSettings.json for Nether.Web for the VS experience
