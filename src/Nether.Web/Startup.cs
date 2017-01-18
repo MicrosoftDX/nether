@@ -98,41 +98,31 @@ namespace Nether.Web
             services.AddLeaderboardServices(Configuration, _logger);
             services.AddPlayerManagementServices(Configuration, _logger);
             services.AddAnalyticsServices(Configuration, _logger);
+
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
+                    PolicyName.NetherIdentityClientId,
+                    policy => policy.RequireClaim(
+                        "client_id",
+                        "nether-identity"
+                        ));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+            ILoggerFactory loggerFactory)
         {
             loggerFactory.AddDebug();
 
-            // TODO - this code was copied from Identity Server sample. Need to understand why the map is cleared!
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-            // TODO - this code was copied from the Identity Server sample. Once working, revisit this config and see what is needed to wire up with the generic OpenIdConnect helpers
-            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
-            {
-                Authority = "http://localhost:5000",
-                RequireHttpsMetadata = false, // we're dev-only ;-)
-                AllowedScopes = { "nether-all" },
-                //AutomaticAuthenticate = true // TODO - understand this setting!
-            });
+            app.UseIdentityServices(Configuration);
 
-            //implicit flow authentication
-            /*IdentityServerAuthenticationOptions identityServerValidationOptions = new IdentityServerAuthenticationOptions
-            {
-                Authority = "http://localhost:5000/",
-                AllowedScopes = new List<string> { "nether-all" },
-                RequireHttpsMetadata = false,
-                ApiSecret = "dataEventRecordsSecret",
-                ApiName = "dataEventRecords",
-                AutomaticAuthenticate = true,
-                SupportedTokens = SupportedTokens.Both,
-                // TokenRetriever = _tokenRetriever,
-                // required if you want to return a 403 and not a 401 for forbidden responses
-                AutomaticChallenge = true,
-            };
 
-            app.UseIdentityServerAuthentication(identityServerValidationOptions);*/
 
             #region [ Admin Web UI ]
             // Create a custom route for Admin Web UI

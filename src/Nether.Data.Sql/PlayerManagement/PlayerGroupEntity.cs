@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Nether.Data.Sql.PlayerManagement
 {
     /// <summary>
     /// Maps a player to a group
     /// </summary>
+    [DebuggerDisplay("PlayerGroupEntity (group '{GroupName}', tag '{Gamertag'})")]
     public class PlayerGroupEntity // see https://docs.microsoft.com/en-us/ef/core/modeling/relationships#many-to-many
     {
         public string GroupName { get; set; }

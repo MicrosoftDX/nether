@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nether.Data.Identity
 {
+    [DebuggerDisplay("User ({UserId})")]
     public class User
     {
         public string UserId { get; set; }

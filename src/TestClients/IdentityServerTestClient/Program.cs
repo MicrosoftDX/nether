@@ -25,7 +25,13 @@ namespace IdentityServerTestClient
         {
             try
             {
-                //var tokenResponse = await TestClientCredentialsAsync(); // this flow just identifies the client app
+                //var clientTokenResponse = await TestClientCredentialsAsync("clientcreds-test", "devsecret"); // this flow just identifies the client app
+                ////var clientTokenResponse = await TestClientCredentialsAsync("nether-identity", "secret"); // this flow just identifies the client app
+                //Console.WriteLine();
+                //Console.WriteLine("Dump claims:");
+                //await CallApiAsync(clientTokenResponse.AccessToken);
+                //return;
+
                 //var tokenResponse = await TestResourceOwnerPasswordAsync(); // this flow uses username + password
 
                 Console.WriteLine("Enter the Facebook User Token (see https://developers.facebook.com/tools/accesstoken):");
@@ -34,8 +40,12 @@ namespace IdentityServerTestClient
                 Console.WriteLine("Getting token..");
                 var tokenResponse = await TestCustomGrantAsync(facebookUserToken); // this flow uses the custom grant that takes the facebook user access token (as obtained via the unity plugin, or fb developer site!)
 
-
                 var accessToken = tokenResponse.AccessToken;
+                if (accessToken == null)
+                {
+                    Console.WriteLine("No token");
+                    return;
+                }
                 var gamertagFromToken = GetGamerTagFromAccessToken(accessToken);
                 Console.WriteLine($"Gamertag from token: {gamertagFromToken}");
 
@@ -123,12 +133,12 @@ namespace IdentityServerTestClient
 
             return tokenResponse;
         }
-        private static async Task<TokenResponse> TestClientCredentialsAsync()
+        private static async Task<TokenResponse> TestClientCredentialsAsync(string clientId, string clientSecret)
         {
             var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
 
             // request token
-            var tokenClient = new TokenClient(disco.TokenEndpoint, "clientcreds-test", "devsecret");
+            var tokenClient = new TokenClient(disco.TokenEndpoint, clientId, clientSecret);
             var tokenResponse = await tokenClient.RequestClientCredentialsAsync("nether-all");
 
             if (tokenResponse.IsError)

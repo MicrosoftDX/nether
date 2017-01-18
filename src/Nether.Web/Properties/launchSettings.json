@@ -11,6 +11,17 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "environmentVariables": {
+        "Identity:IdentityServer:RequireHttps" : false,
+        "Identity:Clients:clientcreds-test:Name": "Test Client for client credentials flow",
+        "Identity:Clients:clientcreds-test:AllowedGrantTypes": "client_credentials",
+        "Identity:Clients:clientcreds-test:ClientSecrets": "devsecret",
+        "Identity:Clients:clientcreds-test:AllowedScopes": "openid, profile, nether-all",
+        "Identity:Clients:resourceowner-test:AllowedGrantTypes": "password",
+        "Identity:Clients:resourceowner-test:ClientSecrets": "devsecret",
+        "Identity:Clients:resourceowner-test:AllowedScopes": "nether-all",
+        "Identity:Clients:customgrant-test:AllowedGrantTypes": "fb-usertoken",
+        "Identity:Clients:customgrant-test:ClientSecrets": "devsecret",
+        "Identity:Clients:customgrant-test:AllowedScopes": "nether-all",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },

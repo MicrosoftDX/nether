@@ -19,16 +19,58 @@ using System.Linq;
 using IdentityServer4.Models;
 using System.Collections.Generic;
 using Nether.Integration.Identity;
+using Microsoft.AspNetCore.Builder;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Nether.Web.Features.Identity
 {
     public static class IdentityServiceExtensions
     {
+        public static IApplicationBuilder UseIdentityServices(
+            this IApplicationBuilder app,
+            IConfiguration configuration
+            )
+        {
+            // TODO - this code was copied from Identity Server sample. Need to understand why the map is cleared!
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            var idsvrConfig = configuration.GetSection("Identity:IdentityServer");
+            string authority = idsvrConfig["Authority"];
+            bool requireHttps = idsvrConfig.GetValue("RequireHttps", true);
+
+            // TODO - this code was copied from the Identity Server sample. Once working, revisit this config and see what is needed to wire up with the generic OpenIdConnect helpers
+            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
+            {
+                Authority = authority,
+                RequireHttpsMetadata = requireHttps,
+                AllowedScopes = { "nether-all" },
+                //AutomaticAuthenticate = true // TODO - understand this setting!
+            });
+
+            //implicit flow authentication
+            /*IdentityServerAuthenticationOptions identityServerValidationOptions = new IdentityServerAuthenticationOptions
+            {
+                Authority = "http://localhost:5000/",
+                AllowedScopes = new List<string> { "nether-all" },
+                RequireHttpsMetadata = false,
+                ApiSecret = "dataEventRecordsSecret",
+                ApiName = "dataEventRecords",
+                AutomaticAuthenticate = true,
+                SupportedTokens = SupportedTokens.Both,
+                // TokenRetriever = _tokenRetriever,
+                // required if you want to return a 403 and not a 401 for forbidden responses
+                AutomaticChallenge = true,
+            };
+
+            app.UseIdentityServerAuthentication(identityServerValidationOptions);*/
+
+            return app;
+        }
+
         public static IServiceCollection AddIdentityServices(
             this IServiceCollection services,
             IConfiguration configuration,
-            ILogger logger
-,
+            ILogger logger,
             IHostingEnvironment hostingEnvironment)
         {
             ConfigureIdentityPlayerMangementClient(services, configuration, logger);
@@ -38,7 +80,10 @@ namespace Nether.Web.Features.Identity
             return services;
         }
 
-        private static void ConfigureIdentityPlayerMangementClient(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        private static void ConfigureIdentityPlayerMangementClient(
+            IServiceCollection services,
+            IConfiguration configuration,
+            ILogger logger)
         {
             if (configuration.Exists("Identity:PlayerManagementClient:wellKnown"))
             {
@@ -50,10 +95,20 @@ namespace Nether.Web.Features.Identity
                     case "default":
                         var baseUri = scopedConfiguration["BaseUrl"];
                         logger.LogInformation("Identity:PlayerManagementClient: using 'default' client with BaseUrl '{0}'", baseUri);
+
+                        // could simplify this by requiring the client secret in the properties for PlayerManagementClient, but that duplicates config
+                        var clientSource = new ConfigurationBasedClientSource(logger);
+                        var clientSecret = clientSource.GetClientSecret(configuration.GetSection("Identity:Clients"), "nether-identity");
+                        if (string.IsNullOrEmpty(clientSecret))
+                        {
+                            throw new Exception("Unable to determine the client secret for nether-identity");
+                        }
+
                         services.AddSingleton<IIdentityPlayerManagementClient, DefaultIdentityPlayerManagementClient>(serviceProvider =>
                         {
                             return new DefaultIdentityPlayerManagementClient(
                                 baseUri,
+                                clientSecret,
                                 serviceProvider.GetService<ILoggerFactory>()
                                 );
                         });
@@ -69,7 +124,11 @@ namespace Nether.Web.Features.Identity
             }
         }
 
-        private static void ConfigureIdentityServer(IServiceCollection services, IConfiguration configuration, ILogger logger, IHostingEnvironment hostingEnvironment)
+        private static void ConfigureIdentityServer(
+            IServiceCollection services,
+            IConfiguration configuration,
+            ILogger logger,
+            IHostingEnvironment hostingEnvironment)
         {
             if (hostingEnvironment.EnvironmentName != "Development")
             {
@@ -77,7 +136,8 @@ namespace Nether.Web.Features.Identity
             }
 
             var clientSource = new ConfigurationBasedClientSource(logger);
-            var clients = clientSource.LoadClients(configuration.GetSection("Identity:Clients"));
+            var clients = clientSource.LoadClients(configuration.GetSection("Identity:Clients"))
+                                .ToList();
 
             services.AddIdentityServer(options =>
             {
@@ -116,18 +176,36 @@ namespace Nether.Web.Features.Identity
                                 builder.UseInMemoryDatabase();
                             }
                         });
-                        services.AddSingleton<IdentityContext>(serviceProvider =>
+                        bool initialised = false;
+                        object synclock = new object();
+                        services.AddTransient<IdentityContext>(serviceProvider =>
                         {
-                            logger.LogInformation("Identity:Store: Adding in-memory seed users...");
+                            // one-off initialisation
+                            if (!initialised)
+                            {
+                                lock (synclock)
+                                {
+                                    if (!initialised)
+                                    {
+                                        logger.LogInformation("Identity:Store: Adding in-memory seed users...");
 
+                                        // construct the singleton so that we can provide seeded users for testing
+                                        var seedContext = new IdentityContext(
+                                                serviceProvider.GetService<ILoggerFactory>(),
+                                                serviceProvider.GetService<IdentityContextOptions>());
+                                        var seedUsers = InMemoryUsersSeed.Get(serviceProvider.GetService<IPasswordHasher>(), false);
+                                        seedContext.Users.AddRange(seedUsers.Select(IdentityMappingExtensions.Map));
+                                        seedContext.SaveChanges();
+                                        logger.LogInformation("Identity:Store: Adding in-memory seed users... complete");
+
+                                        initialised = true;
+                                    }
+                                }
+                            }
                             // construct the singleton so that we can provide seeded users for testing
                             var context = new IdentityContext(
                                     serviceProvider.GetService<ILoggerFactory>(),
                                     serviceProvider.GetService<IdentityContextOptions>());
-                            var seedUsers = InMemoryUsersSeed.Get(serviceProvider.GetService<IPasswordHasher>());
-                            context.Users.AddRange(seedUsers.Select(IdentityMappingExtensions.Map));
-                            context.SaveChanges();
-                            logger.LogInformation("Identity:Store: Adding in-memory seed users... complete");
 
                             return context;
                         });

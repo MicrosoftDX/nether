@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Nether.Web.Features.Identity.Configuration
@@ -26,18 +27,37 @@ namespace Nether.Web.Features.Identity.Configuration
                 yield return ParseClient(clientConfig);
             }
         }
-
-        private Client ParseClient(IConfiguration clientConfig)
+        /// <summary>
+        /// Look up the client secret for the specified clientId in config
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
+        public string GetClientSecret(IConfiguration configuration, string clientId)
         {
-            var client = new Client();
+            var configClient = configuration.GetSection(clientId);
+            if (configClient != null)
+            {
+                var secrets = ParseStringArray(configClient.GetSection("ClientSecrets")).ToArray();
+                if (secrets != null && secrets.Length > 0)
+                {
+                    return secrets[0];
+                }
+            }
+            return null;
+        }
+
+        private Client ParseClient(IConfigurationSection clientConfig)
+        {
+            var client = new Client
+            {
+                ClientId = clientConfig.Key
+            };
 
             foreach (var configValue in clientConfig.GetChildren())
             {
                 switch (configValue.Key)
                 {
-                    case "Id":
-                        client.ClientId = configValue.Value;
-                        break;
                     case "Name":
                         client.ClientName = configValue.Value;
                         break;
@@ -81,6 +101,7 @@ namespace Nether.Web.Features.Identity.Configuration
             return client;
         }
 
+
         private T ParseEnum<T>(string value)
         {
             return (T)Enum.Parse(typeof(T), value);
@@ -93,7 +114,20 @@ namespace Nether.Web.Features.Identity.Configuration
 
         private IEnumerable<string> ParseStringArray(IConfigurationSection configSection)
         {
-            return configSection.GetChildren().Select(v => v.Value);
+            if (configSection.Value == null)
+            {
+                // when the config is specified using JSON it can come as child config elements
+                // if specified in an arry
+                return configSection.GetChildren()
+                    .Select(v => v.Value);
+            }
+            else
+            {
+                // when specified via environment variables it comes in as a comma-delimited string
+                return configSection.Value
+                    .Split(',')
+                    .Select(s => s.Trim());
+            }
         }
     }
 }

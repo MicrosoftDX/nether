@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Nether.Data.Sql.PlayerManagement
 {
+    [DebuggerDisplay("GroupEntity (name '{Name}')")]
     public class GroupEntity
     {
         public string Name { get; set; }

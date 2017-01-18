@@ -5,7 +5,7 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 Write-Output "*** Executing tests"
 $testExitCode=0
-Get-Content "$here\build\test-order.txt" `
+Get-Content "$here\build\unit-test-order.txt" `
     | Where-Object { $_ -ne "" } `
     | ForEach-Object { 
         Write-Output "*** dotnet test $_"

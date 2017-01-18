@@ -9,7 +9,7 @@ namespace Nether.Web.Features.Identity
 {
     [Route("identity-test")]
     [Authorize]
-    public class IdentityController : ControllerBase
+    public class IdentityTestController : ControllerBase
     {
         [HttpGet]
         public IActionResult Get()

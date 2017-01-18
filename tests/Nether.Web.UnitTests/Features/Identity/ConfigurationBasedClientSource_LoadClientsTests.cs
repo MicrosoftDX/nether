@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging.Abstractions;
 using Nether.Web.Features.Identity.Configuration;
+using Nether.Web.UnitTests.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,7 @@ using Xunit;
 
 namespace Nether.Web.UnitTests.Features.Identity
 {
-    public class ConfigurationBasedClientSourceTests : IDisposable
+    public class ConfigurationBasedClientSource_LoadClientsTests : JsonConfigTestBase
     {
         [Fact]
         public void ClientIdIsParsed()
@@ -24,11 +25,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
-                'Id': 'client-id'
+        'Clients': {
+            'client-id': {
+                'Name' : 'wibble'
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -46,11 +47,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'Name': 'client-name'
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -69,11 +70,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'AllowedGrantTypes': ['grant1', 'grant2']
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -93,11 +94,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'RedirectUris': ['http://localhost:12345', 'http://example.com']
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -116,11 +117,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'PostLogoutRedirectUris': ['http://localhost:12345/loggedout', 'http://example.com/done']
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -139,11 +140,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'AccessTokenType': 'Reference'
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -160,11 +161,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'AllowAccessTokensViaBrowser': true
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -181,11 +182,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'AllowedCorsOrigins': ['http://localhost:12345/', 'http://example.com/']
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -207,12 +208,12 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'Id': 'client-id',
                 'SomeRandomProperty': 'wibble'
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -233,11 +234,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'ClientSecrets': ['test', 'test2']
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -256,11 +257,11 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
+        'Clients': {
+            'client-id': {
                 'AllowedScopes': ['scope1', 'scope2']
             }
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -282,9 +283,8 @@ namespace Nether.Web.UnitTests.Features.Identity
             var json = @"
 {
     'Identity': {
-        'Clients': [
-            {
-                'Id': 'client1',
+        'Clients': {
+            'client1': {
                 'Name': 'Client 1',
                 'AllowedGrantTypes': [ 'hybrid', 'password', 'fb-usertoken' ],
                 'RedirectUris': [ 'http://localhost:5000/signin-oidc' ],
@@ -292,11 +292,10 @@ namespace Nether.Web.UnitTests.Features.Identity
                 'ClientSecrets': [ 'test' ], 
                 'AllowedScopes': [ 'openid', 'profile' ]
             },
-            {
-                'Id': 'client2',
+            'client2': {
                 'Name': 'Client 2',
             },
-        ]
+        }
     },
 }";
             var clients = GetClientsFromJson(json);
@@ -329,50 +328,45 @@ namespace Nether.Web.UnitTests.Features.Identity
         }
 
 
-        //        var json = @"
-        //{
-        //    'Identity': {
-        //        'Clients': [
-        //          {
-        //            'Id': 'devclient',
-        //            'Name': 'Dev Client',
-        //            'AllowedGrantTypes': [ 'hybrid', 'password', 'fb-usertoken' ],
-        //            'RedirectUris': [ 'http://localhost:5000/signin-oidc' ],
-        //            'PostLogoutRedirectUris': [ 'http://localhost:5000/' ],
-        //            'ClientSecrets': [ 'devsecret' ], // TODO: should this be plain, or Sha-hashed?
-        //            'AllowedScopes': [ 'openid', 'profile', 'nether-all' ]
-        //        }
-        //        ]
-        //    },
-        //}";
-
-        private List<IdentityServer4.Models.Client> GetClientsFromJson(string json)
+        [Fact]
+        public void AllowedGrantTypesAreParsedFromEnvironmentVariable()
         {
-            var config = LoadConfig(json);
+            var json = @"
+{
+    'Identity': {
+        'Clients': {
+            'client-id': {
+                'AllowedGrantTypes': ['grant1', 'grant2']
+            }
+        }
+    },
+}";
+            Environment.SetEnvironmentVariable("UNITTEST_Identity:Clients:client-id2:AllowedGrantTypes", "mygrant1, mygrant2");
+            var clients = GetClientsFromJson(
+                json,
+                addEnvironmentVariables: true,
+                environmentVariablePrefix: "UNITTEST_");
+
+            Assert.Equal(2, clients.Count);
+
+            var client = clients.FirstOrDefault(c => c.ClientId == "client-id2");
+            Assert.NotNull(client);
+            Assert.Equal(
+                new[] { "mygrant1", "mygrant2" },
+                client.AllowedGrantTypes);
+        }
+
+        private List<Client> GetClientsFromJson(
+            string json,
+            bool addEnvironmentVariables = false,
+            string environmentVariablePrefix = null)
+        {
+            var config = LoadConfig(json, addEnvironmentVariables, environmentVariablePrefix);
 
             var source = new ConfigurationBasedClientSource(NullLogger.Instance);
             var clients = source.LoadClients(config.GetSection("Identity:Clients"))
                 .ToList();
             return clients;
-        }
-
-        private string _filename;
-        private IConfiguration LoadConfig(string json)
-        {
-            // TODO - need to clean this up!
-            _filename = Path.GetTempFileName();
-
-            File.WriteAllText(_filename, json);
-
-            return new ConfigurationBuilder()
-                .AddJsonFile(_filename)
-                .Build();
-        }
-        public void Dispose()
-        {
-            // clean up temporary config file
-            if (File.Exists(_filename))
-                File.Delete(_filename);
         }
     }
 }

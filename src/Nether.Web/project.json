@@ -16,7 +16,7 @@
       "version": "1.1.0",
       "type": "platform"
     },
-    "Nether.Common.DependencyInjection": "1.0.0-*",
+    "Nether.Common": "1.0.0-*",
     "Nether.Data": "1.0.0-*",
     "Nether.Data.MongoDB": "1.0.0-*",
     "Nether.Integration": "1.0.0-*",

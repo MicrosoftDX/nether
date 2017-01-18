@@ -3,11 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nether.Data.Identity
 {
+    [DebuggerDisplay("Login (Type '{ProviderType}', Id '{ProviderId}')")]
+
     public class Login
     {
         public string ProviderType { get; set; }
