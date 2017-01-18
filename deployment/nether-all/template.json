@@ -1,0 +1,73 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sqlAdministratorLogin": {
+            "type": "string",
+            "defaultValue": "netheradmin",
+            "metadata": {
+                "description": "The admin user of the SQL Server"
+            }
+        },
+
+        "sqlAdministratorPassword": {
+            "type": "securestring",
+            "defaultValue": "Password00;",
+            "metadata": {
+                "description": "The password of the admin user of the SQL Server"
+            }
+        }
+    },
+    "variables": {
+        "sqlServerName": "[concat('sqlserver', uniqueString(resourceGroup().id))]",
+        "databaseName": "nether"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Sql/servers",
+            "kind": "v12.0",
+            "name": "[variables('sqlServerName')]",
+            "apiVersion": "2014-04-01-preview",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "SqlServer"
+            },
+            "properties": {
+                "administratorLogin": "[parameters('sqlAdministratorLogin')]",
+                "administratorLoginPassword": "[parameters('sqlAdministratorPassword')]",
+                "version": "12.0"
+            },
+            "resources": [
+                {
+                    "name": "[variables('databaseName')]",
+                    "type": "databases",
+                    "location": "[resourceGroup().location]",
+                    "tags": {
+                        "displayName": "Database"
+                    },
+                    "apiVersion": "2014-04-01-preview",
+                    "dependsOn": [
+                        "[variables('sqlServerName')]"
+                    ],
+                    "properties":{
+                        "edition": "Basic",
+                        "requestedServiceObjectiveName": "Basic"
+                    }
+                },
+                {
+                    "name": "AllowAllWindowsAzureIps",
+                    "type": "firewallrules",
+                    "apiVersion": "2014-04-01-preview",
+                    "dependsOn": [
+                        "[variables('sqlServerName')]"
+                    ],
+                    "location": "[resourceGroup().location]",
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "0.0.0.0"
+                    }
+                }
+            ]
+        }
+    ]
+}
