@@ -10,15 +10,22 @@ namespace Nether.Web.UnitTests.Utilities
     public abstract class JsonConfigTestBase : IDisposable
     {
         private string _filename;
-        protected IConfiguration LoadConfig(string json)
+        protected IConfiguration LoadConfig(
+            string json, 
+            bool addEnvironmentVariables = false,
+            string environmentVariablePrefix = null)
         {
             _filename = Path.GetTempFileName();
 
             File.WriteAllText(_filename, json);
 
-            return new ConfigurationBuilder()
-                .AddJsonFile(_filename)
-                .Build();
+            var builder = new ConfigurationBuilder()
+                .AddJsonFile(_filename);
+
+            if (addEnvironmentVariables)
+                builder.AddEnvironmentVariables(environmentVariablePrefix);
+
+            return builder.Build();
         }
         public void Dispose()
         {

@@ -114,7 +114,20 @@ namespace Nether.Web.Features.Identity.Configuration
 
         private IEnumerable<string> ParseStringArray(IConfigurationSection configSection)
         {
-            return configSection.GetChildren().Select(v => v.Value);
+            if (configSection.Value == null)
+            {
+                // when the config is specified using JSON it can come as child config elements
+                // if specified in an arry
+                return configSection.GetChildren()
+                    .Select(v => v.Value);
+            }
+            else
+            {
+                // when specified via environment variables it comes in as a comma-delimited string
+                return configSection.Value
+                    .Split(',')
+                    .Select(s => s.Trim());
+            }
         }
     }
 }
