@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Nether.Data.Sql.PlayerManagement
 {
+    [DebuggerDisplay("PlayerExtendedEntity (tag '{Gamertag}', UserId '{UserId'})")]
     public class PlayerExtendedEntity
     {
         public string UserId { get; set; }

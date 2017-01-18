@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 using Nether.Data.PlayerManagement;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Diagnostics;
 
 namespace Nether.Data.MongoDB.PlayerManagement
 {
+    [DebuggerDisplay("MongDBPlayerExtended (tag '{Gamertag}', UserId '{Id'})")]
     public class MongoDBPlayerExtended
     {
         // Implicit operator allows Player objects to be used as MongoDbPlayer objects

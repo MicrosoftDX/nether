@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Nether.Data.PlayerManagement
 {
+    [DebuggerDisplay("PlayerExtended (tag '{Gamertag}', UserId '{UserId'})")]
     public class PlayerExtended
     {
         public string UserId { get; set; }
