@@ -1,4 +1,7 @@
-﻿CREATE TABLE [dbo].[PlayerGroups]
+﻿/* Copyright (c) Microsoft. All rights reserved.
+Licensed under the MIT license. See LICENSE file in the project root for full license information. */
+
+CREATE TABLE [dbo].[PlayerGroups]
 (
     [Gamertag] varchar(50) NOT NULL, 
     [GroupName] varchar(50) NOT NULL, 

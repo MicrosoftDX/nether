@@ -75,7 +75,27 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
-        /// Updates information about the current player
+        /// Gets the extended player information from currently logged in user
+        /// </summary>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerExtendedGetResponseModel))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "Extend player information not found")]
+        [Authorize(Roles = RoleNames.Player)]
+        [HttpGet("playerextended")]
+        public async Task<ActionResult> GetCurrentPlayerExtended()
+        {
+            string userId = User.GetId();
+
+            // Call data store
+            var player = await _store.GetPlayerDetailsExtendedAsync(userId);
+            if (player == null) return NotFound();
+
+            // Return result
+            return Ok(PlayerExtendedGetResponseModel.FromPlayer(player));
+        }
+
+        /// <summary>
+        ///  Updates information about the current player
         /// </summary>
         /// <param name="player">Player data</param>
         /// <returns></returns>
@@ -94,6 +114,32 @@ namespace Nether.Web.Features.PlayerManagement
             // Return result
             return new NoContentResult();
         }
+
+        /// <summary>
+        /// Updates extended (e.g. JSON) information about the current player
+        /// </summary>
+        /// <param name="player">Player data</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.NoContent, Description = "Extend Player information (e.g. JSON) updated successfully")]
+        [Authorize(Roles = RoleNames.Player)]
+        [Route("playerextended")]
+        [HttpPut]
+        public async Task<ActionResult> PutCurrentPlayerExtended([FromBody]PlayerExtendedPutRequestModel player)
+        {
+            string userId = User.GetId();
+
+            // Update extended player information
+            // Update player
+            await _store.SavePlayerExtendedAsync(
+                new PlayerExtended { UserId = userId, Gamertag = player.Gamertag, ExtendedInformation = player.ExtendedInformation });
+
+            // Return result
+            return new NoContentResult();
+        }
+
+        ////////////////////////////////////
+        // Implementation of the Admin API
+        ///////////////////////////////////
 
         /// <summary>
         /// Creates or updates information about a player. You have to be an administrator to perform this action.
@@ -131,6 +177,40 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
+        /// Adds/Update extend data to a player. You have to be an administrator to perform this action.
+        /// </summary>
+        /// <param name="Player">Player data</param>
+        /// <returns></returns>
+        [SwaggerResponse((int)HttpStatusCode.Created, Description = "player extended information updated")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "user has no gamertag")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [Route("playersextended")]
+        [HttpPost]
+        public async Task<ActionResult> PostExtended([FromBody]PlayerExtendedPostRequestModel Player)
+        {
+            if (string.IsNullOrWhiteSpace(Player.Gamertag))
+            {
+                return base.BadRequest(); //TODO: return error info in body
+            }
+
+            // Save player extended information
+            var player = new PlayerExtended
+            {
+                UserId = Player.UserId ?? Guid.NewGuid().ToString(),
+                Gamertag = Player.Gamertag,
+                ExtendedInformation = Player.ExtendedInformation
+            };
+            await _store.SavePlayerExtendedAsync(player);
+
+            //// Return result
+            string location = Url.Action(
+                nameof(GetPlayer),
+                ControllerName,
+                new { gamertag = player.Gamertag });
+            return base.Created(location, new { gamertag = player.Gamertag });
+        }
+
+        /// <summary>
         /// Gets player information by player's gamer tag. You have to be an administrator to perform this action.
         /// </summary>
         /// <param name="gamertag">Gamer tag</param>
@@ -147,6 +227,25 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Return result
             return Ok(PlayerGetResponseModel.FromPlayer(player));
+        }
+
+        /// <summary>
+        /// Gets extended player information by player's gamer tag. You have to be an administrator to perform this action.
+        /// </summary>
+        /// <param name="gamertag">Gamer tag</param>
+        /// <returns>Player extended information</returns>
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerExtendedGetResponseModel))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "player not found")]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpGet("playersextended/{gamertag}")]
+        public async Task<ActionResult> GetPlayerExtended(string gamertag)
+        {
+            // Call data store
+            var player = await _store.GetPlayerDetailsExtendedAsync(gamertag);
+            if (player == null) return NotFound();
+
+            // Return result
+            return Ok(PlayerExtendedGetResponseModel.FromPlayer(player));
         }
 
         /// <summary>

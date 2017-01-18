@@ -24,6 +24,9 @@ namespace Nether.Data.MongoDB.PlayerManagement
         private IMongoCollection<MongoDBGroup> GroupsCollection
             => _database.GetCollection<MongoDBGroup>("groups");
 
+        private IMongoCollection<MongoDBPlayerExtended> PlayersExtendedCollection
+            => _database.GetCollection<MongoDBPlayerExtended>("playersextended");
+
         private static readonly UpdateOptions s_upsertOptions = new UpdateOptions { IsUpsert = true };
 
         public MongoDBPlayerManagementStore(string connectionString, string dbName, ILoggerFactory loggerFactory)
@@ -197,6 +200,27 @@ namespace Nether.Data.MongoDB.PlayerManagement
             Group g = await getGroup.FirstOrDefaultAsync();
 
             return g.Image;*/
+        }
+
+        public async Task SavePlayerExtendedAsync(PlayerExtended player)
+        {
+            _logger.LogDebug("Saving Player Extended {0}", player.UserId);
+            await PlayersExtendedCollection.ReplaceOneAsync(p => p.PlayerId == player.UserId, player, s_upsertOptions);
+        }
+
+        public async Task<PlayerExtended> GetPlayerDetailsExtendedAsync(string userid)
+        {
+            var getPlayerExtended = from s in PlayersExtendedCollection.AsQueryable()
+                                    where s.PlayerId == userid
+                                    orderby s.Gamertag descending
+                                    select new PlayerExtended
+                                    {
+                                        UserId = s.PlayerId,
+                                        Gamertag = s.Gamertag,
+                                        ExtendedInformation = s.ExtendedInformation
+                                    };
+
+            return await getPlayerExtended.FirstOrDefaultAsync();
         }
     }
 }
