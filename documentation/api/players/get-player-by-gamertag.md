@@ -30,12 +30,11 @@ Empty body
 
 ```json
 {
-    "player": {
-        "gamertag": "krist00fer",
-        "country" : "Sweden",
-        "customtag" : "my tag",
-        "imageUrl": "https://storagesample.blob.core.windows.net/mycontainer/photos/kristofer.jpg"    
-	}
+  "player": {
+    "gamertag": "string",
+    "country": "string",
+    "customTag": "string"
+  }
 }
 ```
 
@@ -44,4 +43,3 @@ Element name        | Required  | Type       | Description
 gamertag            | Yes       | String     | Tag of the player
 country             | Yes       | String     | Country of the player
 customtag           | No        | String     | Custom tag
-imageUrl            | No        | String     | Reference url to an image
