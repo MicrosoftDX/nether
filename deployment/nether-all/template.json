@@ -16,6 +16,14 @@
             "metadata": {
                 "description": "The password of the admin user of the SQL Server"
             }
+        },
+
+        "webZipUri": {
+            "type": "string",
+            "defaultValue": "https://netherci.blob.core.windows.net/deploy/nether.zip",
+            "metadata": {
+                "description": "Absolute URI containing the package to deploy"
+            }
         }
     },
     "variables": {
@@ -134,6 +142,22 @@
                         "Identity:Clients:customgrant-test:AllowedScopes": "nether-all"
 
 
+                    }
+                },
+
+                {
+                    "name": "MSDeploy",
+                    "type": "extensions",
+                    "location": "[resourceGroup().location]",
+                    "apiVersion": "2015-08-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', variables('webSiteName'))]"
+                    ],
+                    "tags": {
+                        "displayName": "DeployTheZip"
+                    },
+                    "properties": {
+                        "packageUri": "[parameters('webZipUri')]"
                     }
                 }
             ]
