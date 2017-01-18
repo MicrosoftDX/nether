@@ -19,8 +19,10 @@
         }
     },
     "variables": {
-        "sqlServerName": "[concat('sqlserver', uniqueString(resourceGroup().id))]",
-        "databaseName": "nether"
+        "sqlServerName": "[concat('sqlserver-', uniqueString(resourceGroup().id))]",
+        "databaseName": "nether",
+        "hostingPlanName": "[concat('hostingplan-', uniqueString(resourceGroup().id))]",
+        "webSiteName": "[concat('website-', uniqueString(resourceGroup().id))]"
     },
     "resources": [
         {
@@ -68,6 +70,22 @@
                     }
                 }
             ]
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "name": "[variables('hostingPlanName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "HostingPlan"
+            },
+            "sku":{
+                "name": "F1",
+                "capacity": 1
+            },
+            "properties": {
+                "name": "[variables('hostingPlanName')]"
+            }
         }
     ]
 }
