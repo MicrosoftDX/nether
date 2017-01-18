@@ -24,6 +24,7 @@ The following information is common to all tasks that you might do related to pl
 |POST|[`/api/players`](add-new-player.md)|Creates or updates extended information about a player.|
 |POST|[`/api/playersextended`](add-new-playerextended.md)|Creates or updates information about a player.|
 |GET|[`/api/players/{gamerTag}`](get-player-by-gamertag.md)|Gets player information by player's gamer tag.|
+|GET|[`/api/playersextended/{gamerTag}`](get-playerextended-by-gamertag.md)|Gets extended player information by player's gamer tag.|
 |GET|[`/api/player/groups`](get-current-player-groups.md)|Gets the list of groups current player belongs to.|
 |GET|[`/api/players/{gamerTag}/groups`](get-player-groups.md)|Gets the list of groups a player belongs to.|
 |GET|[`/api/groups`](get-all-groups.md)|Get list of all groups.|
