@@ -112,7 +112,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         {
             var client = await GetClientAsync("testuser");
 
-            await PostScoreAsync(client,  -5, HttpStatusCode.BadRequest);
+            await PostScoreAsync(client, -5, HttpStatusCode.BadRequest);
         }
 
         [Fact]
@@ -131,7 +131,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         }
 
         private async Task<LeaderboardGetResponse> GetLeaderboardAsync(
-            HttpClient client, 
+            HttpClient client,
             string type = "Default",
             HttpStatusCode expectedCode = HttpStatusCode.OK)
         {

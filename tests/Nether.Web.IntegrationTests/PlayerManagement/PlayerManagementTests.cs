@@ -119,7 +119,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         public async Task As_a_player_I_can_create_and_list_my_groups()
         {
             var client = await GetClientAsync();
-            
+
             string groupName = Guid.NewGuid().ToString();
 
             var group = new GroupEntry
@@ -219,7 +219,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         public async Task As_a_player_I_can_find_out_which_groups_I_belong_to()
         {
             var client = await GetClientAsync();
-            
+
             //first create two groups and add me to them
             string g1 = Guid.NewGuid().ToString();
             string g2 = Guid.NewGuid().ToString();
