@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Nether.Web.Features.Identity
 {
-    [Route("identity")]
+    [Route("api/identity")]
     [Authorize]
     public class IdentityController : ControllerBase
     {
@@ -52,7 +52,7 @@ namespace Nether.Web.Features.Identity
         [SwaggerResponse((int)HttpStatusCode.NotFound, description: "No such user id")]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpGet("users/{userId}", Name = nameof(GetUser))]
-        public async Task<IActionResult> GetUser(string userId)
+        public async Task<IActionResult> GetUser([FromQuery] string userId)
         {
             var user = await _userStore.GetUserByIdAsync(userId);
             if (user == null)
@@ -72,7 +72,7 @@ namespace Nether.Web.Features.Identity
         [SwaggerResponse((int)HttpStatusCode.OK, typeof(UserResponseModel), "Returns the updated details")]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpPut("users/{userId}")]
-        public async Task<IActionResult> PutUser(string userId, UserRequestModel userModel)
+        public async Task<IActionResult> PutUser([FromQuery] string userId, [FromBody] UserRequestModel userModel)
         {
             var user = UserRequestModel.MapToUser(userModel, userId);
             await _userStore.SaveUserAsync(user);
@@ -88,7 +88,7 @@ namespace Nether.Web.Features.Identity
         [SwaggerResponse((int)HttpStatusCode.Created, description: "The Location header contains the URL to GET the user details")]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpPost("users")]
-        public async Task<IActionResult> PostUser(UserRequestModel userModel)
+        public async Task<IActionResult> PostUser([FromBody] UserRequestModel userModel)
         {
             var user = UserRequestModel.MapToUser(userModel, userId: null);
             await _userStore.SaveUserAsync(user);
@@ -99,7 +99,7 @@ namespace Nether.Web.Features.Identity
         [SwaggerResponse((int)HttpStatusCode.OK, description: "The user has been deleted")]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpDelete("users/{userId}")]
-        public async Task<IActionResult> Delete(string userId)
+        public async Task<IActionResult> Delete([FromQuery] string userId)
         {
             var user = await _userStore.GetUserByIdAsync(userId);
             if (user == null)
