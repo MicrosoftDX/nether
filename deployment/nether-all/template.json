@@ -86,6 +86,25 @@
             "properties": {
                 "name": "[variables('hostingPlanName')]"
             }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "name": "[variables('webSiteName')]",
+            "apiVersion": "2015-08-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('hostingPlanName')]"
+            ],
+            "tags": {
+                "displayName": "WebSite"
+            },
+            "properties":{
+                "name": "[variables('webSiteName')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+            },
+            "resources": [
+                
+            ]
         }
     ]
 }
