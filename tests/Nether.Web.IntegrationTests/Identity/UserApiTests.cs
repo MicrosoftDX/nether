@@ -12,22 +12,26 @@ namespace Nether.Web.IntegrationTests.Identity
     {
         private HttpClient _client;
 
-        //[Fact]
-        //public async Task As_a_player_I_get_Forbidden_response_calling_GetUsers()
-        //{
-        //    AsPlayer();
-        //    ResponseForGet("/users", hasStatusCode: HttpStatusCode.Forbidden);
-        //}
+        [Fact]
+        public async Task As_a_player_I_get_Forbidden_response_calling_GetUsers()
+        {
+            await AsPlayerAsync();
+            await ResponseForGetAsync("/api/identity/users", hasStatusCode: HttpStatusCode.Forbidden);
+        }
 
-        //private void ResponseForGet(string path, HttpStatusCode hasStatusCode)
-        //{
-        //    _client.GetAsync
-        //}
+        private async Task<HttpResponseMessage> ResponseForGetAsync(string path, HttpStatusCode hasStatusCode)
+        {
+            var response = await _client.GetAsync(path);
 
-        //private void AsPlayer()
-        //{
-        //    _client = GetClient(username:"testuser", isPlayer: true);
-        //}
+            Assert.Equal(hasStatusCode, response.StatusCode);
+
+            return response;
+        }
+
+        private async Task AsPlayerAsync()
+        {
+            _client = await GetClientAsync(username: "testuser", setPlayerGamertag: true);
+        }
 
     }
 }
