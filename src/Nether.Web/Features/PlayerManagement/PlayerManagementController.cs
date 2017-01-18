@@ -314,14 +314,14 @@ namespace Nether.Web.Features.PlayerManagement
             Group group = await _store.GetGroupDetailsAsync(groupName);
             if (group == null)
             {
-                _log.LogDebug("group '{0}' not found", groupName);
+                _log.LogWarning("group '{0}' not found", groupName);
                 return BadRequest();
             }
 
             Player player = await _store.GetPlayerDetailsAsync(playerName);
             if (player == null)
             {
-                _log.LogDebug("player '{0}' not found", playerName);
+                _log.LogWarning("player '{0}' not found", playerName);
                 return BadRequest();
             }
 
