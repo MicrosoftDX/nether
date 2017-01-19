@@ -1,4 +1,7 @@
-﻿using IdentityModel.Client;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using IdentityModel.Client;
 using System;
 using System.Net.Http;
 using System.Security.Authentication;
@@ -13,7 +16,7 @@ namespace NetherLoadTest
         private readonly string _clientId;
         private readonly string _clientSecret;
         private readonly HttpClient _httpClient;
-        
+
         public NetherClient(string baseUrl, string clientId, string clientSecret)
         {
             _baseUrl = baseUrl;
