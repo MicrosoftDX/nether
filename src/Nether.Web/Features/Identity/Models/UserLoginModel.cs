@@ -11,8 +11,8 @@ namespace Nether.Web.Features.Identity.Models
 {
     public class UserLoginModel
     {
-        public string ProviderData { get; set; }
-        public string ProviderId { get; set; }
         public string ProviderType { get; set; }
+        public string ProviderId { get; set; }
+        // Don't include ProviderData as that may be sensitive (e.g. password hash!)
     }
 }

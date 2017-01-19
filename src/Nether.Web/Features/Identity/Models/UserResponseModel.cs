@@ -25,8 +25,7 @@ namespace Nether.Web.Features.Identity.Models
                     Logins = user.Logins.Select(l => new UserLoginModel
                     {
                         ProviderType = l.ProviderType,
-                        ProviderId = l.ProviderId,
-                        ProviderData = l.ProviderData
+                        ProviderId = l.ProviderId
                     })
                     .ToList()
                 }

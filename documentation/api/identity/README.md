@@ -1,8 +1,10 @@
 # Users API (Identity)
 
 * [List all users](#list-all-users)
-* [Get user](#get-user)
-
+* [Get a user](#get-a-user)
+* [Add a user](#add-a-user)
+* [Update a user](#update-a-user)
+* [Remove a user](#remove-a-user)
 
 ## List all users
 
@@ -35,7 +37,7 @@ The `_link` property of a user summary provides the URL to make a `GET` request 
 
 
 
-## Get user
+## Get a user
 
 Authorisation: requires `admin` role
 
@@ -56,8 +58,7 @@ Gets details of the user and their logins.
     "logins": [
       {
         "providerType": "password",
-        "providerId": "netheruser",
-        "providerData": "...",
+        "providerId": "netheruser"
       }
     ]
   }
@@ -67,7 +68,105 @@ Gets details of the user and their logins.
 
 Roles: currently Admin or Player
 
-For `logins`, the `providerType` is currently `password` (for username + password flow) or `facebook` for the facebook user access token flow. The meaning of `providerId` and `providerData` are dependent on the `providerType`
+For `logins`, the `providerType` is currently `password` (for username + password flow) or `facebook` for the facebook user access token flow. The `providerId` is the identifier for the user for the given `providerType`. The provider may store additional information (e.g. the password hash for the `password` provider, but the API intentionally doesn't provide this).
 
 
 
+## Add a user
+
+Authorisation: requires `admin` role
+
+```
+    POST /api/identity/users
+```
+
+Creates a new user and assigns them a user id.
+
+### Parameters
+Parameter | Type | Description
+----------|------|------------
+role | string | **Required**. Specifies the user's role. Currently `Admin` and `Player` are supported
+active | boolean | **Required**. Specifies whether the user is active (i.e. should be allowed to log in)
+
+
+
+#### Example
+
+```json
+{
+  "role": "Admin",
+  "active": true
+}
+```
+
+**TODO - need to sort out API to add logins (and document it)** Currently the API will accept a logins property, but we should add APIs to add logins
+
+### Response: 201 Created
+
+Response contains a `Location` header with the URL for the newly created user. Issuing a `GET` against the header value provides the user details.
+
+
+
+
+## Update a user
+
+Authorisation: requires `admin` role
+
+```
+    PUT /api/identity/users/&lt;userId&gt;
+```
+
+Updates an existing user.
+
+### Parameters
+Parameter | Type | Description
+----------|------|------------
+role | string | **Required**. Specifies the user's role. Currently `Admin` and `Player` are supported
+active | boolean | **Required**. Specifies whether the user is active (i.e. should be allowed to log in)
+
+
+
+#### Example
+
+```json
+{
+  "role": "Admin",
+  "active": false
+}
+```
+
+**TODO - need to sort out API to add logins (and document it)**
+
+### Response: 200 OK
+
+The response contains the updated user details:
+
+``` json
+{
+  "user": {
+    "userId": "netheruser",
+    "active": false,
+    "role": "Admin",
+    "logins": [
+      {
+        "providerType": "password",
+        "providerId": "netheruser"
+      }
+    ]
+  }
+}
+```
+
+
+
+## Remove a user
+
+Authorisation: requires `admin` role
+
+```
+    DELETE /api/identity/users/&lt;userId&gt;
+```
+
+### Response: 204 NoContent
+
+The user has been deleted

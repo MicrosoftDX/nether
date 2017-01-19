@@ -13,19 +13,20 @@ namespace Nether.Web.IntegrationTests.Identity
 {
     public class UserApiTests : WebTestBase
     {
-        private HttpClient _client;
-
         [Fact]
         public async Task As_a_player_I_get_Forbidden_response_calling_GetUsers()
         {
-            await AsPlayerAsync();
-            await ResponseForGetAsync("/api/identity/users", hasStatusCode: HttpStatusCode.Forbidden);
+            var client = await AsPlayerAsync();
+
+            var response = await client.GetAsync("/api/identity/users");
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
         [Fact]
         public async Task As_a_player_I_get_Forbidden_response_calling_GetUser()
         {
-            await AsPlayerAsync();
-            await ResponseForGetAsync("/api/identity/users/123", hasStatusCode: HttpStatusCode.Forbidden);
+            var client = await AsPlayerAsync();
+            var response = await client.GetAsync("/api/identity/users/123");
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
         // ... should we fill out the other requests to check permissions, or not?
 
@@ -33,10 +34,11 @@ namespace Nether.Web.IntegrationTests.Identity
         [Fact]
         public async Task As_an_admin_I_can_list_users()
         {
-            await AsAdminAsync();
-            var response = await ResponseForGetAsync("/api/identity/users", hasStatusCode: HttpStatusCode.OK);
-            dynamic responseContent = await response.Content.ReadAsAsync<dynamic>();
+            var client = await AsAdminAsync();
+            var response = await client.GetAsync("/api/identity/users");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
+            dynamic responseContent = await response.Content.ReadAsAsync<dynamic>();
             var users = ((IEnumerable<dynamic>)responseContent.users).ToList();
             Assert.NotNull(users);
             Assert.True(users.Count > 0);
@@ -49,24 +51,26 @@ namespace Nether.Web.IntegrationTests.Identity
             Assert.NotNull(user._link);
         }
 
-
-        private async Task AsPlayerAsync()
+        [Fact]
+        public async Task As_an_admin_I_can_create_a_user_with_a_login_and_login_as_that_user()
         {
-            _client = await GetClientAsync(username: "testuser", setPlayerGamertag: true);
+            var client = await AsAdminAsync();
+
+            // TODO create user with login
+            var response = client.PostAsJsonAsync("/api/identity/users")
+
+            // TODO login as that user
         }
-        private async Task AsAdminAsync()
+
+
+        private async Task<HttpClient> AsPlayerAsync()
         {
-            _client = await GetClientAsync(username: "devadmin", setPlayerGamertag: false);
+            return await GetClientAsync(username: "testuser", setPlayerGamertag: true);
         }
-
-
-        private async Task<HttpResponseMessage> ResponseForGetAsync(string path, HttpStatusCode hasStatusCode)
+        private async Task<HttpClient> AsAdminAsync()
         {
-            var response = await _client.GetAsync(path);
-
-            Assert.Equal(hasStatusCode, response.StatusCode);
-
-            return response;
+            return await GetClientAsync(username: "devadmin", setPlayerGamertag: false);
         }
+
     }
 }

@@ -63,6 +63,22 @@ namespace Nether.Web.Features.Identity
         }
 
         /// <summary>
+        /// Add a new user
+        /// </summary>
+        /// <param name="userModel">The new user and login details for the user (including user id)</param>
+        /// <returns></returns>
+        [ProducesResponseType((int)HttpStatusCode.Created)]
+        [Authorize(Roles = RoleNames.Admin)]
+        [HttpPost("users")]
+        public async Task<IActionResult> PostUser([FromBody] UserRequestModel userModel)
+        {
+            var user = UserRequestModel.MapToUser(userModel, userId: null);
+            await _userStore.SaveUserAsync(user);
+
+            return CreatedAtRoute(nameof(GetUser), new { userId = user.UserId });
+        }
+
+        /// <summary>
         /// Update the user and logins for a user
         /// </summary>
         /// <param name="userId">The id of the user to update</param>
@@ -79,21 +95,6 @@ namespace Nether.Web.Features.Identity
             return Ok(UserResponseModel.MapFrom(user));
         }
 
-        /// <summary>
-        /// Add a new user
-        /// </summary>
-        /// <param name="userModel">The new user and login details for the user (including user id)</param>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.Created)]
-        [Authorize(Roles = RoleNames.Admin)]
-        [HttpPost("users")]
-        public async Task<IActionResult> PostUser([FromBody] UserRequestModel userModel)
-        {
-            var user = UserRequestModel.MapToUser(userModel, userId: null);
-            await _userStore.SaveUserAsync(user);
-
-            return CreatedAtRoute(nameof(GetUser), new { userId = user.UserId });
-        }
 
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [Authorize(Roles = RoleNames.Admin)]
