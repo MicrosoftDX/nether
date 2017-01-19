@@ -1,4 +1,7 @@
-﻿(function (global) {
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+(function (global) {
     System.config({
         paths: {
             // paths serve as alias
