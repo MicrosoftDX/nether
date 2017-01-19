@@ -67,7 +67,8 @@ namespace Nether.Data.Sql.Identity
 
         public async Task DeleteUserAsync(string userId)
         {
-            _context.Users.Remove(new UserEntity { UserId = userId });
+            var user = await _context.Users.FindAsync(userId);
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }
     }
