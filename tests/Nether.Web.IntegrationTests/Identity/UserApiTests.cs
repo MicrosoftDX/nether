@@ -52,12 +52,88 @@ namespace Nether.Web.IntegrationTests.Identity
         }
 
         [Fact]
+        public async Task As_an_admin_I_can_create_a_user_and_update_their_details_and_remove_the_user()
+        {
+            // This test is a classic example of something that would benefit from SpecFlow
+            // as it can be split into separate steps that are reported on in the execution output!
+            // Roll on SpecFlow support for .NET Core
+
+            var client = await AsAdminAsync();
+
+            // Add user
+            var response = await client.PostAsJsonAsync(
+                "/api/identity/users",
+                new
+                {
+                    role = "Admin",
+                    active = true
+                });
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+            var userLocation = response.Headers.Location.LocalPath;
+            Assert.StartsWith("/api/identity/users/", userLocation);
+
+
+            // Get user
+            response = await client.GetAsync(userLocation);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            dynamic userContent = await response.Content.ReadAsAsync<dynamic>();
+            dynamic user = userContent.user;
+
+            string userId = user.userId;
+            Assert.NotNull(userId);
+            Assert.Equal("Admin", (string)user.role);
+            Assert.Equal(true, (bool)user.active);
+
+
+            // Update user
+            response = await client.PutAsJsonAsync(
+                userLocation,
+                new
+                {
+                    role = "Player",
+                    active = false
+                });
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            userContent = await response.Content.ReadAsAsync<dynamic>();
+            user = userContent.user;
+            Assert.Equal(userId, (string)user.userId);
+            Assert.Equal("Player", (string)user.role);
+            Assert.Equal(false, (bool)user.active);
+
+
+            // Get user again
+            response = await client.GetAsync(userLocation);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            userContent = await response.Content.ReadAsAsync<dynamic>();
+            user = userContent.user;
+            Assert.Equal(userId, (string)user.userId);
+            Assert.Equal("Player", (string)user.role);
+            Assert.Equal(false, (bool)user.active);
+
+
+            // Remove user
+            response = await client.DeleteAsync(userLocation);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+
+            // Get user again (shouldn't exist)
+            response = await client.GetAsync(userLocation);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+
+        [Fact(Skip = "Not Implemented")]
         public async Task As_an_admin_I_can_create_a_user_with_a_login_and_login_as_that_user()
         {
             var client = await AsAdminAsync();
 
             // TODO create user with login
-            var response = client.PostAsJsonAsync("/api/identity/users")
+            //var response = client.PostAsJsonAsync("/api/identity/users")
 
             // TODO login as that user
         }
