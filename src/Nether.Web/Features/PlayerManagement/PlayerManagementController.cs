@@ -8,7 +8,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Nether.Data.PlayerManagement;
 using Nether.Web.Utilities;
-using Swashbuckle.SwaggerGen.Annotations;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System;
@@ -58,8 +57,8 @@ namespace Nether.Web.Features.PlayerManagement
         /// Gets the player information from currently logged in user
         /// </summary>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerGetResponseModel))]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "player not found")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerGetResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [Authorize(Roles = RoleNames.Player)]
         [HttpGet("player")]
         public async Task<ActionResult> GetCurrentPlayer()
@@ -78,8 +77,8 @@ namespace Nether.Web.Features.PlayerManagement
         /// Gets the extended player information from currently logged in user
         /// </summary>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerExtendedGetResponseModel))]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "Extend player information not found")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerExtendedGetResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [Authorize(Roles = RoleNames.Player)]
         [HttpGet("playerextended")]
         public async Task<ActionResult> GetCurrentPlayerExtended()
@@ -99,10 +98,9 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="player">Player data</param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.NoContent, Description = "Player updated successfully")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [Authorize(Roles = RoleNames.Player)]
-        [Route("player")]
-        [HttpPut]
+        [HttpPut("player")]
         public async Task<ActionResult> PutCurrentPlayer([FromBody]PlayerPutRequestModel player)
         {
             string userId = User.GetId();
@@ -112,7 +110,7 @@ namespace Nether.Web.Features.PlayerManagement
                 new Player { UserId = userId, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
 
             // Return result
-            return new NoContentResult();
+            return NoContent();
         }
 
         /// <summary>
@@ -120,10 +118,9 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="player">Player data</param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.NoContent, Description = "Extend Player information (e.g. JSON) updated successfully")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [Authorize(Roles = RoleNames.Player)]
-        [Route("playerextended")]
-        [HttpPut]
+        [HttpPut("playerextended")]
         public async Task<ActionResult> PutCurrentPlayerExtended([FromBody]PlayerExtendedPutRequestModel player)
         {
             string userId = User.GetId();
@@ -134,7 +131,7 @@ namespace Nether.Web.Features.PlayerManagement
                 new PlayerExtended { UserId = userId, Gamertag = player.Gamertag, ExtendedInformation = player.ExtendedInformation });
 
             // Return result
-            return new NoContentResult();
+            return NoContent();
         }
 
         ////////////////////////////////////
@@ -146,16 +143,15 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="newPlayer">Player data</param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.Created, Description = "player created")]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "user has no gamertag")]
+        [ProducesResponseType((int)HttpStatusCode.Created)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(Roles = RoleNames.Admin)]
-        [Route("players")]
-        [HttpPost]
+        [HttpPost("players")]
         public async Task<ActionResult> Post([FromBody]PlayerPostRequestModel newPlayer)
         {
             if (string.IsNullOrWhiteSpace(newPlayer.Gamertag))
             {
-                return base.BadRequest(); //TODO: return error info in body
+                return BadRequest(); //TODO: return error info in body
             }
 
             // Save player
@@ -169,11 +165,7 @@ namespace Nether.Web.Features.PlayerManagement
             await _store.SavePlayerAsync(player);
 
             // Return result
-            string location = Url.Action(
-                nameof(GetPlayer),
-                ControllerName,
-                new { gamertag = player.Gamertag });
-            return base.Created(location, new { gamertag = player.Gamertag });
+            return CreatedAtRoute(nameof(GetPlayer), new { gamertag = player.Gamertag }, null);
         }
 
         /// <summary>
@@ -181,16 +173,15 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="Player">Player data</param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.Created, Description = "player extended information updated")]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "user has no gamertag")]
+        [ProducesResponseType((int)HttpStatusCode.Created)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(Roles = RoleNames.Admin)]
-        [Route("playersextended")]
-        [HttpPost]
+        [HttpPost("playersextended")]
         public async Task<ActionResult> PostExtended([FromBody]PlayerExtendedPostRequestModel Player)
         {
             if (string.IsNullOrWhiteSpace(Player.Gamertag))
             {
-                return base.BadRequest(); //TODO: return error info in body
+                return BadRequest(); //TODO: return error info in body
             }
 
             // Save player extended information
@@ -202,12 +193,8 @@ namespace Nether.Web.Features.PlayerManagement
             };
             await _store.SavePlayerExtendedAsync(player);
 
-            //// Return result
-            string location = Url.Action(
-                nameof(GetPlayer),
-                ControllerName,
-                new { gamertag = player.Gamertag });
-            return base.Created(location, new { gamertag = player.Gamertag });
+            // Return result
+            return CreatedAtRoute(nameof(GetPlayer), new { gamertag = player.Gamertag }, null);
         }
 
         /// <summary>
@@ -215,15 +202,16 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="gamertag">Gamer tag</param>
         /// <returns>Player information</returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerGetResponseModel))]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "player not found")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerGetResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [Authorize(Roles = RoleNames.Admin)]
-        [HttpGet("players/{gamertag}")]
+        [HttpGet("players/{gamertag}", Name = nameof(GetPlayer))]
         public async Task<ActionResult> GetPlayer(string gamertag)
         {
             // Call data store
             var player = await _store.GetPlayerDetailsAsync(gamertag);
-            if (player == null) return NotFound();
+            if (player == null)
+                return NotFound();
 
             // Return result
             return Ok(PlayerGetResponseModel.FromPlayer(player));
@@ -234,15 +222,16 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="gamertag">Gamer tag</param>
         /// <returns>Player extended information</returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerExtendedGetResponseModel))]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, Description = "player not found")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerExtendedGetResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpGet("playersextended/{gamertag}")]
         public async Task<ActionResult> GetPlayerExtended(string gamertag)
         {
             // Call data store
             var player = await _store.GetPlayerDetailsExtendedAsync(gamertag);
-            if (player == null) return NotFound();
+            if (player == null)
+                return NotFound();
 
             // Return result
             return Ok(PlayerExtendedGetResponseModel.FromPlayer(player));
@@ -252,7 +241,7 @@ namespace Nether.Web.Features.PlayerManagement
         /// Gets all players
         /// </summary>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(PlayerListGetResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerListGetResponseModel))]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpGet("players")]
         public async Task<ActionResult> GetPlayers()
@@ -274,7 +263,7 @@ namespace Nether.Web.Features.PlayerManagement
         /// Gets the list of groups current player belongs to.
         /// </summary>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupListResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupListResponseModel))]
         [Authorize(Roles = RoleNames.PlayerOrAdmin)]
         [HttpGet("player/groups")]
         public async Task<ActionResult> GetPlayerGroups()
@@ -287,7 +276,7 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="gamerTag">Player's gamertag.</param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupListResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupListResponseModel))]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpGet("players/{gamerTag}/groups")]
         public async Task<ActionResult> GetPlayerGroups(string gamerTag)
@@ -306,9 +295,10 @@ namespace Nether.Web.Features.PlayerManagement
         /// <param name="playerName">Player's gamer tag</param>
         /// <param name="groupName">Group name.</param>
         /// <returns></returns>
-        [Route("players/{playerName}/groups/{groupName}")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(Roles = RoleNames.Admin)]
-        [HttpPut]
+        [HttpPut("players/{playerName}/groups/{groupName}")]
         public async Task<ActionResult> AddPlayerToGroup(string playerName, string groupName)
         {
             Group group = await _store.GetGroupDetailsAsync(groupName);
@@ -327,7 +317,7 @@ namespace Nether.Web.Features.PlayerManagement
 
             await _store.AddPlayerToGroupAsync(group, player);
 
-            return Ok();
+            return NoContent();
         }
 
         /// <summary>
@@ -335,9 +325,10 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="groupName">Group name.</param>
         /// <returns></returns>
-        [Route("player/groups/{groupName}")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(Roles = RoleNames.PlayerOrAdmin)]
-        [HttpPut]
+        [HttpPut("player/groups/{groupName}")]
         public async Task<ActionResult> AddCurrentPlayerToGroup(string groupName)
         {
             return await AddPlayerToGroup(User.GetGamerTag(), groupName);
@@ -349,10 +340,9 @@ namespace Nether.Web.Features.PlayerManagement
         /// <param name="groupName">Group name</param>
         /// <param name="playerName">Player name</param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.NoContent, Description = "player is removed from the group successfully")]
-        [Route("groups/{groupName}/players/{playerName}")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [Authorize(Roles = RoleNames.Admin)]
-        [HttpDelete]
+        [HttpDelete("groups/{groupName}/players/{playerName}")]
         public async Task<ActionResult> DeletePlayerFromGroup(string groupName, string playerName)
         {
             Player player = await _store.GetPlayerDetailsAsync(playerName);
@@ -360,7 +350,7 @@ namespace Nether.Web.Features.PlayerManagement
 
             await _store.RemovePlayerFromGroupAsync(group, player);
 
-            return new NoContentResult();
+            return NoContent();
         }
 
         //Implementation of the group API
@@ -370,10 +360,9 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="group">Group object</param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.Created, Description = "group created")]
+        [ProducesResponseType((int)HttpStatusCode.Created)]
         [Authorize(Roles = RoleNames.PlayerOrAdmin)]
-        [Route("groups")]
-        [HttpPost]
+        [HttpPost("groups")]
         public async Task<ActionResult> PostGroup([FromBody]GroupPostRequestModel group)
         {
             // Save group
@@ -388,18 +377,14 @@ namespace Nether.Web.Features.PlayerManagement
             );
 
             // Return result
-            string location = Url.Action(
-                nameof(GetGroup),
-                ControllerName,
-                new { groupName = group.Name });
-            return Created(location, new { groupName = group.Name });
+            return CreatedAtRoute(nameof(GetGroup), new { groupName = group.Name }, null);
         }
 
         /// <summary>
         /// Get list of all groups. You must be an administrator to perform this action.
         /// </summary>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupListResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupListResponseModel))]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpGet("groups")]
         public async Task<ActionResult> GetGroupsAsync()
@@ -416,9 +401,9 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="groupName"></param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupGetResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupGetResponseModel))]
         [Authorize(Roles = RoleNames.Admin)]
-        [HttpGet("groups/{groupName}", Name = "GetGroup")]
+        [HttpGet("groups/{groupName}", Name = nameof(GetGroup))]
         public async Task<ActionResult> GetGroup(string groupName)
         {
             // Call data store
@@ -443,7 +428,7 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="groupName">Name of the group</param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(GroupMemberResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupMemberResponseModel))]
         [Authorize(Roles = RoleNames.PlayerOrAdmin)]
         [HttpGet("groups/{groupName}/players")]
         public async Task<ActionResult> GetGroupPlayers(string groupName)
@@ -466,10 +451,9 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="group">Group name</param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.NoContent, Description = "group updated successfully")]
-        [Route("groups/{name}")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [Authorize(Roles = RoleNames.Admin)]
-        [HttpPut]
+        [HttpPut("groups/{name}")]
         public async Task<ActionResult> PutGroup([FromBody]GroupPostRequestModel group)
         {
             // Update group
@@ -484,7 +468,7 @@ namespace Nether.Web.Features.PlayerManagement
                 );
 
             // Return result
-            return new NoContentResult();
+            return NoContent();
         }
     }
 }

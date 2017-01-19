@@ -15,7 +15,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 {
     public class PlayerManagementTests : WebTestBase
     {
-        private const string BaseUri = "/api/";
+        private const string BasePath = "/api/";
 
 
         [Fact]
@@ -66,8 +66,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
                                 Guid.NewGuid().ToString(),
                                 null);
 
-            Assert.Equal("/api/players/" + gamertag, result.Response.Headers.GetValues("Location").First());
-            Assert.Equal(gamertag, (string)result.ResponseBody.gamertag);
+            Assert.Equal($"{BaseUrl}api/players/" + gamertag, result.Response.Headers.GetValues("Location").First());
 
             //check that I can get player by gamertag
             PlayerGetResponse response = await GetPlayerAsync(client, gamertag);
@@ -107,8 +106,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
             // validate group response
             var groupResponse = await CreateGroupAsync(client, group, HttpStatusCode.Created);
-            Assert.Equal("/api/groups/" + groupName, groupResponse.Response.Headers.GetValues("Location").First());
-            Assert.Equal(groupName, (string)groupResponse.ResponseBody.groupName);
+            Assert.Equal($"{BaseUrl}api/groups/" + groupName, groupResponse.Response.Headers.GetValues("Location").First());
 
             //list groups and check the created group is in the list
             GroupListResponse allGroups = await GetAllGroupsAsync(client);
@@ -130,9 +128,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
             // validate group response
             var groupResponse = await CreateGroupAsync(client, group, HttpStatusCode.Created);
-            Assert.Equal("/api/groups/" + groupName, groupResponse.Response.Headers.GetValues("Location").First());
-            Assert.Equal(groupName, (string)groupResponse.ResponseBody.groupName);
-
+            Assert.Equal($"{BaseUrl}api/groups/" + groupName, groupResponse.Response.Headers.GetValues("Location").First());
 
             await AddPlayerToGroupAsync(client, groupName);
 
@@ -238,37 +234,37 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         {
             if (gamerTag == null)
             {
-                return await HttpGet<GroupListResponse>(client, BaseUri + "player/groups", expectedCode);
+                return await HttpGet<GroupListResponse>(client, BasePath + "player/groups", expectedCode);
             }
             else
             {
-                return await HttpGet<GroupListResponse>(client, BaseUri + "players/" + gamerTag + "/groups", expectedCode);
+                return await HttpGet<GroupListResponse>(client, BasePath + "players/" + gamerTag + "/groups", expectedCode);
             }
         }
 
         private async Task<GroupMembersResponseModel> GetGroupMembersAsync(HttpClient client, string groupName, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            return await HttpGet<GroupMembersResponseModel>(client, $"{BaseUri}groups/{groupName}/players", expectedCode);
+            return await HttpGet<GroupMembersResponseModel>(client, $"{BasePath}groups/{groupName}/players", expectedCode);
         }
 
         private async Task DeletePlayerFromGroupAsync(HttpClient client, string groupName, string playerName, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
         {
-            HttpResponseMessage response = await client.DeleteAsync($"{BaseUri}groups/{groupName}/players/{playerName}");
+            HttpResponseMessage response = await client.DeleteAsync($"{BasePath}groups/{groupName}/players/{playerName}");
 
             Assert.Equal(expectedCode, response.StatusCode);
         }
 
-        private async Task AddPlayerToGroupAsync(HttpClient client, string groupName, string playerName = null, HttpStatusCode expectedStatus = HttpStatusCode.OK)
+        private async Task AddPlayerToGroupAsync(HttpClient client, string groupName, string playerName = null, HttpStatusCode expectedStatus = HttpStatusCode.NoContent)
         {
             HttpResponseMessage response;
 
             if (playerName == null)
             {
-                response = await client.PutAsync($"{BaseUri}player/groups/{groupName}", null);
+                response = await client.PutAsync($"{BasePath}player/groups/{groupName}", null);
             }
             else
             {
-                response = await client.PutAsync($"{BaseUri}players/{playerName}/groups/{groupName}", null);
+                response = await client.PutAsync($"{BasePath}players/{playerName}/groups/{groupName}", null);
             }
 
             Assert.Equal(expectedStatus, response.StatusCode);
@@ -276,7 +272,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
         private async Task<ApiResponse> CreateGroupAsync(HttpClient client, GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.Created)
         {
-            HttpResponseMessage response = await client.PostAsJsonAsync(BaseUri + "groups", group);
+            HttpResponseMessage response = await client.PostAsJsonAsync(BasePath + "groups", group);
 
             Assert.Equal(expectedCode, response.StatusCode);
 
@@ -287,39 +283,39 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
         private async Task UpdateGroupAsync(HttpClient client, GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
         {
-            HttpResponseMessage response = await client.PutAsJsonAsync(BaseUri + "groups/" + group.Name, group);
+            HttpResponseMessage response = await client.PutAsJsonAsync(BasePath + "groups/" + group.Name, group);
 
             Assert.Equal(expectedCode, response.StatusCode);
         }
 
         private async Task<GroupListResponse> GetAllGroupsAsync(HttpClient client, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            return await HttpGet<GroupListResponse>(client, BaseUri + "groups", expectedCode);
+            return await HttpGet<GroupListResponse>(client, BasePath + "groups", expectedCode);
         }
 
         private async Task<GroupGetResponse> GetGroupByNameAsync(HttpClient client, string name, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            return await HttpGet<GroupGetResponse>(client, BaseUri + "groups/" + name, expectedCode);
+            return await HttpGet<GroupGetResponse>(client, BasePath + "groups/" + name, expectedCode);
         }
 
         private async Task<PlayerListGetResponse> GetPlayersAsync(HttpClient client, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            return await HttpGet<PlayerListGetResponse>(client, BaseUri + "players", expectedCode);
+            return await HttpGet<PlayerListGetResponse>(client, BasePath + "players", expectedCode);
         }
 
         private async Task<PlayerGetResponse> GetPlayerAsync(HttpClient client, string gamerTag = null, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
             if (gamerTag == null)
             {
-                return await HttpGet<PlayerGetResponse>(client, BaseUri + "player");
+                return await HttpGet<PlayerGetResponse>(client, BasePath + "player");
             }
 
-            return await HttpGet<PlayerGetResponse>(client, BaseUri + "players/" + gamerTag);
+            return await HttpGet<PlayerGetResponse>(client, BasePath + "players/" + gamerTag);
         }
 
         private async Task UpdatePlayerAsync(HttpClient client, string country, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
         {
-            HttpResponseMessage response = await client.PutAsJsonAsync(BaseUri + "player",
+            HttpResponseMessage response = await client.PutAsJsonAsync(BasePath + "player",
                 new
                 {
                     Country = country,
@@ -337,7 +333,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             string customTag,
             HttpStatusCode expectedCode = HttpStatusCode.Created)
         {
-            HttpResponseMessage response = await client.PostAsJsonAsync(BaseUri + "players",
+            HttpResponseMessage response = await client.PostAsJsonAsync(BasePath + "players",
                 new
                 {
                     UserId = userId,

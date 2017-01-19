@@ -5,6 +5,7 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using Nether.Web.Utilities;
 using Microsoft.Extensions.Configuration;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,8 +20,9 @@ namespace Nether.Web.Features.Analytics
         {
             _endpointInfo = endpointInfo;
         }
+        [ProducesResponseType((int)HttpStatusCode.OK, Type=typeof(AnalyticsEndpointInfoResponseModel))]
         [HttpGet]
-        public ActionResult Get()
+        public IActionResult Get()
         {
             Console.WriteLine();
             Console.WriteLine($"AccessKey = {_endpointInfo.AccessKey}");

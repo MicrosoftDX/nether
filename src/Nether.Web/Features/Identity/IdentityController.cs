@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nether.Data.Identity;
 using Nether.Web.Features.Identity.Models;
-using Swashbuckle.SwaggerGen.Annotations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -27,7 +26,7 @@ namespace Nether.Web.Features.Identity
         /// Return a list of users
         /// </summary>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(UserListModel), "The list of users")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserListModel))]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers()
@@ -48,8 +47,8 @@ namespace Nether.Web.Features.Identity
         /// </summary>
         /// <param name="userId">The id of the user to retrieve</param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(UserResponseModel), "The user details")]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, description: "No such user id")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpGet("users/{userId}", Name = nameof(GetUser))]
         public async Task<IActionResult> GetUser([FromQuery] string userId)
@@ -69,7 +68,7 @@ namespace Nether.Web.Features.Identity
         /// <param name="userId">The id of the user to update</param>
         /// <param name="userModel">The new user and logins details for the user</param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(UserResponseModel), "Returns the updated details")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type=typeof(UserResponseModel))]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpPut("users/{userId}")]
         public async Task<IActionResult> PutUser([FromQuery] string userId, [FromBody] UserRequestModel userModel)
@@ -85,7 +84,7 @@ namespace Nether.Web.Features.Identity
         /// </summary>
         /// <param name="userModel">The new user and login details for the user (including user id)</param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.Created, description: "The Location header contains the URL to GET the user details")]
+        [ProducesResponseType((int)HttpStatusCode.Created)]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpPost("users")]
         public async Task<IActionResult> PostUser([FromBody] UserRequestModel userModel)
@@ -96,7 +95,7 @@ namespace Nether.Web.Features.Identity
             return CreatedAtRoute(nameof(GetUser), new { userId = user.UserId });
         }
 
-        [SwaggerResponse((int)HttpStatusCode.OK, description: "The user has been deleted")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpDelete("users/{userId}")]
         public async Task<IActionResult> Delete([FromQuery] string userId)
@@ -108,7 +107,7 @@ namespace Nether.Web.Features.Identity
             }
             await _userStore.DeleteUserAsync(user.UserId);
 
-            return Ok();
+            return NoContent();
         }
     }
 }

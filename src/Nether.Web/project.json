@@ -25,7 +25,7 @@
     "Microsoft.AspNet.WebApi.Client": "5.2.3",
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "System.Runtime.Serialization.Xml": "4.1.1",
-    "Swashbuckle": "6.0.0-preview-0035",
+    "Swashbuckle.AspNetCore": "1.0.0-rc1",
     "Nether.Data.Sql": "1.0.0-*",
     "Microsoft.AspNetCore.Cryptography.KeyDerivation": "1.1.0",
     "Microsoft.EntityFrameworkCore.InMemory": "1.1.0"

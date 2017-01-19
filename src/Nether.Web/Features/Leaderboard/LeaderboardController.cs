@@ -12,7 +12,6 @@ using Nether.Data.Leaderboard;
 using Nether.Integration.Analytics;
 using Nether.Web.Features.Leaderboard.Configuration;
 using Nether.Web.Utilities;
-using Swashbuckle.SwaggerGen.Annotations;
 using System.Net;
 using Microsoft.Extensions.Logging;
 
@@ -49,8 +48,8 @@ namespace Nether.Web.Features.Leaderboard
         /// </summary>
         /// <param name="name">Name of the leaderboard</param>
         /// <returns>List of scores and gametags</returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, typeof(LeaderboardGetResponseModel))]
-        [SwaggerResponse((int)HttpStatusCode.Forbidden, Description = "not enough permissions to submit the score")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LeaderboardGetResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         [Authorize(Roles = RoleNames.Player)]
         [HttpGet("{name}")]
         public async Task<ActionResult> Get(string name)
@@ -89,8 +88,8 @@ namespace Nether.Web.Features.Leaderboard
         /// </summary>
         /// <param name="request">Achieved score, must be positive</param>
         /// <returns></returns>
-        [SwaggerResponse((int)HttpStatusCode.OK, Description = "score posted successfully")]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "score is negative or user does not have an associated gamertag")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(Roles = RoleNames.Player)]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody]LeaderboardPostRequestModel request)
@@ -134,8 +133,8 @@ namespace Nether.Web.Features.Leaderboard
         /// <summary>
         /// Deletes all score achievements for the logged in user
         /// </summary>
-        [SwaggerResponse((int)HttpStatusCode.OK, Description = "scores deleted successfully")]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "user does not have an associated gamertag")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(Roles = RoleNames.Player)]
         [HttpDelete("")]
         public async Task<ActionResult> DropMyScores()
