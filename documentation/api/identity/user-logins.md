@@ -36,6 +36,10 @@ The `_link` property of a login summary provides the URL to make a `DELETE` requ
 See [Get a user](users.md#get-a-user) for more information on `providerType` and `providerId`.
 
 
+### Response: 404 NotFound
+The user does not exist
+
+
 ## Add or update a login
 
 Authorisation: requires `admin` role
@@ -79,6 +83,9 @@ Body:
 
 Response contains a `Location` header with the URL for the newly created login. Issuing a `DELETE` against the header value will remove the login.
 
+### Response: 404 NotFound
+The user does not exist
+
 
 ## Remove a login
 
@@ -91,3 +98,6 @@ Authorisation: requires `admin` role
 ### Response: 204 NoContent
 
 The user login has been deleted
+
+### Response: 404 NotFound
+The user does not exist

@@ -70,6 +70,8 @@ Roles: currently Admin or Player
 
 For `logins`, the `providerType` can currently be: `password` (for username + password flow) or `facebook` for the facebook user access token flow. The `providerId` is the identifier for the user for the given `providerType`. The provider may store additional information (e.g. the password hash for the `password` provider, but the API intentionally doesn't provide this).
 
+### Response: 404 NotFound
+The user does not exist
 
 
 ## Add a user
@@ -135,7 +137,6 @@ active | boolean | **Required**. Specifies whether the user is active (i.e. shou
 }
 ```
 
-**TODO - need to sort out API to add logins (and document it)**
 
 ### Response: 200 OK
 
@@ -157,6 +158,9 @@ The response contains the updated user details:
 }
 ```
 
+### Response: 404 NotFound
+The user does not exist
+
 
 
 ## Remove a user
@@ -170,3 +174,6 @@ Authorisation: requires `admin` role
 ### Response: 204 NoContent
 
 The user has been deleted
+
+### Response: 404 NotFound
+The user does not exist
