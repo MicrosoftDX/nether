@@ -13,7 +13,7 @@ namespace Nether.Web.Features.Identity.Models
     {
         public string UserId { get; set; }
         public string Role { get; set; }
-        [JsonProperty(PropertyName ="_link")]
+        [JsonProperty(PropertyName = "_link")]
         public string _Link { get; set; }
     }
 }

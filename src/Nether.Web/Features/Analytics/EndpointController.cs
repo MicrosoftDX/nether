@@ -20,7 +20,7 @@ namespace Nether.Web.Features.Analytics
         {
             _endpointInfo = endpointInfo;
         }
-        [ProducesResponseType((int)HttpStatusCode.OK, Type=typeof(AnalyticsEndpointInfoResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(AnalyticsEndpointInfoResponseModel))]
         [HttpGet]
         public IActionResult Get()
         {

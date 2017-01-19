@@ -68,6 +68,5 @@ namespace Nether.Web.IntegrationTests.Identity
 
             return response;
         }
-
     }
 }

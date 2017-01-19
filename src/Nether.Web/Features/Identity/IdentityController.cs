@@ -68,7 +68,7 @@ namespace Nether.Web.Features.Identity
         /// <param name="userId">The id of the user to update</param>
         /// <param name="userModel">The new user and logins details for the user</param>
         /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type=typeof(UserResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserResponseModel))]
         [Authorize(Roles = RoleNames.Admin)]
         [HttpPut("users/{userId}")]
         public async Task<IActionResult> PutUser([FromQuery] string userId, [FromBody] UserRequestModel userModel)
