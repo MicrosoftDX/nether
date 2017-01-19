@@ -61,7 +61,7 @@ namespace Nether.Data.Sql.Identity
                 IsActive = user.IsActive,
                 Role = user.Role,
             };
-            userEntity.Logins = user.Logins.Select(l => l.Map(userEntity)).ToList();
+            userEntity.Logins = user.Logins?.Select(l => l.Map(userEntity))?.ToList();
             return userEntity;
         }
         public static LoginEntity Map(this Login login, UserEntity userEntity)
