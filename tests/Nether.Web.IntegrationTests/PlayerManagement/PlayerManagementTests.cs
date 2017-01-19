@@ -204,11 +204,11 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             var client = await GetClientAsync();
 
             string groupName = Guid.NewGuid().ToString();
-            await CreateGroupAsync(client, new GroupEntry { Name = groupName, Members = new[] { _gamertag, "testUserGamerTag" } });
+            await CreateGroupAsync(client, new GroupEntry { Name = groupName, Members = new[] { _gamertag } });
 
             GroupMembersResponseModel group = await GetGroupMembersAsync(client, groupName);
 
-            Assert.Equal(2, group.Gamertags.Length);
+            Assert.Equal(1, group.Gamertags.Length);
         }
 
         [Fact]
