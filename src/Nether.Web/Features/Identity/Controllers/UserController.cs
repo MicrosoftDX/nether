@@ -49,7 +49,7 @@ namespace Nether.Web.Features.Identity
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserResponseModel))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpGet("{userId}", Name = nameof(GetUser))]
-        public async Task<IActionResult> GetUser([FromQuery] string userId)
+        public async Task<IActionResult> GetUser([FromRoute] string userId)
         {
             var user = await _userStore.GetUserByIdAsync(userId);
             if (user == null)
@@ -72,7 +72,7 @@ namespace Nether.Web.Features.Identity
             var user = UserRequestModel.MapToUser(userModel, userId: null);
             await _userStore.SaveUserAsync(user);
 
-            return CreatedAtRoute(nameof(GetUser), new { userId = user.UserId });
+            return CreatedAtRoute(nameof(GetUser), new { userId = user.UserId }, null);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Nether.Web.Features.Identity
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserResponseModel))]
         [HttpPut("{userId}")]
-        public async Task<IActionResult> PutUser([FromQuery] string userId, [FromBody] UserRequestModel userModel)
+        public async Task<IActionResult> PutUser([FromRoute] string userId, [FromBody] UserRequestModel userModel)
         {
             var user = UserRequestModel.MapToUser(userModel, userId);
             await _userStore.SaveUserAsync(user);
@@ -94,7 +94,7 @@ namespace Nether.Web.Features.Identity
 
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [HttpDelete("{userId}")]
-        public async Task<IActionResult> Delete([FromQuery] string userId)
+        public async Task<IActionResult> Delete([FromRoute] string userId)
         {
             var user = await _userStore.GetUserByIdAsync(userId);
             if (user == null)
