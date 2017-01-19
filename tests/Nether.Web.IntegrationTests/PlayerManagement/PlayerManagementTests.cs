@@ -15,36 +15,36 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 {
     public class PlayerManagementTests : WebTestBase
     {
-        private const string BaseUri = "/api/";
-        private HttpClient _client;
+        private const string BasePath = "/api/";
 
-        public PlayerManagementTests()
+
+        [Fact]
+        public async Task As_a_player_I_can_get_my_player_info()
         {
-            _client = GetClient();
+            var client = await GetClientAsync();
+
+            PlayerGetResponse myPlayer = await GetPlayerAsync(client);
         }
 
         [Fact]
-        public async Task I_can_get_my_player_info()
+        public async Task As_a_player_I_can_update_my_info()
         {
-            PlayerGetResponse myPlayer = await GetPlayerAsync();
-        }
-
-        [Fact]
-        public async Task I_can_update_my_info()
-        {
-            PlayerGetResponse beforeUpdate = await GetPlayerAsync();
+            var client = await GetClientAsync();
+            PlayerGetResponse beforeUpdate = await GetPlayerAsync(client);
 
             string newCountry = Guid.NewGuid().ToString();
-            await UpdatePlayerAsync(newCountry);
+            await UpdatePlayerAsync(client, newCountry);
 
-            PlayerGetResponse afterUpdate = await GetPlayerAsync();
+            PlayerGetResponse afterUpdate = await GetPlayerAsync(client);
             Assert.Equal(newCountry, afterUpdate.Player.Country);
         }
 
         [Fact]
-        public async Task As_a_user_i_cannot_add_new_players()
+        public async Task As_a_player_I_cannot_add_new_players()
         {
+            var client = await GetClientAsync();
             await AddNewPlayerAsync(
+                client,
                 Guid.NewGuid().ToString(),
                 Guid.NewGuid().ToString(),
                 Guid.NewGuid().ToString(),
@@ -53,224 +53,226 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         }
 
         [Fact]
-        public async Task As_an_admin_i_can_add_new_players()
+        public async Task As_an_admin_I_can_add_new_players()
         {
-            _client = GetAdminClient();
+            var client = await GetAdminClientAsync();
 
             string gamertag = Guid.NewGuid().ToString();
             string userId = Guid.NewGuid().ToString();
             var result = await AddNewPlayerAsync(
+                                client,
                                 gamertag,
                                 userId,
                                 Guid.NewGuid().ToString(),
                                 null);
 
-            Assert.Equal("/api/players/" + gamertag, result.Response.Headers.GetValues("Location").First());
-            Assert.Equal(gamertag, (string)result.ResponseBody.gamertag);
+            Assert.Equal($"{BaseUrl}api/players/" + gamertag, result.Response.Headers.GetValues("Location").First());
 
             //check that I can get player by gamertag
-            PlayerGetResponse response = await GetPlayerAsync(gamertag);
+            PlayerGetResponse response = await GetPlayerAsync(client, gamertag);
         }
 
         [Fact]
-        public async Task As_an_admin_i_can_get_all_players()
+        public async Task As_an_admin_I_can_get_all_players()
         {
-            _client = GetAdminClient();
+            var client = await GetAdminClientAsync();
 
-            PlayerListGetResponse response = await GetPlayersAsync();
+            PlayerListGetResponse response = await GetPlayersAsync(client);
 
             Assert.NotNull(response.Players);
             Assert.True(response.Players.Length > 0);
         }
 
         [Fact]
-        public async Task As_a_normal_user_I_cant_get_player_list()
+        public async Task As_a_player_user_I_cant_get_player_list()
         {
-            PlayerListGetResponse response = await GetPlayersAsync(HttpStatusCode.Forbidden);
+            var client = await GetClientAsync();
+
+            PlayerListGetResponse response = await GetPlayersAsync(client, HttpStatusCode.Forbidden);
         }
 
         [Fact]
         public async Task As_an_admin_I_can_create_and_list_groups()
         {
-            _client = GetAdminClient();
+            var client = await GetAdminClientAsync();
 
             string groupName = Guid.NewGuid().ToString();
 
-            var g = new GroupEntry
+            var group = new GroupEntry
             {
                 Name = groupName,
                 Description = "fake"
             };
 
             // validate group response
-            var groupResponse = await CreateGroupAsync(g, HttpStatusCode.Created);
-            Assert.Equal("/api/groups/" + groupName, groupResponse.Response.Headers.GetValues("Location").First());
-            Assert.Equal(groupName, (string)groupResponse.ResponseBody.groupName);
+            var groupResponse = await CreateGroupAsync(client, group, HttpStatusCode.Created);
+            Assert.Equal($"{BaseUrl}api/groups/" + groupName, groupResponse.Response.Headers.GetValues("Location").First());
 
             //list groups and check the created group is in the list
-            GroupListResponse allGroups = await GetAllGroupsAsync();
-            Assert.True(allGroups.Groups.Any(gr => gr.Name == groupName));
+            GroupListResponse allGroups = await GetAllGroupsAsync(client);
+            Assert.True(allGroups.Groups.Any(g => g.Name == groupName));
         }
 
         [Fact]
-        public async Task As_a_users_I_can_create_and_list_my_groups()
+        public async Task As_a_player_I_can_create_and_list_my_groups()
         {
-            _client = GetClient();
+            var client = await GetClientAsync();
 
             string groupName = Guid.NewGuid().ToString();
 
-            var g = new GroupEntry
+            var group = new GroupEntry
             {
                 Name = groupName,
                 Description = "fake"
             };
 
             // validate group response
-            var groupResponse = await CreateGroupAsync(g, HttpStatusCode.Created);
-            Assert.Equal("/api/groups/" + groupName, groupResponse.Response.Headers.GetValues("Location").First());
-            Assert.Equal(groupName, (string)groupResponse.ResponseBody.groupName);
+            var groupResponse = await CreateGroupAsync(client, group, HttpStatusCode.Created);
+            Assert.Equal($"{BaseUrl}api/groups/" + groupName, groupResponse.Response.Headers.GetValues("Location").First());
 
-
-            await AddPlayerToGroupAsync(groupName);
+            await AddPlayerToGroupAsync(client, groupName);
 
 
             //list groups and check the created group is in the list
-            GroupListResponse allGroups = await GetPlayerGroupsAsync();
+            GroupListResponse allGroups = await GetPlayerGroupsAsync(client);
             Assert.True(allGroups.Groups.Any(gr => gr.Name == groupName));
         }
 
         [Fact]
-        public async Task I_can_get_a_group_by_name()
+        public async Task As_an_admin_I_can_get_a_group_by_name()
         {
-            _client = GetAdminClient();
+            var client = await GetAdminClientAsync();
 
             string name = Guid.NewGuid().ToString();
 
-            await CreateGroupAsync(new GroupEntry
+            await CreateGroupAsync(client, new GroupEntry
             {
                 Name = name
             });
 
-            GroupGetResponse g = await GetGroupByNameAsync(name);
+            GroupGetResponse g = await GetGroupByNameAsync(client, name);
 
             Assert.Equal(name, g.Group.Name);
         }
 
         [Fact]
-        public async Task Admin_can_update_groups()
+        public async Task As_an_admin_I_can_update_groups()
         {
-            _client = GetAdminClient();
+            var client = await GetAdminClientAsync();
 
             string name = Guid.NewGuid().ToString();
 
-            await CreateGroupAsync(new GroupEntry { Name = name, Description = "before change" });
+            await CreateGroupAsync(client, new GroupEntry { Name = name, Description = "before change" });
 
-            await UpdateGroupAsync(new GroupEntry { Name = name, Description = "after change" });
+            await UpdateGroupAsync(client, new GroupEntry { Name = name, Description = "after change" });
 
-            GroupGetResponse group = await GetGroupByNameAsync(name);
+            GroupGetResponse group = await GetGroupByNameAsync(client, name);
 
             Assert.Equal("after change", group.Group.Description);
         }
 
         [Fact]
-        public async Task Adding_and_removing_a_player_to_a_group()
+        public async Task As_an_admin_I_can_add_and_remove_a_player_to_a_group()
         {
-            _client = GetAdminClient();
+            var client = await GetClientAsync(); // ensure player is created
+            client = await GetAdminClientAsync();
 
             //create test group
             string groupName = Guid.NewGuid().ToString();
-            await CreateGroupAsync(new GroupEntry { Name = groupName });
+            await CreateGroupAsync(client, new GroupEntry { Name = groupName });
+
+            // TODO - clean this test up so that it's not relying on _gamertag shared state
 
             //add myself to this group
-            await AddPlayerToGroupAsync(groupName, _gamertag);
+            await AddPlayerToGroupAsync(client, groupName, _gamertag);
 
             //check that i'm in the group now
-            GroupMembersResponseModel groupMembers = await GetGroupMembersAsync(groupName);
+            GroupMembersResponseModel groupMembers = await GetGroupMembersAsync(client, groupName);
             Assert.True(groupMembers.Gamertags.Any(m => m == _gamertag));
 
             //remove me from this group
-            await DeletePlayerFromGroupAsync(groupName, _gamertag);
+            await DeletePlayerFromGroupAsync(client, groupName, _gamertag);
 
             //check group has no gamertag of mine anymore
-            groupMembers = await GetGroupMembersAsync(groupName);
+            groupMembers = await GetGroupMembersAsync(client, groupName);
             Assert.True(!groupMembers.Gamertags.Any(m => m == _gamertag));
         }
 
         [Fact]
-        public async Task I_can_list_group_members()
+        public async Task As_a_player_I_can_list_group_members()
         {
-            _client = GetAdminClient();
+            var client = await GetClientAsync();
 
             string groupName = Guid.NewGuid().ToString();
-            await CreateGroupAsync(new GroupEntry { Name = groupName, Members = new[] { _gamertag, "testUserGamerTag" } });
+            await CreateGroupAsync(client, new GroupEntry { Name = groupName, Members = new[] { _gamertag, "testUserGamerTag" } });
 
-            GroupMembersResponseModel group = await GetGroupMembersAsync(groupName);
+            GroupMembersResponseModel group = await GetGroupMembersAsync(client, groupName);
 
             Assert.Equal(2, group.Gamertags.Length);
         }
 
         [Fact]
-        public async Task I_can_find_out_which_groups_I_belong_to()
+        public async Task As_a_player_I_can_find_out_which_groups_I_belong_to()
         {
-            _client = GetClient();
+            var client = await GetClientAsync();
 
             //first create two groups and add me to them
             string g1 = Guid.NewGuid().ToString();
             string g2 = Guid.NewGuid().ToString();
-            await CreateGroupAsync(new GroupEntry { Name = g1, Members = new[] { _gamertag } });
-            await CreateGroupAsync(new GroupEntry { Name = g2, Members = new[] { _gamertag } });
+            await CreateGroupAsync(client, new GroupEntry { Name = g1, Members = new[] { _gamertag } });
+            await CreateGroupAsync(client, new GroupEntry { Name = g2, Members = new[] { _gamertag } });
 
             //get my groups
-            GroupListResponse groups = await GetPlayerGroupsAsync();
+            GroupListResponse groups = await GetPlayerGroupsAsync(client);
             Assert.True(groups.Groups.Any(g => g.Name == g1));
             Assert.True(groups.Groups.Any(g => g.Name == g2));
         }
 
         #region [ REST helpers ]
 
-        private async Task<GroupListResponse> GetPlayerGroupsAsync(string gamerTag = null, HttpStatusCode expectedCode = HttpStatusCode.OK)
+        private async Task<GroupListResponse> GetPlayerGroupsAsync(HttpClient client, string gamerTag = null, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
             if (gamerTag == null)
             {
-                return await HttpGet<GroupListResponse>(_client, BaseUri + "player/groups", expectedCode);
+                return await HttpGet<GroupListResponse>(client, BasePath + "player/groups", expectedCode);
             }
             else
             {
-                return await HttpGet<GroupListResponse>(_client, BaseUri + "players/" + gamerTag + "/groups", expectedCode);
+                return await HttpGet<GroupListResponse>(client, BasePath + "players/" + gamerTag + "/groups", expectedCode);
             }
         }
 
-        private async Task<GroupMembersResponseModel> GetGroupMembersAsync(string groupName, HttpStatusCode expectedCode = HttpStatusCode.OK)
+        private async Task<GroupMembersResponseModel> GetGroupMembersAsync(HttpClient client, string groupName, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            return await HttpGet<GroupMembersResponseModel>(_client, $"{BaseUri}groups/{groupName}/players", expectedCode);
+            return await HttpGet<GroupMembersResponseModel>(client, $"{BasePath}groups/{groupName}/players", expectedCode);
         }
 
-        private async Task DeletePlayerFromGroupAsync(string groupName, string playerName, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
+        private async Task DeletePlayerFromGroupAsync(HttpClient client, string groupName, string playerName, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
         {
-            HttpResponseMessage response = await _client.DeleteAsync($"{BaseUri}groups/{groupName}/players/{playerName}");
+            HttpResponseMessage response = await client.DeleteAsync($"{BasePath}groups/{groupName}/players/{playerName}");
 
             Assert.Equal(expectedCode, response.StatusCode);
         }
 
-        private async Task AddPlayerToGroupAsync(string groupName, string playerName = null, HttpStatusCode expetectedCode = HttpStatusCode.OK)
+        private async Task AddPlayerToGroupAsync(HttpClient client, string groupName, string playerName = null, HttpStatusCode expectedStatus = HttpStatusCode.NoContent)
         {
             HttpResponseMessage response;
 
             if (playerName == null)
             {
-                response = await _client.PutAsync($"{BaseUri}player/groups/{groupName}", null);
+                response = await client.PutAsync($"{BasePath}player/groups/{groupName}", null);
             }
             else
             {
-                response = await _client.PutAsync($"{BaseUri}players/{playerName}/groups/{groupName}", null);
+                response = await client.PutAsync($"{BasePath}players/{playerName}/groups/{groupName}", null);
             }
 
-            Assert.Equal(expetectedCode, response.StatusCode);
+            Assert.Equal(expectedStatus, response.StatusCode);
         }
 
-        private async Task<ApiResponse> CreateGroupAsync(GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.Created)
+        private async Task<ApiResponse> CreateGroupAsync(HttpClient client, GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.Created)
         {
-            HttpResponseMessage response = await _client.PostAsJsonAsync(BaseUri + "groups", group);
+            HttpResponseMessage response = await client.PostAsJsonAsync(BasePath + "groups", group);
 
             Assert.Equal(expectedCode, response.StatusCode);
 
@@ -279,41 +281,41 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             return new ApiResponse { Response = response, ResponseBody = r };
         }
 
-        private async Task UpdateGroupAsync(GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
+        private async Task UpdateGroupAsync(HttpClient client, GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
         {
-            HttpResponseMessage response = await _client.PutAsJsonAsync(BaseUri + "groups/" + group.Name, group);
+            HttpResponseMessage response = await client.PutAsJsonAsync(BasePath + "groups/" + group.Name, group);
 
             Assert.Equal(expectedCode, response.StatusCode);
         }
 
-        private async Task<GroupListResponse> GetAllGroupsAsync(HttpStatusCode expectedCode = HttpStatusCode.OK)
+        private async Task<GroupListResponse> GetAllGroupsAsync(HttpClient client, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            return await HttpGet<GroupListResponse>(_client, BaseUri + "groups", expectedCode);
+            return await HttpGet<GroupListResponse>(client, BasePath + "groups", expectedCode);
         }
 
-        private async Task<GroupGetResponse> GetGroupByNameAsync(string name, HttpStatusCode expectedCode = HttpStatusCode.OK)
+        private async Task<GroupGetResponse> GetGroupByNameAsync(HttpClient client, string name, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            return await HttpGet<GroupGetResponse>(_client, BaseUri + "groups/" + name, expectedCode);
+            return await HttpGet<GroupGetResponse>(client, BasePath + "groups/" + name, expectedCode);
         }
 
-        private async Task<PlayerListGetResponse> GetPlayersAsync(HttpStatusCode expectedCode = HttpStatusCode.OK)
+        private async Task<PlayerListGetResponse> GetPlayersAsync(HttpClient client, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            return await HttpGet<PlayerListGetResponse>(_client, BaseUri + "players", expectedCode);
+            return await HttpGet<PlayerListGetResponse>(client, BasePath + "players", expectedCode);
         }
 
-        private async Task<PlayerGetResponse> GetPlayerAsync(string gamerTag = null, HttpStatusCode expectedCode = HttpStatusCode.OK)
+        private async Task<PlayerGetResponse> GetPlayerAsync(HttpClient client, string gamerTag = null, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
             if (gamerTag == null)
             {
-                return await HttpGet<PlayerGetResponse>(_client, BaseUri + "player");
+                return await HttpGet<PlayerGetResponse>(client, BasePath + "player");
             }
 
-            return await HttpGet<PlayerGetResponse>(_client, BaseUri + "players/" + gamerTag);
+            return await HttpGet<PlayerGetResponse>(client, BasePath + "players/" + gamerTag);
         }
 
-        private async Task UpdatePlayerAsync(string country, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
+        private async Task UpdatePlayerAsync(HttpClient client, string country, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
         {
-            HttpResponseMessage response = await _client.PutAsJsonAsync(BaseUri + "player",
+            HttpResponseMessage response = await client.PutAsJsonAsync(BasePath + "player",
                 new
                 {
                     Country = country,
@@ -324,13 +326,14 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         }
 
         private async Task<ApiResponse> AddNewPlayerAsync(
+            HttpClient client,
             string gamerTag,
             string userId,
             string country,
             string customTag,
             HttpStatusCode expectedCode = HttpStatusCode.Created)
         {
-            HttpResponseMessage response = await _client.PostAsJsonAsync(BaseUri + "players",
+            HttpResponseMessage response = await client.PostAsJsonAsync(BasePath + "players",
                 new
                 {
                     UserId = userId,

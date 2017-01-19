@@ -15,31 +15,33 @@ namespace Nether.Web.IntegrationTests.Leaderboard
     //todo: come up with better naming
     public class LeaderboardTests : WebTestBase
     {
-        private const string BaseUri = "/api/leaderboard";
-        private HttpClient _client;
+        private const string BasePath = "/api/leaderboard";
 
         public LeaderboardTests()
         {
-            _client = GetClient();
         }
 
         [Fact]
         public async Task Get_leaderboard_call_succeeds()
         {
-            HttpResponseMessage response = await _client.GetAsync(BaseUri + "/Default");
+            var client = await GetClientAsync();
+            HttpResponseMessage response = await client.GetAsync(BasePath + "/Default");
             Assert.True(response.IsSuccessStatusCode);
         }
 
         [Fact]
         public async Task Post_leaderboard_call_succeeds()
         {
-            await PostScore(1);
+            var client = await GetClientAsync();
+            await PostScoreAsync(client, 1);
         }
 
         [Fact]
         public async Task Posting_new_score_updates_default_leaderboard()
         {
-            LeaderboardGetResponse leaderboardBefore = await GetLeaderboard();
+            var client = await GetClientAsync();
+
+            LeaderboardGetResponse leaderboardBefore = await GetLeaderboardAsync(client);
 
             List<LeaderboardGetResponse.LeaderboardEntry> entries =
                 leaderboardBefore.Entries.Where(e => e.Gamertag == _gamertag).ToList();
@@ -50,10 +52,10 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
             //update the score posting a different (higher) result
             int newScore = oldScore + 1;
-            await PostScore(newScore);
+            await PostScoreAsync(client, newScore);
 
             //check that leaderboard has the updated score
-            LeaderboardGetResponse leaderboardAfter = await GetLeaderboard();
+            LeaderboardGetResponse leaderboardAfter = await GetLeaderboardAsync(client);
             int newFreshScore = leaderboardAfter.Entries.Where(e => e.Gamertag == _gamertag).Select(e => e.Score).First();
             Assert.Equal(newFreshScore, newScore);
         }
@@ -61,10 +63,12 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Posting_similar_score_gets_around_me()
         {
+            var client = await GetClientAsync();
+
             //note: radius is 2 at the moment, meaning you get 2 players above and 2 below (4 elements in response in general)
 
             //check there are at least 5 users
-            LeaderboardGetResponse response = await GetLeaderboard();
+            LeaderboardGetResponse response = await GetLeaderboardAsync(client);
             if (response.Entries.Length < 5)
             {
                 throw new NotImplementedException();    //todo: post scores to get at least 5
@@ -72,32 +76,33 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
             //todo: delete score entries before testing, this requires a separate http method
 
-            //put me somewhere in the middle and push the other user in the bottom so he is not around me
-            await DeleteMyScores();
-            await PostScore(int.MaxValue / 2);
+            //put me somewhere in the middle and push the other user in the bottom so they are not around me
+            await DeleteMyScores(client);
+            await PostScoreAsync(client, int.MaxValue / 2);
             string myGamertag = _gamertag;
-            _client = GetClient("testuser1");
-            string hisGamertag = _gamertag;
-            await DeleteMyScores();
-            await PostScore(1);
+            client = await GetClientAsync("testuser1");
+            string theirGamertag = _gamertag;
+            await DeleteMyScores(client);
+            await PostScoreAsync(client, 1);
 
-            //check he is not around me
-            _client = GetClient();
-            response = await GetLeaderboard("5-AroundMe");
-            Assert.False(response.Entries.Any(e => e.Gamertag == hisGamertag));
+            //check they are not around me
+            client = await GetClientAsync();
+            response = await GetLeaderboardAsync(client, "5-AroundMe");
+            Assert.False(response.Entries.Any(e => e.Gamertag == theirGamertag));
 
-            //make his score similar to mine and check he is around me
-            _client = GetClient("testuser1");
-            await PostScore(int.MaxValue / 2 + 1);
-            _client = GetClient();
-            response = await GetLeaderboard("5-AroundMe");
-            Assert.True(response.Entries.Any(e => e.Gamertag == hisGamertag));
+            //make their score similar to mine and check they are around me
+            client = await GetClientAsync("testuser1");
+            await PostScoreAsync(client, int.MaxValue / 2 + 1);
+            client = await GetClientAsync();
+            response = await GetLeaderboardAsync(client, "5-AroundMe");
+            Assert.True(response.Entries.Any(e => e.Gamertag == theirGamertag));
         }
 
         [Fact]
         public async Task Limiting_top_scores_returns_limited_numer_of_rows()
         {
-            LeaderboardGetResponse response = await GetLeaderboard("Top-5", HttpStatusCode.OK);
+            var client = await GetClientAsync();
+            LeaderboardGetResponse response = await GetLeaderboardAsync(client, "Top-5", HttpStatusCode.OK);
 
             Assert.True(response.Entries.Length <= 5);
         }
@@ -105,40 +110,44 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Posting_negative_score_causes_bad_request()
         {
-            _client = GetClient("testuser");
+            var client = await GetClientAsync("testuser");
 
-            await PostScore(-5, HttpStatusCode.BadRequest);
+            await PostScoreAsync(client, -5, HttpStatusCode.BadRequest);
         }
 
         [Fact]
         public async Task Cannot_get_leaderboard_if_im_not_in_Player_role()
         {
-            _client = GetAdminClient();    //login as devadmin who is not in "Player" role
+            var client = await GetAdminClientAsync();    //login as devadmin who is not in "Player" role
 
-            await GetLeaderboard("Default", HttpStatusCode.Forbidden);
+            await GetLeaderboardAsync(client, "Default", HttpStatusCode.Forbidden);
         }
 
         #region [ REST Wrappers ]
 
-        private async Task DeleteMyScores()
+        private async Task DeleteMyScores(HttpClient client)
         {
-            await _client.DeleteAsync(BaseUri);
+            await client.DeleteAsync(BasePath);
         }
 
-        private async Task<LeaderboardGetResponse> GetLeaderboard(string type = "Default",
+        private async Task<LeaderboardGetResponse> GetLeaderboardAsync(
+            HttpClient client,
+            string type = "Default",
             HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            HttpResponseMessage response = await _client.GetAsync(BaseUri + "/" + type);
+            HttpResponseMessage response = await client.GetAsync(BasePath + "/" + type);
             Assert.Equal(expectedCode, response.StatusCode);
 
             string content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<LeaderboardGetResponse>(content);
         }
 
-        private async Task PostScore(int score,
+        private async Task PostScoreAsync(
+            HttpClient client,
+            int score,
             HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            HttpResponseMessage response = await _client.PostAsJsonAsync(BaseUri,
+            HttpResponseMessage response = await client.PostAsJsonAsync(BasePath,
                 new
                 {
                     country = "UK",

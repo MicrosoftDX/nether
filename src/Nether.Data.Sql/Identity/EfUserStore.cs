@@ -7,6 +7,7 @@ using Nether.Data.Identity;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Nether.Data.Sql.Identity
 {
@@ -22,6 +23,12 @@ namespace Nether.Data.Sql.Identity
             _logger = loggerFactory.CreateLogger<EntityFrameworkUserStore>();
         }
 
+        public async Task<IEnumerable<User>> GetUsersAsync()
+        {
+            var userEntities = await _context.Users.ToListAsync();
+            return userEntities
+                    .Select(u => u.Map());
+        }
 
         public async Task<User> GetUserByIdAsync(string userid)
         {
@@ -56,6 +63,12 @@ namespace Nether.Data.Sql.Identity
             await _context.SaveChangesAsync();
             // update user with any changes from saving
             userEntity.MapTo(user);
+        }
+
+        public async Task DeleteUserAsync(string userId)
+        {
+            _context.Users.Remove(new UserEntity { UserId = userId });
+            await _context.SaveChangesAsync();
         }
     }
 }

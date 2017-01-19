@@ -11,7 +11,6 @@ using Nether.Web.Features.Analytics;
 using Nether.Web.Features.Identity;
 using Nether.Web.Features.Leaderboard;
 using Nether.Web.Features.PlayerManagement;
-using Swashbuckle.Swagger.Model;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
@@ -19,6 +18,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Nether.Web.Utilities;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Nether.Web
 {
@@ -147,10 +147,13 @@ namespace Nether.Web
             app.UseIdentityServer();
             app.UseMvc();
 
-            app.UseSwagger(routeTemplate: "api/swagger/{documentName}/swagger.json");
+            app.UseSwagger(options =>
+            {
+                options.RouteTemplate = "api/swagger/{documentName}/swagger.json";
+            });
             app.UseSwaggerUi(options =>
             {
-                options.BaseRoute = "api/swagger/ui";
+                options.RoutePrefix = "api/swagger/ui";
                 options.SwaggerEndpoint("/api/swagger/v0.1/swagger.json", "v0.1 Docs");
             });
         }
