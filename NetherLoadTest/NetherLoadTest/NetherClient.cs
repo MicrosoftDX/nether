@@ -1,17 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using IdentityModel.Client;
+﻿using IdentityModel.Client;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 
-namespace Nether.Web.LoadTests
+namespace NetherLoadTest
 {
-    // This could form the basis of the .NET Client SDK for Nether
     public class NetherClient
     {
         private string _accessToken;
@@ -19,12 +13,8 @@ namespace Nether.Web.LoadTests
         private readonly string _clientId;
         private readonly string _clientSecret;
         private readonly HttpClient _httpClient;
-
-        // TODO - figure out configuration to avoid these hard-coded strings
-        public NetherClient(
-            string baseUrl = "http://localhost:5000",
-            string clientId = "resourceowner-test",
-            string clientSecret = "devsecret")
+        
+        public NetherClient(string baseUrl, string clientId, string clientSecret)
         {
             _baseUrl = baseUrl;
             _clientId = clientId;
@@ -152,3 +142,4 @@ namespace Nether.Web.LoadTests
         public T Result { get; set; }
     }
 }
+
