@@ -116,7 +116,8 @@
                     "type": "config",
                     "name": "appsettings",
                     "dependsOn": [
-                        "[variables('webSiteName')]"
+                        "[variables('webSiteName')]",
+                        "MSDeploy"
                     ],
                     "properties": {
                         "Leaderboard:Store:wellknown": "sql",
@@ -151,7 +152,7 @@
                     "location": "[resourceGroup().location]",
                     "apiVersion": "2015-08-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/sites', variables('webSiteName'))]"
+                        "[resourceId('Microsoft.Web/sites/', variables('webSiteName'))]"
                     ],
                     "tags": {
                         "displayName": "DeployTheZip"
