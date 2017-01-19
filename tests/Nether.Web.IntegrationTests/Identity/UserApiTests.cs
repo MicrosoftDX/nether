@@ -33,9 +33,9 @@ namespace Nether.Web.IntegrationTests.Identity
         [Fact]
         public async Task As_an_admin_I_can_list_users()
         {
-            await AsPlayerAsync();
+            await AsAdminAsync();
             var response = await ResponseForGetAsync("/api/identity/users", hasStatusCode: HttpStatusCode.OK);
-            dynamic responseContent = response.Content.ReadAsAsync<dynamic>();
+            dynamic responseContent = await response.Content.ReadAsAsync<dynamic>();
 
             var users = ((IEnumerable<dynamic>)responseContent.users).ToList();
             Assert.NotNull(users);
@@ -43,11 +43,21 @@ namespace Nether.Web.IntegrationTests.Identity
 
             dynamic user = users[0];
             Assert.NotNull(user.userId);
+
             Assert.NotNull(user.role);
+
             Assert.NotNull(user._link);
         }
 
 
+        private async Task AsPlayerAsync()
+        {
+            _client = await GetClientAsync(username: "testuser", setPlayerGamertag: true);
+        }
+        private async Task AsAdminAsync()
+        {
+            _client = await GetClientAsync(username: "devadmin", setPlayerGamertag: false);
+        }
 
 
         private async Task<HttpResponseMessage> ResponseForGetAsync(string path, HttpStatusCode hasStatusCode)
@@ -59,9 +69,5 @@ namespace Nether.Web.IntegrationTests.Identity
             return response;
         }
 
-        private async Task AsPlayerAsync()
-        {
-            _client = await GetClientAsync(username: "testuser", setPlayerGamertag: true);
-        }
     }
 }
