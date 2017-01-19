@@ -83,8 +83,6 @@ Body:
 
 Response contains a `Location` header with the URL for the newly created login. Issuing a `DELETE` against the header value will remove the login.
 
-### Response: 404 NotFound
-The user does not exist
 
 
 ## Remove a login
