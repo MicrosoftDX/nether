@@ -4,14 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nether.Web.LoadTests
+namespace NetherLoadTest
 {
-    public class AutoPlayer
+    internal class AutoPlayer
     {
         private static int s_counter;
         private readonly string _password;
@@ -24,14 +22,15 @@ namespace Nether.Web.LoadTests
 
         private static readonly Random s_rnd = new Random(DateTime.UtcNow.Millisecond);
 
-        public AutoPlayer(string username, string password)
+        public AutoPlayer(string uri, string username, string password)
         {
             _playerInternalId = (s_counter++).ToString();
             _playerInternalId = _playerInternalId.PadLeft(5, '0');
 
             _username = username;
             _password = password;
-            _client = new NetherClient();
+            // TODO: those values should be injected via config, not hard coded
+            _client = new NetherClient(uri, "resourceowner-test", "devsecret");
         }
 
         public List<string> CallNames => _callTimes.Keys.ToList();

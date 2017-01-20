@@ -9,7 +9,8 @@ using System.Threading;
 using System.Net.Http;
 using System.Net;
 
-namespace Nether.Web.LoadTests
+
+namespace NetherLoadTest
 {
     [TestClass]
     public class NetherUnitTest
@@ -22,7 +23,7 @@ namespace Nether.Web.LoadTests
         {
             string username = "loadUser" + _random.Next(10000); // hard coded user names created for the load test in the memory store
             string password = username;
-            _player = new AutoPlayer(username, password);
+            _player = new AutoPlayer("http://localhost:5000", username, password);
             _loggedIn = false;
         }
 

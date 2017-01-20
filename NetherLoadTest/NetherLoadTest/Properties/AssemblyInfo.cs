@@ -8,12 +8,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Nether.Web.LoadTests")]
+[assembly: AssemblyTitle("NetherLoadTest")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Nether.Web.LoadTests")]
-[assembly: AssemblyCopyright("Copyright \u00A9  2016")]
+[assembly: AssemblyProduct("NetherLoadTest")]
+[assembly: AssemblyCopyright("Copyright \u00A9  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("68ad4877-616d-4ee8-919a-5e19ed739b4f")]
+[assembly: Guid("a6600be0-0d95-4681-944f-b3063d68736d")]
 
 // Version information for an assembly consists of the following four values:
 //
