@@ -37,3 +37,26 @@ if($gitHasChanges)
     git diff
     exit 20
 }
+
+## Check if license is included in GUI files
+$pathlist = @("src\Nether.Web\wwwroot\Features")
+$filter = "*.ts"
+$filelist = Get-ChildItem -Filter $filter -Path $pathlist -Recurse|Select-Object -ExpandProperty FullName
+foreach($file in $filelist)
+{
+    $content = Get-Content $file -TotalCount 2
+    if (-not($content -match "LICENSE"))
+    {
+        Write-Host "License info missing in file " $file
+    }
+}
+$filter = "*.html"
+$filelist = Get-ChildItem -Filter $filter -Path $pathlist -Recurse|Select-Object -ExpandProperty FullName
+foreach($file in $filelist)
+{
+    $content = Get-Content $file -TotalCount 2
+    if (-not($content -match "LICENSE"))
+    {
+        Write-Host "License info missing in file " $file
+    }
+}

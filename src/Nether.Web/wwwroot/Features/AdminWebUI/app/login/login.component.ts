@@ -1,4 +1,7 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+import { Component, OnInit } from "@angular/core";
 import { Form, FormGroup, FormControl, Validators, FormBuilder } from "@angular/forms";
 import { Router } from "@angular/router"
 import { NetherApiService } from "./../nether.api";

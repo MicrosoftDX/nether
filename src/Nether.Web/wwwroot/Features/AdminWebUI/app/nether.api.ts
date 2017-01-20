@@ -1,4 +1,7 @@
-﻿import { Injectable, EventEmitter, Output } from "@angular/core";
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+import { Injectable, EventEmitter, Output } from "@angular/core";
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import { Player, LeaderboardScore, Group } from "./model";
 import { Observable } from "rxjs/Observable";

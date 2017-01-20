@@ -1,4 +1,7 @@
-﻿import { Component, OnInit } from "@angular/core";
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+import { Component, OnInit } from "@angular/core";
 import { NetherApiService } from "./../nether.api";
 import { Player, Group } from "./../model";
 import { Router, ActivatedRoute, Params } from "@angular/router";
