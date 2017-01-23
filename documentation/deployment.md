@@ -1,16 +1,65 @@
-# Deploy to production
+# Deploy to Microsoft Azure
 
-## Create required resources in Azure
+The deployment process is almost fully automated, however some manual steps are involved.
 
-In order to deploy Nether to production, you will have to create the resources in the list below. Follow the links provided and create those resources.
-Make sure to create all resources in the same location.
+Generally, Nether consists of one or more API application(s) and one or more database(s). This document focuses on deploying the minimum amount of nodes required for Nether to work.
 
-1. Blob Storage - [About Azure storage accounts](https://azure.microsoft.com/en-us/documentation/articles/storage-create-storage-account/)
-2. Service Fabric Cluster, Azure Active Directory and Azure Key Vault - [Create a Service Fabric cluster in Azure](https://azure.microsoft.com/en-us/documentation/articles/service-fabric-cluster-creation-via-arm/)
-  * Recommendation: Create a secure Service Fabric cluster utilising Azure Active Directory for authentication and authorisation.
+## Publish Web Application Locally
 
-## Deploy to service fabric
+First, you need to create a version of `Nether.Web` application which can be hosted in a web server. In order to do that navigate to the `src/Nether.Web` folder in the command line and type
 
-### Deploy through Visual Studio:
+```cmd
+dotnet publish -c release
+```
 
-### Deploy through PowerShell:
+This will create a new folder under `src/Nether.Web/bin/release/netcoreapp1.1/publish`. The folder contains all files required for web application to work.
+
+You need to zip this folder and upload somewhere Azure Resource Manager can access it, like a blob storage. For security purposes you may want to create a SAS token on top of this blob to pass to the deployment script.
+
+## Create Required Resources in Azure
+
+This repository includes a [deployment script](../deployment/nether-all/deploy.ps1) you can launch from PowerShell. It will create a new resource group, a database server and web application. The script will also set web application parameters to point to the database with a proper connection string. The script accepts resource group name and datacenter location as two required input parameters.
+
+You can find default parameters for this deployment in [template.json](../deployment/nether-all/template.json) file in this repository, in the `parameters` section:
+
+```json
+    "parameters": {
+        "sqlAdministratorLogin": {
+            "type": "string",
+            "defaultValue": "netheradmin",
+            "metadata": {
+                "description": "The admin user of the SQL Server"
+            }
+        },
+
+        "sqlAdministratorPassword": {
+            "type": "securestring",
+            "defaultValue": "Password!123",
+            "metadata": {
+                "description": "The password of the admin user of the SQL Server"
+            }
+        },
+
+        "webZipUri": {
+            "type": "string",
+            "defaultValue": "http://website.com/package.zip",
+            "metadata": {
+                "description": "Absolute URI containing the package to deploy"
+            }
+        }
+    },
+
+```
+
+ It is recommended to change them for production.
+
+You can also change the default parameters for deployed website (see **properties** section under website resource).
+
+
+## Deploying Database Schema
+
+ARM template creates an empty database but doesn't deploy any schema at the moment.
+
+Visual Studio solution contains a project called `Nether.Data.Sql.Schema` which produces a `.dacpac` file to deploy the schema on top of the created database. You can use a variety of tools like `Visual Studio 2015`, `SQL Server Management Studio` or [command-line](https://msdn.microsoft.com/en-us/library/hh550080(v=vs.103).aspx) to deploy it. Note that by default SQL Server firewall doesn't allow incoming connection from non-Azure services, therefore you may want to temporarily open a firewall port for it. Another option is to use Visual Studio Team Services dacpac deployment task which does it for you.
+
+Once database schema is deployed Nether deployment is complete.
