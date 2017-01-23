@@ -176,39 +176,7 @@ namespace Nether.Web.Features.Identity
                                 builder.UseInMemoryDatabase();
                             }
                         });
-                        bool initialised = false;
-                        object synclock = new object();
-                        services.AddTransient<IdentityContext>(serviceProvider =>
-                        {
-                            // one-off initialisation
-                            if (!initialised)
-                            {
-                                lock (synclock)
-                                {
-                                    if (!initialised)
-                                    {
-                                        logger.LogInformation("Identity:Store: Adding in-memory seed users...");
-
-                                        // construct the singleton so that we can provide seeded users for testing
-                                        var seedContext = new IdentityContext(
-                                                serviceProvider.GetService<ILoggerFactory>(),
-                                                serviceProvider.GetService<IdentityContextOptions>());
-                                        var seedUsers = InMemoryUsersSeed.Get(serviceProvider.GetService<IPasswordHasher>(), false);
-                                        seedContext.Users.AddRange(seedUsers.Select(u => IdentityMappingExtensions.Map(u)));
-                                        seedContext.SaveChanges();
-                                        logger.LogInformation("Identity:Store: Adding in-memory seed users... complete");
-
-                                        initialised = true;
-                                    }
-                                }
-                            }
-                            // construct the singleton so that we can provide seeded users for testing
-                            var context = new IdentityContext(
-                                    serviceProvider.GetService<ILoggerFactory>(),
-                                    serviceProvider.GetService<IdentityContextOptions>());
-
-                            return context;
-                        });
+                        services.AddEntityFrameworkUserStoreWithInitialUserCreation(logger);
                         break;
                     case "sql":
                         logger.LogInformation("Identity:Store: using 'Sql' store");
@@ -237,6 +205,36 @@ namespace Nether.Web.Features.Identity
                 // fall back to generic "factory"/"implementation" configuration
                 services.AddServiceFromConfiguration<IUserStore>(configuration, logger, "Identity:Store");
             }
+        }
+
+        private static void AddEntityFrameworkUserStoreWithInitialUserCreation(this IServiceCollection services, ILogger logger)
+        {
+            services.AddTransientWithOneTimeInitialization(
+                    logger,
+                    factory: serviceProvider => new IdentityContext(
+                            serviceProvider.GetService<ILoggerFactory>(),
+                            serviceProvider.GetService<IdentityContextOptions>()),
+                    initialization: serviceProvider =>
+                    {
+                        try
+                        {
+                            logger.LogInformation("Identity:Store: Adding in-memory seed users...");
+
+                // construct the singleton so that we can provide seeded users for testing
+                var seedContext = new IdentityContext(
+                                    serviceProvider.GetService<ILoggerFactory>(),
+                                    serviceProvider.GetService<IdentityContextOptions>());
+                            var seedUsers = InMemoryUsersSeed.Get(serviceProvider.GetService<IPasswordHasher>(), false);
+                            seedContext.Users.AddRange(seedUsers.Select(u => IdentityMappingExtensions.Map(u)));
+                            seedContext.SaveChanges();
+                            logger.LogInformation("Identity:Store: Adding in-memory seed users... complete");
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogCritical("Identity:Store: Adding in-memory seed users, exception: {0}", ex);
+                        }
+
+                    });
         }
 
         private static T GetServiceFromCollection<T>(IServiceCollection services)
