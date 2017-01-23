@@ -21,7 +21,7 @@ namespace Nether.Web.Features.Identity
         private readonly ILogger _logger;
 
         public UserLoginController(
-            IUserStore userStore, 
+            IUserStore userStore,
             IPasswordHasher passwordHasher,
             ILoggerFactory loggerFactory
             )
@@ -53,7 +53,7 @@ namespace Nether.Web.Features.Identity
                 ProviderId = l.ProviderId,
                 _Link = Url.RouteUrl(nameof(DeleteUserLogin), new { providerType = l.ProviderType, providerId = l.ProviderId })
             });
-            return Ok(new UserLoginListModel { Logins = logins});
+            return Ok(new UserLoginListModel { Logins = logins });
         }
 
         /// <summary>
@@ -67,8 +67,8 @@ namespace Nether.Web.Features.Identity
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserLoginRequestModel))]
         [HttpPut("{providerType}/{providerId}")]
         public async Task<IActionResult> PutUserLogin(
-            [FromRoute] string userId, 
-            [FromRoute] string providerType, 
+            [FromRoute] string userId,
+            [FromRoute] string providerType,
             [FromRoute] string providerId,
             [FromBody] UserLoginRequestModel userLoginModel)
         {
@@ -83,7 +83,7 @@ namespace Nether.Web.Features.Identity
             // TODO Add password complexity options!
             var user = await _userStore.GetUserByIdAsync(userId);
 
-            
+
             var login = user.Logins.FirstOrDefault(l => l.ProviderType == providerType && l.ProviderId == providerId);
             if (login == null)
             {

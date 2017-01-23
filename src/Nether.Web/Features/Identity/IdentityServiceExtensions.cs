@@ -194,7 +194,7 @@ namespace Nether.Web.Features.Identity
                                                 serviceProvider.GetService<ILoggerFactory>(),
                                                 serviceProvider.GetService<IdentityContextOptions>());
                                         var seedUsers = InMemoryUsersSeed.Get(serviceProvider.GetService<IPasswordHasher>(), false);
-                                        seedContext.Users.AddRange(seedUsers.Select(u=>IdentityMappingExtensions.Map(u)));
+                                        seedContext.Users.AddRange(seedUsers.Select(u => IdentityMappingExtensions.Map(u)));
                                         seedContext.SaveChanges();
                                         logger.LogInformation("Identity:Store: Adding in-memory seed users... complete");
 

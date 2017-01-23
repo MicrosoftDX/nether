@@ -134,6 +134,5 @@ namespace Nether.Web.IntegrationTests.Identity
         {
             return await GetClientAsync(username: "devadmin", setPlayerGamertag: false);
         }
-
     }
 }

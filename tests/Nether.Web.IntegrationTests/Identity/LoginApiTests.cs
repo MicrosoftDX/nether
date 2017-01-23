@@ -68,18 +68,16 @@ namespace Nether.Web.IntegrationTests.Identity
             // delete the user
             response = await client.DeleteAsync(userLocation);
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-
         }
 
 
         private async Task<HttpClient> AsPlayerAsync(string username = "testuser", string password = null)
         {
-            return await GetClientAsync(username: username, setPlayerGamertag: true, password:password);
+            return await GetClientAsync(username: username, setPlayerGamertag: true, password: password);
         }
         private async Task<HttpClient> AsAdminAsync()
         {
             return await GetClientAsync(username: "devadmin", setPlayerGamertag: false);
         }
-
     }
 }

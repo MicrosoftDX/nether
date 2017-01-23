@@ -23,7 +23,7 @@ namespace Nether.Web.Features.Identity.Models.User
                     {
                         ProviderType = l.ProviderType,
                         ProviderId = l.ProviderId,
-                        _Link = url.RouteUrl(nameof(UserLoginController.DeleteUserLogin), new { userId = user.UserId, providerType = l.ProviderType, providerId = l.ProviderId}, null )
+                        _Link = url.RouteUrl(nameof(UserLoginController.DeleteUserLogin), new { userId = user.UserId, providerType = l.ProviderType, providerId = l.ProviderId }, null)
                     })
                     .ToList()
                 }
