@@ -58,7 +58,8 @@ Gets details of the user and their logins.
     "logins": [
       {
         "providerType": "password",
-        "providerId": "netheruser"
+        "providerId": "netheruser",
+        "_link" : "http://.../api/identity/users/netheruser/logins/password/netheruser"
       }
     ]
   }
@@ -69,6 +70,8 @@ Gets details of the user and their logins.
 Roles: currently Admin or Player
 
 For `logins`, the `providerType` can currently be: `password` (for username + password flow) or `facebook` for the facebook user access token flow. The `providerId` is the identifier for the user for the given `providerType`. The provider may store additional information (e.g. the password hash for the `password` provider, but the API intentionally doesn't provide this).
+
+Issuing a `DELETE` against the `_link` property for a login will remove the login for the user.
 
 ### Response: 404 NotFound
 The user does not exist
@@ -152,7 +155,8 @@ The response contains the updated user details:
       {
         "providerType": "password",
         "providerId": "netheruser"
-      }
+      },
+      { }
     ]
   }
 }
