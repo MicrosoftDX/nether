@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nether.Data.Identity;
 using Nether.Web.Features.Identity.Models;
+using Nether.Web.Features.Identity.Models.User;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -57,7 +58,7 @@ namespace Nether.Web.Features.Identity
                 return NotFound();
             }
 
-            return Ok(UserResponseModel.MapFrom(user));
+            return Ok(UserResponseModel.MapFrom(user, Url));
         }
 
         /// <summary>
@@ -88,10 +89,14 @@ namespace Nether.Web.Features.Identity
             var user = UserRequestModel.MapToUser(userModel, userId);
             await _userStore.SaveUserAsync(user);
 
-            return Ok(UserResponseModel.MapFrom(user));
+            return Ok(UserResponseModel.MapFrom(user, Url));
         }
 
-
+        /// <summary>
+        /// Deletes the specified user
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [HttpDelete("{userId}")]
         public async Task<IActionResult> Delete([FromRoute] string userId)

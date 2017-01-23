@@ -52,10 +52,11 @@ namespace Nether.Web.IntegrationTests
             return await GetClientAsync("devadmin", setPlayerGamertag: false);
         }
 
-        protected async Task<HttpClient> GetClientAsync(string username = "testuser", bool setPlayerGamertag = true)
+        protected async Task<HttpClient> GetClientAsync(string username = "testuser", bool setPlayerGamertag = true, string password = null)
         {
             HttpClient client = CreateClient(BaseUrl);
-            string password = s_userToPassword[username];
+            if (password == null)
+                password = s_userToPassword[username];
 
             //authenticate so it's ready for use
             DiscoveryResponse disco = await DiscoveryClient.GetAsync(BaseUrl);
@@ -70,7 +71,7 @@ namespace Nether.Web.IntegrationTests
             TokenResponse tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(username, password, "nether-all");
             if (tokenResponse.IsError)
             {
-                throw new AuthenticationException("GetClient: failed to authenticate");
+                throw new AuthenticationException($"GetClient: failed to authenticate: '{tokenResponse.ErrorDescription}'");
             }
             client.SetBearerToken(tokenResponse.AccessToken);
 

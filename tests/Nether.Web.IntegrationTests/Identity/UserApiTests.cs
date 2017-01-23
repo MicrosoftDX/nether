@@ -126,19 +126,6 @@ namespace Nether.Web.IntegrationTests.Identity
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-
-        [Fact(Skip = "Not Implemented")]
-        public async Task As_an_admin_I_can_create_a_user_with_a_login_and_login_as_that_user()
-        {
-            var client = await AsAdminAsync();
-
-            // TODO create user with login
-            //var response = client.PostAsJsonAsync("/api/identity/users")
-
-            // TODO login as that user
-        }
-
-
         private async Task<HttpClient> AsPlayerAsync()
         {
             return await GetClientAsync(username: "testuser", setPlayerGamertag: true);

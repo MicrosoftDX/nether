@@ -83,6 +83,7 @@ namespace Nether.Web
                         Url = "https://github.com/dx-ted-emea/nether/blob/master/LICENSE"
                     }
                 });
+                options.CustomSchemaIds(type => type.FullName);
                 //options.AddSecurityDefinition("oauth2", new OAuth2Scheme
                 //{
                 //    Type = "oauth2",

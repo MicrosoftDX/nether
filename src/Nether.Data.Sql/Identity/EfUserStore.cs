@@ -49,16 +49,18 @@ namespace Nether.Data.Sql.Identity
 
         public async Task SaveUserAsync(User user)
         {
-            var userEntity = user.Map();
+            UserEntity userEntity;
             // assume that the user is new if UserId is null, and existing if it is set
-            if (userEntity.UserId == null)
+            if (user.UserId == null)
             {
+                userEntity = user.Map();
                 userEntity.UserId = Guid.NewGuid().ToString("d");
                 _context.Add(userEntity);
             }
             else
             {
-                _context.Update(userEntity);
+                userEntity = await _context.Users.FindAsync(user.UserId);
+                user.MapTo(userEntity);
             }
             await _context.SaveChangesAsync();
             // update user with any changes from saving
