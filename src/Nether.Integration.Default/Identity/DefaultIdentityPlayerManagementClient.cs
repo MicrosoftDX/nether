@@ -29,6 +29,7 @@ namespace Nether.Integration.Identity
         // healthy flag and lock are used to avoid making multiple parallel failed calls when auth has failed and needs refreshing
         private AsyncLock _healthLock = new AsyncLock();
         private bool _healthy = false;
+        private readonly string _baseUri;
 
         public DefaultIdentityPlayerManagementClient(
             string baseUri, // e.g. localhost:5000
@@ -36,6 +37,7 @@ namespace Nether.Integration.Identity
             ILoggerFactory loggerFactory
             )
         {
+            _baseUri = baseUri;
             _httpClient = new HttpClient
             {
                 BaseAddress = new Uri(baseUri)
@@ -151,7 +153,7 @@ namespace Nether.Integration.Identity
             _logger.LogInformation("Attempting to get access token...");
 
             _logger.LogInformation("Querying token endpoint");
-            var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
+            var disco = await DiscoveryClient.GetAsync(_baseUri);
 
             // request token
             _logger.LogInformation("Requesting token");

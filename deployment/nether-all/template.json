@@ -12,7 +12,7 @@
 
         "sqlAdministratorPassword": {
             "type": "securestring",
-            "defaultValue": "Password00;",
+            "defaultValue": "Password!123",
             "metadata": {
                 "description": "The password of the admin user of the SQL Server"
             }
@@ -127,7 +127,6 @@
                         "PlayerManagement:Store:properties:ConnectionString": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('databaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', reference(concat('Microsoft.Sql/servers/', variables('sqlServerName'))).fullyQualifiedDomainName, ';Password=', parameters('sqlAdministratorPassword'), ';')]",
 
                         "ASPNETCORE_ENVIRONMENT": "Development",
-                        "Identity:IdentityServer:RequireHttps": "false",
 
                         "Identity:Clients:clientcreds-test:Name": "Test Client for client credentials flow",
                         "Identity:Clients:clientcreds-test:AllowedGrantTypes": "client_credentials",
@@ -140,9 +139,15 @@
 
                         "Identity:Clients:customgrant-test:AllowedGrantTypes": "fb-usertoken",
                         "Identity:Clients:customgrant-test:ClientSecrets": "devsecret",
-                        "Identity:Clients:customgrant-test:AllowedScopes": "nether-all"
+                        "Identity:Clients:customgrant-test:AllowedScopes": "nether-all",
 
+                        "WEB_HOST_URL": "[concat('http://', reference(concat('Microsoft.Web/sites/', variables('webSiteName'))).hostNames[0])]",
 
+                        "Identity:PlayerManagementClient:wellknown": "default",
+                        "Identity:PlayerManagementClient:properties:BaseUrl": "[concat('http://', reference(concat('Microsoft.Web/sites/', variables('webSiteName'))).hostNames[0])]",
+
+                        "Identity:IdentityServer:RequireHttps": "false",
+                        "Identity:IdentityServer:Authority": "[concat('http://', reference(concat('Microsoft.Web/sites/', variables('webSiteName'))).hostNames[0])]"
                     }
                 },
 
