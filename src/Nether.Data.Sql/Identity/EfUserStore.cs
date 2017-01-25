@@ -53,7 +53,9 @@ namespace Nether.Data.Sql.Identity
             // assume that the user is new if UserId is null, and existing if it is set
             if (user.UserId != null)
             {
-                userEntity = await _context.Users.FindAsync(user.UserId);
+                userEntity = await _context.Users
+                                        .Include(u=>u.Logins) // include logins for proper merging!
+                                        .FirstOrDefaultAsync(u=>u.UserId == user.UserId);
                 if (userEntity != null)
                 {
                     user.MapTo(userEntity);
