@@ -104,15 +104,22 @@ namespace NetherLoadTest
         public async Task PostScore()
         {
             await EnsureLoggedInAsync();
+
+            TestContext.BeginTimer("PostScore");
             await _client.PostScoreAsync(_random.Next(100, 1000));
+            TestContext.EndTimer("PostScore");
         }
 
         [TestMethod]
         public async Task GetScore()
         {
             await EnsureLoggedInAsync();
+
+            TestContext.BeginTimer("GetScore");
             await _client.GetScoresAsync();
+            TestContext.EndTimer("GetScore");
         }
+
         private async Task EnsureLoggedInAsync()
         {
             if (!LoggedIn)
