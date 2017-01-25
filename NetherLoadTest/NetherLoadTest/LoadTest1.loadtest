@@ -3,7 +3,7 @@
   <Scenarios>
     <Scenario Name="PlayGame" DelayBetweenIterations="0" PercentNewUsers="0" IPSwitching="false" TestMixType="PercentageOfTestsStarted" ApplyDistributionToPacingDelay="true" MaxTestIterations="0" DisableDuringWarmup="false" DelayStartTime="0" AllowedAgents="">
       <ThinkProfile Value="0.2" Pattern="NormalDistribution" />
-      <LoadProfile Pattern="Constant" InitialUsers="25" />
+      <LoadProfile Pattern="Constant" InitialUsers="1" />
       <TestMix>
         <TestProfile Name="PostScore" Path="bin\debug\netherloadtest.dll" Id="cf507c80-eb7f-eb7f-57dc-751e2c830610" Percentage="70" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
         <TestProfile Name="GetScore" Path="bin\debug\netherloadtest.dll" Id="5fd8c5aa-75b8-7e7e-15b3-a937a44c8b39" Percentage="30" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -429,6 +429,10 @@
       </LoadGeneratorLocations>
       <ContextParameters>
         <ContextParameter Name="BaseUrl" Value="http://localhost:5000" />
+        <ContextParameter Name="ClientId" Value="resourceowner-test" />
+        <ContextParameter Name="ClientSecret" Value="devsecret" />
+        <ContextParameter Name="AdminUserName" Value="netheradmin" />
+        <ContextParameter Name="AdminPassword" Value="N3therAdm1n" />
       </ContextParameters>
     </RunConfiguration>
   </RunConfigurations>

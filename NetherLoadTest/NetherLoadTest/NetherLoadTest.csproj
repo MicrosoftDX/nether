@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoPlayer.cs" />
+    <Compile Include="Helpers\ContextHelpers.cs" />
     <Compile Include="Helpers\CopyLoadTestParametersLoadTestPlugin.cs" />
     <Compile Include="NetherClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
