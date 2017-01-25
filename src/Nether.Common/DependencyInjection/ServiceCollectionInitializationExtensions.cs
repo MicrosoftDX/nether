@@ -38,10 +38,7 @@ namespace Nether.Common.DependencyInjection
                 }
                 return factory(serviceProvider);
             });
-
         }
-
-
     }
 }
 

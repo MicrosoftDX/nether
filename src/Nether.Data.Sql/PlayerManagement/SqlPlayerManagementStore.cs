@@ -297,6 +297,5 @@ namespace Nether.Data.Sql.PlayerManagement
             PlayerExtendedEntity player = await _context.PlayersExtended.SingleOrDefaultAsync(p => p.Gamertag.Equals(gamertag));
             return player?.ToPlayerExtended();
         }
-
     }
 }

@@ -258,7 +258,7 @@ namespace Nether.Web.Features.Identity
                 services.AddServiceFromConfiguration<IUserStore>(configuration, logger, "Identity:Store");
             }
         }
-        
+
         private static T GetServiceFromCollection<T>(IServiceCollection services)
         {
             return (T)services

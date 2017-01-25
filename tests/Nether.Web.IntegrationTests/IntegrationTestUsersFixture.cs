@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -15,7 +18,7 @@ namespace Nether.Web.IntegrationTests
 
         public IntegrationTestUsersFixture()
         {
-            foreach(var user in s_users)
+            foreach (var user in s_users)
             {
                 CreateUser(user.UserName, user.Password, user.Role, user.Gamertag);
             }
@@ -24,7 +27,7 @@ namespace Nether.Web.IntegrationTests
 
         public void Dispose()
         {
-            foreach (var username  in _createdUserNames)
+            foreach (var username in _createdUserNames)
             {
                 DeleteUser(username);
             }
@@ -37,7 +40,7 @@ namespace Nether.Web.IntegrationTests
 
         public void CreateUser(string username, string password, string role, string gamertag)
         {
-            Task.Run(()=>CreateUserAsync(username, password, role, gamertag)).Wait();
+            Task.Run(() => CreateUserAsync(username, password, role, gamertag)).Wait();
         }
         public async Task CreateUserAsync(string username, string password, string role, string gamertag)
         {
@@ -87,7 +90,7 @@ namespace Nether.Web.IntegrationTests
         }
         public async Task DeleteUserAsync(string username)
         {
-            var client = await GetClientAsync(InitialAdminUserName,InitialAdminPassword).ConfigureAwait(false);
+            var client = await GetClientAsync(InitialAdminUserName, InitialAdminPassword).ConfigureAwait(false);
 
             await client.DeleteAsync($"/api/identity/users/{username}").ConfigureAwait(false);
         }

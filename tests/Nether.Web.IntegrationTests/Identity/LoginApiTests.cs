@@ -12,7 +12,6 @@ using Xunit;
 
 namespace Nether.Web.IntegrationTests.Identity
 {
-    
     public class LoginApiTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
     {
         [Fact()]

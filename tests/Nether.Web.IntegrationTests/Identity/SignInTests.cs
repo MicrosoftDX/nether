@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Nether.Web.IntegrationTests.Identity
 {
-    public class SignInTests: WebTestBase, IClassFixture<IntegrationTestUsersFixture>
+    public class SignInTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
     {
         [Fact]
         public async Task As_a_new_user_I_can_authenticate_and_create_a_gamertag()
