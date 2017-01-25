@@ -14,10 +14,8 @@ using Xunit;
 
 namespace Nether.Web.IntegrationTests.Identity
 {
-    public class SignInTests
+    public class SignInTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
     {
-        private const string BaseUrl = "http://localhost:5000/";
-
         [Fact]
         public async Task As_a_new_user_I_can_authenticate_and_create_a_gamertag()
         {
@@ -50,7 +48,7 @@ namespace Nether.Web.IntegrationTests.Identity
             Assert.Equal(HttpStatusCode.NotFound, playerResponse.StatusCode);
 
             // PUT /api/players
-            var player = new { gamertag = "testuser-notag", country = "UK", customTag = "testing" };
+            var player = new { gamertag = "testuser-notag", country = "UK", customTag = "IntegrationTestUser" };
             playerResponse = await client.PutAsJsonAsync("api/player", player);
             playerResponse.EnsureSuccessStatusCode();
 
@@ -77,6 +75,10 @@ namespace Nether.Web.IntegrationTests.Identity
 
             // GET /api/player
             var playerGroupsResponse = await client.GetAsync("api/player/groups");
+
+            // DELETE /api/player
+            playerResponse = await client.DeleteAsync("api/player");
+            playerResponse.EnsureSuccessStatusCode();
         }
 
 

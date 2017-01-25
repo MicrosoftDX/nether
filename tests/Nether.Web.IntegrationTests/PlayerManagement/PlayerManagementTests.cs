@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Nether.Web.IntegrationTests.PlayerManagement
 {
-    public class PlayerManagementTests : WebTestBase
+    public class PlayerManagementTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
     {
         private const string BasePath = "/api/";
 
@@ -29,11 +29,11 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_a_player_I_can_update_my_info()
         {
-            var client = await GetClientAsync();
+            var client = await GetClientAsync(username: "testuser");
             PlayerGetResponse beforeUpdate = await GetPlayerAsync(client);
 
             string newCountry = Guid.NewGuid().ToString();
-            await UpdatePlayerAsync(client, newCountry);
+            await UpdatePlayerAsync(client, newCountry, gamertag: "testuser");
 
             PlayerGetResponse afterUpdate = await GetPlayerAsync(client);
             Assert.Equal(newCountry, afterUpdate.Player.Country);
@@ -48,7 +48,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
                 Guid.NewGuid().ToString(),
                 Guid.NewGuid().ToString(),
                 Guid.NewGuid().ToString(),
-                null,
+                "IntegrationTestUser",
                 HttpStatusCode.Forbidden);
         }
 
@@ -64,7 +64,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
                                 gamertag,
                                 userId,
                                 Guid.NewGuid().ToString(),
-                                null);
+                                "IntegrationTestUser");
 
             Assert.Equal($"{BaseUrl}api/players/" + gamertag, result.Response.Headers.GetValues("Location").First());
 
@@ -174,7 +174,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_an_admin_I_can_add_and_remove_a_player_to_a_group()
         {
-            var client = await GetClientAsync(); // ensure player is created
+            var client = await GetClientAsync(username: "testuser"); // ensure player is created
             client = await GetAdminClientAsync();
 
             //create test group
@@ -184,43 +184,43 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             // TODO - clean this test up so that it's not relying on _gamertag shared state
 
             //add myself to this group
-            await AddPlayerToGroupAsync(client, groupName, _gamertag);
+            await AddPlayerToGroupAsync(client, groupName, "testuser");
 
             //check that i'm in the group now
             GroupMembersResponseModel groupMembers = await GetGroupMembersAsync(client, groupName);
-            Assert.True(groupMembers.Gamertags.Any(m => m == _gamertag));
+            Assert.True(groupMembers.Gamertags.Any(m => m == "testuser"));
 
             //remove me from this group
-            await DeletePlayerFromGroupAsync(client, groupName, _gamertag);
+            await DeletePlayerFromGroupAsync(client, groupName, "testuser");
 
             //check group has no gamertag of mine anymore
             groupMembers = await GetGroupMembersAsync(client, groupName);
-            Assert.True(!groupMembers.Gamertags.Any(m => m == _gamertag));
+            Assert.True(!groupMembers.Gamertags.Any(m => m == "testuser"));
         }
 
         [Fact]
         public async Task As_a_player_I_can_list_group_members()
         {
-            var client = await GetClientAsync();
+            var client = await GetClientAsync(username: "testuser");
 
             string groupName = Guid.NewGuid().ToString();
-            await CreateGroupAsync(client, new GroupEntry { Name = groupName, Members = new[] { _gamertag, "testUserGamerTag" } });
+            await CreateGroupAsync(client, new GroupEntry { Name = groupName, Members = new[] { "testuser" } });
 
             GroupMembersResponseModel group = await GetGroupMembersAsync(client, groupName);
 
-            Assert.Equal(2, group.Gamertags.Length);
+            Assert.Equal(1, group.Gamertags.Length);
         }
 
         [Fact]
         public async Task As_a_player_I_can_find_out_which_groups_I_belong_to()
         {
-            var client = await GetClientAsync();
+            var client = await GetClientAsync(username: "testuser");
 
             //first create two groups and add me to them
             string g1 = Guid.NewGuid().ToString();
             string g2 = Guid.NewGuid().ToString();
-            await CreateGroupAsync(client, new GroupEntry { Name = g1, Members = new[] { _gamertag } });
-            await CreateGroupAsync(client, new GroupEntry { Name = g2, Members = new[] { _gamertag } });
+            await CreateGroupAsync(client, new GroupEntry { Name = g1, Members = new[] { "testuser" } });
+            await CreateGroupAsync(client, new GroupEntry { Name = g2, Members = new[] { "testuser" } });
 
             //get my groups
             GroupListResponse groups = await GetPlayerGroupsAsync(client);
@@ -313,14 +313,14 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             return await HttpGet<PlayerGetResponse>(client, BasePath + "players/" + gamerTag);
         }
 
-        private async Task UpdatePlayerAsync(HttpClient client, string country, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
+        private async Task UpdatePlayerAsync(HttpClient client, string country, string gamertag, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
         {
             HttpResponseMessage response = await client.PutAsJsonAsync(BasePath + "player",
                 new
                 {
                     Country = country,
                     CustomTag = (string)null,
-                    Gamertag = _gamertag
+                    Gamertag = gamertag
                 });
             Assert.Equal(expectedCode, response.StatusCode);
         }

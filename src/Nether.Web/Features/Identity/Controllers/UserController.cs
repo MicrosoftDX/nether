@@ -5,19 +5,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nether.Data.Identity;
 using Nether.Web.Features.Identity.Models;
+using Nether.Web.Features.Identity.Models.User;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace Nether.Web.Features.Identity
 {
-    [Route("api/identity")]
-    [Authorize]
-    public class IdentityController : ControllerBase
+    [Route("api/identity/users")]
+    [Authorize(Roles = RoleNames.Admin)]
+    public class UserController : ControllerBase
     {
         private readonly IUserStore _userStore;
 
-        public IdentityController(IUserStore userStore)
+        public UserController(IUserStore userStore)
         {
             _userStore = userStore;
         }
@@ -27,8 +28,7 @@ namespace Nether.Web.Features.Identity
         /// </summary>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserListModel))]
-        [Authorize(Roles = RoleNames.Admin)]
-        [HttpGet("users")]
+        [HttpGet()]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userStore.GetUsersAsync();
@@ -49,9 +49,8 @@ namespace Nether.Web.Features.Identity
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserResponseModel))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [Authorize(Roles = RoleNames.Admin)]
-        [HttpGet("users/{userId}", Name = nameof(GetUser))]
-        public async Task<IActionResult> GetUser([FromQuery] string userId)
+        [HttpGet("{userId}", Name = nameof(GetUser))]
+        public async Task<IActionResult> GetUser([FromRoute] string userId)
         {
             var user = await _userStore.GetUserByIdAsync(userId);
             if (user == null)
@@ -59,7 +58,22 @@ namespace Nether.Web.Features.Identity
                 return NotFound();
             }
 
-            return Ok(UserResponseModel.MapFrom(user));
+            return Ok(UserResponseModel.MapFrom(user, Url));
+        }
+
+        /// <summary>
+        /// Add a new user
+        /// </summary>
+        /// <param name="userModel">The new user and login details for the user (including user id)</param>
+        /// <returns></returns>
+        [ProducesResponseType((int)HttpStatusCode.Created)]
+        [HttpPost()]
+        public async Task<IActionResult> PostUser([FromBody] UserRequestModel userModel)
+        {
+            var user = UserRequestModel.MapToUser(userModel, userId: null);
+            await _userStore.SaveUserAsync(user);
+
+            return CreatedAtRoute(nameof(GetUser), new { userId = user.UserId }, null);
         }
 
         /// <summary>
@@ -69,36 +83,23 @@ namespace Nether.Web.Features.Identity
         /// <param name="userModel">The new user and logins details for the user</param>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserResponseModel))]
-        [Authorize(Roles = RoleNames.Admin)]
-        [HttpPut("users/{userId}")]
-        public async Task<IActionResult> PutUser([FromQuery] string userId, [FromBody] UserRequestModel userModel)
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> PutUser([FromRoute] string userId, [FromBody] UserRequestModel userModel)
         {
             var user = UserRequestModel.MapToUser(userModel, userId);
             await _userStore.SaveUserAsync(user);
 
-            return Ok(UserResponseModel.MapFrom(user));
+            return Ok(UserResponseModel.MapFrom(user, Url));
         }
 
         /// <summary>
-        /// Add a new user
+        /// Deletes the specified user
         /// </summary>
-        /// <param name="userModel">The new user and login details for the user (including user id)</param>
+        /// <param name="userId">The id of the user</param>
         /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.Created)]
-        [Authorize(Roles = RoleNames.Admin)]
-        [HttpPost("users")]
-        public async Task<IActionResult> PostUser([FromBody] UserRequestModel userModel)
-        {
-            var user = UserRequestModel.MapToUser(userModel, userId: null);
-            await _userStore.SaveUserAsync(user);
-
-            return CreatedAtRoute(nameof(GetUser), new { userId = user.UserId });
-        }
-
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        [Authorize(Roles = RoleNames.Admin)]
-        [HttpDelete("users/{userId}")]
-        public async Task<IActionResult> Delete([FromQuery] string userId)
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> Delete([FromRoute] string userId)
         {
             var user = await _userStore.GetUserByIdAsync(userId);
             if (user == null)

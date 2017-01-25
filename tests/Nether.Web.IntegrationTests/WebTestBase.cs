@@ -11,6 +11,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Nether.Web.IntegrationTests
 {
@@ -25,15 +26,21 @@ namespace Nether.Web.IntegrationTests
         protected const string BaseUrl = "http://localhost:5000/";
         private const string ClientId = "resourceowner-test";
         private const string ClientSecret = "devsecret";
-        protected string _gamertag;
 
-        private static readonly Dictionary<string, string> s_userToPassword =
-            new Dictionary<string, string>
-            {
-                { "testuser", "testuser" },     // in "Player" role
-                { "testuser1", "testuser1" },   // in "Player" role
-                { "devadmin", "devadmin" }      // not in "Player" role
-            };
+        protected class UserInfo
+        {
+            public string UserName { get; set; }
+            public string Password { get; set; }
+            public string Role { get; set; }
+            public string Gamertag { get; internal set; }
+        }
+        protected static readonly UserInfo[] s_users = new[]
+        {
+            new UserInfo { UserName = "testuser", Password = "testuser", Role = "Player", Gamertag = "testuser" },
+            new UserInfo { UserName = "testuser1", Password = "testuser1", Role = "Player", Gamertag = "testuser1" },
+            new UserInfo { UserName = "testuser-notag", Password = "password123", Role = "Player" },
+            new UserInfo { UserName = "devadmin", Password = "devadmin", Role = "Admin" },
+        };
 
         private static HttpClient CreateClient(string baseUrl)
         {
@@ -41,7 +48,7 @@ namespace Nether.Web.IntegrationTests
             {
                 AllowAutoRedirect = true,
                 UseCookies = true,
-                CookieContainer = new System.Net.CookieContainer()
+                CookieContainer = new CookieContainer()
             };
 
             return new HttpClient(handler) { BaseAddress = new Uri(baseUrl) };
@@ -49,13 +56,14 @@ namespace Nether.Web.IntegrationTests
 
         protected async Task<HttpClient> GetAdminClientAsync()
         {
-            return await GetClientAsync("devadmin", setPlayerGamertag: false);
+            return await GetClientAsync("devadmin");
         }
 
-        protected async Task<HttpClient> GetClientAsync(string username = "testuser", bool setPlayerGamertag = true)
+        protected async Task<HttpClient> GetClientAsync(string username = "testuser", string password = null)
         {
             HttpClient client = CreateClient(BaseUrl);
-            string password = s_userToPassword[username];
+            if (password == null)
+                password = GetPassword(username);
 
             //authenticate so it's ready for use
             DiscoveryResponse disco = await DiscoveryClient.GetAsync(BaseUrl);
@@ -70,31 +78,16 @@ namespace Nether.Web.IntegrationTests
             TokenResponse tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(username, password, "nether-all");
             if (tokenResponse.IsError)
             {
-                throw new AuthenticationException("GetClient: failed to authenticate");
+                throw new AuthenticationException($"GetClient: failed to authenticate: '{tokenResponse.ErrorDescription}'");
             }
             client.SetBearerToken(tokenResponse.AccessToken);
 
-            if (setPlayerGamertag)
-            {
-                _gamertag = username + "GamerTag";
-                var player = new
-                {
-                    gamertag = _gamertag,
-                    country = "UK",
-                    customTag = nameof(WebTestBase)
-                };
-                HttpResponseMessage response = await client.PutAsJsonAsync("api/player", player);
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new AuthenticationException("GetClient: could not update player info");
-                }
-
-                //get the token again as it will include the gamertag claim
-                tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(username, password, "nether-all");
-                client.SetBearerToken(tokenResponse.AccessToken);
-            }
-
             return client;
+        }
+
+        private string GetPassword(string username)
+        {
+            return s_users.FirstOrDefault(u => u.UserName == username)?.Password;
         }
 
         protected async Task<T> HttpGet<T>(HttpClient client, string url, HttpStatusCode expectedCode = HttpStatusCode.OK)

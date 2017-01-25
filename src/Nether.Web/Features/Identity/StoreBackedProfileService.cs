@@ -28,11 +28,11 @@ namespace Nether.Web.Features.Identity
         public StoreBackedProfileService(
             IUserStore userStore,
             UserClaimsProvider userClaimsProvider,
-            ILoggerFactory loggerFactory)
+            ILogger<StoreBackedProfileService> logger)
         {
             _userStore = userStore;
             _userClaimsProvider = userClaimsProvider;
-            _logger = loggerFactory.CreateLogger<StoreBackedProfileService>();
+            _logger = logger;
         }
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {

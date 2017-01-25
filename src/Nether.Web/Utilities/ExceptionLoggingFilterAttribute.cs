@@ -15,9 +15,9 @@ namespace Nether.Web.Utilities
     {
         private readonly ILogger<ExceptionLoggingFilterAttribute> _logger;
 
-        public ExceptionLoggingFilterAttribute(ILoggerFactory loggerFactory)
+        public ExceptionLoggingFilterAttribute(ILogger<ExceptionLoggingFilterAttribute> logger)
         {
-            _logger = loggerFactory.CreateLogger<ExceptionLoggingFilterAttribute>();
+            _logger = logger;
         }
         public override void OnException(ExceptionContext context)
         {

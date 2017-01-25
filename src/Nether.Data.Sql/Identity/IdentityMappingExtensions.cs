@@ -51,17 +51,58 @@ namespace Nether.Data.Sql.Identity
                 ProviderData = entity.ProviderData
             };
         }
+
         public static UserEntity Map(this User user)
         {
             if (user == null)
                 return null;
-            var userEntity = new UserEntity
+
+            var entity = new UserEntity();
+            user.MapTo(entity);
+            return entity;
+        }
+        public static UserEntity MapTo(this User user, UserEntity userEntity)
+        {
+            userEntity.UserId = user.UserId;
+            userEntity.IsActive = user.IsActive;
+            userEntity.Role = user.Role;
+            if (userEntity.Logins == null)
             {
-                UserId = user.UserId,
-                IsActive = user.IsActive,
-                Role = user.Role,
-            };
-            userEntity.Logins = user.Logins.Select(l => l.Map(userEntity)).ToList();
+                userEntity.Logins = new List<LoginEntity>();
+            }
+
+            // merge the login values to ensure correct change tracking with EF
+            if (user.Logins == null)
+            {
+                userEntity?.Logins?.Clear();
+            }
+            else
+            {
+                foreach (var login in user.Logins)
+                {
+                    var loginEntity = userEntity.Logins
+                                        .FirstOrDefault(l => l.ProviderType == login.ProviderType && l.ProviderId == login.ProviderId);
+                    if (loginEntity == null)
+                    {
+                        loginEntity = new LoginEntity
+                        {
+                            User = userEntity,
+                            UserId = userEntity.UserId
+                        };
+                        userEntity.Logins.Add(loginEntity);
+                    }
+                    loginEntity.ProviderType = login.ProviderType;
+                    loginEntity.ProviderId = login.ProviderId;
+                    loginEntity.ProviderData = login.ProviderData;
+                }
+                var loginsToRemove = userEntity?.Logins
+                                        ?.Where(l => !user.Logins.Any(l2 => l.ProviderType == l2.ProviderType && l.ProviderId == l2.ProviderId));
+                foreach (var loginToRemove in loginsToRemove)
+                {
+                    userEntity.Logins.Remove(loginToRemove);
+                }
+            }
+
             return userEntity;
         }
         public static LoginEntity Map(this Login login, UserEntity userEntity)

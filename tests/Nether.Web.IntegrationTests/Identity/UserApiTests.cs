@@ -11,21 +11,22 @@ using Xunit;
 
 namespace Nether.Web.IntegrationTests.Identity
 {
-    public class UserApiTests : WebTestBase
+    public class UserApiTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
     {
-        private HttpClient _client;
-
         [Fact]
         public async Task As_a_player_I_get_Forbidden_response_calling_GetUsers()
         {
-            await AsPlayerAsync();
-            await ResponseForGetAsync("/api/identity/users", hasStatusCode: HttpStatusCode.Forbidden);
+            var client = await AsPlayerAsync();
+
+            var response = await client.GetAsync("/api/identity/users");
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
         [Fact]
         public async Task As_a_player_I_get_Forbidden_response_calling_GetUser()
         {
-            await AsPlayerAsync();
-            await ResponseForGetAsync("/api/identity/users/123", hasStatusCode: HttpStatusCode.Forbidden);
+            var client = await AsPlayerAsync();
+            var response = await client.GetAsync("/api/identity/users/123");
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
         // ... should we fill out the other requests to check permissions, or not?
 
@@ -33,10 +34,11 @@ namespace Nether.Web.IntegrationTests.Identity
         [Fact]
         public async Task As_an_admin_I_can_list_users()
         {
-            await AsAdminAsync();
-            var response = await ResponseForGetAsync("/api/identity/users", hasStatusCode: HttpStatusCode.OK);
-            dynamic responseContent = await response.Content.ReadAsAsync<dynamic>();
+            var client = await AsAdminAsync();
+            var response = await client.GetAsync("/api/identity/users");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
+            dynamic responseContent = await response.Content.ReadAsAsync<dynamic>();
             var users = ((IEnumerable<dynamic>)responseContent.users).ToList();
             Assert.NotNull(users);
             Assert.True(users.Count > 0);
@@ -49,24 +51,88 @@ namespace Nether.Web.IntegrationTests.Identity
             Assert.NotNull(user._link);
         }
 
-
-        private async Task AsPlayerAsync()
+        [Fact]
+        public async Task As_an_admin_I_can_create_a_user_and_update_their_details_and_remove_the_user()
         {
-            _client = await GetClientAsync(username: "testuser", setPlayerGamertag: true);
+            // This test is a classic example of something that would benefit from SpecFlow
+            // as it can be split into separate steps that are reported on in the execution output!
+            // Roll on SpecFlow support for .NET Core
+
+            var client = await AsAdminAsync();
+
+            // Add user
+            var response = await client.PostAsJsonAsync(
+                "/api/identity/users",
+                new
+                {
+                    role = "Admin",
+                    active = true
+                });
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+            var userLocation = response.Headers.Location.LocalPath;
+            Assert.StartsWith("/api/identity/users/", userLocation);
+
+
+            // Get user
+            response = await client.GetAsync(userLocation);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            dynamic userContent = await response.Content.ReadAsAsync<dynamic>();
+            dynamic user = userContent.user;
+
+            string userId = user.userId;
+            Assert.NotNull(userId);
+            Assert.Equal("Admin", (string)user.role);
+            Assert.Equal(true, (bool)user.active);
+
+
+            // Update user
+            response = await client.PutAsJsonAsync(
+                userLocation,
+                new
+                {
+                    role = "Player",
+                    active = false
+                });
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            userContent = await response.Content.ReadAsAsync<dynamic>();
+            user = userContent.user;
+            Assert.Equal(userId, (string)user.userId);
+            Assert.Equal("Player", (string)user.role);
+            Assert.Equal(false, (bool)user.active);
+
+
+            // Get user again
+            response = await client.GetAsync(userLocation);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            userContent = await response.Content.ReadAsAsync<dynamic>();
+            user = userContent.user;
+            Assert.Equal(userId, (string)user.userId);
+            Assert.Equal("Player", (string)user.role);
+            Assert.Equal(false, (bool)user.active);
+
+
+            // Remove user
+            response = await client.DeleteAsync(userLocation);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+
+            // Get user again (shouldn't exist)
+            response = await client.GetAsync(userLocation);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
-        private async Task AsAdminAsync()
+
+        private async Task<HttpClient> AsPlayerAsync()
         {
-            _client = await GetClientAsync(username: "devadmin", setPlayerGamertag: false);
+            return await GetClientAsync(username: "testuser");
         }
-
-
-        private async Task<HttpResponseMessage> ResponseForGetAsync(string path, HttpStatusCode hasStatusCode)
+        private async Task<HttpClient> AsAdminAsync()
         {
-            var response = await _client.GetAsync(path);
-
-            Assert.Equal(hasStatusCode, response.StatusCode);
-
-            return response;
+            return await GetClientAsync(username: "devadmin");
         }
     }
 }

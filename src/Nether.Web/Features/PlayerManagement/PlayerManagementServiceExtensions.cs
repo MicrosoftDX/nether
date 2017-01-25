@@ -35,9 +35,9 @@ namespace Nether.Web.Features.PlayerManagement
 
                         services.AddTransient<IPlayerManagementStore>(serviceProvider =>
                         {
-                            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+                            var storeLogger = serviceProvider.GetRequiredService<ILogger<MongoDBPlayerManagementStore>>();
                             // TODO - look at encapsulating the connection info and registering that so that we can just register the type without the factory
-                            return new MongoDBPlayerManagementStore(connectionString, databaseName, loggerFactory);
+                            return new MongoDBPlayerManagementStore(connectionString, databaseName, storeLogger);
                         });
                         break;
                     case "sql":

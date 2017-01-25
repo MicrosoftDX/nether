@@ -26,12 +26,12 @@ namespace Nether.Web.Features.PlayerManagement
     {
         private const string ControllerName = "PlayerManagement";
         private readonly IPlayerManagementStore _store;
-        private readonly ILogger<PlayerManagementController> _log;
+        private readonly ILogger _logger;
 
-        public PlayerManagementController(IPlayerManagementStore store, ILogger<PlayerManagementController> log)
+        public PlayerManagementController(IPlayerManagementStore store, ILogger<PlayerManagementController> logger)
         {
             _store = store;
-            _log = log;
+            _logger = logger;
         }
 
 
@@ -63,14 +63,42 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpGet("player")]
         public async Task<ActionResult> GetCurrentPlayer()
         {
-            string userId = User.GetId();
+            string gamertag = User.GetGamerTag();
+            if (string.IsNullOrWhiteSpace(gamertag))
+            {
+                return NotFound();
+            }
 
             // Call data store
-            var player = await _store.GetPlayerDetailsByUserIdAsync(userId);
-            if (player == null) return NotFound();
+            var player = await _store.GetPlayerDetailsByUserIdAsync(gamertag);
+            if (player == null)
+                return NotFound();
 
             // Return result
             return Ok(PlayerGetResponseModel.FromPlayer(player));
+        }
+
+        /// <summary>
+        /// Gets the player information from currently logged in user
+        /// </summary>
+        /// <returns></returns>
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [Authorize(Roles = RoleNames.Player)]
+        [HttpDelete("player")]
+        public async Task<ActionResult> DeleteCurrentPlayer()
+        {
+            string gamertag = User.GetGamerTag();
+            if (string.IsNullOrWhiteSpace(gamertag))
+            {
+                return NotFound();
+            }
+
+            // Call data store
+            await _store.DeletePlayerDetailsAsync(gamertag);
+
+            // Return result
+            return NoContent();
         }
 
         /// <summary>
@@ -87,7 +115,8 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Call data store
             var player = await _store.GetPlayerDetailsExtendedAsync(userId);
-            if (player == null) return NotFound();
+            if (player == null)
+                return NotFound();
 
             // Return result
             return Ok(PlayerExtendedGetResponseModel.FromPlayer(player));
@@ -104,6 +133,8 @@ namespace Nether.Web.Features.PlayerManagement
         public async Task<ActionResult> PutCurrentPlayer([FromBody]PlayerPutRequestModel player)
         {
             string userId = User.GetId();
+
+            // TODO - need to prevent modifying gamertag
 
             // Update player
             await _store.SavePlayerAsync(
@@ -304,14 +335,14 @@ namespace Nether.Web.Features.PlayerManagement
             Group group = await _store.GetGroupDetailsAsync(groupName);
             if (group == null)
             {
-                _log.LogWarning("group '{0}' not found", groupName);
+                _logger.LogWarning("group '{0}' not found", groupName);
                 return BadRequest();
             }
 
             Player player = await _store.GetPlayerDetailsAsync(playerName);
             if (player == null)
             {
-                _log.LogWarning("player '{0}' not found", playerName);
+                _logger.LogWarning("player '{0}' not found", playerName);
                 return BadRequest();
             }
 
@@ -365,6 +396,18 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpPost("groups")]
         public async Task<ActionResult> PostGroup([FromBody]GroupPostRequestModel group)
         {
+            if (!ModelState.IsValid)
+            {
+                var messages = new List<string>();
+                var states = ModelState.Where(mse => mse.Value.Errors.Count > 0);
+                foreach (var state in states)
+                {
+                    var message = $"{state.Key}. Errors: {string.Join(", ", state.Value.Errors.Select(e => e.ErrorMessage))}\n";
+                    messages.Add(message);
+                }
+                _logger.LogError(string.Join("\n", messages));
+                return BadRequest();
+            }
             // Save group
             await _store.SaveGroupAsync(
                 new Group

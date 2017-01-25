@@ -8,7 +8,7 @@ using System;
 
 namespace Nether.Common.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceCollectionConfigurationExtensions
     {
         public static void AddServiceFromConfiguration<TService>(
             this IServiceCollection services,

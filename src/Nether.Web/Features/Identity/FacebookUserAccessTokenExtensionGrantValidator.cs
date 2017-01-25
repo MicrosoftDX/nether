@@ -31,12 +31,12 @@ namespace Nether.Web.Features.Identity
             IConfiguration configuration,
             IUserStore userStore,
             UserClaimsProvider userClaimsProvider,
-            ILoggerFactory loggerFactory)
+            ILogger<FacebookUserAccessTokenExtensionGrantValidator> logger)
         {
             _configuration = configuration;
             _userClaimsProvider = userClaimsProvider;
             _userStore = userStore;
-            _logger = loggerFactory.CreateLogger<FacebookUserAccessTokenExtensionGrantValidator>();
+            _logger = logger;
         }
 
         public async Task ValidateAsync(ExtensionGrantValidationContext context)

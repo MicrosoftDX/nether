@@ -17,10 +17,10 @@ namespace Nether.Data.Sql.Identity
 
         private readonly ILogger _logger;
 
-        public EntityFrameworkUserStore(IdentityContext context, ILoggerFactory loggerFactory)
+        public EntityFrameworkUserStore(IdentityContext context, ILogger<EntityFrameworkUserStore> logger)
         {
             _context = context;
-            _logger = loggerFactory.CreateLogger<EntityFrameworkUserStore>();
+            _logger = logger;
         }
 
         public async Task<IEnumerable<User>> GetUsersAsync()
@@ -49,17 +49,27 @@ namespace Nether.Data.Sql.Identity
 
         public async Task SaveUserAsync(User user)
         {
-            var userEntity = user.Map();
+            UserEntity userEntity;
             // assume that the user is new if UserId is null, and existing if it is set
-            if (userEntity.UserId == null)
+            if (user.UserId != null)
             {
-                userEntity.UserId = Guid.NewGuid().ToString("d");
-                _context.Add(userEntity);
+                userEntity = await _context.Users
+                                        .Include(u => u.Logins) // include logins for proper merging!
+                                        .FirstOrDefaultAsync(u => u.UserId == user.UserId);
+                if (userEntity != null)
+                {
+                    user.MapTo(userEntity);
+                    await _context.SaveChangesAsync();
+                    // update user with any changes from saving
+                    userEntity.MapTo(user);
+                    return;
+                }
             }
-            else
-            {
-                _context.Update(userEntity);
-            }
+
+            // no user id, or we didn't find the user, so add them
+            userEntity = user.Map();
+            userEntity.UserId = userEntity.UserId ?? Guid.NewGuid().ToString("d");
+            _context.Add(userEntity);
             await _context.SaveChangesAsync();
             // update user with any changes from saving
             userEntity.MapTo(user);
@@ -67,7 +77,8 @@ namespace Nether.Data.Sql.Identity
 
         public async Task DeleteUserAsync(string userId)
         {
-            _context.Users.Remove(new UserEntity { UserId = userId });
+            var user = await _context.Users.FindAsync(userId);
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }
     }

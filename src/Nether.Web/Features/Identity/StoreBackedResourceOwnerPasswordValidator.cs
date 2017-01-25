@@ -23,12 +23,12 @@ namespace Nether.Web.Features.Identity
             IUserStore userStore,
             UserClaimsProvider userClaimsProvider,
             IPasswordHasher passwordHasher,
-            ILoggerFactory loggerFactory)
+            ILogger<StoreBackedResourceOwnerPasswordValidator> logger)
         {
             _userStore = userStore;
             _userClaimsProvider = userClaimsProvider;
             _passwordHasher = passwordHasher;
-            _logger = loggerFactory.CreateLogger<StoreBackedResourceOwnerPasswordValidator>();
+            _logger = logger;
         }
         public async Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {

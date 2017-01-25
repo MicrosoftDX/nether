@@ -16,10 +16,10 @@ namespace Nether.Data.Sql.Leaderboard
         private readonly ILogger<SqlLeaderboardStore> _logger;
         private readonly string _table = "Scores";
 
-        public SqlLeaderboardStore(string connectionString, ILoggerFactory loggerFactory)
+        public SqlLeaderboardStore(string connectionString, ILogger<SqlLeaderboardStore> logger)
         {
             _db = new ScoreContext(connectionString, _table);
-            _logger = loggerFactory.CreateLogger<SqlLeaderboardStore>();
+            _logger = logger;
         }
 
         public async Task SaveScoreAsync(GameScore score)

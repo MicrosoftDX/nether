@@ -44,6 +44,8 @@ namespace Nether.Data.Sql.PlayerManagement
 
             builder.Entity<PlayerEntity>()
                 .HasKey(p => p.Gamertag);
+            builder.Entity<PlayerEntity>()
+                .HasAlternateKey(p => p.UserId);
 
             builder.Entity<PlayerExtendedEntity>()
                 .HasKey(p => p.Gamertag);

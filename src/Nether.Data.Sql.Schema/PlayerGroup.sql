@@ -6,7 +6,8 @@ CREATE TABLE [dbo].[PlayerGroups]
     [Gamertag] varchar(50) NOT NULL, 
     [GroupName] varchar(50) NOT NULL, 
     CONSTRAINT [FK_PlayerGroups_Players] FOREIGN KEY ([Gamertag]) REFERENCES [Players](Gamertag), 
-    CONSTRAINT [FK_PlayerGroups_Groups] FOREIGN KEY ([GroupName]) REFERENCES [Groups]([Name])
+    CONSTRAINT [FK_PlayerGroups_Groups] FOREIGN KEY ([GroupName]) REFERENCES [Groups]([Name]), 
+    CONSTRAINT [PK_PlayerGroups] PRIMARY KEY ([Gamertag], [GroupName])
 )
 GO
 

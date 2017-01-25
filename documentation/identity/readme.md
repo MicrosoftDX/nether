@@ -11,26 +11,32 @@ To configure the project to use facebook authentication you need to set up an ap
 appsettings.json
 
 ```json
- "Facebook": {
-    "AppToken": "<your token>"
-  }
+ "Identity" : {
+    "Facebook": {
+      "AppToken": "<your token>"
+    }
+ }
 ```
 
 Or set environment variables:
 
 ```powershell
  # powershell
- ${env:Facebook:AppToken} = "<your token>"
+ ${env:Identity:Facebook:AppToken} = "<your token>"
 ```
 
 
 ```bash
  # bash
-export Facebook__AppToken="<your token>"
+export Identity__Facebook__AppToken="<your token>"
 ```
 
 ### Configuring users
-There is currently no API to add users (other than through the facebook custom grant flow). To add users to test with using the in-memory store, update the `Nether.Web/Features/Identity/Configuration/Users.cs` file. For other stores the temporary workaround is to directly add the user in the data store.
+The Users and Logins APIs allow you to programmatically add users. Additionally, the facebook custom flow creates users in the player role based on a facebook user acces token.
+
+The users for testing with the in-memory  are currently created in `Nether.Web/Features/Identity/Configuration/Users.cs` as a temporary workaround.
+
+When Nether initially starts up it performs a check to see whether there are any users in the user store. If not then it will pre-create a user with username `netheradmin` and password specified in the config under `Identity:InitialSetup:AdminPassword`. It is strongly recommended that you change this password when you deploy.
 
 ## Authenticating with Nether Identity
 The Nether Identity endpoint currently supports two means of authenticating: facebook user token and resource owner password (i.e. user name and password).

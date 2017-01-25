@@ -60,7 +60,6 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Scores.sql" />
-    <Build Include="Friends.sql" />
     <Build Include="Players.sql" />
     <Build Include="Groups.sql" />
     <Build Include="PlayerGroup.sql" />

@@ -60,6 +60,8 @@ Default Response Code for GET Operations in Nether.
 
 Default Response Code for any API call that synchronously create a resource. If a corresponding request is made to retrieve the same resource, the caller should expect to retrieve the just created resource.
 
+The response headers must include a Location header that gives the URL for the newly created resource.
+
 ### 202 Accepted
 
 Default Response Code for aynchronous APIs. The response signals that the request has been received by the server, but perhaps not yet processed. A caller should not expect to see any imediate updated state in the service after calling an API that responds with this Response Code.
