@@ -120,8 +120,9 @@ namespace Nether.Web
         {
             loggerFactory.AddDebug();
 
+            var logger = loggerFactory.CreateLogger<Startup>();
 
-            app.UseIdentityServices(Configuration);
+            app.UseIdentityServices(Configuration, logger);
 
 
 

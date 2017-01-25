@@ -13,6 +13,6 @@ namespace Nether.Data.Sql.Identity
         public bool IsActive { get; set; }
         public string Role { get; set; } // TODO - allow multiple roles?
 
-        public ICollection<LoginEntity> Logins { get; set; }
+        public IList<LoginEntity> Logins { get; set; }
     }
 }

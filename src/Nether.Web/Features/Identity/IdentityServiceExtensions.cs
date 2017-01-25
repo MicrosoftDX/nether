@@ -28,7 +28,8 @@ namespace Nether.Web.Features.Identity
     {
         public static IApplicationBuilder UseIdentityServices(
             this IApplicationBuilder app,
-            IConfiguration configuration
+            IConfiguration configuration,
+            ILogger logger
             )
         {
             // TODO - this code was copied from Identity Server sample. Need to understand why the map is cleared!
@@ -37,6 +38,8 @@ namespace Nether.Web.Features.Identity
             var idsvrConfig = configuration.GetSection("Identity:IdentityServer");
             string authority = idsvrConfig["Authority"];
             bool requireHttps = idsvrConfig.GetValue("RequireHttps", true);
+
+
 
             // TODO - this code was copied from the Identity Server sample. Once working, revisit this config and see what is needed to wire up with the generic OpenIdConnect helpers
             app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
@@ -64,7 +67,56 @@ namespace Nether.Web.Features.Identity
 
             app.UseIdentityServerAuthentication(identityServerValidationOptions);*/
 
+
+            AddInitialAdminUser(app, configuration, logger);
+
             return app;
+        }
+
+        private static void AddInitialAdminUser(IApplicationBuilder app, IConfiguration configuration, ILogger logger)
+        {
+            try
+            {
+                var serviceProvider = app.ApplicationServices;
+
+                logger.LogInformation("Identity:Store: Checking user store...");
+
+                // construct a context to test if we have a user
+                var identityContext = serviceProvider.GetRequiredService<IdentityContext>();
+                bool gotUsers = identityContext.Users.Any();
+                if (gotUsers)
+                {
+                    logger.LogInformation("Identity:Store: users exist - no action");
+                }
+                else
+                {
+                    logger.LogInformation("Identity:Store: Adding initial admin user...");
+                    // Create an initial admin
+                    var passwordHasher = serviceProvider.GetRequiredService<IPasswordHasher>();
+                    var password = configuration["Identity:InitialSetup:AdminPassword"];
+                    var user = new UserEntity
+                    {
+                        Role = RoleNames.Admin,
+                        IsActive = true,
+                        Logins = new List<LoginEntity>
+                                    {
+                                        new LoginEntity {
+                                            ProviderType = LoginProvider.UserNamePassword,
+                                            ProviderId = "netheradmin",
+                                            ProviderData = passwordHasher.HashPassword(password)
+                                        }
+                                    }
+                    };
+                    user.Logins[0].User = user;
+                    identityContext.Users.Add(user);
+                    identityContext.SaveChanges();
+                    logger.LogInformation("Identity:Store: Adding initial admin user... complete");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogCritical("Identity:Store: Adding initial admin user, exception: {0}", ex);
+            }
         }
 
         public static IServiceCollection AddIdentityServices(
@@ -109,7 +161,7 @@ namespace Nether.Web.Features.Identity
                             return new DefaultIdentityPlayerManagementClient(
                                 baseUri,
                                 clientSecret,
-                                serviceProvider.GetService<ILoggerFactory>()
+                                serviceProvider.GetRequiredService<ILoggerFactory>()
                                 );
                         });
                         break;
@@ -176,7 +228,7 @@ namespace Nether.Web.Features.Identity
                                 builder.UseInMemoryDatabase();
                             }
                         });
-                        services.AddEntityFrameworkUserStoreWithInitialUserCreation(logger);
+                        services.AddTransient<IdentityContext>();
                         break;
                     case "sql":
                         logger.LogInformation("Identity:Store: using 'Sql' store");
@@ -206,37 +258,7 @@ namespace Nether.Web.Features.Identity
                 services.AddServiceFromConfiguration<IUserStore>(configuration, logger, "Identity:Store");
             }
         }
-
-        private static void AddEntityFrameworkUserStoreWithInitialUserCreation(this IServiceCollection services, ILogger logger)
-        {
-            services.AddTransientWithOneTimeInitialization(
-                    logger,
-                    factory: serviceProvider => new IdentityContext(
-                            serviceProvider.GetService<ILoggerFactory>(),
-                            serviceProvider.GetService<IdentityContextOptions>()),
-                    initialization: serviceProvider =>
-                    {
-                        try
-                        {
-                            logger.LogInformation("Identity:Store: Adding in-memory seed users...");
-
-                // construct the singleton so that we can provide seeded users for testing
-                var seedContext = new IdentityContext(
-                                    serviceProvider.GetService<ILoggerFactory>(),
-                                    serviceProvider.GetService<IdentityContextOptions>());
-                            var seedUsers = InMemoryUsersSeed.Get(serviceProvider.GetService<IPasswordHasher>(), false);
-                            seedContext.Users.AddRange(seedUsers.Select(u => IdentityMappingExtensions.Map(u)));
-                            seedContext.SaveChanges();
-                            logger.LogInformation("Identity:Store: Adding in-memory seed users... complete");
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.LogCritical("Identity:Store: Adding in-memory seed users, exception: {0}", ex);
-                        }
-
-                    });
-        }
-
+        
         private static T GetServiceFromCollection<T>(IServiceCollection services)
         {
             return (T)services
