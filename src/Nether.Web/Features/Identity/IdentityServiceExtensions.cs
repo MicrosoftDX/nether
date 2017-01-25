@@ -240,6 +240,7 @@ namespace Nether.Web.Features.Identity
                             OnModelCreating = builder =>
                             {
                                 builder.Entity<UserEntity>().ForSqlServerToTable("Users");
+                                builder.Entity<LoginEntity>().ForSqlServerToTable("UserLogins");
                             },
                             OnConfiguring = builder =>
                             {
