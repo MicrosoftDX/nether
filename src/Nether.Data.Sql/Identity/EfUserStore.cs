@@ -51,17 +51,23 @@ namespace Nether.Data.Sql.Identity
         {
             UserEntity userEntity;
             // assume that the user is new if UserId is null, and existing if it is set
-            if (user.UserId == null)
-            {
-                userEntity = user.Map();
-                userEntity.UserId = Guid.NewGuid().ToString("d");
-                _context.Add(userEntity);
-            }
-            else
+            if (user.UserId != null)
             {
                 userEntity = await _context.Users.FindAsync(user.UserId);
-                user.MapTo(userEntity);
+                if (userEntity != null)
+                {
+                    user.MapTo(userEntity);
+                    await _context.SaveChangesAsync();
+                    // update user with any changes from saving
+                    userEntity.MapTo(user);
+                    return;
+                }
             }
+
+            // no user id, or we didn't find the user, so add them
+            userEntity = user.Map();
+            userEntity.UserId = userEntity.UserId ?? Guid.NewGuid().ToString("d");
+            _context.Add(userEntity);
             await _context.SaveChangesAsync();
             // update user with any changes from saving
             userEntity.MapTo(user);
