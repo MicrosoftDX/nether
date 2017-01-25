@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 namespace Nether.Data.PlayerManagement
 {
-    [DebuggerDisplay("PlayerExtended (tag '{Gamertag}', UserId '{UserId'})")]
+    [DebuggerDisplay("PlayerExtended (tag '{Gamertag}', UserId '{UserId}')")]
     public class PlayerExtended
     {
         public string UserId { get; set; }
