@@ -19,7 +19,7 @@ namespace NetherLoadTest
         private AutoPlayer _player;
         private bool _loggedIn;
 
-       
+
 
         public TestContext TestContext { get; set; }
 
