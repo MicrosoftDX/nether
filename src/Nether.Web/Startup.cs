@@ -118,7 +118,7 @@ namespace Nether.Web
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddDebug();
+            loggerFactory.AddTrace(LogLevel.Information);
 
             var logger = loggerFactory.CreateLogger<Startup>();
 
