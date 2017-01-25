@@ -15,15 +15,21 @@ namespace NetherLoadTest
     [TestClass]
     public class NetherUnitTest
     {
-        private readonly Random _random = new Random();
-        private readonly AutoPlayer _player;
+        private Random _random = new Random();
+        private AutoPlayer _player;
         private bool _loggedIn;
 
-        public NetherUnitTest()
+
+
+        public TestContext TestContext { get; set; }
+
+        [TestInitialize]
+        public void Init()
         {
             string username = "loadUser" + _random.Next(10000); // hard coded user names created for the load test in the memory store
             string password = username;
-            _player = new AutoPlayer("http://localhost:5000", username, password);
+            var baseUrl = (string)TestContext.Properties["BaseUrl"] ?? "http://localhost:5000";
+            _player = new AutoPlayer(baseUrl, username, password);
             _loggedIn = false;
         }
 
