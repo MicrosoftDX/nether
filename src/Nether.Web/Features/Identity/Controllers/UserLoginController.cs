@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nether.Data.Identity;
 using Nether.Web.Features.Identity.Models.UserLogin;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -65,6 +66,8 @@ namespace Nether.Web.Features.Identity
         /// <param name="userLoginModel">Any additional parameters required by the provider</param>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserLoginRequestModel))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [HttpPut("{providerType}/{providerId}")]
         public async Task<IActionResult> PutUserLogin(
             [FromRoute] string userId,
@@ -82,9 +85,13 @@ namespace Nether.Web.Features.Identity
 
             // TODO Add password complexity options!
             var user = await _userStore.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
-
-            var login = user.Logins.FirstOrDefault(l => l.ProviderType == providerType && l.ProviderId == providerId);
+            user.Logins = user.Logins ?? new List<Login>();
+            var login = user.Logins?.FirstOrDefault(l => l.ProviderType == providerType && l.ProviderId == providerId);
             if (login == null)
             {
                 login = new Login

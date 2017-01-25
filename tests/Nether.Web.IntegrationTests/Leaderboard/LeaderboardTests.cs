@@ -13,7 +13,7 @@ using Xunit;
 namespace Nether.Web.IntegrationTests.Leaderboard
 {
     //todo: come up with better naming
-    public class LeaderboardTests : WebTestBase
+    public class LeaderboardTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
     {
         private const string BasePath = "/api/leaderboard";
 
@@ -39,12 +39,12 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Posting_new_score_updates_default_leaderboard()
         {
-            var client = await GetClientAsync();
+            var client = await GetClientAsync(username: "testuser");
 
             LeaderboardGetResponse leaderboardBefore = await GetLeaderboardAsync(client);
 
             List<LeaderboardGetResponse.LeaderboardEntry> entries =
-                leaderboardBefore.Entries.Where(e => e.Gamertag == _gamertag).ToList();
+                leaderboardBefore.Entries.Where(e => e.Gamertag == "testuser").ToList();
 
             //check that there is only one or less (if score wasn't posted yet) entry per user
             Assert.True(entries.Count <= 1);
@@ -56,14 +56,14 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
             //check that leaderboard has the updated score
             LeaderboardGetResponse leaderboardAfter = await GetLeaderboardAsync(client);
-            int newFreshScore = leaderboardAfter.Entries.Where(e => e.Gamertag == _gamertag).Select(e => e.Score).First();
+            int newFreshScore = leaderboardAfter.Entries.Where(e => e.Gamertag == "testuser").Select(e => e.Score).First();
             Assert.Equal(newFreshScore, newScore);
         }
 
         [Fact]
         public async Task Posting_similar_score_gets_around_me()
         {
-            var client = await GetClientAsync();
+            var client = await GetClientAsync(username: "testuser");
 
             //note: radius is 2 at the moment, meaning you get 2 players above and 2 below (4 elements in response in general)
 
@@ -79,9 +79,8 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             //put me somewhere in the middle and push the other user in the bottom so they are not around me
             await DeleteMyScores(client);
             await PostScoreAsync(client, int.MaxValue / 2);
-            string myGamertag = _gamertag;
             client = await GetClientAsync("testuser1");
-            string theirGamertag = _gamertag;
+            string theirGamertag = "testuser1";
             await DeleteMyScores(client);
             await PostScoreAsync(client, 1);
 

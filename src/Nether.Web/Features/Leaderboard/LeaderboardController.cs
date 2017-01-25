@@ -103,8 +103,8 @@ namespace Nether.Web.Features.Leaderboard
             }
 
             //TODO: Handle exceptions and retries
-            var gamerTag = User.GetGamerTag();
-            if (string.IsNullOrWhiteSpace(gamerTag))
+            var gamertag = User.GetGamerTag();
+            if (string.IsNullOrWhiteSpace(gamertag))
             {
                 _log.LogError("user has no gamertag: '{0}'", User.GetId());
                 return BadRequest(); //TODO: return error info in body
@@ -114,14 +114,14 @@ namespace Nether.Web.Features.Leaderboard
             await Task.WhenAll(
                 _store.SaveScoreAsync(new GameScore
                 {
-                    GamerTag = gamerTag,
+                    GamerTag = gamertag,
                     Country = request.Country,
                     CustomTag = request.CustomTag,
                     Score = request.Score
                 }),
                 _analyticsIntegrationClient.SendGameEventAsync(new ScoreAchieved
                 {
-                    GamerTag = gamerTag,
+                    GamerTag = gamertag,
                     UtcDateTime = DateTime.UtcNow,
                     Score = request.Score
                 }));

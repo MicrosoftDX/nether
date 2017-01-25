@@ -34,7 +34,11 @@ namespace Nether.Data.Sql.Identity
                 .HasKey(u => u.UserId);
 
             builder.Entity<LoginEntity>()
-                .HasKey(l => new { l.ProviderType, l.ProviderId });
+                .HasKey(l => new { l.UserId, l.ProviderType, l.ProviderId });
+
+            builder.Entity<LoginEntity>().Property(l => l.UserId).IsRequired();
+            builder.Entity<LoginEntity>().Property(l => l.ProviderType).IsRequired();
+            builder.Entity<LoginEntity>().Property(l => l.ProviderId).IsRequired();
 
             _options?.OnModelCreating?.Invoke(builder);
         }

@@ -12,7 +12,8 @@ using Xunit;
 
 namespace Nether.Web.IntegrationTests.Identity
 {
-    public class LoginApiTests : WebTestBase
+    
+    public class LoginApiTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
     {
         [Fact()]
         public async Task As_an_admin_I_can_create_a_user_with_a_login_and_login_as_that_user()
@@ -73,11 +74,11 @@ namespace Nether.Web.IntegrationTests.Identity
 
         private async Task<HttpClient> AsPlayerAsync(string username = "testuser", string password = null)
         {
-            return await GetClientAsync(username: username, setPlayerGamertag: true, password: password);
+            return await GetClientAsync(username, password);
         }
         private async Task<HttpClient> AsAdminAsync()
         {
-            return await GetClientAsync(username: "devadmin", setPlayerGamertag: false);
+            return await GetClientAsync("devadmin");
         }
     }
 }

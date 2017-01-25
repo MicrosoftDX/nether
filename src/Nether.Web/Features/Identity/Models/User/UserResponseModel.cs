@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Nether.Web.Features.Identity.Models.User
@@ -19,13 +20,14 @@ namespace Nether.Web.Features.Identity.Models.User
                     UserId = user.UserId,
                     Role = user.Role,
                     Active = user.IsActive,
-                    Logins = user.Logins.Select(l => new UserLoginModel
-                    {
-                        ProviderType = l.ProviderType,
-                        ProviderId = l.ProviderId,
-                        _Link = url.RouteUrl(nameof(UserLoginController.DeleteUserLogin), new { userId = user.UserId, providerType = l.ProviderType, providerId = l.ProviderId }, null)
-                    })
-                    .ToList()
+                    Logins = user.Logins == null
+                            ? new List<UserLoginModel>()
+                            : user.Logins.Select(l => new UserLoginModel
+                            {
+                                ProviderType = l.ProviderType,
+                                ProviderId = l.ProviderId,
+                                _Link = url.RouteUrl(nameof(UserLoginController.DeleteUserLogin), new { userId = user.UserId, providerType = l.ProviderType, providerId = l.ProviderId }, null)
+                            }).ToList()
                 }
             };
         }
