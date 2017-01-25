@@ -85,8 +85,8 @@ namespace Nether.Web.Features.Leaderboard
                         connectionString = scopedConfiguration["ConnectionString"];
                         services.AddTransient<ILeaderboardStore>(serviceProvider =>
                         {
-                            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-                            return new SqlLeaderboardStore(connectionString, loggerFactory);
+                            var storeLogger = serviceProvider.GetRequiredService<ILogger<SqlLeaderboardStore>>();
+                            return new SqlLeaderboardStore(connectionString, storeLogger);
                         });
                         services.AddTransient<ILeaderboardConfiguration>(ServiceProviderServiceExtensions =>
                         {

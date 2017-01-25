@@ -79,6 +79,29 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
+        /// Gets the player information from currently logged in user
+        /// </summary>
+        /// <returns></returns>
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [Authorize(Roles = RoleNames.Player)]
+        [HttpDelete("player")]
+        public async Task<ActionResult> DeleteCurrentPlayer()
+        {
+            string gamertag = User.GetGamerTag();
+            if (string.IsNullOrWhiteSpace(gamertag))
+            {
+                return NotFound();
+            }
+
+            // Call data store
+            await _store.DeletePlayerDetailsAsync(gamertag);
+
+            // Return result
+            return NoContent();
+        }
+
+        /// <summary>
         /// Gets the extended player information from currently logged in user
         /// </summary>
         /// <returns></returns>

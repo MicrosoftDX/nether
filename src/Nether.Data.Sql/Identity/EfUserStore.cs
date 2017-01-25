@@ -17,10 +17,10 @@ namespace Nether.Data.Sql.Identity
 
         private readonly ILogger _logger;
 
-        public EntityFrameworkUserStore(IdentityContext context, ILoggerFactory loggerFactory)
+        public EntityFrameworkUserStore(IdentityContext context, ILogger<EntityFrameworkUserStore> logger)
         {
             _context = context;
-            _logger = loggerFactory.CreateLogger<EntityFrameworkUserStore>();
+            _logger = logger;
         }
 
         public async Task<IEnumerable<User>> GetUsersAsync()

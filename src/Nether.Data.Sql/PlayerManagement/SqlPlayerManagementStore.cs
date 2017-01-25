@@ -15,7 +15,7 @@ namespace Nether.Data.Sql.PlayerManagement
     {
         private PlayerManagementContext _context;
 
-        private readonly ILogger<SqlPlayerManagementStore> _logger;
+        private readonly ILogger _logger;
 
         public SqlPlayerManagementStore(string connectionString, ILoggerFactory loggerFactory)
         {
@@ -249,6 +249,13 @@ namespace Nether.Data.Sql.PlayerManagement
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task DeletePlayerDetailsAsync(string gamertag)
+        {
+            var entity = await _context.Players.SingleOrDefaultAsync(p => p.Gamertag == gamertag);
+            _context.Players.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+
 
         public async Task UploadGroupImageAsync(string groupname, byte[] image)
         {
@@ -290,5 +297,6 @@ namespace Nether.Data.Sql.PlayerManagement
             PlayerExtendedEntity player = await _context.PlayersExtended.SingleOrDefaultAsync(p => p.Gamertag.Equals(gamertag));
             return player?.ToPlayerExtended();
         }
+
     }
 }

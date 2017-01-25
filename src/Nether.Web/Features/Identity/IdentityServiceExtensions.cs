@@ -161,7 +161,7 @@ namespace Nether.Web.Features.Identity
                             return new DefaultIdentityPlayerManagementClient(
                                 baseUri,
                                 clientSecret,
-                                serviceProvider.GetRequiredService<ILoggerFactory>()
+                                serviceProvider.GetRequiredService<ILogger<DefaultIdentityPlayerManagementClient>>()
                                 );
                         });
                         break;

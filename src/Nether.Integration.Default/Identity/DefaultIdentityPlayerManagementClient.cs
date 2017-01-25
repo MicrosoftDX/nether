@@ -34,7 +34,7 @@ namespace Nether.Integration.Identity
         public DefaultIdentityPlayerManagementClient(
             string baseUri, // e.g. localhost:5000
             string clientSecret,
-            ILoggerFactory loggerFactory
+            ILogger<DefaultIdentityPlayerManagementClient> logger
             )
         {
             _baseUri = baseUri;
@@ -47,7 +47,7 @@ namespace Nether.Integration.Identity
                 throw new ArgumentException("clientSecret must be specified", nameof(clientSecret));
             }
             _clientSecret = clientSecret;
-            _logger = loggerFactory.CreateLogger<DefaultIdentityPlayerManagementClient>();
+            _logger = logger;
         }
         public async Task<string> GetGamertagForUserIdAsync(string userId)
         {

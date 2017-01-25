@@ -24,12 +24,12 @@ namespace Nether.Web.Features.Identity
         public UserLoginController(
             IUserStore userStore,
             IPasswordHasher passwordHasher,
-            ILoggerFactory loggerFactory
+            ILogger<UserLoginController> logger
             )
         {
             _userStore = userStore;
             _passwordHasher = passwordHasher;
-            _logger = loggerFactory.CreateLogger<UserLoginController>();
+            _logger = logger;
         }
 
         /// <summary>

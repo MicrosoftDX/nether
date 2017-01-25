@@ -16,7 +16,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
     public class MongoDBPlayerManagementStore : IPlayerManagementStore
     {
         private readonly IMongoDatabase _database;
-        private readonly ILogger<MongoDBPlayerManagementStore> _logger;
+        private readonly ILogger _logger;
 
         private IMongoCollection<MongoDBPlayer> PlayersCollection
             => _database.GetCollection<MongoDBPlayer>("players");
@@ -29,11 +29,11 @@ namespace Nether.Data.MongoDB.PlayerManagement
 
         private static readonly UpdateOptions s_upsertOptions = new UpdateOptions { IsUpsert = true };
 
-        public MongoDBPlayerManagementStore(string connectionString, string dbName, ILoggerFactory loggerFactory)
+        public MongoDBPlayerManagementStore(string connectionString, string dbName, ILogger<MongoDBPlayerManagementStore> logger)
         {
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase(dbName);
-            _logger = loggerFactory.CreateLogger<MongoDBPlayerManagementStore>();
+            _logger = logger;
 
             // ensure PlayerId is indexed as we query by this
             PlayersCollection.Indexes.CreateOne(Builders<MongoDBPlayer>.IndexKeys.Ascending(_ => _.PlayerId));
@@ -221,6 +221,11 @@ namespace Nether.Data.MongoDB.PlayerManagement
                                     };
 
             return await getPlayerExtended.FirstOrDefaultAsync();
+        }
+
+        public Task DeletePlayerDetailsAsync(string gamertag)
+        {
+            throw new NotImplementedException();
         }
     }
 }
