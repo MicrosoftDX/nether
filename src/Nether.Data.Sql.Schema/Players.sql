@@ -15,8 +15,8 @@ CREATE TABLE [dbo].[Players]
 
 GO
 
-CREATE INDEX [IX_Players_Gamertag] ON [dbo].[Players] ([Gamertag])
+CREATE UNIQUE INDEX [IX_Players_Gamertag] ON [dbo].[Players] ([Gamertag])
 
 GO
 
-CREATE INDEX [IX_Players_UserId] ON [dbo].[Players] ([UserId])
+CREATE UNIQUE INDEX [IX_Players_UserId] ON [dbo].[Players] ([UserId])
