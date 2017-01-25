@@ -11,7 +11,6 @@ namespace NetherLoadTest
 {
     public class NetherClient
     {
-        private string _accessToken;
         private readonly string _baseUrl;
         private readonly string _clientId;
         private readonly string _clientSecret;
@@ -27,16 +26,21 @@ namespace NetherLoadTest
 
         private HttpClient CreateClient(string baseUrl)
         {
-            //configure client to use cookies                                  
-
-            var handler = new HttpClientHandler
+            return new HttpClient
             {
-                AllowAutoRedirect = true,
-                UseCookies = true,
-                CookieContainer = new System.Net.CookieContainer()
+                BaseAddress = new Uri(baseUrl)
             };
+        }
 
-            return new HttpClient(handler) { BaseAddress = new Uri(baseUrl) };
+        private string _accessToken_Internal;
+        public string AccessToken
+        {
+            get { return _accessToken_Internal; }
+            set
+            {
+                _accessToken_Internal = value;
+                _httpClient.SetBearerToken(_accessToken_Internal);
+            }
         }
 
         public async Task<OperationResult> LoginUserNamePasswordAsync(string username, string password)
@@ -50,8 +54,7 @@ namespace NetherLoadTest
 
             if (tokenResponse.IsError)
             {
-                _accessToken = null;
-                _httpClient.SetBearerToken(null);
+                AccessToken = null;
                 return new OperationResult
                 {
                     IsSuccess = false,
@@ -60,33 +63,10 @@ namespace NetherLoadTest
             }
             else
             {
-                _accessToken = tokenResponse.AccessToken;
-                _httpClient.SetBearerToken(_accessToken);
-
-                AssignGamertag(tokenClient, username, password);
+                AccessToken = tokenResponse.AccessToken;
 
                 return new OperationResult { IsSuccess = true };
             }
-        }
-
-        private void AssignGamertag(TokenClient client, string username, string password)
-        {
-            string gamertag = username + "GamerTag";
-            var player = new
-            {
-                gamertag = gamertag,
-                country = "UK",
-                customtag = "LoadTest"
-            };
-            HttpResponseMessage response = _httpClient.PutAsJsonAsync("api/player", player).Result;
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new AuthenticationException("GetClient: could not update player info " + username);
-            }
-
-            //get the token again as it will include the gamertag claim
-            var tokenResponse = client.RequestResourceOwnerPasswordAsync(username, password, "nether-all").Result;
-            _httpClient.SetBearerToken(tokenResponse.AccessToken);
         }
 
         // TODO - create result model rather than returning JSON string!

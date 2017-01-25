@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Nether.Data.PlayerManagement
 {
-    [DebuggerDisplay("Player (tag '{Gamertag}', UserId '{UserId'})")]
+    [DebuggerDisplay("Player (tag '{Gamertag}', UserId '{UserId}')")]
     public class Player
     {
         public string UserId { get; set; }
