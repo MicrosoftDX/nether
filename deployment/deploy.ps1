@@ -17,13 +17,18 @@ param
     [securestring]
     $SqlAdministratorPassword
 )
+$ErrorActionPreference = "Stop";
 
 $netherRoot = "$PSScriptRoot/.."
 
+
 # Publish Nether.Web
+Write-Host
+Write-Host "Publishing Nether.Web ..."
 # $build = "Release"
 $build = "Debug"
 $publishPath = "$netherRoot/src/Nether.Web/bin/$build/netcoreapp1.1/publish"
+
 if (Test-Path $publishPath)
 {
     Remove-Item $publishPath -Recurse -Force
@@ -31,7 +36,19 @@ if (Test-Path $publishPath)
 dotnet publish src/Nether.Web -c $build
 
 # Create ZIP (requires PowerShell 5.0 upwards)
-Compress-Archive -Path "$publishPath/*" -DestinationPath "$publishPath/Nether.Web.zip"
+Write-Host
+Write-Host "Creating Nether.Web.zip ..."
+$zipPath = "$publishPath/../Nether.Web.zip"
+if (Test-Path $zipPath){
+    Remove-Item $zipPath
+}
+
+# want to be able to use Compress-Archive as it shows progress
+# but I get a weird error on deploying: " Could not find a part of the path 'D:\\home\\site\\wwwroot\\runtimes\\unix\\'"
+# The .NET library approach succeeds, even though the PowerShell cmdlets are built on it!
+# Compress-Archive -Path "$publishPath/*" -DestinationPath $zipPath -CompressionLevel Fastest
+[Reflection.Assembly]::LoadWithPartialName( "System.IO.Compression.FileSystem" ) | out-null
+[System.IO.Compression.ZipFile]::CreateFromDirectory($publishPath, $zipPath, "Fastest", $false)
 
 
 $storageAccount = Get-AzureRmStorageAccount `
@@ -39,6 +56,7 @@ $storageAccount = Get-AzureRmStorageAccount `
                     -Name $storageAccountName `
                     -ErrorAction SilentlyContinue
 if ($storageAccount -eq $null){
+    Write-Host
     Write-Host "Creating storage account $StorageAccountName..."
     $storageAccount = New-AzureRmStorageAccount `
         -ResourceGroupName $ResourceGroupName `
@@ -54,6 +72,7 @@ $container = Get-AzureStorageContainer `
                     -ErrorAction SilentlyContinue
 if ($container -eq $null){
     # TODO - create SAS URL rather than making the container public??
+    Write-Host
     Write-Host "Creating public (blob) storage container $containerName..."
     $container = New-AzureStorageContainer `
                         -Context $storageAccount.Context `
@@ -61,22 +80,20 @@ if ($container -eq $null){
                         -Permission Blob
 }
 
+Write-Host
 Write-Host "Uploading Nether.Web.zip to storage..."
 $blob = Set-AzureStorageBlobContent `
         -Context $storageAccount.Context `
         -Container $containerName `
-        -File "$publishPath/Nether.Web.zip" `
+        -File $zipPath `
         -Blob "Nether.Web.Zip" `
         -Force
 
 
 
-#uncomment sample to delete previous resource groups by prefix
-#Write-Host "deleting old resource groups..."
-#$result = Get-AzureRmResourceGroup | Where-Object { $_.ResourceGroupName.StartsWith("nether-deploy-") } | Remove-AzureRmResourceGroup -Force
-
 #deploy from template
 
+Write-Host
 Write-Host "Checking for resource group $ResourceGroupName..."
 $resourceGroup = Get-AzureRmResourceGroup -name workshare -ErrorAction SilentlyContinue
 if ($resourceGroup -eq $null){
@@ -87,14 +104,20 @@ if ($resourceGroup -eq $null){
 $templateParameters = @{
     sqlAdministratorPassword = $SqlAdministratorPassword
     webZipUri = $blob.ICloudBlob.Uri.AbsoluteUri
+    # webZipUri = "https://netherassets.blob.core.windows.net/packages/package261.zip"
+    # webZipUri = "https://netherbits.blob.core.windows.net/deployment/Nether.Web.zip"
 }
 
-Write-Host "Deploying application..."
+$deploymentName = "Nether-Deployment-{0:yyyy-MM-dd-HH-mm-ss}" -f (Get-Date)
+Write-Host
+Write-Host "Deploying application... ($deploymentName)"
 $result = New-AzureRmResourceGroupDeployment `
             -ResourceGroupName $ResourceGroupName `
+            -Name $deploymentName `
             -TemplateFile "$PSScriptRoot\nether-web.json" `
             -TemplateParameterObject $templateParameters
 
+Write-Host
 Write-Host "Done."
 
 <#
