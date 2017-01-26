@@ -10,7 +10,7 @@ param
     $Location,
 
     [Parameter(Mandatory=$true)]
-    [securestring]
+    [string]
     $StorageAccountName,
 
     [Parameter(Mandatory=$true)]
@@ -18,10 +18,12 @@ param
     $SqlAdministratorPassword
 )
 
+$netherRoot = "$PSScriptRoot/.."
+
 # Publish Nether.Web
 # $build = "Release"
 $build = "Debug"
-$publishPath = "src/Nether.Web/bin/$build/netcoreapp1.1/publish"
+$publishPath = "$netherRoot/src/Nether.Web/bin/$build/netcoreapp1.1/publish"
 if (Test-Path $publishPath)
 {
     Remove-Item $publishPath -Recurse -Force
@@ -51,6 +53,7 @@ $container = Get-AzureStorageContainer `
                     -Container $containerName `
                     -ErrorAction SilentlyContinue
 if ($container -eq $null){
+    # TODO - create SAS URL rather than making the container public??
     Write-Host "Creating public (blob) storage container $containerName..."
     $container = New-AzureStorageContainer `
                         -Context $storageAccount.Context `
