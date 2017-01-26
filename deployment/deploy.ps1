@@ -31,7 +31,7 @@ if (Test-Path $publishPath)
 dotnet publish src/Nether.Web -c $build
 
 # Create ZIP (requires PowerShell 5.0 upwards)
-Compress-Archive -Path $publishPath -DestinationPath "$publishPath/Nether.Web.zip"
+Compress-Archive -Path "$publishPath/*" -DestinationPath "$publishPath/Nether.Web.zip"
 
 
 $storageAccount = Get-AzureRmStorageAccount `
