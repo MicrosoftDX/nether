@@ -18,9 +18,9 @@ You need to zip this folder and upload somewhere Azure Resource Manager can acce
 
 ## Create Required Resources in Azure
 
-This repository includes a [deployment script](../deployment/nether-all/deploy.ps1) you can launch from PowerShell. It will create a new resource group, a database server and web application. The script will also set web application parameters to point to the database with a proper connection string. The script accepts resource group name and datacenter location as two required input parameters.
+This repository includes a [deployment script](../deployment/deploy.ps1) you can launch from PowerShell. It will create a new resource group, a database server and web application. The script will also set web application parameters to point to the database with a proper connection string. The script accepts resource group name and datacenter location as two required input parameters.
 
-You can find default parameters for this deployment in [template.json](../deployment/nether-all/template.json) file in this repository, in the `parameters` section:
+You can find default parameters for this deployment in [nether-web.json](../deployment/nether-web.json) file in this repository, in the `parameters` section:
 
 ```json
     "parameters": {

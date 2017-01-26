@@ -12,7 +12,6 @@
 
         "sqlAdministratorPassword": {
             "type": "securestring",
-            "defaultValue": "Password!123",
             "metadata": {
                 "description": "The password of the admin user of the SQL Server"
             }
@@ -20,7 +19,6 @@
 
         "webZipUri": {
             "type": "string",
-            "defaultValue": "https://netherci.blob.core.windows.net/deploy/nether.zip",
             "metadata": {
                 "description": "Absolute URI containing the package to deploy"
             }
