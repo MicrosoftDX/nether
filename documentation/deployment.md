@@ -6,59 +6,36 @@ Generally, Nether consists of one or more API application(s) and one or more dat
 
 ## Publish Web Application Locally
 
-First, you need to create a version of `Nether.Web` application which can be hosted in a web server. In order to do that navigate to the `src/Nether.Web` folder in the command line and type
+Currently, the publish script is PowerShell only (and requires PowerShell 5.0).
+It also requires that you have the Azure PowerShell Cmdlets installed. The link to install the Cmdlets can be found [here](https://azure.microsoft.com/en-us/downloads/)
 
-```cmd
-dotnet publish -c release
-```
+There is a `deploy.ps1` in the `deployment` folder. This script will coordinate creating the artefacts to publish to [Azure App Service](https://azure.microsoft.com/en-us/services/app-service/web/) and [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/). The deployment uses [Azure Resource Manager Templates](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview) for the bulk of the deployment and sets up the configuration for the Web App with the SQL Database connection details etc.
 
-This will create a new folder under `src/Nether.Web/bin/release/netcoreapp1.1/publish`. The folder contains all files required for web application to work.
 
-You need to zip this folder and upload somewhere Azure Resource Manager can access it, like a blob storage. For security purposes you may want to create a SAS token on top of this blob to pass to the deployment script.
+Example script usage:
 
-## Create Required Resources in Azure
+```powershell
 
-This repository includes a [deployment script](../deployment/nether-all/deploy.ps1) you can launch from PowerShell. It will create a new resource group, a database server and web application. The script will also set web application parameters to point to the database with a proper connection string. The script accepts resource group name and datacenter location as two required input parameters.
+    # The SqlAdministratorPassword parameter is a SecureString... convert the password here
+    $sqlPassword = ConvertTo-SecureString -String "PutAStrongPasswordHere;-)" -AsPlainText -Force
 
-You can find default parameters for this deployment in [template.json](../deployment/nether-all/template.json) file in this repository, in the `parameters` section:
-
-```json
-    "parameters": {
-        "sqlAdministratorLogin": {
-            "type": "string",
-            "defaultValue": "netheradmin",
-            "metadata": {
-                "description": "The admin user of the SQL Server"
-            }
-        },
-
-        "sqlAdministratorPassword": {
-            "type": "securestring",
-            "defaultValue": "Password!123",
-            "metadata": {
-                "description": "The password of the admin user of the SQL Server"
-            }
-        },
-
-        "webZipUri": {
-            "type": "string",
-            "defaultValue": "http://website.com/package.zip",
-            "metadata": {
-                "description": "Absolute URI containing the package to deploy"
-            }
-        }
-    },
+    .\deploy.ps1 -ResourceGroupName "nether" -Location "northeurope" -StorageAccountName "netherstorage" -SqlAdministratorPassword $sqlPassword
 
 ```
 
- It is recommended to change them for production.
+### Deployment script parameters
 
-You can also change the default parameters for deployed website (see **properties** section under website resource).
+Parameter name | Description
+---------------|------------
+ResourceGroupName | **Required.** The name of the resource group to deploy into
+Location | **Required.** The Azure location to create the resource group in if it doesn't already exist. You can list the available locations with the `Get-AzureRmLocation` cmdlet
+StorageAccountName | **Required.** The name of the storage account to create/use to upload the web application binaries to for deployment
+SqlAdministratorPassword | **Required.** The password to use for the adminstrator account for the SQL Database
 
 
 ## Deploying Database Schema
 
-ARM template creates an empty database but doesn't deploy any schema at the moment.
+The deployment script currently creates an empty database but doesn't yet deploy the schema.
 
 Visual Studio solution contains a project called `Nether.Data.Sql.Schema` which produces a `.dacpac` file to deploy the schema on top of the created database. You can use a variety of tools like `Visual Studio 2015`, `SQL Server Management Studio` or [command-line](https://msdn.microsoft.com/en-us/library/hh550080(v=vs.103).aspx) to deploy it. Note that by default SQL Server firewall doesn't allow incoming connection from non-Azure services, therefore you may want to temporarily open a firewall port for it. Another option is to use Visual Studio Team Services dacpac deployment task which does it for you.
 
