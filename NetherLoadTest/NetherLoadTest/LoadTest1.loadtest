@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LoadTest Name="LoadTest1" Description="" Owner="" storage="c:\source\sl-nether\netherloadtest\netherloadtest\loadtest1.loadtest" Priority="2147483647" Enabled="true" CssProjectStructure="" CssIteration="" DeploymentItemsEditable="" WorkItemIds="" TraceLevel="None" CurrentRunConfig="Run Settings1" Id="e270f727-7dc4-4311-add3-92f72b31f25a" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+<LoadTest Name="LoadTest1" Description="" Owner="" storage="c:\projects\nether\netherloadtest\netherloadtest\loadtest1.loadtest" Priority="2147483647" Enabled="true" CssProjectStructure="" CssIteration="" DeploymentItemsEditable="" WorkItemIds="" TraceLevel="None" CurrentRunConfig="Run Settings1" Id="e270f727-7dc4-4311-add3-92f72b31f25a" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
   <Scenarios>
     <Scenario Name="PlayGame" DelayBetweenIterations="0" PercentNewUsers="0" IPSwitching="false" TestMixType="PercentageOfTestsStarted" ApplyDistributionToPacingDelay="true" MaxTestIterations="0" DisableDuringWarmup="false" DelayStartTime="0" AllowedAgents="">
       <ThinkProfile Value="0.2" Pattern="NormalDistribution" />
@@ -428,7 +428,7 @@
         <GeoLocation Location="Default" Percentage="100" />
       </LoadGeneratorLocations>
       <ContextParameters>
-        <ContextParameter Name="BaseUrl" Value="http://localhost:5000" />
+        <ContextParameter Name="BaseUrl" Value="http://website-yrlm77ddnpqre.azurewebsites.net" />
         <ContextParameter Name="ClientId" Value="resourceowner-test" />
         <ContextParameter Name="ClientSecret" Value="devsecret" />
         <ContextParameter Name="AdminUserName" Value="netheradmin" />
