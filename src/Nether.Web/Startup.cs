@@ -38,6 +38,9 @@ namespace Nether.Web
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            loggerFactory.AddTrace(LogLevel.Information);
+            loggerFactory.AddAzureWebAppDiagnostics(); // docs: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging#appservice
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -46,7 +49,6 @@ namespace Nether.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IConfiguration>(Configuration);
-
 
             // Add framework services.
             services
@@ -118,7 +120,6 @@ namespace Nether.Web
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddTrace(LogLevel.Information);
 
             var logger = loggerFactory.CreateLogger<Startup>();
 

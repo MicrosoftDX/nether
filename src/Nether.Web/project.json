@@ -28,7 +28,8 @@
     "Swashbuckle.AspNetCore": "1.0.0-rc1",
     "Nether.Data.Sql": "1.0.0-*",
     "Microsoft.AspNetCore.Cryptography.KeyDerivation": "1.1.0",
-    "Microsoft.EntityFrameworkCore.InMemory": "1.1.0"
+    "Microsoft.EntityFrameworkCore.InMemory": "1.1.0",
+    "Microsoft.Extensions.Logging.AzureAppServices":  "1.0.0"
   },
 
   "tools": {
