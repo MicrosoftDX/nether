@@ -120,7 +120,6 @@ namespace Nether.Web
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
-
             var logger = loggerFactory.CreateLogger<Startup>();
 
             app.UseIdentityServices(Configuration, logger);
