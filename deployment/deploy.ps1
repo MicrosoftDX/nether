@@ -50,6 +50,12 @@ if (Test-Path $zipPath){
 [Reflection.Assembly]::LoadWithPartialName( "System.IO.Compression.FileSystem" ) | out-null
 [System.IO.Compression.ZipFile]::CreateFromDirectory($publishPath, $zipPath, "Fastest", $false)
 
+Write-Host "Checking for resource group $ResourceGroupName..."
+$resourceGroup = Get-AzureRmResourceGroup -name workshare -ErrorAction SilentlyContinue
+if ($resourceGroup -eq $null){
+    Write-Host "creating new resource group $ResourceGroupName ... in $Location"
+    $resourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location
+}
 
 $storageAccount = Get-AzureRmStorageAccount `
                     -ResourceGroupName $ResourceGroupName `
@@ -94,12 +100,6 @@ $blob = Set-AzureStorageBlobContent `
 #deploy from template
 
 Write-Host
-Write-Host "Checking for resource group $ResourceGroupName..."
-$resourceGroup = Get-AzureRmResourceGroup -name workshare -ErrorAction SilentlyContinue
-if ($resourceGroup -eq $null){
-    Write-Host "creating new resource group $ResourceGroupName ... in $Location"
-    $resourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location
-}
 
 $templateParameters = @{
     sqlAdministratorPassword = $SqlAdministratorPassword
