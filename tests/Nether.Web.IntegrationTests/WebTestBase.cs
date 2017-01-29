@@ -23,7 +23,7 @@ namespace Nether.Web.IntegrationTests
         public const string PlayerUser = "testuser";
         public const string AdminUser = "devadmin";
 
-        protected const string BaseUrl = "http://localhost:5000/";
+        public static string BaseUrl => Environment.GetEnvironmentVariable("NETHER_INTEGRATION_TEST_BASE") ?? "http://localhost:5000/";
         private const string ClientId = "resourceowner-test";
         private const string ClientSecret = "devsecret";
 
