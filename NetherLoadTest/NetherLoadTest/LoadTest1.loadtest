@@ -428,7 +428,7 @@
         <GeoLocation Location="Default" Percentage="100" />
       </LoadGeneratorLocations>
       <ContextParameters>
-        <ContextParameter Name="BaseUrl" Value="http://website-yrlm77ddnpqre.azurewebsites.net" />
+        <ContextParameter Name="BaseUrl" Value="http://localhost:5000" />
         <ContextParameter Name="ClientId" Value="resourceowner-test" />
         <ContextParameter Name="ClientSecret" Value="devsecret" />
         <ContextParameter Name="AdminUserName" Value="netheradmin" />
