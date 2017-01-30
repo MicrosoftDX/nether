@@ -66,6 +66,9 @@
     <Build Include="Users.sql" />
     <Build Include="UserLogins.sql" />
     <Build Include="PlayersExtended.sql" />
+    <Build Include="GetHighScores.sql" />
+    <Build Include="GetScoresAroundPlayer.sql" />
+    <Build Include="GetPlayerRank.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Nether.Data.Sql.Schema.refactorlog" />
