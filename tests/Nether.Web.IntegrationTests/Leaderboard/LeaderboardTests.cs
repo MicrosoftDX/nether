@@ -96,7 +96,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             await PostScoreAsync(client, 750);
 
             var response = await GetLeaderboardAsync(client, leaderboardName);
-            Assert.Collection(response.Entries, 
+            Assert.Collection(response.Entries,
                 entry => Assert.Equal("testuser12", entry.Gamertag),
                 entry => Assert.Equal("testuser11", entry.Gamertag),
                 entry => Assert.Equal("testuser10", entry.Gamertag),
