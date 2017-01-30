@@ -40,12 +40,7 @@ namespace Nether.Data.Sql.Leaderboard
 
         public async Task<List<GameScore>> GetScoresAroundMeAsync(string gamerTag, int radius)
         {
-            GameScore score = await _db.GetGamerRankAsync(gamerTag);
-            if (score == null) return null;
-
-            List<GameScore> res = await _db.GetScoresAroundMeAsync(gamerTag, score.Rank, radius);
-
-            return res.OrderBy(s => s.Rank).ToList();
+            return await _db.GetScoresAroundMeAsync(gamerTag, radius);
         }
 
         public async Task DeleteAllScoresAsync(string gamerTag)
