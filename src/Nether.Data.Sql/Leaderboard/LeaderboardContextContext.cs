@@ -55,7 +55,7 @@ namespace Nether.Data.Sql.Leaderboard
 
         public async Task<List<GameScore>> GetHighScoresAsync(int n)
         {
-            if (n==0)
+            if (n == 0)
             {
                 // temporary - set n to large number. Will remove this once we implement paging
                 n = 1000;
