@@ -24,7 +24,7 @@ namespace Nether.Data.Sql.Leaderboard
 
         public async Task SaveScoreAsync(GameScore score)
         {
-            await _db.SaveSoreAsync(score);
+            await _db.SaveScoreAsync(score);
         }
 
         public async Task<List<GameScore>> GetAllHighScoresAsync()

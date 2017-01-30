@@ -49,7 +49,7 @@ namespace Nether.Data.Sql.Leaderboard
             builder.UseSqlServer(_connectionString);
         }
 
-        public async Task SaveSoreAsync(GameScore score)
+        public async Task SaveScoreAsync(GameScore score)
         {
             await Scores.AddAsync(new SavedGamerScore { Score = score.Score, CustomTag = score.CustomTag, GamerTag = score.GamerTag, DateAchieved = DateTime.UtcNow });
             await SaveChangesAsync();
