@@ -82,7 +82,7 @@ namespace Nether.Web.Features.Identity
                 logger.LogInformation("Identity:Store: Checking user store...");
 
                 // construct a context to test if we have a user
-                var identityContext = serviceProvider.GetRequiredService<IdentityContext>();
+                var identityContext = serviceProvider.GetRequiredService<IdentityContextBase>();
                 bool gotUsers = identityContext.Users.Any();
                 if (gotUsers)
                 {
@@ -220,34 +220,15 @@ namespace Nether.Web.Features.Identity
                     case "in-memory":
                         logger.LogInformation("Identity:Store: using 'in-memory' store");
                         services.AddTransient<IUserStore, EntityFrameworkUserStore>();
-                        // Add IdentityContextOptions to configure for in-memory
-                        services.AddSingleton(new IdentityContextOptions
-                        {
-                            OnConfiguring = builder =>
-                            {
-                                builder.UseInMemoryDatabase();
-                            }
-                        });
-                        services.AddTransient<IdentityContext>();
+                        services.AddTransient<InMemoryIdentityContext>();
                         break;
                     case "sql":
                         logger.LogInformation("Identity:Store: using 'Sql' store");
                         string connectionString = scopedConfiguration["ConnectionString"];
                         services.AddTransient<IUserStore, EntityFrameworkUserStore>();
                         // Add IdentityContextOptions to configure for SQL Server
-                        services.AddSingleton(new IdentityContextOptions
-                        {
-                            OnModelCreating = builder =>
-                            {
-                                builder.Entity<UserEntity>().ForSqlServerToTable("Users");
-                                builder.Entity<LoginEntity>().ForSqlServerToTable("UserLogins");
-                            },
-                            OnConfiguring = builder =>
-                            {
-                                builder.UseSqlServer(connectionString);
-                            }
-                        });
-                        services.AddTransient<IdentityContext>();
+                        services.AddSingleton(new SqlIdentityContextOptions { ConnectionString = connectionString});
+                        services.AddTransient<IdentityContextBase>();
                         break;
                     default:
                         throw new Exception($"Unhandled 'wellKnown' type for Identity:Store: '{wellKnownType}'");

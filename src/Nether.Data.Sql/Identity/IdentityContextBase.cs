@@ -12,17 +12,15 @@ using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace Nether.Data.Sql.Identity
 {
-    public class IdentityContext : DbContext
+    public abstract class IdentityContextBase : DbContext
     {
         private readonly ILoggerFactory _loggerFactory;
-        private readonly IdentityContextOptions _options;
 
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<LoginEntity> Logins { get; set; }
 
-        public IdentityContext(ILoggerFactory loggerFactory, IdentityContextOptions options)
+        public IdentityContextBase(ILoggerFactory loggerFactory)
         {
-            _options = options;
             _loggerFactory = loggerFactory;
         }
 
@@ -39,8 +37,6 @@ namespace Nether.Data.Sql.Identity
             builder.Entity<LoginEntity>().Property(l => l.UserId).IsRequired();
             builder.Entity<LoginEntity>().Property(l => l.ProviderType).IsRequired();
             builder.Entity<LoginEntity>().Property(l => l.ProviderId).IsRequired();
-
-            _options?.OnModelCreating?.Invoke(builder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -48,14 +44,6 @@ namespace Nether.Data.Sql.Identity
             base.OnConfiguring(builder);
 
             builder.UseLoggerFactory(_loggerFactory);
-
-            _options?.OnConfiguring?.Invoke(builder);
         }
-    }
-
-    public class IdentityContextOptions
-    {
-        public Action<ModelBuilder> OnModelCreating { get; set; }
-        public Action<DbContextOptionsBuilder> OnConfiguring { get; set; }
     }
 }

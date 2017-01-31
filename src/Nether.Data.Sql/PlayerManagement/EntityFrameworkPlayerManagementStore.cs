@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace Nether.Data.Sql.PlayerManagement
 {
-    public class SqlPlayerManagementStore : IPlayerManagementStore
+    public class EntityFrameworkPlayerManagementStore : IPlayerManagementStore
     {
-        private PlayerManagementContext _context;
+        private PlayerManagementContextBase _context;
 
         private readonly ILogger _logger;
 
-        public SqlPlayerManagementStore(string connectionString, ILoggerFactory loggerFactory)
+        public EntityFrameworkPlayerManagementStore(PlayerManagementContextBase context, ILoggerFactory loggerFactory)
         {
-            _context = new PlayerManagementContext(connectionString, loggerFactory);
-            _logger = loggerFactory.CreateLogger<SqlPlayerManagementStore>();
+            _context = context;
+            _logger = loggerFactory.CreateLogger<EntityFrameworkPlayerManagementStore>();
         }
 
         public async Task AddPlayerToGroupAsync(Group group, Player player)

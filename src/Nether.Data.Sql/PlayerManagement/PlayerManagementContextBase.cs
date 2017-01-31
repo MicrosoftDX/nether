@@ -11,9 +11,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Nether.Data.Sql.PlayerManagement
 {
-    public class PlayerManagementContext : DbContext
+    public abstract class PlayerManagementContextBase : DbContext
     {
-        private readonly string _connectionString;
         private readonly ILoggerFactory _loggerFactory;
 
         public DbSet<PlayerGroupEntity> PlayerGroups { get; set; }
@@ -21,9 +20,8 @@ namespace Nether.Data.Sql.PlayerManagement
         public DbSet<GroupEntity> Groups { get; set; }
         public DbSet<PlayerExtendedEntity> PlayersExtended { get; set; }
 
-        public PlayerManagementContext(string connectionString, ILoggerFactory loggerFactory)
+        public PlayerManagementContextBase(ILoggerFactory loggerFactory)
         {
-            _connectionString = connectionString;
             _loggerFactory = loggerFactory;
         }
 
@@ -52,19 +50,11 @@ namespace Nether.Data.Sql.PlayerManagement
 
             builder.Entity<GroupEntity>()
                 .HasKey(g => g.Name);
-
-
-            builder.Entity<PlayerGroupEntity>().ForSqlServerToTable("PlayerGroups");
-            builder.Entity<PlayerEntity>().ForSqlServerToTable("Players");
-            builder.Entity<GroupEntity>().ForSqlServerToTable("Groups");
-            builder.Entity<PlayerExtendedEntity>().ForSqlServerToTable("PlayersExtended");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
             base.OnConfiguring(builder);
-
-            builder.UseSqlServer(_connectionString);
             builder.UseLoggerFactory(_loggerFactory);
         }
     }

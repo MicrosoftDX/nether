@@ -13,11 +13,11 @@ namespace Nether.Data.Sql.Identity
 {
     public class EntityFrameworkUserStore : IUserStore
     {
-        private IdentityContext _context;
+        private IdentityContextBase _context;
 
         private readonly ILogger _logger;
 
-        public EntityFrameworkUserStore(IdentityContext context, ILogger<EntityFrameworkUserStore> logger)
+        public EntityFrameworkUserStore(IdentityContextBase context, ILogger<EntityFrameworkUserStore> logger)
         {
             _context = context;
             _logger = logger;
