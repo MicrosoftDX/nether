@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Nether.Data.Sql.PlayerManagement
 {
-    public class SqlPlayerManagementContext : PlayerManagementContextBase   
+    public class SqlPlayerManagementContext : PlayerManagementContextBase
     {
         private readonly SqlPlayerManagementContextOptions _options;
 

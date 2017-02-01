@@ -227,7 +227,7 @@ namespace Nether.Web.Features.Identity
                         string connectionString = scopedConfiguration["ConnectionString"];
                         services.AddTransient<IUserStore, EntityFrameworkUserStore>();
                         // Add IdentityContextOptions to configure for SQL Server
-                        services.AddSingleton(new SqlIdentityContextOptions { ConnectionString = connectionString});
+                        services.AddSingleton(new SqlIdentityContextOptions { ConnectionString = connectionString });
                         services.AddTransient<IdentityContextBase>();
                         break;
                     default:
