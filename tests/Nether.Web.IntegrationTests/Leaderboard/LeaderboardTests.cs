@@ -63,38 +63,66 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Posting_similar_score_gets_around_me()
         {
-            var client = await GetClientAsync(username: "testuser");
+            const string leaderboardName = "5-AroundMe";
 
-            //note: radius is 2 at the moment, meaning you get 2 players above and 2 below (4 elements in response in general)
+            // note: this test assumes that radius is set to 5
+            // meaning you get 5 players above and 5 below (11 elements in response in general)
 
-            //check there are at least 5 users
-            LeaderboardGetResponse response = await GetLeaderboardAsync(client);
-            if (response.Entries.Length < 5)
+            // set up scores
+            var scores = new[] {
+                    new { username = "testuser1", score = 100 },
+                    new { username = "testuser2", score = 200 },
+                    new { username = "testuser3", score = 300 },
+                    new { username = "testuser4", score = 400 },
+                    new { username = "testuser5", score = 500 },
+                    new { username = "testuser6", score = 600 },
+                    new { username = "testuser7", score = 700 },
+                    new { username = "testuser8", score = 800 },
+                    new { username = "testuser9", score = 900 },
+                    new { username = "testuser10", score = 1000 },
+                    new { username = "testuser11", score = 1100 },
+                    new { username = "testuser12", score = 1200 },
+                };
+            foreach (var score in scores)
             {
-                throw new NotImplementedException();    //todo: post scores to get at least 5
+                var tempClient = await GetClientAsync(score.username);
+                await DeleteMyScoresAsync(tempClient);
+                await PostScoreAsync(tempClient, score.score);
             }
 
-            //todo: delete score entries before testing, this requires a separate http method
 
-            //put me somewhere in the middle and push the other user in the bottom so they are not around me
-            await DeleteMyScores(client);
-            await PostScoreAsync(client, int.MaxValue / 2);
-            client = await GetClientAsync("testuser1");
-            string theirGamertag = "testuser1";
-            await DeleteMyScores(client);
-            await PostScoreAsync(client, 1);
+            var client = await GetClientAsync(username: "testuser");
+            await DeleteMyScoresAsync(client);
+            await PostScoreAsync(client, 750);
 
-            //check they are not around me
-            client = await GetClientAsync();
-            response = await GetLeaderboardAsync(client, "5-AroundMe");
-            Assert.False(response.Entries.Any(e => e.Gamertag == theirGamertag));
+            var response = await GetLeaderboardAsync(client, leaderboardName);
+            Assert.Collection(response.Entries,
+                entry => Assert.Equal("testuser12", entry.Gamertag),
+                entry => Assert.Equal("testuser11", entry.Gamertag),
+                entry => Assert.Equal("testuser10", entry.Gamertag),
+                entry => Assert.Equal("testuser9", entry.Gamertag),
+                entry => Assert.Equal("testuser8", entry.Gamertag),
+                entry => Assert.Equal("testuser", entry.Gamertag),
+                entry => Assert.Equal("testuser7", entry.Gamertag),
+                entry => Assert.Equal("testuser6", entry.Gamertag),
+                entry => Assert.Equal("testuser5", entry.Gamertag),
+                entry => Assert.Equal("testuser4", entry.Gamertag),
+                entry => Assert.Equal("testuser3", entry.Gamertag)
+             );
 
-            //make their score similar to mine and check they are around me
-            client = await GetClientAsync("testuser1");
-            await PostScoreAsync(client, int.MaxValue / 2 + 1);
-            client = await GetClientAsync();
-            response = await GetLeaderboardAsync(client, "5-AroundMe");
-            Assert.True(response.Entries.Any(e => e.Gamertag == theirGamertag));
+            // update testuser make their score similar to mine and check they are around me
+            await PostScoreAsync(client, 1050);
+            response = await GetLeaderboardAsync(client, leaderboardName);
+            Assert.Collection(response.Entries,
+                entry => Assert.Equal("testuser12", entry.Gamertag),
+                entry => Assert.Equal("testuser11", entry.Gamertag),
+                entry => Assert.Equal("testuser", entry.Gamertag),
+                entry => Assert.Equal("testuser10", entry.Gamertag),
+                entry => Assert.Equal("testuser9", entry.Gamertag),
+                entry => Assert.Equal("testuser8", entry.Gamertag),
+                entry => Assert.Equal("testuser7", entry.Gamertag),
+                entry => Assert.Equal("testuser6", entry.Gamertag)
+             );
         }
 
         [Fact]
@@ -124,7 +152,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
         #region [ REST Wrappers ]
 
-        private async Task DeleteMyScores(HttpClient client)
+        private async Task DeleteMyScoresAsync(HttpClient client)
         {
             await client.DeleteAsync(BasePath);
         }

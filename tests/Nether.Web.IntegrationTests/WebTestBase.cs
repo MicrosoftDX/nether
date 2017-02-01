@@ -37,7 +37,18 @@ namespace Nether.Web.IntegrationTests
         protected static readonly UserInfo[] s_users = new[]
         {
             new UserInfo { UserName = "testuser", Password = "testuser", Role = "Player", Gamertag = "testuser" },
-            new UserInfo { UserName = "testuser1", Password = "testuser1", Role = "Player", Gamertag = "testuser1" },
+            new UserInfo { UserName = "testuser1", Password = "password123", Role = "Player", Gamertag = "testuser1" },
+            new UserInfo { UserName = "testuser2", Password = "password123", Role = "Player", Gamertag = "testuser2" },
+            new UserInfo { UserName = "testuser3", Password = "password123", Role = "Player", Gamertag = "testuser3" },
+            new UserInfo { UserName = "testuser4", Password = "password123", Role = "Player", Gamertag = "testuser4" },
+            new UserInfo { UserName = "testuser5", Password = "password123", Role = "Player", Gamertag = "testuser5" },
+            new UserInfo { UserName = "testuser6", Password = "password123", Role = "Player", Gamertag = "testuser6" },
+            new UserInfo { UserName = "testuser7", Password = "password123", Role = "Player", Gamertag = "testuser7" },
+            new UserInfo { UserName = "testuser8", Password = "password123", Role = "Player", Gamertag = "testuser8" },
+            new UserInfo { UserName = "testuser9", Password = "password123", Role = "Player", Gamertag = "testuser9" },
+            new UserInfo { UserName = "testuser10", Password = "password123", Role = "Player", Gamertag = "testuser10" },
+            new UserInfo { UserName = "testuser11", Password = "password123", Role = "Player", Gamertag = "testuser11" },
+            new UserInfo { UserName = "testuser12", Password = "password123", Role = "Player", Gamertag = "testuser12" },
             new UserInfo { UserName = "testuser-notag", Password = "password123", Role = "Player" },
             new UserInfo { UserName = "devadmin", Password = "devadmin", Role = "Admin" },
         };
