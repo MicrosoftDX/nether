@@ -83,11 +83,9 @@ namespace Nether.Web.Features.Leaderboard
                     case "sql":
                         logger.LogInformation("Leaderboard:Store: using 'Sql' store");
                         connectionString = scopedConfiguration["ConnectionString"];
-                        services.AddTransient<ILeaderboardStore>(serviceProvider =>
-                        {
-                            var storeLogger = serviceProvider.GetRequiredService<ILogger<SqlLeaderboardStore>>();
-                            return new SqlLeaderboardStore(connectionString, storeLogger);
-                        });
+                        services.AddSingleton(new SqlLeaderboardContextOptions { ConnectionString = connectionString });
+                        services.AddTransient<LeaderboardContextBase, SqlLeaderboardContext>();
+                        services.AddTransient<ILeaderboardStore, EntityFrameworkLeaderboardStore>();
                         services.AddTransient<ILeaderboardConfiguration>(ServiceProviderServiceExtensions =>
                         {
                             return new LeaderboardConfiguration(GetLeaderboardconfiguraion(configuration.GetSection("Leaderboard:Leaderboards").GetChildren()));

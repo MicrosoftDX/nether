@@ -10,42 +10,41 @@ using Microsoft.Extensions.Logging;
 
 namespace Nether.Data.Sql.Leaderboard
 {
-    public class SqlLeaderboardStore : ILeaderboardStore
+    public class EntityFrameworkLeaderboardStore : ILeaderboardStore
     {
-        private LeaderboardContext _db;
-        private readonly ILogger<SqlLeaderboardStore> _logger;
-        private readonly string _table = "Scores";
+        private readonly LeaderboardContextBase _context;
+        private readonly ILogger _logger;
 
-        public SqlLeaderboardStore(string connectionString, ILogger<SqlLeaderboardStore> logger)
+        public EntityFrameworkLeaderboardStore(ILogger logger, LeaderboardContextBase context)
         {
-            _db = new LeaderboardContext(connectionString, _table);
+            _context = context;
             _logger = logger;
         }
 
         public async Task SaveScoreAsync(GameScore score)
         {
-            await _db.SaveScoreAsync(score);
+            await _context.SaveScoreAsync(score);
         }
 
         public async Task<List<GameScore>> GetAllHighScoresAsync()
         {
-            return await _db.GetHighScoresAsync(0);
+            return await _context.GetHighScoresAsync(0);
         }
 
         public async Task<List<GameScore>> GetTopHighScoresAsync(int n)
         {
-            return await _db.GetHighScoresAsync(n);
+            return await _context.GetHighScoresAsync(n);
         }
 
 
         public async Task<List<GameScore>> GetScoresAroundMeAsync(string gamerTag, int radius)
         {
-            return await _db.GetScoresAroundMeAsync(gamerTag, radius);
+            return await _context.GetScoresAroundMeAsync(gamerTag, radius);
         }
 
         public async Task DeleteAllScoresAsync(string gamerTag)
         {
-            await _db.DeleteScores(gamerTag);
+            await _context.DeleteScores(gamerTag);
         }
     }
 }

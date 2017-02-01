@@ -2,29 +2,27 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Nether.Data.Leaderboard;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nether.Data.Sql.Leaderboard
 {
-    public class LeaderboardContext : DbContext
+    public class SqlLeaderboardContext : LeaderboardContextBase
     {
-        private readonly string _connectionString;
-        private readonly string _table;
+        private readonly SqlLeaderboardContextOptions _options;
 
         private static string s_topSql = "EXEC GetHighScores @StartRank = 0, @Count = {0}";
         private static string s_aroundMeSql = "EXEC GetScoresAroundPlayer @Gamertag = {0}, @Radius = {1}";
 
-        public DbSet<SavedGamerScore> Scores { get; set; }
         public DbSet<QueriedGamerScore> Ranks { get; set; }
 
-        public LeaderboardContext(string connectionString, string table)
+        public SqlLeaderboardContext(SqlLeaderboardContextOptions options, ILoggerFactory loggerFactory)
+            : base(loggerFactory)
         {
-            _connectionString = connectionString;
-            _table = table;
+            _options = options;
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -32,28 +30,15 @@ namespace Nether.Data.Sql.Leaderboard
             base.OnModelCreating(builder);
 
             builder.Entity<SavedGamerScore>()
-                .HasKey(c => c.Id);
-
-            builder.Entity<QueriedGamerScore>()
-                .HasKey(c => c.GamerTag);
-
-
-            builder.Entity<SavedGamerScore>()
-                .ForSqlServerToTable(_table);
+                .ForSqlServerToTable("Scores");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            builder.UseSqlServer(_connectionString);
+            builder.UseSqlServer(_options.ConnectionString);
         }
 
-        public async Task SaveScoreAsync(GameScore score)
-        {
-            await Scores.AddAsync(new SavedGamerScore { Score = score.Score, CustomTag = score.CustomTag, GamerTag = score.GamerTag, DateAchieved = DateTime.UtcNow });
-            await SaveChangesAsync();
-        }
-
-        public async Task<List<GameScore>> GetHighScoresAsync(int n)
+        public override async Task<List<GameScore>> GetHighScoresAsync(int n)
         {
             if (n == 0)
             {
@@ -71,7 +56,7 @@ namespace Nether.Data.Sql.Leaderboard
                 }).ToListAsync();
         }
 
-        public async Task<List<GameScore>> GetScoresAroundMeAsync(string gamertag, int radius)
+        public override async Task<List<GameScore>> GetScoresAroundMeAsync(string gamertag, int radius)
         {
             return await Ranks.FromSql(s_aroundMeSql, gamertag, radius)
                 .Select(s =>
@@ -83,30 +68,10 @@ namespace Nether.Data.Sql.Leaderboard
                     Rank = s.Ranking
                 }).ToListAsync();
         }
-
-        public async Task DeleteScores(string gamerTag)
-        {
-            List<SavedGamerScore> scores = await Scores.Where(_ => _.GamerTag == gamerTag).ToListAsync();
-            RemoveRange(scores);
-            await SaveChangesAsync();
-        }
     }
-
-    public class SavedGamerScore
+    public class SqlLeaderboardContextOptions
     {
-        public Guid Id { get; set; }
-        public int Score { get; set; }
-        public string GamerTag { get; set; }
-        public string CustomTag { get; set; }
-        public DateTime DateAchieved { get; set; }
-    }
-
-    public class QueriedGamerScore
-    {
-        public int Score { get; set; }
-        public string GamerTag { get; set; }
-        public string CustomTag { get; set; }
-        public long Ranking { get; set; }
+        public string ConnectionString { get; set; }
     }
 }
 
