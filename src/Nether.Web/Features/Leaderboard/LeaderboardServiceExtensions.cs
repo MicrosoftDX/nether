@@ -88,7 +88,7 @@ namespace Nether.Web.Features.Leaderboard
                         services.AddTransient<ILeaderboardStore, EntityFrameworkLeaderboardStore>();
                         services.AddTransient<ILeaderboardConfiguration>(ServiceProviderServiceExtensions =>
                         {
-                            return new LeaderboardConfiguration(GetLeaderboardconfiguraion(configuration.GetSection("Leaderboard:Leaderboards").GetChildren()));
+                            return new LeaderboardConfiguration(GetLeaderboardConfiguration(configuration.GetSection("Leaderboard:Leaderboards").GetChildren()));
                         });
                         break;
                     default:
@@ -102,7 +102,7 @@ namespace Nether.Web.Features.Leaderboard
             }
         }
 
-        private static Dictionary<string, LeaderboardConfig> GetLeaderboardconfiguraion(IEnumerable<IConfigurationSection> enumerable)
+        private static Dictionary<string, LeaderboardConfig> GetLeaderboardConfiguration(IEnumerable<IConfigurationSection> enumerable)
         {
             Dictionary<string, LeaderboardConfig> leaderboards = new Dictionary<string, LeaderboardConfig>();
             // go over all leaderboards under "Leaderboard:Leaderboards"
