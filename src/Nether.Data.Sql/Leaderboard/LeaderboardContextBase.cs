@@ -27,7 +27,6 @@ namespace Nether.Data.Sql.Leaderboard
 
             builder.Entity<SavedGamerScore>()
                 .HasKey(c => c.Id);
-
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)

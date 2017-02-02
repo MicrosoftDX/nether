@@ -21,7 +21,6 @@ namespace Nether.Data.Sql.Leaderboard
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -70,7 +69,7 @@ namespace Nether.Data.Sql.Leaderboard
                         Score = g.Max(s => s.Score),
                         Rank = index
                     })
-                    .OrderByDescending(s=>s.Score)
+                    .OrderByDescending(s => s.Score)
                     .ToList();
         }
     }
