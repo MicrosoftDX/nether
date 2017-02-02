@@ -80,20 +80,27 @@ namespace Nether.Web.Features.Leaderboard
                 string connectionString;
                 switch (wellKnownType)
                 {
+                    case "in-memory":
+                        logger.LogInformation("Leaderboard:Store: using 'in-memory' store");
+                        connectionString = scopedConfiguration["ConnectionString"];
+                        services.AddTransient<LeaderboardContextBase, InMemoryLeaderboardContext>();
+                        services.AddTransient<ILeaderboardStore, EntityFrameworkLeaderboardStore>();
+
+                        break;
                     case "sql":
-                        logger.LogInformation("Leaderboard:Store: using 'Sql' store");
+                        logger.LogInformation("Leaderboard:Store: using 'sql' store");
                         connectionString = scopedConfiguration["ConnectionString"];
                         services.AddSingleton(new SqlLeaderboardContextOptions { ConnectionString = connectionString });
                         services.AddTransient<LeaderboardContextBase, SqlLeaderboardContext>();
                         services.AddTransient<ILeaderboardStore, EntityFrameworkLeaderboardStore>();
-                        services.AddTransient<ILeaderboardConfiguration>(ServiceProviderServiceExtensions =>
-                        {
-                            return new LeaderboardConfiguration(GetLeaderboardConfiguration(configuration.GetSection("Leaderboard:Leaderboards").GetChildren()));
-                        });
                         break;
                     default:
                         throw new Exception($"Unhandled 'wellKnown' type for Leaderboard:Store: '{wellKnownType}'");
                 }
+                services.AddTransient<ILeaderboardConfiguration>(serviceProvider =>
+                {
+                    return new LeaderboardConfiguration(GetLeaderboardConfiguration(configuration.GetSection("Leaderboard:Leaderboards").GetChildren()));
+                });
             }
             else
             {

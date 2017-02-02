@@ -220,7 +220,7 @@ namespace Nether.Web.Features.Identity
                     case "in-memory":
                         logger.LogInformation("Identity:Store: using 'in-memory' store");
                         services.AddTransient<IUserStore, EntityFrameworkUserStore>();
-                        services.AddTransient<InMemoryIdentityContext>();
+                        services.AddTransient<IdentityContextBase, InMemoryIdentityContext>();
                         break;
                     case "sql":
                         logger.LogInformation("Identity:Store: using 'Sql' store");
@@ -228,7 +228,7 @@ namespace Nether.Web.Features.Identity
                         services.AddTransient<IUserStore, EntityFrameworkUserStore>();
                         // Add IdentityContextOptions to configure for SQL Server
                         services.AddSingleton(new SqlIdentityContextOptions { ConnectionString = connectionString });
-                        services.AddTransient<IdentityContextBase>();
+                        services.AddTransient<IdentityContextBase, SqlIdentityContext>();
                         break;
                     default:
                         throw new Exception($"Unhandled 'wellKnown' type for Identity:Store: '{wellKnownType}'");

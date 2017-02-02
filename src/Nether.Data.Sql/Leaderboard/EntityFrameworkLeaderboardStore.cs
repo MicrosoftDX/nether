@@ -15,7 +15,7 @@ namespace Nether.Data.Sql.Leaderboard
         private readonly LeaderboardContextBase _context;
         private readonly ILogger _logger;
 
-        public EntityFrameworkLeaderboardStore(ILogger logger, LeaderboardContextBase context)
+        public EntityFrameworkLeaderboardStore(ILogger<EntityFrameworkLeaderboardStore> logger, LeaderboardContextBase context)
         {
             _context = context;
             _logger = logger;

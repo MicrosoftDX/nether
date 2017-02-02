@@ -40,6 +40,11 @@ namespace Nether.Web.Features.PlayerManagement
                             return new MongoDBPlayerManagementStore(connectionString, databaseName, storeLogger);
                         });
                         break;
+                    case "in-memory":
+                        logger.LogInformation("PlayerManagement:Store: using 'in-memory' store");
+                        services.AddTransient<PlayerManagementContextBase, InMemoryPlayerManagementContext>();
+                        services.AddTransient<IPlayerManagementStore, EntityFrameworkPlayerManagementStore>();
+                        break;
                     case "sql":
                         logger.LogInformation("PlayerManagement:Store: using 'sql' store");
                         services.AddSingleton(new SqlPlayerManagementContextOptions { ConnectionString = connectionString });
