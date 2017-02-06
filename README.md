@@ -3,9 +3,14 @@
 
 master branch status
 
-[![Build status](https://ci.appveyor.com/api/projects/status/v5btbm617bcmu6nq/branch/master?svg=true)](https://ci.appveyor.com/project/stuartleeks/nether/branch/master)
+AppVeyor: [![Build status](https://ci.appveyor.com/api/projects/status/v5btbm617bcmu6nq/branch/master?svg=true)](https://ci.appveyor.com/project/stuartleeks/nether/branch/master)
 
-##About
+Travis:   [![Build Status](https://travis-ci.org/MicrosoftDX/nether.svg?branch=master)](https://travis-ci.org/MicrosoftDX/nether)
+
+
+
+
+## About
 
 Nether is a project composed of reusable set of building blocks, projects, services and best practices designed for Gaming workloads powered by Microsoft Azure, aimed to be beneficial for many type of game developers seeking inspiration or a fully implemented solution.
 
