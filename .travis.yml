@@ -1,0 +1,10 @@
+language: csharp
+solution: Nether.sln
+dist: trusty
+sudo: required
+mono: none
+dotnet: 1.0.0-preview2-1-003177
+script: 
+#   - ./RunCodeFormatter.sh
+  - ./build.sh
+  - ./run-unit-tests.sh
