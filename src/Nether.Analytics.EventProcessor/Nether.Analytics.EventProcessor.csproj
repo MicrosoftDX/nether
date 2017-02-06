@@ -88,8 +88,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlobAppender.cs" />
-    <Compile Include="EventHubWriter.cs" />
+    <Compile Include="Output\Blob\BlobOutputFolderStructure.cs" />
+    <Compile Include="Output\Blob\BlobOutputManager.cs" />
+    <Compile Include="Output\EventHub\EventHubOutputManager.cs" />
     <Compile Include="GameEventHandler.cs" />
     <Compile Include="EventProcessorExtensions.cs" />
     <Compile Include="GameEventReceiver.cs" />

@@ -12,7 +12,7 @@ namespace Nether.Analytics.EventProcessor
 
         private const string CsvDelimiter = "|";
 
-        public static void RegHandler(this GameEventRouter router, string gameEventType, string version, Action<string, string> action)
+        public static void RegEventTypeAction(this GameEventRouter router, string gameEventType, string version, Action<string, string> action)
         {
             router.RegisterKnownGameEventTypeHandler(GameEventHandler.VersionedName(gameEventType, version), action);
         }

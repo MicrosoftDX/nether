@@ -1,43 +1,57 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Azure.WebJobs.Host.Bindings;
 
 namespace Nether.Analytics.EventProcessor
 {
+    /// <summary>
+    /// Routes Game Events depending on their Game Event Type to correct and registered
+    /// Event Type Actions. Any Game Events with unknown Event Type or Event Formats will
+    /// be routed to registered actions for handling as well.
+    /// </summary>
     public class GameEventRouter
     {
+        #region Private Properties
         private readonly Func<string, string> _gameEventTypeResolver;
 
-        private readonly Dictionary<string, Action<string, string>> _gameEventHandlers;
+        private readonly Dictionary<string, Action<string, string>> _gameEventTypeActions;
 
         private Action<string, string> _unknownGameEventTypeHandler;
         private Action<string> _unknownGameEventFormatHandler;
+        #endregion
 
-        public GameEventRouter(Func<string, string> gameEventTypeResolver)
+        /// <summary>
+        /// Constructs a new GameEventRouter class
+        /// </summary>
+        /// <param name="gameEventTypeResolver">Function used to resolve/parse Game Event Types</param>
+        /// <param name="unknownGameEventFormatHandler">Action to be called in case an unknown format is encountered in a Game Event</param>
+        /// <param name="unknownGameEventTypeHandler">Action to be called in case of an unregistered game event is encountered</param>
+        public GameEventRouter(Func<string, string> gameEventTypeResolver,
+            Action<string> unknownGameEventFormatHandler = null,
+            Action<string, string> unknownGameEventTypeHandler = null)
         {
             _gameEventTypeResolver = gameEventTypeResolver;
+            _unknownGameEventFormatHandler = unknownGameEventFormatHandler;
+            _unknownGameEventTypeHandler = unknownGameEventTypeHandler;
 
-            _gameEventHandlers = new Dictionary<string, Action<string, string>>();
-
-            // Set unknown game event and unknown game event format handlers to default handlers
-            _unknownGameEventTypeHandler = (t, d) => Console.WriteLine($"Unknown Game Event ({t}): {d}");
-            _unknownGameEventFormatHandler = d => Console.WriteLine($"Unknown Game Event Format: {d}");
+            _gameEventTypeActions = new Dictionary<string, Action<string, string>>();            
         }
 
+        /// <summary>
+        /// Registeres Game Event Types and what action to take if received
+        /// </summary>
+        /// <param name="gameEventType">Game Event Type</param>
+        /// <param name="action">Action(gameEventType, data) to be called when Game Event is received</param>
         public void RegisterKnownGameEventTypeHandler(string gameEventType, Action<string, string> action)
         {
-            _gameEventHandlers.Add(gameEventType, action);
+            _gameEventTypeActions.Add(gameEventType, action);
         }
 
-        public void RegisterUnknownGameEventHandler(Action<string, string> action)
-        {
-            _unknownGameEventTypeHandler = action;
-        }
-
-        public void RegisterUnknownGameEventFormatHandler(Action<string> action)
-        {
-            _unknownGameEventFormatHandler = action;
-        }
-
+        /// <summary>
+        /// Handles a Game Event by looking at the Game Event Type and routing the event data to the
+        /// correct registered action.
+        /// </summary>
+        /// <param name="data">Game Event Data</param>
         public void HandleGameEvent(string data)
         {
             string type;
@@ -48,25 +62,29 @@ namespace Nether.Analytics.EventProcessor
             }
             catch (Exception e)
             {
-                // Resolving game event type failed. Unknown game event format?!?!
-                Console.WriteLine($"An exception occurred while resolving game event type. Game event format is of unexpected type or gameEventTypeResolver is faulty: {data}");
-                Console.WriteLine(e);
-                _unknownGameEventFormatHandler(data);
+                // Resolving game event type failed. Unknown Game Event format?!?!
+                // Invoke action to handle Unknown Game Event Formats if registered (not null)
+                _unknownGameEventFormatHandler?.Invoke(data);
+                
+                // No more can be done, so return
                 return;
             }
 
             // Get correct game event handler from dictionary of registered handlers
-            var handler = _gameEventHandlers[type];
+            var handler = _gameEventTypeActions[type];
 
             // Check if game event type is known
             if (handler == null)
             {
-                Console.WriteLine($"An unknown game event type has been encountered ({type}): {data}");
-                _unknownGameEventTypeHandler(type, data);
+                // No registered action found for the found Game Event Type
+                // Invoke action to handle Unknown Game Event Type if registered (not null)
+                _unknownGameEventTypeHandler?.Invoke(type, data);
+
+                // No more can be done, so return
                 return;
             }
 
-            // Pass game event data to handler
+            // Pass game event data to correct action
             handler(type, data);
         }
     }
