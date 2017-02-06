@@ -1,17 +1,14 @@
 using System;
 
-namespace AnalyticsTestClient
+namespace AnalyticsTestClient.Utils
 {
-    public class MenuItem
+    public class ConsoleMenuItem
     {
-        public MenuItem(char key, string text, Action menuAction)
+        public ConsoleMenuItem(string text, Action menuAction)
         {
-            Key = key;
             Text = text;
             MenuAction = menuAction;
         }
-
-        public char Key { get; }
 
         public string Text { get; }
 

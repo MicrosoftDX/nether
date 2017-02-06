@@ -1,0 +1,26 @@
+using System;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Azure.EventHubs;
+
+namespace AnalyticsTestClient.Utils
+{
+    public static class EventHubManager
+    {
+        public static async Task SendMessageToEventHub(string msg)
+        {
+            Console.WriteLine($"Connecting to EventHub [{ConfigCache.EventHubName}]");
+            var connectionStringBuilder = new EventHubsConnectionStringBuilder(ConfigCache.EventHubConnectionString)
+            {
+                EntityPath = ConfigCache.EventHubName
+            };
+
+            var client = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
+
+            Console.WriteLine($"Sending message...");
+            await client.SendAsync(new EventData(Encoding.UTF8.GetBytes(msg)));
+            Console.WriteLine("Message sent!");
+            await client.CloseAsync();
+        }
+    }
+}
