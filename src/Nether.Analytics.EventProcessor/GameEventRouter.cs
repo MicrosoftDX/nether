@@ -60,7 +60,7 @@ namespace Nether.Analytics.EventProcessor
             {
                 type = _gameEventTypeResolver(data);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // Resolving game event type failed. Unknown Game Event format?!?!
                 // Invoke action to handle Unknown Game Event Formats if registered (not null)

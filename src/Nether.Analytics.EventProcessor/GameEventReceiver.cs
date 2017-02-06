@@ -36,7 +36,10 @@ namespace Nether.Analytics.EventProcessor
             _handler = new GameEventHandler(_blobOutputManager, _eventHubOutputManager);
 
             // Configure Router to switch handeling to correct method depending on game event type
-            _router = new GameEventRouter(GameEventHandler.ResolveEventType);
+            _router = new GameEventRouter(GameEventHandler.ResolveEventType,
+                GameEventHandler.UnknownGameEventFormatHandler,
+                GameEventHandler.UnknownGameEventTypeHandler);
+
             _router.RegEventTypeAction("game-start", "1.0.0", _handler.HandleGameStartEvent);
             _router.RegEventTypeAction("game-heartbeat", "1.0.0", _handler.HandleGameHeartbeat);
         }
@@ -47,7 +50,7 @@ namespace Nether.Analytics.EventProcessor
         /// that gets processed by the Event Processor.
         /// </summary>
         /// <param name="data">The raw Game Event Data to be processed</param>
-        public void HandleOne([EventHubTrigger("analytics")] string data)
+        public void HandleOne([EventHubTrigger("incomming")] string data)
         {
             // Forward data to "router" in order to handle the event
             _router.HandleGameEvent(data);

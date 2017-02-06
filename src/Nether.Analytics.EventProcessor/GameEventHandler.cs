@@ -1,3 +1,4 @@
+using System;
 using Nether.Analytics.EventProcessor.Output.Blob;
 using Nether.Analytics.EventProcessor.Output.EventHub;
 using Newtonsoft.Json.Linq;
@@ -66,5 +67,16 @@ namespace Nether.Analytics.EventProcessor
         }
 
 
+        public static void UnknownGameEventFormatHandler(string data)
+        {
+            Console.WriteLine("Unknown Game Event Format found in ...");
+            Console.WriteLine(data);
+        }
+
+        public static void UnknownGameEventTypeHandler(string gameEventType, string data)
+        {
+            Console.WriteLine("Unknown and unhandled Game Event Type found in ...");
+            Console.WriteLine(data);
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Nether.Analytics.GameEvents;
 using Nether.Integration.Analytics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
