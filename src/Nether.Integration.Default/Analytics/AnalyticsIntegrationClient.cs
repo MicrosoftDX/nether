@@ -27,7 +27,7 @@ namespace Nether.Integration.Default.Analytics
             _analyticsBaseUrl = analyticsBaseUrl;
         }
 
-        public async Task SendGameEventAsync(GameEvent gameEvent)
+        public async Task SendGameEventAsync(IGameEvent gameEvent)
         {
             // Retrieve information of where to send analytics data
             //TODO: Cache data so we don't ask everytime

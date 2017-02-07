@@ -120,10 +120,11 @@ namespace Nether.Web.Features.Leaderboard
                     CustomTag = request.CustomTag,
                     Score = request.Score
                 }),
-                _analyticsIntegrationClient.SendGameEventAsync(new ScoreAchieved
+                _analyticsIntegrationClient.SendGameEventAsync(new ScoreEvent()
                 {
-                    GamerTag = gamertag,
+                    //GamerTag = gamertag,
                     ClientUtcTime = DateTime.UtcNow,
+                    GameSessionId = "unknowngamesession",
                     Score = request.Score
                 }));
 

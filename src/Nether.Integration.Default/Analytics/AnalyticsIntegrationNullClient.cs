@@ -9,7 +9,7 @@ namespace Nether.Integration.Default.Analytics
 {
     public class AnalyticsIntegrationNullClient : IAnalyticsIntegrationClient
     {
-        public async Task SendGameEventAsync(GameEvent gameEvent)
+        public async Task SendGameEventAsync(IGameEvent gameEvent)
         {
             await Task.CompletedTask;
         }
