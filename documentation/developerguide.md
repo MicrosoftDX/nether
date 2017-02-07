@@ -3,7 +3,7 @@
 
 ## Set the development environment
 
-Follow the instructions [here](devenvironment.md)
+Follow the instructions [here](setup.md)
 
 ## Test 
 
