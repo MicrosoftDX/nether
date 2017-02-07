@@ -41,11 +41,11 @@ namespace AnalyticsTestClient.Utils
             //   [Environment]::SetEnvironmentVariable("NETHER_INGEST_EVENTHUB_NAME", "ingest", "User")
 
             Console.WriteLine("Configuring");
-            var connectionString = Environment.GetEnvironmentVariable("NETHER_INGEST_EVENTHUB_CONNECTIONSTRING");
-            var eventHubName = Environment.GetEnvironmentVariable("NETHER_INGEST_EVENTHUB_NAME");
+            var ingestEventHubConnectionString = Environment.GetEnvironmentVariable("NETHER_INGEST_EVENTHUB_CONNECTIONSTRING");
+            var ingestEventHubName = Environment.GetEnvironmentVariable("NETHER_INGEST_EVENTHUB_NAME");
 
-            ConfigCache.EventHubConnectionString = connectionString;
-            ConfigCache.EventHubName = eventHubName;
+            ConfigCache.EventHubConnectionString = ingestEventHubConnectionString;
+            ConfigCache.EventHubName = ingestEventHubName;
 
             SetupMenu.ShowCurrentConfig();
         }
@@ -55,8 +55,10 @@ namespace AnalyticsTestClient.Utils
             PropertyCache = new Dictionary<string, object>
             {
                 {"GameSessionId", Guid.NewGuid().ToString()},
-                {"EventCorrelationId", Guid.NewGuid(). ToString()},
-                {"GamerTag", "krist00fer" }
+                {"EventCorrelationId", Guid.NewGuid().ToString()},
+                {"GamerTag", "krist00fer" },
+                {"DisplayName", "MagicSwordFound" },
+                {"Value", 1 }
             };
         }
     }

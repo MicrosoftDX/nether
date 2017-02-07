@@ -18,6 +18,7 @@ namespace AnalyticsTestClient.Utils
             var client = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
 
             Console.WriteLine($"Sending message...");
+            Console.WriteLine(msg);
             await client.SendAsync(new EventData(Encoding.UTF8.GetBytes(msg)));
             Console.WriteLine("Message sent!");
             await client.CloseAsync();

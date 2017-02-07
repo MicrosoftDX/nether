@@ -1,10 +1,6 @@
-﻿using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.ServiceBus;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Newtonsoft.Json;
 
 namespace Nether.Analytics.EventProcessor
 {
@@ -15,20 +11,26 @@ namespace Nether.Analytics.EventProcessor
         // AzureWebJobsDashboard and AzureWebJobsStorage
         public static void Main()
         {
-            var dashboardAndstorageConnectionString = "DefaultEndpointsProtocol=https;AccountName=netherdashboard;AccountKey=oT30a8/BSwTFg/4GGWLPCeGIHBfgDcMf9zEThKHlY4hjUNy3sYUTSWXWa3yJMoX2lvTnWSIrjtwU9kg9YaL0Qw==";
-            var eventHubConnectionString = "Endpoint=sb://nether.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=h16jv6nc0bVfgdWrZp7f5Fpau4jaSu2YH+U2xg0YI14=";
-            var eventHubName = "incomming";
+            // Read configuration
+            //TODO: Make all configuration work in the same way across Nether
+            Console.WriteLine("Configuring WebJob (from Environment Variables");
+            var webJobDashboardAndStorageConnectionString = 
+                Environment.GetEnvironmentVariable("NETHER_WEBJOB_DASHBOARD_AND_STORAGE_CONNECTIONSTRING");
+            Console.WriteLine($"webJobDashboardAndStorageConnectionString: {webJobDashboardAndStorageConnectionString}");
+            var ingestEventHubConnectionString = 
+                Environment.GetEnvironmentVariable("NETHER_INGEST_EVENTHUB_CONNECTIONSTRING");
+            Console.WriteLine($"ingestEventHubConnectionString: {ingestEventHubConnectionString}");
+            var ingestEventHubName = 
+                Environment.GetEnvironmentVariable("NETHER_INGEST_EVENTHUB_NAME");
+            Console.WriteLine($"ingestEventHubName: {ingestEventHubName}");
+            Console.WriteLine();
 
             // Configure WebJob
-<<<<<<< HEAD
-            var jobHostConfig = new JobHostConfiguration("");
+
+            var jobHostConfig = new JobHostConfiguration(webJobDashboardAndStorageConnectionString);
             var eventHubConfig = new EventHubConfiguration();
-            eventHubConfig.AddReceiver("analytics", "");
-=======
-            var jobHostConfig = new JobHostConfiguration(dashboardAndstorageConnectionString);
-            var eventHubConfig = new EventHubConfiguration();
-            eventHubConfig.AddReceiver(eventHubName, eventHubConnectionString);
->>>>>>> 82d0142... Updates to Analytics Test Client
+            eventHubConfig.AddReceiver(ingestEventHubName, ingestEventHubConnectionString);
+
             jobHostConfig.UseEventHub(eventHubConfig);
 
             if (jobHostConfig.IsDevelopment)

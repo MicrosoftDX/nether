@@ -20,12 +20,12 @@ namespace AnalyticsTestClient
 
         private void SetEventHubConnectionString()
         {
-            ConfigCache.EventHubConnectionString = (string)EditProperty("Event Hub Connection String", ConfigCache.EventHubConnectionString);
+            ConfigCache.EventHubConnectionString = (string)EditProperty("Event Hub Connection String", ConfigCache.EventHubConnectionString, typeof(string));
         }
 
         private void SetEventHubNamePath()
         {
-            ConfigCache.EventHubName = (string)EditProperty("Event Hub Name", ConfigCache.EventHubName);
+            ConfigCache.EventHubName = (string)EditProperty("Event Hub Name", ConfigCache.EventHubName, typeof(string));
         }
 
         public static void ShowCurrentConfig()

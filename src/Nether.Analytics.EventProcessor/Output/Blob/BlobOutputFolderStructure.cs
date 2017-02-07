@@ -11,7 +11,8 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
         public static string YearMonthDayHour()
         {
-            return DateTime.UtcNow.ToString("yyyy/MM/dd/hh");
+            var now = DateTime.UtcNow;
+            return $"{now.Year:D4}/{now.Month:D2}/{now.Day:D2}/{now.Hour:D2}";
         }
 
         public static string YearMonthDay()

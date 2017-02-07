@@ -16,7 +16,7 @@ namespace AnalyticsTestClient
 
         private void SendCustomGameEvent()
         {
-            var msg = (string)EditProperty("Custom Message", $"This is a custom msg at {DateTime.UtcNow}");
+            var msg = (string)EditProperty("Custom Message", $"This is a custom msg at {DateTime.UtcNow}", typeof(string));
 
             EventHubManager.SendMessageToEventHub(msg).Wait();
 

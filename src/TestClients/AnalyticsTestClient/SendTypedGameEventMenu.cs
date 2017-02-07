@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Nether.Analytics.GameEvents;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace AnalyticsTestClient.Utils
 {
@@ -19,7 +20,7 @@ namespace AnalyticsTestClient.Utils
                 var gameEvent = (IGameEvent)Activator.CreateInstance(gameEventType);
                 MenuItems.Add(menuKey++,
                     new ConsoleMenuItem(
-                        $"{gameEvent.GameEventType}, {gameEvent.Version}",
+                        $"{gameEvent.Type}, {gameEvent.Version}",
                         () => StaticGameEventSelected(gameEvent)));
             }
         }
@@ -40,7 +41,15 @@ namespace AnalyticsTestClient.Utils
         private void StaticGameEventSelected(IGameEvent gameEvent)
         {
             EditGameEventProperties(gameEvent);
-            var msg = JsonConvert.SerializeObject(gameEvent);
+
+            // Serialize object to JSON
+
+            var msg = JsonConvert.SerializeObject(
+                gameEvent, 
+                Formatting.Indented, 
+                new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+
+            //var msg = JsonConvert.SerializeObject(gameEvent);
             EventHubManager.SendMessageToEventHub(msg).Wait();
         }
 
@@ -51,13 +60,13 @@ namespace AnalyticsTestClient.Utils
             foreach (var prop in gameEvent.GetType().GetProperties())
             {
                 var propName = prop.Name;
-                if (Program.PropertyCache.ContainsKey(propName))
+                if (propName != "ClientUtcTime" && Program.PropertyCache.ContainsKey(propName))
                 {
                     prop.SetValue(gameEvent, Program.PropertyCache[propName]);
                 }
                 var propValue = prop.GetValue(gameEvent);
 
-                if (propName == "GameEventType" || propName == "Version")
+                if (propName == "Type" || propName == "Version")
                 {
                     // Don't ask for input for these properties, just display their 
                     // values since they are static and can't be changed
@@ -65,7 +74,8 @@ namespace AnalyticsTestClient.Utils
                 }
                 else
                 {
-                    var o = EditProperty(propName, propValue);
+                    var propertyType = prop.PropertyType;
+                    var o = EditProperty(propName, propValue, propertyType);
                     prop.SetValue(gameEvent, o);
                     Program.PropertyCache[propName] = o;
 

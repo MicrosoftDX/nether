@@ -63,11 +63,11 @@ namespace AnalyticsTestClient.Utils
             
         }
 
-        public object EditProperty<T>(string propertyDisplayName, T o)
+        public object EditProperty(string propertyName, object o, Type propertyType )
         {
             while (true)
             {
-                Console.Write($"{propertyDisplayName} [{o}]: ");
+                Console.Write($"{propertyName} [{o}]: ");
                 var s = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(s))
@@ -76,39 +76,39 @@ namespace AnalyticsTestClient.Utils
                     return o;
                 }
 
-                if (typeof(T) == typeof(string))
+                if (propertyType == typeof(string))
                 {
                     return s;
                 }
-                else if (o is int)
+                else if (propertyType == typeof(int))
                 {
                     int i;
 
                     if (int.TryParse(s, out i))
                         return i;
                 }
-                else if (o is long)
+                else if (propertyType == typeof(long))
                 {
                     long l;
 
                     if (long.TryParse(s, out l))
                         return l;
                 }
-                else if (o is float)
+                else if (propertyType == typeof(float))
                 {
                     float f;
 
                     if (float.TryParse(s, out f))
                         return f;
                 }
-                else if (o is double)
+                else if (propertyType == typeof(double))
                 {
                     double d;
 
                     if (double.TryParse(s, out d))
                         return d;
                 }
-                else if (o is DateTime)
+                else if (propertyType == typeof(DateTime))
                 {
                     DateTime date;
 

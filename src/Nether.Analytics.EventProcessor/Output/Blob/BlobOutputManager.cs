@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Nether.Analytics.EventProcessor.Output.Blob
 {
     public class BlobOutputManager
     {
+        private static readonly Dictionary<string, string> BlobNameDictionary = new Dictionary<string, string>();
+
         private readonly string _storageAccountConnectionString;
         private readonly string _containerName;
         private readonly Func<string> _folderStructureFunc;
-        private readonly Dictionary<string, string> _blobNameDictionary = new Dictionary<string, string>();
         private readonly long _maxBlobSize;
 
         public BlobOutputManager(string storageAccountConnectionString, string containerName, Func<string> folderStructureFunc, long maxBlobBlobSize )
@@ -21,27 +23,41 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
         }
 
 
-        public void SendTo(string gameEventType, string data)
+        public void AppendLineToBlob(string gameEventType, string data)
         {
             var account = CloudStorageAccount.Parse(_storageAccountConnectionString);
             var client = account.CreateCloudBlobClient();
             var container = client.GetContainerReference(_containerName);
-            var folder = _folderStructureFunc();
+            container.CreateIfNotExists();
+            var folder = $"{gameEventType}/{_folderStructureFunc()}";
             var blobName = GetBlobName(gameEventType);
             var fullBlobName = $"{folder}/{blobName}";
             var blob = container.GetAppendBlobReference(fullBlobName);
 
             try
             {
-                blob.AppendText(data, accessCondition: AccessCondition.GenerateIfMaxSizeLessThanOrEqualCondition(_maxBlobSize));
+
+                if (!blob.Exists())
+                {
+                    Console.WriteLine($"Creating AppendBlob: {fullBlobName}");
+                    try
+                    {
+                        blob.CreateOrReplace(AccessCondition.GenerateIfNotExistsCondition());
+                    }
+                    catch (StorageException ex)
+                    {
+                    }
+                }
+
+                blob.AppendText(data + "\n",accessCondition: AccessCondition.GenerateIfMaxSizeLessThanOrEqualCondition(_maxBlobSize));
             }
             //TODO: Figure out exactly what exception is thrown if blob is too big and only catch that
-            catch (Exception)
+            catch (StorageException ex)
             {
                 // Blob was too big, get new blob name
                 GetNewBlobName(gameEventType);
                 // ... and try again
-                SendTo(gameEventType, data);
+                AppendLineToBlob(gameEventType, data);
             }
 
             //TODO: Catch and handle other exceptions
@@ -50,14 +66,13 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
         private string GetBlobName(string gameEventType)
         {
-            var name = _blobNameDictionary[gameEventType];
-            return string.IsNullOrWhiteSpace(name) ? GetNewBlobName(gameEventType) : name;
+            return BlobNameDictionary.ContainsKey(gameEventType) ? BlobNameDictionary[gameEventType] : GetNewBlobName(gameEventType);
         }
 
         private string GetNewBlobName(string gameEventType)
         {
             var name = $"{Guid.NewGuid()}.csv";
-            _blobNameDictionary[gameEventType] = name;
+            BlobNameDictionary[gameEventType] = name;
 
             return name;
         }

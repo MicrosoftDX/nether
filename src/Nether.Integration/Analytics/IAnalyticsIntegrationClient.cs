@@ -12,7 +12,7 @@ namespace Nether.Integration.Analytics
 {
     public interface IAnalyticsIntegrationClient
     {
-        Task SendGameEventAsync(GameEvent gameEvent);
+        Task SendGameEventAsync(IGameEvent gameEvent);
     }
 
 
