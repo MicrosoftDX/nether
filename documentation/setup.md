@@ -53,6 +53,8 @@ If you want to configure nether to use a different connection string or data sto
 
 ## Visual Studio
 
+Due to issues with the current version of ASP.NET Core tooling we are using, run `build.ps1` in the source root before loading the solution in Visual Studio.
+
 To build Nether from Visual Studio, open `Nether.sln` and trigger a build. 
 
 To run, choose either `Start` (`F5`), or `Start without Debugging` (`Ctrl+F5`) from the `Debug` menu.
