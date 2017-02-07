@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Nether.Analytics.GameEvents;
 using Nether.Integration.Analytics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -26,7 +27,7 @@ namespace Nether.Integration.Default.Analytics
             _analyticsBaseUrl = analyticsBaseUrl;
         }
 
-        public async Task SendGameEventAsync(GameEvent gameEvent)
+        public async Task SendGameEventAsync(IGameEvent gameEvent)
         {
             // Retrieve information of where to send analytics data
             //TODO: Cache data so we don't ask everytime

@@ -14,6 +14,7 @@ using Nether.Web.Features.Leaderboard.Configuration;
 using Nether.Web.Utilities;
 using System.Net;
 using Microsoft.Extensions.Logging;
+using Nether.Analytics.GameEvents;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -119,10 +120,11 @@ namespace Nether.Web.Features.Leaderboard
                     CustomTag = request.CustomTag,
                     Score = request.Score
                 }),
-                _analyticsIntegrationClient.SendGameEventAsync(new ScoreAchieved
+                _analyticsIntegrationClient.SendGameEventAsync(new ScoreEvent()
                 {
-                    GamerTag = gamertag,
-                    UtcDateTime = DateTime.UtcNow,
+                    //GamerTag = gamertag,
+                    ClientUtcTime = DateTime.UtcNow,
+                    GameSessionId = "unknowngamesession",
                     Score = request.Score
                 }));
 
