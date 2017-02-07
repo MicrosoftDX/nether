@@ -11,15 +11,7 @@ Simple leaderboard functionality, implementing Nether [leaderboard APIs](api/lea
 
 ## Setup
 
-1. Create the Leaderboard schema:
-   
-   **ARM Template**
-   
-   Use the ARM template in this repository to deply a **new** SQL Azure Database and the schema from a bacpac file (located in this repository as well).
-   All deployment templates and assest are located under the [deployment](https://github.com/dx-ted-emea/nether/tree/master/deployment) folder.
-   1. Currently, you will need to download the bacpac file, until this repo will be public. Place it in Azure Storage and take a note of the URI. You will need to provide it as an input to the template.
-   For the leaderboard, bacpac files are located under [leaderboard-assets](https://github.com/dx-ted-emea/nether/tree/master/deployment/leaderboard-assets) folder.
-   2. Deploy the [leaderboardSqlDeploy](https://github.com/dx-ted-emea/nether/blob/master/deployment/leaderboardSqlDeploy.json) template
+1. Create the Leaderboard schema:      
    
    **SQL Query:**
    
