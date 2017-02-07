@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System;
 using System.Collections.Generic;
 using Microsoft.WindowsAzure.Storage;
@@ -7,14 +10,14 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 {
     public class BlobOutputManager
     {
-        private static readonly Dictionary<string, string> BlobNameDictionary = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> s_blobNameDictionary = new Dictionary<string, string>();
 
         private readonly string _storageAccountConnectionString;
         private readonly string _containerName;
         private readonly Func<string> _folderStructureFunc;
         private readonly long _maxBlobSize;
 
-        public BlobOutputManager(string storageAccountConnectionString, string containerName, Func<string> folderStructureFunc, long maxBlobBlobSize )
+        public BlobOutputManager(string storageAccountConnectionString, string containerName, Func<string> folderStructureFunc, long maxBlobBlobSize)
         {
             _storageAccountConnectionString = storageAccountConnectionString;
             _containerName = containerName;
@@ -36,7 +39,6 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
             try
             {
-
                 if (!blob.Exists())
                 {
                     Console.WriteLine($"Creating AppendBlob: {fullBlobName}");
@@ -49,7 +51,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                     }
                 }
 
-                blob.AppendText(data + "\n",accessCondition: AccessCondition.GenerateIfMaxSizeLessThanOrEqualCondition(_maxBlobSize));
+                blob.AppendText(data + "\n", accessCondition: AccessCondition.GenerateIfMaxSizeLessThanOrEqualCondition(_maxBlobSize));
             }
             //TODO: Figure out exactly what exception is thrown if blob is too big and only catch that
             catch (StorageException ex)
@@ -66,13 +68,13 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
         private string GetBlobName(string gameEventType)
         {
-            return BlobNameDictionary.ContainsKey(gameEventType) ? BlobNameDictionary[gameEventType] : GetNewBlobName(gameEventType);
+            return s_blobNameDictionary.ContainsKey(gameEventType) ? s_blobNameDictionary[gameEventType] : GetNewBlobName(gameEventType);
         }
 
         private string GetNewBlobName(string gameEventType)
         {
             var name = $"{Guid.NewGuid()}.csv";
-            BlobNameDictionary[gameEventType] = name;
+            s_blobNameDictionary[gameEventType] = name;
 
             return name;
         }

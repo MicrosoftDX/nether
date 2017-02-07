@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System;
 using Microsoft.Azure.WebJobs.ServiceBus;
 using Nether.Analytics.EventProcessor.Output.Blob;
@@ -28,7 +31,7 @@ namespace Nether.Analytics.EventProcessor
             string outputContainer =
                 Environment.GetEnvironmentVariable("NETHER_ANALYTICS_STORAGE_CONTAINER");
             Console.WriteLine($"outputContainer: {outputContainer}");
-            string outputEventHubConnectionString = 
+            string outputEventHubConnectionString =
                 Environment.GetEnvironmentVariable("NETHER_INTERMEDIATE_EVENTHUB_CONNECTIONSTRING");
             Console.WriteLine($"outputEventHubConnectionString: {outputEventHubConnectionString}");
             string outputEventHubName =
@@ -62,7 +65,6 @@ namespace Nether.Analytics.EventProcessor
             _router.RegEventTypeAction("score", "1.0.0", _handler.HandleScoreEvent);
             _router.RegEventTypeAction("start", "1.0.0", _handler.HandleStartEvent);
             _router.RegEventTypeAction("stop", "1.0.0", _handler.HandleStopEvent);
-
         }
 
         /// <summary>

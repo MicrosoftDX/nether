@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System;
 using System.Collections.Generic;
 
@@ -39,7 +42,7 @@ namespace AnalyticsTestClient.Utils
                 }
 
                 var c = key.KeyChar;
-                
+
                 if (MenuItems.ContainsKey(c))
                 {
                     // Execute Selected Menu Action
@@ -55,15 +58,13 @@ namespace AnalyticsTestClient.Utils
 
         protected virtual void PrintHeader()
         {
-            
         }
 
         protected virtual void PrintFooter()
         {
-            
         }
 
-        public object EditProperty(string propertyName, object o, Type propertyType )
+        public object EditProperty(string propertyName, object o, Type propertyType)
         {
             while (true)
             {
@@ -115,7 +116,7 @@ namespace AnalyticsTestClient.Utils
                     if (DateTime.TryParse(s, out date))
                         return date;
                 }
-                
+
                 Console.WriteLine($"Unable to parse {s} as {o.GetType()}");
             }
         }

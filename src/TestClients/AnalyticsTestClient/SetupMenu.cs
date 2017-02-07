@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System;
 using AnalyticsTestClient.Utils;
 
@@ -34,11 +37,11 @@ namespace AnalyticsTestClient
             Console.WriteLine("Using:");
             Console.WriteLine($"  Event Hub Connection String:");
             PrintConnectionString(ConfigCache.EventHubConnectionString, 4);
-            Console.WriteLine($"  Event Hub Name/Path: {ConfigCache.EventHubName??"not specified"}");
+            Console.WriteLine($"  Event Hub Name/Path: {ConfigCache.EventHubName ?? "not specified"}");
             Console.WriteLine();
         }
 
-        private static void PrintConnectionString(string connectionString, int indent=0)
+        private static void PrintConnectionString(string connectionString, int indent = 0)
         {
             var lines = connectionString.Split(';');
 

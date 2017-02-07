@@ -14,7 +14,5 @@ namespace Nether.Integration.Analytics
     {
         Task SendGameEventAsync(IGameEvent gameEvent);
     }
-
-
 }
 

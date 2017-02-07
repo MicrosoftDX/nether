@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System;
 using System.Collections.Generic;
 using Microsoft.Azure.WebJobs.Host.Bindings;
@@ -34,7 +37,7 @@ namespace Nether.Analytics.EventProcessor
             _unknownGameEventFormatHandler = unknownGameEventFormatHandler;
             _unknownGameEventTypeHandler = unknownGameEventTypeHandler;
 
-            _gameEventTypeActions = new Dictionary<string, Action<string, string>>();            
+            _gameEventTypeActions = new Dictionary<string, Action<string, string>>();
         }
 
         /// <summary>
@@ -65,7 +68,7 @@ namespace Nether.Analytics.EventProcessor
                 // Resolving game event type failed. Unknown Game Event format?!?!
                 // Invoke action to handle Unknown Game Event Formats if registered (not null)
                 _unknownGameEventFormatHandler?.Invoke(data);
-                
+
                 // No more can be done, so return
                 return;
             }

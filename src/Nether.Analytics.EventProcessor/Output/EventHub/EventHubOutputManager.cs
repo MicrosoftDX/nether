@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System.Text;
 using Microsoft.ServiceBus.Messaging;
 
@@ -19,7 +22,7 @@ namespace Nether.Analytics.EventProcessor.Output.EventHub
             // All events are sent to the same Event Hub, so no need to look at gameEventType at this time
 
             var client = EventHubClient.CreateFromConnectionString(_eventHubConnectionString, _eventHubName);
-            
+
             //TODO: Implement Async Sending and caching of connection
             client.Send(new EventData(Encoding.UTF8.GetBytes(data)));
         }

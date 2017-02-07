@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System;
 using Nether.Analytics.EventProcessor.Output.Blob;
 using Nether.Analytics.EventProcessor.Output.EventHub;
@@ -100,8 +103,8 @@ namespace Nether.Analytics.EventProcessor
         public static string ResolveEventType(string gameEvent)
         {
             var json = JObject.Parse(gameEvent);
-            var gameEventType = (string) json["type"];
-            var version = (string) json["version"];
+            var gameEventType = (string)json["type"];
+            var version = (string)json["version"];
 
             if (gameEventType == null || version == null)
                 throw new ApplicationException("Unable to resolve Game Event Type, since game event doesn't contain type and/or version property");
@@ -132,7 +135,5 @@ namespace Nether.Analytics.EventProcessor
             Console.WriteLine("Unknown and unhandled Game Event Type found in ...");
             Console.WriteLine(data);
         }
-
-       
     }
 }

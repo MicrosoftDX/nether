@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System;
 using System.Linq;
 using System.Reflection;
@@ -45,8 +48,8 @@ namespace AnalyticsTestClient.Utils
             // Serialize object to JSON
 
             var msg = JsonConvert.SerializeObject(
-                gameEvent, 
-                Formatting.Indented, 
+                gameEvent,
+                Formatting.Indented,
                 new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
 
             //var msg = JsonConvert.SerializeObject(gameEvent);

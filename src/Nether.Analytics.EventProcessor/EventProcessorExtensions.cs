@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System;
 using System.Text;
 using Newtonsoft.Json.Linq;
@@ -9,7 +12,6 @@ namespace Nether.Analytics.EventProcessor
     /// </summary>
     public static class EventProcessorExtensions
     {
-
         private const string CsvDelimiter = "|";
 
         public static void RegEventTypeAction(this GameEventRouter router, string gameEventType, string version, Action<string, string> action)

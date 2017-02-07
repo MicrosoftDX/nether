@@ -1,11 +1,14 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.ServiceBus;
 
 namespace Nether.Analytics.EventProcessor
 {
     // To learn more about Microsoft Azure WebJobs SDK, please see https://go.microsoft.com/fwlink/?LinkID=320976
-    static class Program
+    internal static class Program
     {
         // Please set the following connection strings in app.config for this WebJob to run:
         // AzureWebJobsDashboard and AzureWebJobsStorage
@@ -14,13 +17,13 @@ namespace Nether.Analytics.EventProcessor
             // Read configuration
             //TODO: Make all configuration work in the same way across Nether
             Console.WriteLine("Configuring WebJob (from Environment Variables");
-            var webJobDashboardAndStorageConnectionString = 
+            var webJobDashboardAndStorageConnectionString =
                 Environment.GetEnvironmentVariable("NETHER_WEBJOB_DASHBOARD_AND_STORAGE_CONNECTIONSTRING");
             Console.WriteLine($"webJobDashboardAndStorageConnectionString: {webJobDashboardAndStorageConnectionString}");
-            var ingestEventHubConnectionString = 
+            var ingestEventHubConnectionString =
                 Environment.GetEnvironmentVariable("NETHER_INGEST_EVENTHUB_CONNECTIONSTRING");
             Console.WriteLine($"ingestEventHubConnectionString: {ingestEventHubConnectionString}");
-            var ingestEventHubName = 
+            var ingestEventHubName =
                 Environment.GetEnvironmentVariable("NETHER_INGEST_EVENTHUB_NAME");
             Console.WriteLine($"ingestEventHubName: {ingestEventHubName}");
             Console.WriteLine();
