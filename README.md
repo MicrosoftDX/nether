@@ -1,11 +1,11 @@
 ![Nether Logo](https://github.com/dx-ted-emea/nether/blob/master/logos/both-logo-and-title/logo-title-1109x256.png)
 # Building blocks for gaming on Azure
 
-<!--
 master branch status
 
 AppVeyor: [![Build status](https://ci.appveyor.com/api/projects/status/v5btbm617bcmu6nq/branch/master?svg=true)](https://ci.appveyor.com/project/stuartleeks/nether/branch/master)
 
+<!--
 Travis:   [![Build Status](https://travis-ci.org/MicrosoftDX/nether.svg?branch=master)](https://travis-ci.org/MicrosoftDX/nether)
 -->
 
