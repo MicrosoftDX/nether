@@ -131,7 +131,7 @@ The ADF here makes use of 3 types of components:
 
 ## How do I deploy it?
 
-1. Upload the Hive script [kpis-sliding.hql](../deployment/analytics-assets/ADF/scripts/kpis-sliding.hql) into any blob storage account.
+1. Upload the Hive script [kpis-sliding.hql](../deployment/analytics-assets/ADF/scripts/kpis-sliding.hql) under *../deployment/analytics-assets/ADF/scripts/kpis-sliding.hql* into any blob storage account.
 2. Configure the following parameters in the parameters file [analyticsdeploy.parameters.json](../deployment/analyticsdeploy.parameters.json):
    * eventHubName: by default set to `gameevents`
    * hiveScriptStorageAccountName: name of storage account where you have uploaded the aforementioned Hive script kpis-sliding.hql
@@ -153,7 +153,7 @@ azure group deployment create -f "<path-to-ARM-template>\analyticsdeploy.json" -
    * Storage account for raw data and hive tables.
    ![Resources deployed by the ARM template deployment](images/analytics/analytics-arm-deployment.jpg)
 
-4. Create tables in Azure SQL DB: Run [CreateTables.sql](../deployment/analytics-assets/ADF/scripts/CreateTables.sql) on the Azure SQL DB that has just been created by the ARM template.
+4. Create tables in Azure SQL DB: Run [CreateTables.sql](../deployment/analytics-assets/ADF/scripts/CreateTables.sql) under *../deployment/analytics-assets/ADF/scripts/CreateTables.sql* on the Azure SQL DB that has just been created by the ARM template.
    * In Visual Studio Code, make sure that you have installed the [mssql extension](https://marketplace.visualstudio.com/items?itemName=ms-mssql.mssql). To install, launch VS Code Quick Open (Ctrl+P), paste the following command, and press enter:
    ```ext install mssql```
    * Press F1 --> type "sql" --> select **MS SQL: Connect**. Alternatively, hit Ctrl+Shift+C.
