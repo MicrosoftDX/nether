@@ -73,11 +73,9 @@ namespace Nether.Analytics.EventProcessor
                 return;
             }
 
-            // Get correct game event handler from dictionary of registered handlers
-            var handler = _gameEventTypeActions[type];
 
             // Check if game event type is known
-            if (handler == null)
+            if (!_gameEventTypeActions.ContainsKey(type))
             {
                 // No registered action found for the found Game Event Type
                 // Invoke action to handle Unknown Game Event Type if registered (not null)
@@ -87,6 +85,8 @@ namespace Nether.Analytics.EventProcessor
                 return;
             }
 
+            // Get correct game event handler from dictionary of registered handlers
+            var handler = _gameEventTypeActions[type];
             // Pass game event data to correct action
             handler(type, data);
         }
