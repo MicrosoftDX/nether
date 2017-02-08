@@ -80,22 +80,27 @@ namespace Nether.Web.Features.Leaderboard
                 string connectionString;
                 switch (wellKnownType)
                 {
-                    case "sql":
-                        logger.LogInformation("Leaderboard:Store: using 'Sql' store");
+                    case "in-memory":
+                        logger.LogInformation("Leaderboard:Store: using 'in-memory' store");
                         connectionString = scopedConfiguration["ConnectionString"];
-                        services.AddTransient<ILeaderboardStore>(serviceProvider =>
-                        {
-                            var storeLogger = serviceProvider.GetRequiredService<ILogger<SqlLeaderboardStore>>();
-                            return new SqlLeaderboardStore(connectionString, storeLogger);
-                        });
-                        services.AddTransient<ILeaderboardConfiguration>(ServiceProviderServiceExtensions =>
-                        {
-                            return new LeaderboardConfiguration(GetLeaderboardconfiguraion(configuration.GetSection("Leaderboard:Leaderboards").GetChildren()));
-                        });
+                        services.AddTransient<LeaderboardContextBase, InMemoryLeaderboardContext>();
+                        services.AddTransient<ILeaderboardStore, EntityFrameworkLeaderboardStore>();
+
+                        break;
+                    case "sql":
+                        logger.LogInformation("Leaderboard:Store: using 'sql' store");
+                        connectionString = scopedConfiguration["ConnectionString"];
+                        services.AddSingleton(new SqlLeaderboardContextOptions { ConnectionString = connectionString });
+                        services.AddTransient<LeaderboardContextBase, SqlLeaderboardContext>();
+                        services.AddTransient<ILeaderboardStore, EntityFrameworkLeaderboardStore>();
                         break;
                     default:
                         throw new Exception($"Unhandled 'wellKnown' type for Leaderboard:Store: '{wellKnownType}'");
                 }
+                services.AddTransient<ILeaderboardConfiguration>(serviceProvider =>
+                {
+                    return new LeaderboardConfiguration(GetLeaderboardConfiguration(configuration.GetSection("Leaderboard:Leaderboards").GetChildren()));
+                });
             }
             else
             {
@@ -104,7 +109,7 @@ namespace Nether.Web.Features.Leaderboard
             }
         }
 
-        private static Dictionary<string, LeaderboardConfig> GetLeaderboardconfiguraion(IEnumerable<IConfigurationSection> enumerable)
+        private static Dictionary<string, LeaderboardConfig> GetLeaderboardConfiguration(IEnumerable<IConfigurationSection> enumerable)
         {
             Dictionary<string, LeaderboardConfig> leaderboards = new Dictionary<string, LeaderboardConfig>();
             // go over all leaderboards under "Leaderboard:Leaderboards"

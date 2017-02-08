@@ -40,14 +40,16 @@ namespace Nether.Web.Features.PlayerManagement
                             return new MongoDBPlayerManagementStore(connectionString, databaseName, storeLogger);
                         });
                         break;
+                    case "in-memory":
+                        logger.LogInformation("PlayerManagement:Store: using 'in-memory' store");
+                        services.AddTransient<PlayerManagementContextBase, InMemoryPlayerManagementContext>();
+                        services.AddTransient<IPlayerManagementStore, EntityFrameworkPlayerManagementStore>();
+                        break;
                     case "sql":
                         logger.LogInformation("PlayerManagement:Store: using 'sql' store");
-                        services.AddTransient<IPlayerManagementStore>(serviceProvider =>
-                        {
-                            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-                            // TODO - look at encapsulating the connection info and registering that so that we can just register the type without the factory
-                            return new SqlPlayerManagementStore(connectionString, loggerFactory);
-                        });
+                        services.AddSingleton(new SqlPlayerManagementContextOptions { ConnectionString = connectionString });
+                        services.AddTransient<PlayerManagementContextBase, SqlPlayerManagementContext>();
+                        services.AddTransient<IPlayerManagementStore, EntityFrameworkPlayerManagementStore>();
                         break;
                     default:
                         throw new Exception($"Unhandled 'wellKnown' type for PlayerManagement:Store: '{wellKnownType}'");

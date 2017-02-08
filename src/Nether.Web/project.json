@@ -29,14 +29,18 @@
     "Nether.Data.Sql": "1.0.0-*",
     "Microsoft.AspNetCore.Cryptography.KeyDerivation": "1.1.0",
     "Microsoft.EntityFrameworkCore.InMemory": "1.1.0",
-    "Microsoft.Extensions.Logging.AzureAppServices":  "1.0.0"
+    "Microsoft.Extensions.Logging.AzureAppServices":  "1.0.0",
+    "Microsoft.EntityFrameworkCore.Design": {
+      "version": "1.1.0",
+      "type": "build"
+    }
   },
 
   "tools": {
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final",
-    "Microsoft.DotNet.Watcher.Tools" : "1.0.0-preview2-final"
+    "Microsoft.DotNet.Watcher.Tools": "1.0.0-preview2-final",
+    "Microsoft.EntityFrameworkCore.Tools.DotNet": "1.1.0-preview4"
   },
-
   "frameworks": {
     "netcoreapp1.1": {
       "imports": [
@@ -45,13 +49,13 @@
       ]
     }
   },
-   "buildOptions": {
-      "emitEntryPoint": true,
-      "preserveCompilationContext": true,
-      "debugType": "portable",
-      "xmlDoc": true,
-      "nowarn": [ "1591" ]
-   },
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "preserveCompilationContext": true,
+    "debugType": "portable",
+    "xmlDoc": true,
+    "nowarn": [ "1591" ]
+  },
 
   "runtimeOptions": {
     "configProperties": {
