@@ -24,5 +24,5 @@ done < "build/unit-test-order.txt"
 
 if [ $testExitCode -ne 0 ]
 then
-  exit=$testExitCode
+  exit $testExitCode
 fi
