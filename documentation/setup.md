@@ -8,14 +8,14 @@ The goal of Nether is to be available on both Windows and OSX (Mac), hence any u
 
 ### Visual Studio Code and/or full version of Visual Studio
 
-All code should compile and work on both Windows and OSX hence we strive to use [Visual Studio Code](https://code.visualstudio.com) for as much as possible. We also  support [Visual Studio](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx) on Windows.
+All code should compile and work on both Windows and OSX hence we strive to use [Visual Studio Code](https://code.visualstudio.com) for as much as possible. We also  support Visual Studio 2017 on Windows. To use Visual Studio, you will need to have Visual Studio 2017 installed, which is currently a [Release Candidate](https://www.visualstudio.com/vs/visual-studio-2017-rc/). Make sure you have the .NET Core and Web tooling installed.
 
 ### .NET Core
 
-Nether is built on top of .NET Core 1.1. Install from https://dot.net/core
+Nether is built on top of .NET Core 1.1. Install from https://dot.net/core. The current RC of Visual Studio installs SDK version 1.0.0-rc4-004771. To install on Linux/OSX see the [RC4 release notes](https://github.com/dotnet/core/blob/master/release-notes/rc4-download.md)
 
-### MongoDB
-The out-of-the-box configuration for nether requires MongoDB to be installed on your machine, and started listening on the default port.
+### SQL Server
+The out-of-the-box configuration for nether uses in-memory data stores. You can configure it to run against SQL Server as per [the configuration docs](./configuration.md), and there is a partial implementation of MongoDB providers
 
 ## Facebook authentication
 
@@ -43,7 +43,7 @@ Facebook user access tokens for working with Nether can be obtained from [https:
 
 ## Unity
 
-We support and build SDKs for [Unity](http://unity3d.com) but Nether as service is available from any operating system that would have access to Internet.
+We support and plan to build SDKs for [Unity](http://unity3d.com) but Nether as service is available from any operating system that would have access to Internet.
 
 # Building and running Nether
 
@@ -80,3 +80,4 @@ To run, set the `ASPNETCORE_ENVIRONMENT` environment variable to `Development` a
 
 # 3rd party packages
 [MongoDB.Driver](https://www.nuget.org/packages/MongoDB.Driver/2.3.0-rc1)
+[IdentityServer4](http://identityserver4.readthedocs.io/en/release/)
