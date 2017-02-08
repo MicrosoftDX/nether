@@ -29,6 +29,9 @@ namespace Nether.Data.Sql.Leaderboard
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<QueriedGamerScore>()
+                .HasKey(c => c.GamerTag);
+
             builder.Entity<SavedGamerScore>()
                 .ForSqlServerToTable("Scores");
         }
