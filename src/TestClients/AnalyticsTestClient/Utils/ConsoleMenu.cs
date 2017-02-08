@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 
 namespace AnalyticsTestClient.Utils
 {
@@ -64,8 +65,44 @@ namespace AnalyticsTestClient.Utils
         {
         }
 
+        public Dictionary<string, string> EditDictionary(string propertyName)
+        {
+            Console.WriteLine($"Fill {propertyName} with key value pairs. End with empty key.");
+
+            var dict = new Dictionary<string, string>();
+            int i = 1;
+
+            while (true)
+            {
+                Console.Write($"  Key{i++}: ");
+                var key = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(key))
+                    break;
+                else if (dict.ContainsKey(key))
+                {
+                    Console.WriteLine("    Can't add a key that already exists");
+                    continue;
+                }
+
+                Console.Write($"  Value: ");
+                var value = Console.ReadLine();
+
+                dict.Add(key, value);
+            }
+
+            return dict;
+        }
+
         public object EditProperty(string propertyName, object o, Type propertyType)
         {
+            //TODO: ReFactor to have different methods per property type
+
+            if (propertyType == typeof(Dictionary<string, string>))
+            {
+                return EditDictionary(propertyName);
+            }
+
             while (true)
             {
                 Console.Write($"{propertyName} [{o}]: ");

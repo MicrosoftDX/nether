@@ -60,7 +60,9 @@ namespace AnalyticsTestClient.Utils
         {
             gameEvent.ClientUtcTime = DateTime.UtcNow;
 
-            foreach (var prop in gameEvent.GetType().GetProperties())
+            var props = gameEvent.GetType().GetProperties();
+
+            foreach (var prop in props)
             {
                 var propName = prop.Name;
                 if (propName != "ClientUtcTime" && Program.PropertyCache.ContainsKey(propName))
@@ -81,103 +83,8 @@ namespace AnalyticsTestClient.Utils
                     var o = EditProperty(propName, propValue, propertyType);
                     prop.SetValue(gameEvent, o);
                     Program.PropertyCache[propName] = o;
-
-                    //Console.Write($"{propName} [{propValue}]:");
-                    //var answer = Console.ReadLine();
-                    //if (!string.IsNullOrWhiteSpace(answer))
-                    //{
-                    //    if (prop.PropertyType == typeof(int))
-                    //    {
-                    //        int i = int.Parse(answer);
-                    //        prop.SetValue(gameEvent, i);
-                    //        Program.PropertyCache[propName] = i;
-                    //    }
-                    //    else if (prop.PropertyType == typeof(long))
-                    //    {
-                    //        long l = long.Parse(answer);
-                    //        prop.SetValue(gameEvent, l);
-                    //        Program.PropertyCache[propName] = l;
-                    //    }
-                    //    else if (prop.PropertyType == typeof(DateTime))
-                    //    {
-                    //        DateTime dt = DateTime.Parse(answer);
-                    //        prop.SetValue(gameEvent, dt);
-                    //        Program.PropertyCache[propName] = dt;
-                    //    }
-                    //    else
-                    //    {
-                    //        // If nothing else, use string directly
-                    //        prop.SetValue(gameEvent, answer);
-                    //        Program.PropertyCache[propName] = answer;
-                    //    }
-                    //}
                 }
             }
         }
-        //private static void EditGameEventPropertiesAndSend(IGameEvent ge)
-        //{
-        //    Console.WriteLine("Fill out property values for Game Event. Press <Enter> to keep current/default value.");
-        //    ge.ClientUtcTime = DateTime.UtcNow;
-
-        //    //var gameEvent = new T {ClientUtcTime = DateTime.UtcNow};
-
-        //    foreach (var prop in ge.GetType().GetProperties())
-        //    {
-        //        var propName = prop.Name;
-        //        if (PropertyCache.ContainsKey(propName))
-        //        {
-        //            prop.SetValue(ge, PropertyCache[propName]);
-        //        }
-        //        var propValue = prop.GetValue(ge);
-
-        //        if (propName == "GameEventType" || propName == "Version")
-        //        {
-        //            // Don't ask for input for these properties, just display their 
-        //            // values since they are static and can't be changed
-        //            Console.WriteLine($"{propName}: {propValue}");
-        //        }
-        //        else
-        //        {
-        //            Console.Write($"{propName} [{propValue}]:");
-        //            var answer = Console.ReadLine();
-        //            if (!string.IsNullOrWhiteSpace(answer))
-        //            {
-        //                if (prop.PropertyType == typeof(int))
-        //                {
-        //                    int i = int.Parse(answer);
-        //                    prop.SetValue(ge, i);
-        //                    PropertyCache[propName] = i;
-        //                }
-        //                else if (prop.PropertyType == typeof(long))
-        //                {
-        //                    long l = long.Parse(answer);
-        //                    prop.SetValue(ge, l);
-        //                    PropertyCache[propName] = l;
-        //                }
-        //                else if (prop.PropertyType == typeof(DateTime))
-        //                {
-        //                    DateTime dt = DateTime.Parse(answer);
-        //                    prop.SetValue(ge, dt);
-        //                    PropertyCache[propName] = dt;
-        //                }
-        //                else
-        //                {
-        //                    // If nothing else, use string directly
-        //                    prop.SetValue(ge, answer);
-        //                    PropertyCache[propName] = answer;
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    var json = JsonConvert.SerializeObject(ge);
-
-        //    Console.WriteLine(json);
-
-        //    SendMessageToEventHub(json).Wait();
-
-        //    SendKnownMessageMenu();
-        //}
-
     }
 }
