@@ -29,14 +29,46 @@ else
   echo "*** Restoring packages"
   buildExitCode=0
 
-  dotnet restore --disable-parallel
+  while IFS= read -r var
+  do
+    if [ "x$var" != "x" ]
+    then
+      echo "*** dotnet restore $var"
+      dotnet restore "$var"
+      lastexit=$?
+      if [ $lastexit -ne 0 ]
+      then
+        buildExitCode=$lastexit
+      fi
+    fi
+  done < "build/build-order.txt"
 
-  buildExitCode=$?
   if [ $buildExitCode -ne 0 ]
   then
-    exit=$buildExitCode
+    echo
+    echo "*** Restore failed"
+    exit $buildExitCode
   fi
 fi
+
+#  want to do this, but need to figure it out for xplat
+# echo
+# echo "*** Building solution"
+# buildExitCode=0
+# dotnet msbuild Nether.sln
+# lastexit=$?
+# if [ $lastexit -ne 0 ]
+# then
+#   buildExitCode=$lastexit
+# fi
+
+# if [ $buildExitCode -ne 0 ]
+# then
+#   echo
+#   echo "*** Build failed"
+#   exit $buildExitCode
+# fi
+
 
 echo
 echo "*** Building projects"
@@ -60,21 +92,8 @@ if [ $buildExitCode -ne 0 ]
 then
   echo
   echo "*** Build failed"
-  exit=$buildExitCode
+  exit $buildExitCode
 fi
 
-#echo
-#echo "*** Running tests"
-#
-#buildExitCode=0
-#while IFS= read -r var
-#do
-#  dotnet test "$var"
-#  lastexit=$?
-#  if [ $lastexit -ne 0 ]
-#  then
-#    buildExitCode=$lastexit
-#  fi
-#done < "build/test-order.txt"
-#
-#exit $buildExitCode
+echo "*** Build completed"
+

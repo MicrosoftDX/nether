@@ -13,15 +13,38 @@ if ($NoRestore) {
     Write-Output "*** Skipping package restore"
 } else {
     $buildExitCode=0
+    Get-Content "$here\build\build-order.txt" `
+        | Where-Object { $_ -ne "" } `
+        | ForEach-Object { 
+            Write-Output "*** dotnet restore $_"
+                dotnet restore $_
+            if ($LASTEXITCODE -ne 0){
+                $buildExitCode = $LASTEXITCODE
+            }
+        }
 
-    Write-Output "*** Restoring packages"
-    dotnet restore
-    $buildExitCode = $LASTEXITCODE
-    if ($buildExitCode -ne 0){
+    if($buildExitCode -ne 0) {
+        Write-Output ""
         Write-Output "*** Restore failed"
         exit $buildExitCode
     }
 }
+
+#  want to do this, but need to figure it out for xplat
+# Write-Output ""
+# Write-Output "*** Building solution"
+# $buildExitCode=0
+# dotnet msbuild .\Nether.sln
+# if ($LASTEXITCODE -ne 0){
+#     $buildExitCode = $LASTEXITCODE
+# }
+
+# if($buildExitCode -ne 0) {
+#     Write-Output ""
+#     Write-Output "*** Build failed"
+#     exit $buildExitCode
+# }
+
 
 Write-Output ""
 Write-Output "*** Building projects"
@@ -41,4 +64,5 @@ if($buildExitCode -ne 0) {
     Write-Output "*** Build failed"
     exit $buildExitCode
 }
-# TODO - think about how to handle this going forwards. e.g. xplat msbuild?
+
+Write-Output "*** Build completed"

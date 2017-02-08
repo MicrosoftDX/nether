@@ -63,7 +63,7 @@ namespace Nether.Web.Utilities
             {
                 message += Environment.NewLine + Environment.NewLine + exception.ToString();
             }
-
+            
             Trace.WriteLine(message, _categoryName);
         }
     }

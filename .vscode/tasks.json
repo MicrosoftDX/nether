@@ -99,6 +99,5 @@
             }
         ]
     },
-    "isShellCommand": true,
-    "args": []
+    "isShellCommand": true
 }
