@@ -89,6 +89,13 @@ namespace Nether.Analytics.EventProcessor
             _blobOutputManager.AppendLineToBlob(gameEventType, csvEvent);
         }
 
+        public void HandleGenericEvent(string gameEventType, string jsonEvent)
+        {
+            var csvEvent = jsonEvent.JsonToCsvString("type", "version");
+
+            _blobOutputManager.AppendLineToBlob(gameEventType, csvEvent);
+        }
+
         #endregion
 
 

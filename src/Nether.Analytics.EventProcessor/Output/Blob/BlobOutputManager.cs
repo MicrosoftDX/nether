@@ -51,6 +51,8 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                     }
                 }
 
+                Console.WriteLine($"Write to [{blobName}]: {data}");
+
                 blob.AppendText(data + "\n", accessCondition: AccessCondition.GenerateIfMaxSizeLessThanOrEqualCondition(_maxBlobSize));
             }
             //TODO: Figure out exactly what exception is thrown if blob is too big and only catch that
