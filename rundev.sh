@@ -8,7 +8,8 @@ command -v nodejs >/dev/null 2>%1 || { echo >&2 "Node.js is not installed. Abort
 command -v npm >/dev/null 2>%1 || { echo >&2 "NPM is not installed. Aborting."; exit 1;}
 
 # fix for Ubuntu (node binary is called nodejs)
-ln -s /usr/bin/nodejs /usr/bin/node
+# commenting out for now as we can use nodejs legacy
+# ln -s /usr/bin/nodejs /usr/bin/node
 
 # install bower
 if command bower 2>/dev/null; then

@@ -1,1 +1,1 @@
-tests/Nether.Web.UnitTests/
+tests/Nether.Web.UnitTests/Nether.Web.UnitTests.csproj

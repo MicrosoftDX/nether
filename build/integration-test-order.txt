@@ -1,1 +1,1 @@
-tests/Nether.Web.IntegrationTests/
+tests/Nether.Web.IntegrationTests/Nether.Web.IntegrationTests.csproj
