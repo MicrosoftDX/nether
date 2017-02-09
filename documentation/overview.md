@@ -2,24 +2,21 @@
 
 ## Introduction - What is Nether?
 
-Nether is a project composed of reusable set of bluiding blocks, projects, services and best practices designed for Gaming workloads on Azure. We have worked with several gaming partners, from indie developers to AAA studios, alltrying to solve the same problem. We have learned that there are hardly new games coming out without a backend for player management, leader boards and analytics purposes.
-
-Nether is a set of reusable components that leverage the power of the Microsoft Azure cloud that will be beneficial for many game developers.
-
+In working with gaming partners, from indie developers to AAA studios, we have realized they are often trying to solve common problems. There are hardly any new games that don't require a backend for player management, leader boards and analytics purposes. **Nether** is a project composed of reusable set of building blocks, projects, services and best practices designed to support these commong gaming workloads on [Microsoft Azure](http://azure.microsoft.com).
 
 ## Features
 
-- Player Management; a solution to administrate, authenticate and authorize players of your game
+- Player Management; a solution authenticate, authorize, and administrate players
 - Leader Boards; a building block that implement basic leaderboard functionality
-- Analytics; a building block to collect, analyze and react to incoming game events
+- Analytics; a mechanism to collect, analyze and react to incoming game events
 - Unity client SDK
 
 ## Benefits
 
-- For the game developer, the services will hide all the complexity of dealing with player management, leader boards and game analytics. Once the service is deployed, all you needs to do is interact with a REST API or leverage the Client SDK with Unity
-- Reliability, the services a built on top of Microsoft Azure leveraging the robust infrastructure
-- Performance, is a key technical requirement that is take in consideration from the start of the project. With Microsoft Azure available in many physical locations across the world your services are always near your players
-- Scalability. Nether leverage the scaling facilities of Microsoft Azure. You can start small, and scale easily with the populairty of your game rises
+- Rapid Development; Nether services will hide the complexity of dealing with player management, leader boards and game analytics. Once the service is deployed, simply interact with REST based API or leverage the Unity Client SDK
+- Reliability; Nether services are built on top of the enterprise quality infrastructure provided by Microsoft Azure
+- Performance; a key technical requirement taken into consideration from the start of the project. Additionally, Microsoft Azure is available in many locations across the world, ensuring your services are always near your players
+- Scalability; Nether leverages the scaling capabilities of Microsoft Azure. You can start small, and scale easily as the populairty of your game rises
 
 ## Scenarios
 
