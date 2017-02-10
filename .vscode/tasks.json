@@ -12,7 +12,8 @@
                 "taskName": "build",
                 "args": [
                     "${workspaceRoot}\\build.ps1",
-                    "-NoRestore"
+                    "-NoDotNetRestore",
+                    "-NoWebClientRestore"
                 ],
                 "suppressTaskName": true,
                 "isBuildCommand": true,
@@ -44,7 +45,8 @@
                 "taskName": "build",
                 "args": [
                     "${workspaceRoot}/build.sh",
-                    "--no-restore"
+                    "--no--dot-net-restore",
+                    "--no--web-client-restore"
                 ],
                 "suppressTaskName": true,
                 "isBuildCommand": true,
