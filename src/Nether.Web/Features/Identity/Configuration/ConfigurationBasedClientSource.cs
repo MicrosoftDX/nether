@@ -51,7 +51,8 @@ namespace Nether.Web.Features.Identity.Configuration
         {
             var client = new Client
             {
-                ClientId = clientConfig.Key
+                ClientId = clientConfig.Key,
+                RequireConsent = false,
             };
 
             foreach (var configValue in clientConfig.GetChildren())

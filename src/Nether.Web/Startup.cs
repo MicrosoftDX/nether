@@ -55,7 +55,29 @@ namespace Nether.Web
             services
                 .AddMvc(options =>
                 {
+                    options.Conventions.Add(new FeatureConvention());
                     options.Filters.AddService(typeof(ExceptionLoggingFilterAttribute));
+                })
+                .AddRazorOptions(options =>
+                {
+                    // {0} - Action Name
+                    // {1} - Controller Name
+                    // {2} - Area Name
+                    // {3} - Feature Name
+                    options.AreaViewLocationFormats.Clear();
+                    options.AreaViewLocationFormats.Add("/Areas/{2}/Features/{3}/Views/{1}/{0}.cshtml");
+                    options.AreaViewLocationFormats.Add("/Areas/{2}/Features/{3}/Views/{0}.cshtml");
+                    options.AreaViewLocationFormats.Add("/Areas/{2}/Features/Views/Shared/{0}.cshtml");
+                    options.AreaViewLocationFormats.Add("/Areas/Shared/{0}.cshtml");
+
+                    // replace normal view location entirely
+                    options.ViewLocationFormats.Clear();
+                    options.ViewLocationFormats.Add("/Features/{3}/Views/{1}/{0}.cshtml");
+                    options.ViewLocationFormats.Add("/Features/{3}/Views/Shared/{0}.cshtml");
+                    options.ViewLocationFormats.Add("/Features/{3}/Views/{0}.cshtml");
+                    options.ViewLocationFormats.Add("/Features/Views/Shared/{0}.cshtml");
+
+                    options.ViewLocationExpanders.Add(new FeatureViewLocationExpander());
                 })
                 .AddJsonOptions(options =>
                 {
@@ -136,6 +158,15 @@ namespace Nether.Web
                 idapp.UseIdentityServer();
 
                 // TODO - add facebook!
+
+                idapp.UseStaticFiles();
+                idapp.UseMvc(routes =>
+                {
+                    routes.MapRoute(
+                        name: "account",
+                        template: "account/{action}",
+                        defaults: new { controller = "Account" });
+                });
             });
 
 
@@ -172,6 +203,36 @@ namespace Nether.Web
 
             app.Map("/ui", uiapp =>
             {
+                uiapp.UseCookieAuthentication(new CookieAuthenticationOptions
+                {
+                    AuthenticationScheme = "Cookies"
+                });
+
+                JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+
+                // hybrid
+                uiapp.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+                {
+                    AuthenticationScheme = "oidc",
+                    SignInScheme = "Cookies",
+
+                    Authority = "http://localhost:5000/identity",
+                    RequireHttpsMetadata = false,
+
+                    PostLogoutRedirectUri = "http://localhost:5000/ui",
+
+                    ClientId = "mvc2",
+                    ClientSecret = "secret",
+
+                    ResponseType = "code id_token",
+                    Scope = { "api1", "offline_access" },
+
+                    GetClaimsFromUserInfoEndpoint = true,
+                    SaveTokens = true
+                });
+
+
                 uiapp.UseDefaultFiles();
                 uiapp.UseStaticFiles();
 
