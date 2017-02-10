@@ -1,0 +1,491 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "hiveScriptStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage account name where the hive script is stored."
+            }
+        },
+        "hiveScriptStorageAccountKey": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage account key of blob storage where the hive script is stored."
+            }
+        }
+    },
+    "variables": {
+        "location": "North Europe",
+        "stgApiVersion": "2015-06-15",
+        "dfApiVersion": "2015-10-01",
+        "uniqueIdentifier": "[uniqueString(resourceGroup().id)]",
+        "storageAccountType": "Standard_GRS",
+        "storageAccountName": "[concat(resourceGroup().name, variables('uniqueIdentifier'))]",
+        "rawEventsContainer": "gameevents",
+        "intermediateEventsContainer": "inter",
+        "startsFolder": "start",
+        "stopsFolder": "stop",
+        "durationsFolder": "durations",
+        "dailyDurationsFolder": "aggdurations/daily",
+        "monthlyDurationsFolder": "aggdurations/monthly",
+        "yearlyDurationsFolder": "aggdurations/yearly",
+        "dfName": "[concat(resourceGroup().name, variables('uniqueIdentifier'))]",
+        "dfFrequency": "Minute",
+        "dfInterval": 30,
+        "dfStorageLS": "StorageLinkedService",
+        "dfScriptsStorageLS": "ScriptsStorageLinkedService",
+        "dfHDInsightLS": "HDIonDemandLinkedService",
+        "dfStartDS": "RawStartEvents",
+        "dfStopDS": "RawStopEvents",
+        "dfDurationsDS": "Durations",
+        "dfDailyDurationsDS": "DailyDurations",
+        "dfMonthlyDurationsDS": "MonthlyDurations",
+        "dfYearlyDurationsDS": "YearlyDurations",
+        "dfDurationsPL": "DurationsPipeline",
+        "dfDailyDurationsPL": "DailyDurationsPipeline",
+        "dfMonthlyDurationsPL": "MonthlyDurationsPipeline",
+        "dfYearlyDurationsPL": "YearlyDurationsPipeline"
+    },
+    "resources": [
+        {
+            "apiVersion": "[variables('stgApiVersion')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('storageAccountName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "accountType": "[variables('storageAccountType')]"
+            }
+        },
+        {
+            "name": "[variables('dfName')]",
+            "apiVersion": "[variables('dfApiVersion')]",
+            "type": "Microsoft.DataFactory/datafactories",
+            "location": "[variables('location')]",
+            "resources": [
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('dfStorageLS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+                    ],
+                    "properties": {
+                        "type": "AzureStorage",
+                        "description": "Azure Storage linked service",
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), variables('stgApiVersion')).key1)]"
+                        }
+                    }
+                },
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('dfScriptsStorageLS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dfName')]"
+                    ],
+                    "properties": {
+                        "type": "AzureStorage",
+                        "description": "Storage account in which the hive scripts are stored",
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('hiveScriptStorageAccountName'),';AccountKey=', parameters('hiveScriptStorageAccountKey'))]"
+                        }
+                    }
+                },
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('dfHDInsightLS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+                    ],
+                    "properties": {
+                        "type": "HDInsightOnDemand",
+                        "typeProperties": {
+                            "clusterSize": 2,
+                            "version": "3.2",
+                            "timeToLive": "00:20:00",
+                            "osType": "linux",
+                            "linkedServiceName": "[variables('dfStorageLS')]"
+                        }
+                    }
+                },
+                {
+                    "type": "datasets",
+                    "name": "[variables('dfStartDS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]"
+                    ],
+                    "properties": {
+                        "type": "AzureBlob",
+                        "linkedServiceName": "[variables('dfStorageLS')]",
+                        "typeProperties": {
+                            "folderPath": "[concat(variables('rawEventsContainer'), '/', variables('startsFolder'), '/')]",
+                            "format": {
+                                "type": "TextFormat",
+                                "rowDelimiter": "\n",
+                                "columnDelimiter": "|",
+                                "treatEmptyAsNull": true,
+                                "skipLineCount": 0,
+                                "firstRowAsHeader": false
+                            }
+                        }
+                    },
+                    "availability": {
+                        "frequency": "[variables('dfFrequency')]",
+                        "interval": "[variables('dfInterval')]"
+                    },
+                    "external": true
+                },
+                {
+                    "type": "datasets",
+                    "name": "[variables('dfStopDS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]"
+                    ],
+                    "properties": {
+                        "type": "AzureBlob",
+                        "linkedServiceName": "[variables('dfStorageLS')]",
+                        "typeProperties": {
+                            "folderPath": "[concat(variables('rawEventsContainer'), '/', variables('stopsFolder'), '/')]",
+                            "format": {
+                                "type": "TextFormat",
+                                "rowDelimiter": "\n",
+                                "columnDelimiter": "|",
+                                "treatEmptyAsNull": true,
+                                "skipLineCount": 0,
+                                "firstRowAsHeader": false
+                            }
+                        }
+                    },
+                    "availability": {
+                        "frequency": "[variables('dfFrequency')]",
+                        "interval": "[variables('dfInterval')]"
+                    },
+                    "external": true
+                },
+                {
+                    "type": "datasets",
+                    "name": "[variables('dfDurationsDS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]"
+                    ],
+                    "properties": {
+                        "type": "AzureBlob",
+                        "linkedServiceName": "[variables('dfStorageLS')]",
+                        "typeProperties": {
+                            "folderPath": "[concat(variables('intermediateEventsContainer'), '/', variables('durationsFolder'), '/')]",
+                            "format": {
+                                "type": "TextFormat",
+                                "rowDelimiter": "\n",
+                                "columnDelimiter": "|",
+                                "treatEmptyAsNull": true,
+                                "skipLineCount": 0,
+                                "firstRowAsHeader": false
+                            }
+                        }
+                    },
+                    "availability": {
+                        "frequency": "[variables('dfFrequency')]",
+                        "interval": "[variables('dfInterval')]"
+                    }
+                },
+                {
+                    "type": "datasets",
+                    "name": "[variables('dfDailyDurationsDS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]"
+                    ],
+                    "properties": {
+                        "type": "AzureBlob",
+                        "linkedServiceName": "[variables('dfStorageLS')]",
+                        "typeProperties": {
+                            "folderPath": "[concat(variables('intermediateEventsContainer'),'/', variables('dailyDurationsFolder'),'/')]",
+                            "format": {
+                                "type": "TextFormat",
+                                "rowDelimiter": "\n",
+                                "columnDelimiter": "|",
+                                "treatEmptyAsNull": true,
+                                "skipLineCount": 0,
+                                "firstRowAsHeader": false
+                            }
+                        }
+                    },
+                    "availability": {
+                        "frequency": "[variables('dfFrequency')]",
+                        "interval": 30
+                    }
+                },
+                {
+                    "type": "datasets",
+                    "name": "[variables('dfMonthlyDurationsDS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]"
+                    ],
+                    "properties": {
+                        "type": "AzureBlob",
+                        "linkedServiceName": "[variables('dfStorageLS')]",
+                        "typeProperties": {
+                            "folderPath": "[concat(variables('intermediateEventsContainer'), '/', variables('monthlyDurationsFolder'),'/')]",
+                            "format": {
+                                "type": "TextFormat",
+                                "rowDelimiter": "\n",
+                                "columnDelimiter": "|",
+                                "treatEmptyAsNull": true,
+                                "skipLineCount": 0,
+                                "firstRowAsHeader": false
+                            }
+                        }
+                    },
+                    "availability": {
+                        "frequency": "[variables('dfFrequency')]",
+                        "interval": 30
+                    }
+                },
+                {
+                    "type": "datasets",
+                    "name": "[variables('dfYearlyDurationsDS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]"
+                    ],
+                    "properties": {
+                        "type": "AzureBlob",
+                        "linkedServiceName": "[variables('dfStorageLS')]",
+                        "typeProperties": {
+                            "folderPath": "[concat(variables('intermediateEventsContainer'),'/',variables('yearlyDurationsFolder'),'/')]",
+                            "format": {
+                                "type": "TextFormat",
+                                "rowDelimiter": "\n",
+                                "columnDelimiter": "|",
+                                "treatEmptyAsNull": true,
+                                "skipLineCount": 0,
+                                "firstRowAsHeader": false
+                            }
+                        }
+                    },
+                    "availability": {
+                        "frequency": "[variables('dfFrequency')]",
+                        "interval": 30
+                    }
+                },
+                {
+                    "type": "dataPipelines",
+                    "name": "[variables('dfDurationsPL')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]",
+                        "[variables('dfStartDS')]",
+                        "[variables('dfStopDS')]",
+                        "[variables('dfDurationsDS')]"
+                    ],
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "CalculateGeneralDurations",
+                                "linkedServiceName": "[variables('dfHDInsightLS')]",
+                                "description": "",
+                                "type": "HDInsightHive",
+                                "typeProperties": {
+                                    "scriptPath": "scripts/durations/durations.hql",
+                                    "scriptLinkedService": "[variables('dfScriptsStorageLS')]",
+                                    "defines": {
+                                        "starteventsloc": "[concat('wasbs://', variables('rawEventsContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/start/')]",
+                                        "stopeventsloc": "[concat('wasbs://', variables('rawEventsContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/stop/')]",
+                                        "rawdurationsloc": "[concat('wasbs://', variables('intermediateEventsContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/durations/')]"
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "name": "[variables('dfStartDS')]"
+                                    },
+                                    {
+                                        "name": "[variables('dfStopDS')]"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "[variables('dfDurationsDS')]"
+                                    }
+                                ],
+                                "policy": {
+                                    "concurrency": 1,
+                                    "retry": 0
+                                },
+                                "scheduler": {
+                                    "frequecy": "[variables('dfFrequency')]",
+                                    "interval": "[variables('dfInterval')]"
+                                }
+                            }
+                        ],
+                        "start": "2017-02-01T00:00:00Z",
+                        "end": "2017-02-11T00:00:00Z",
+                        "isPaused": false
+                    }
+                },
+                {
+                    "type": "dataPipelines",
+                    "name": "[variables('dfDailyDurationsPL')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]",
+                        "[variables('dfDurationsDS')]",
+                        "[variables('dfDailyDurationsDS')]"
+                    ],
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "CalculateDailyDurations",
+                                "linkedServiceName": "[variables('dfHDInsightLS')]",
+                                "description": "Calculate generic durations per day",
+                                "type": "HDInsightHive",
+                                "typeProperties": {
+                                    "scriptPath": "scripts/durations/dailydurations.hql",
+                                    "scriptLinkedService": "[variables('dfScriptsStorageLS')]",
+                                    "defines": {
+                                        "dailydurations": "[concat('wasbs://', variables('intermediateEventsContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/aggdurations/daily/')]"
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "name": "[variables('dfDurationsDS')]"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "[variables('dfDailyDurationsDS')]"
+                                    }
+                                ],
+                                "policy": {
+                                    "concurrency": 1,
+                                    "retry": 0
+                                },
+                                "scheduler": {
+                                    "frequecy": "[variables('dfFrequency')]",
+                                    "interval": "[variables('dfInterval')]"
+                                }
+                            }
+                        ],
+                        "start": "2017-02-01T00:00:00Z",
+                        "end": "2017-02-11T00:00:00Z",
+                        "isPaused": false
+                    }
+                },
+                {
+                    "type": "dataPipelines",
+                    "name": "[variables('dfMonthlyDurationsPL')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]",
+                        "[variables('dfDurationsDS')]",
+                        "[variables('dfMonthlyDurationsDS')]"
+                    ],
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "CalcMonthlyDurations",
+                                "linkedServiceName": "[variables('dfHDInsightLS')]",
+                                "description": "",
+                                "type": "HDInsightHive",
+                                "typeProperties": {
+                                    "scriptPath": "scripts/durations/monthlydurations.hql",
+                                    "scriptLinkedService": "[variables('dfScriptsStorageLS')]",
+                                    "defines": {
+                                        "monthlydurations": "[concat('wasbs://', variables('intermediateEventsContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/aggdurations/monthly/')]"
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "name": "[variables('dfDurationsDS')]"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "[variables('dfMonthlyDurationsDS')]"
+                                    }
+                                ],
+                                "policy": {
+                                    "concurrency": 1,
+                                    "retry": 0
+                                },
+                                "scheduler": {
+                                    "frequecy": "[variables('dfFrequency')]",
+                                    "interval": "[variables('dfInterval')]"
+                                }
+                            }
+                        ],
+                        "start": "2017-02-01T00:00:00Z",
+                        "end": "2017-02-11T00:00:00Z",
+                        "isPaused": false
+                    }
+                },
+                {
+                    "type": "dataPipelines",
+                    "name": "[variables('dfYearlyDurationsPL')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]",
+                        "[variables('dfDurationsDS')]",
+                        "[variables('dfYearlyDurationsDS')]"
+                    ],
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "CalcYearlyDurations",
+                                "linkedServiceName": "[variables('dfHDInsightLS')]",
+                                "description": "",
+                                "type": "HDInsightHive",
+                                "typeProperties": {
+                                    "scriptPath": "scripts/durations/annualdurations.hql",
+                                    "scriptLinkedService": "[variables('dfScriptsStorageLS')]",
+                                    "defines": {
+                                        "yearlydurations": "[concat('wasbs://', variables('intermediateEventsContainer'), '@', variables('storageAccountName'), '.blob.core.windows.net/aggdurations/yearly/')]"
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "name": "[variables('dfDurationsDS')]"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "[variables('dfYearlyDurationsDS')]"
+                                    }
+                                ],
+                                "policy": {
+                                    "concurrency": 1,
+                                    "retry": 0
+                                },
+                                "scheduler": {
+                                    "frequecy": "[variables('dfFrequency')]",
+                                    "interval": "[variables('dfInterval')]"
+                                }
+                            }
+                        ],
+                        "start": "2017-02-01T00:00:00Z",
+                        "end": "2017-02-11T00:00:00Z",
+                        "isPaused": false
+                    }
+                }
+            ]
+        }
+    ]
+}
