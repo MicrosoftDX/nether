@@ -23,6 +23,9 @@ namespace AnalyticsTestClient.Utils
             SetupPropertyCache();
 
             new MainMenu().Show();
+
+            Console.WriteLine("Closing connection");
+            EventHubManager.CloseConnectionToEventHub().Wait();
         }
 
         private static void Greet()
@@ -32,7 +35,8 @@ namespace AnalyticsTestClient.Utils
             Console.WriteLine(@"| \ | | ___| |_| |__   ___ _ __ ");
             Console.WriteLine(@"|  \| |/ _ \ __| '_ \ / _ \ '__|");
             Console.WriteLine(@"| |\  |  __/ |_| | | |  __/ |   ");
-            Console.WriteLine(@"|_| \_|\___|\__|_| |_|\___|_|   Analytics Test Client");
+            Console.WriteLine(@"|_| \_|\___|\__|_| |_|\___|_|   ");
+            Console.WriteLine(@"- Analytics Test Client -");
             Console.WriteLine();
         }
 

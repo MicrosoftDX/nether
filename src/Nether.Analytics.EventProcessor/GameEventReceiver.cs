@@ -5,6 +5,7 @@ using System;
 using Microsoft.Azure.WebJobs.ServiceBus;
 using Nether.Analytics.EventProcessor.Output.Blob;
 using Nether.Analytics.EventProcessor.Output.EventHub;
+using System.Configuration;
 
 namespace Nether.Analytics.EventProcessor
 {
@@ -12,73 +13,82 @@ namespace Nether.Analytics.EventProcessor
     /// Main class of the EventProcessor. This class has the required trigger(s) to
     /// get called by the WebJob SDK whenever there is a new Event to Process
     /// </summary>
-    public class GameEventReceiver
+    public static class GameEventReceiver
     {
-        private readonly GameEventRouter _router;
-        private readonly GameEventHandler _handler;
-        private readonly BlobOutputManager _blobOutputManager;
-        private readonly EventHubOutputManager _eventHubOutputManager;
+        private static readonly GameEventRouter s_router;
 
-        public GameEventReceiver()
+        static GameEventReceiver()
         {
             // Read Environment Variables for configuration
             // TODO: Fix configuration to be in line with other configuration in Nether
 
             Console.WriteLine("Configuring GameEventReceiver (from Environment Variables");
-            string outputStorageAccountConnectionString =
-                Environment.GetEnvironmentVariable("NETHER_ANALYTICS_STORAGE_CONNECTIONSTRING");
+
+            var outputStorageAccountConnectionString = ConfigResolver.Resolve("NETHER_ANALYTICS_STORAGE_CONNECTIONSTRING");
             Console.WriteLine($"outputStorageAccountConnectionString: {outputStorageAccountConnectionString}");
-            string outputContainer =
-                Environment.GetEnvironmentVariable("NETHER_ANALYTICS_STORAGE_CONTAINER");
+
+            var outputContainer = ConfigResolver.Resolve("NETHER_ANALYTICS_STORAGE_CONTAINER");
             Console.WriteLine($"outputContainer: {outputContainer}");
-            string outputEventHubConnectionString =
-                Environment.GetEnvironmentVariable("NETHER_INTERMEDIATE_EVENTHUB_CONNECTIONSTRING");
+
+            var outputEventHubConnectionString = ConfigResolver.Resolve("NETHER_INTERMEDIATE_EVENTHUB_CONNECTIONSTRING");
             Console.WriteLine($"outputEventHubConnectionString: {outputEventHubConnectionString}");
-            string outputEventHubName =
-                Environment.GetEnvironmentVariable("NETHER_INTERMEDIATE_EVENTHUB_NAME");
+
+            var outputEventHubName = ConfigResolver.Resolve("NETHER_INTERMEDIATE_EVENTHUB_NAME");
             Console.WriteLine($"outputEventHubName: {outputEventHubName}");
+
+            var maxBlobSize = 100 * 1024 * 1024;
+
+            Console.WriteLine($"Max Blob Size: {maxBlobSize / 1024 / 1024}MB ({maxBlobSize}B)");
             Console.WriteLine();
 
             // Configure Blob Output
-            _blobOutputManager = new BlobOutputManager(
+            var blobOutputManager = new BlobOutputManager(
                 outputStorageAccountConnectionString,
                 outputContainer,
-                BlobOutputFolderStructure.YearMonthDayHour,
-                100 * 1024 * 1024); // 100MB
+                BlobOutputFolderStructure.YearMonthDay,
+                maxBlobSize);
 
             // Configure EventHub Output
-            _eventHubOutputManager = new EventHubOutputManager(outputEventHubConnectionString, outputEventHubName);
+            var eventHubOutputManager = new EventHubOutputManager(outputEventHubConnectionString, outputEventHubName);
 
             // Setup Handler to use above configured output managers
-            _handler = new GameEventHandler(_blobOutputManager, _eventHubOutputManager);
+            var handler = new GameEventHandler(blobOutputManager, eventHubOutputManager);
 
             // Configure Router to switch handeling to correct method depending on game event type
-            _router = new GameEventRouter(GameEventHandler.ResolveEventType,
+            s_router = new GameEventRouter(GameEventHandler.ResolveEventType,
                 GameEventHandler.UnknownGameEventFormatHandler,
-                GameEventHandler.UnknownGameEventTypeHandler);
+                GameEventHandler.UnknownGameEventTypeHandler,
+                handler.Flush);
 
-            _router.RegEventTypeAction("count", "1.0.0", _handler.HandleCountEvent);
-            _router.RegEventTypeAction("game-heartbeat", "1.0.0", _handler.HandleGameHeartbeat);
-            _router.RegEventTypeAction("game-start", "1.0.0", _handler.HandleGameStartEvent);
-            _router.RegEventTypeAction("game-stop", "1.0.0", _handler.HandleGameStopEvent);
-            _router.RegEventTypeAction("location", "1.0.0", _handler.HandleLocationEvent);
-            _router.RegEventTypeAction("score", "1.0.0", _handler.HandleScoreEvent);
-            _router.RegEventTypeAction("start", "1.0.0", _handler.HandleStartEvent);
-            _router.RegEventTypeAction("stop", "1.0.0", _handler.HandleStopEvent);
+            s_router.RegEventTypeAction("count", "1.0.0", handler.HandleCountEvent);
+            s_router.RegEventTypeAction("game-heartbeat", "1.0.0", handler.HandleGameHeartbeat);
+            s_router.RegEventTypeAction("game-start", "1.0.0", handler.HandleGameStartEvent);
+            s_router.RegEventTypeAction("game-stop", "1.0.0", handler.HandleGameStopEvent);
+            s_router.RegEventTypeAction("location", "1.0.0", handler.HandleLocationEvent);
+            s_router.RegEventTypeAction("score", "1.0.0", handler.HandleScoreEvent);
+            s_router.RegEventTypeAction("start", "1.0.0", handler.HandleStartEvent);
+            s_router.RegEventTypeAction("stop", "1.0.0", handler.HandleStopEvent);
+            s_router.RegEventTypeAction("generic", "1.0.0", handler.HandleGenericEvent);
         }
 
-        /// <summary>
-        /// Method gets called automatically by the WebJobs SDK whenever there is a new
-        /// event on the monitored EventHub. Acts as the starting point for any Game Event
-        /// that gets processed by the Event Processor.
-        /// </summary>
-        /// <param name="data">The raw Game Event Data to be processed</param>
-        public void HandleOne([EventHubTrigger("ingest")] string data)
-        {
-            //TODO: Figure out how to configure above EventHubName now named ingest
+        //public void HandleOne([EventHubTrigger("%NETHER_INGEST_EVENTHUB_NAME%")] string data)
+        //{
+        //    //TODO: Figure out how to configure above EventHubName now named ingest
 
-            // Forward data to "router" in order to handle the event
-            _router.HandleGameEvent(data);
+        //    // Forward data to "router" in order to handle the event
+        //    _router.HandleGameEvent(data);
+        //}
+
+        public static void HandleBatch([EventHubTrigger("%NETHER_INGEST_EVENTHUB_NAME%")] string[] events)
+        {
+            if (events.Length > 1)
+                Console.WriteLine($"....Received batch of {events.Length} events");
+            foreach (var e in events)
+            {
+                s_router.HandleGameEvent(e);
+            }
+
+            s_router.Flush();
         }
     }
 }

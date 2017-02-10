@@ -19,22 +19,25 @@ namespace Nether.Analytics.EventProcessor
         private readonly BlobOutputManager _blobOutputManager;
         private readonly EventHubOutputManager _eventHubOutputManager;
 
-        #region Constructor
         public GameEventHandler(BlobOutputManager blobOutputManager, EventHubOutputManager eventHubOutputManager)
         {
             _blobOutputManager = blobOutputManager;
             _eventHubOutputManager = eventHubOutputManager;
         }
-        #endregion
 
-        #region Event Type Handlers
+        public void Flush()
+        {
+            _blobOutputManager.FlushWriteQueues();
+        }
+
         //TODO: Fix Game Event Handlers to use reflection over properties if possible
         //TODO: Enrich events with knows facts, such as location on heartbeats, etc.
         public void HandleCountEvent(string gameEventType, string jsonEvent)
         {
-            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "displayName", "value", "gameSessionId");
+            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "displayName", "value",
+                "gameSessionId");
 
-            _blobOutputManager.AppendLineToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
             _eventHubOutputManager.SendToEventHub(gameEventType, csvEvent);
         }
 
@@ -42,7 +45,7 @@ namespace Nether.Analytics.EventProcessor
         {
             var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "gameSessionId");
 
-            _blobOutputManager.AppendLineToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
             _eventHubOutputManager.SendToEventHub(gameEventType, csvEvent);
         }
 
@@ -50,14 +53,21 @@ namespace Nether.Analytics.EventProcessor
         {
             var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "gameSessionId", "gamerTag");
 
-            _blobOutputManager.AppendLineToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
         }
 
         public void HandleGameStopEvent(string gameEventType, string jsonEvent)
         {
             var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "gameSessionId");
 
-            _blobOutputManager.AppendLineToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
+        }
+
+        public void HandleGenericEvent(string gameEventType, string jsonEvent)
+        {
+            var csvEvent = jsonEvent.JsonToCsvString("type", "version");
+
+            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
         }
 
         public void HandleLocationEvent(string gameEventType, string jsonEvent)
@@ -65,40 +75,31 @@ namespace Nether.Analytics.EventProcessor
             //TODO: Implement more properties on Location Event
             var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "gameSessionId");
 
-            _blobOutputManager.AppendLineToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
         }
 
         public void HandleScoreEvent(string gameEventType, string jsonEvent)
         {
             var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "gameSessionId", "score");
 
-            _blobOutputManager.AppendLineToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
         }
 
         public void HandleStartEvent(string gameEventType, string jsonEvent)
         {
-            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "eventCorrelationId", "displayName", "gameSessionId");
+            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "eventCorrelationId",
+                "displayName", "gameSessionId");
 
-            _blobOutputManager.AppendLineToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
         }
 
         public void HandleStopEvent(string gameEventType, string jsonEvent)
         {
-            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "eventCorrelationId", "gameSessionId");
+            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "eventCorrelationId",
+                "gameSessionId");
 
-            _blobOutputManager.AppendLineToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
         }
-
-        public void HandleGenericEvent(string gameEventType, string jsonEvent)
-        {
-            var csvEvent = jsonEvent.JsonToCsvString("type", "version");
-
-            _blobOutputManager.AppendLineToBlob(gameEventType, csvEvent);
-        }
-
-        #endregion
-
-
 
         /// <summary>
         ///     Inspects gameEvent to figure out what GameEventType we are working with.
@@ -114,20 +115,10 @@ namespace Nether.Analytics.EventProcessor
             var version = (string)json["version"];
 
             if (gameEventType == null || version == null)
-                throw new ApplicationException("Unable to resolve Game Event Type, since game event doesn't contain type and/or version property");
+                throw new ApplicationException(
+                    "Unable to resolve Game Event Type, since game event doesn't contain type and/or version property");
 
             return VersionedName(gameEventType, version);
-        }
-
-        /// <summary>
-        ///     Combines Event Type and Version to a "versioned name"
-        /// </summary>
-        /// <param name="gameEventType">Game Event Type</param>
-        /// <param name="version">Version of Game Event Type</param>
-        /// <returns>A combined and versioned name</returns>
-        public static string VersionedName(string gameEventType, string version)
-        {
-            return $"{gameEventType}|{version}";
         }
 
 
@@ -141,6 +132,17 @@ namespace Nether.Analytics.EventProcessor
         {
             Console.WriteLine("Unknown and unhandled Game Event Type found in ...");
             Console.WriteLine(data);
+        }
+
+        /// <summary>
+        ///     Combines Event Type and Version to a "versioned name"
+        /// </summary>
+        /// <param name="gameEventType">Game Event Type</param>
+        /// <param name="version">Version of Game Event Type</param>
+        /// <returns>A combination of version and name</returns>
+        public static string VersionedName(string gameEventType, string version)
+        {
+            return $"{gameEventType}/v{version}";
         }
     }
 }
