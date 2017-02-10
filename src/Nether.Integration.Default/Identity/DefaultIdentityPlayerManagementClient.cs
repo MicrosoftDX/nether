@@ -3,6 +3,7 @@
 
 using IdentityModel.Client;
 using Microsoft.Extensions.Logging;
+using Nether.Common;
 using Nether.Common.Async;
 using Newtonsoft.Json;
 using System;
@@ -29,18 +30,19 @@ namespace Nether.Integration.Identity
         // healthy flag and lock are used to avoid making multiple parallel failed calls when auth has failed and needs refreshing
         private AsyncLock _healthLock = new AsyncLock();
         private bool _healthy = false;
-        private readonly string _baseUri;
+        private readonly string _identityBaseUri;
 
         public DefaultIdentityPlayerManagementClient(
-            string baseUri, // e.g. localhost:5000
+            string identityBaseUri, // e.g. localhost:5000/identity
+            string apiBaseUri, // e.g. localhost:5000/api
             string clientSecret,
             ILogger<DefaultIdentityPlayerManagementClient> logger
             )
         {
-            _baseUri = baseUri;
+            _identityBaseUri = identityBaseUri.EnsureEndsWith("/");
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri(baseUri)
+                BaseAddress = new Uri(apiBaseUri.EnsureEndsWith("/"))
             };
             if (string.IsNullOrEmpty(clientSecret))
             {
@@ -133,7 +135,7 @@ namespace Nether.Integration.Identity
         private async Task<GamerTagResponse> CallGamertagApiAsync(string userId)
         {
             string gamertag = null;
-            var response = await _httpClient.GetAsync($"/api/playertag/{userId}");
+            var response = await _httpClient.GetAsync($"playertag/{userId}");
             if (response.IsSuccessStatusCode)
             {
                 var gamertagResponse = await ParseGamerTagResponseAsync(response.Content);
@@ -153,7 +155,7 @@ namespace Nether.Integration.Identity
             _logger.LogInformation("Attempting to get access token...");
 
             _logger.LogInformation("Querying token endpoint");
-            var disco = await DiscoveryClient.GetAsync(_baseUri);
+            var disco = await DiscoveryClient.GetAsync(_identityBaseUri);
 
             // request token
             _logger.LogInformation("Requesting token");

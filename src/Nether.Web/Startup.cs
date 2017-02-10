@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Nether.Web.Utilities;
 using Swashbuckle.AspNetCore.Swagger;
+using IdentityServer4;
 
 namespace Nether.Web
 {
@@ -85,6 +86,7 @@ namespace Nether.Web
                         Url = "https://github.com/dx-ted-emea/nether/blob/master/LICENSE"
                     }
                 });
+                //options.OperationFilter<ApiPrefixFilter>();
                 options.CustomSchemaIds(type => type.FullName);
                 //options.AddSecurityDefinition("oauth2", new OAuth2Scheme
                 //{
@@ -122,41 +124,58 @@ namespace Nether.Web
         {
             var logger = loggerFactory.CreateLogger<Startup>();
 
-            app.UseIdentityServices(Configuration, logger);
 
+            app.EnsureInitialAdminUser(Configuration, logger);
 
+            // Set up separate web pipelines for identity, MVC UI, and API
+            // as they each have different auth requirements!
 
-            #region [ Admin Web UI ]
-            // Create a custom route for Admin Web UI
-            // todo: make it nicer
-            const string adminFeatureSubstringUrl = "/features/adminwebui";
-            app.Use(async (context, next) =>
+            app.Map("/identity", idapp =>
             {
-                await next();
+                JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+                idapp.UseIdentityServer();
 
-                string path = context.Request.Path.Value;
-                if (path.Contains(adminFeatureSubstringUrl))
+                // TODO - add facebook!
+            });
+
+
+            app.Map("/api", apiapp =>
+            {
+                JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+                var idsvrConfig = Configuration.GetSection("Identity:IdentityServer");
+                string authority = idsvrConfig["Authority"];
+                bool requireHttps = idsvrConfig.GetValue("RequireHttps", true);
+
+                apiapp.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
                 {
-                    context.Request.Path = adminFeatureSubstringUrl + "/index.html";
+                    Authority = authority,
+                    RequireHttpsMetadata = requireHttps,
 
-                    await next();
-                }
+                    ApiName = "nether-all",
+                    AllowedScopes = { "nether-all" },
+                });
+
+                // TODO filter which routes this matches (i.e. only API routes)
+                apiapp.UseMvc();
+
+                apiapp.UseSwagger(options =>
+                {
+                    options.RouteTemplate = "swagger/{documentName}/swagger.json";
+                });
+                apiapp.UseSwaggerUi(options =>
+                {
+                    options.RoutePrefix = "swagger/ui";
+                    options.SwaggerEndpoint("/api/swagger/v0.1/swagger.json", "v0.1 Docs");
+                });
             });
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-            #endregion
 
-            app.UseIdentityServer();
-            app.UseMvc();
+            app.Map("/ui", uiapp =>
+            {
+                uiapp.UseDefaultFiles();
+                uiapp.UseStaticFiles();
 
-            app.UseSwagger(options =>
-            {
-                options.RouteTemplate = "api/swagger/{documentName}/swagger.json";
-            });
-            app.UseSwaggerUi(options =>
-            {
-                options.RoutePrefix = "api/swagger/ui";
-                options.SwaggerEndpoint("/api/swagger/v0.1/swagger.json", "v0.1 Docs");
+                uiapp.UseMvc(); // TODO filter which routes this matches (i.e. only non-API routes)
             });
         }
     }

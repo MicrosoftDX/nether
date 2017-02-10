@@ -21,7 +21,6 @@ namespace Nether.Web.Features.PlayerManagement
     /// <summary>
     /// Player management
     /// </summary>
-    [Route("api")]
     public class PlayerManagementController : Controller
     {
         private const string ControllerName = "PlayerManagement";

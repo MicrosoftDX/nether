@@ -11,7 +11,7 @@ using System.Net;
 
 namespace Nether.Web.Features.Analytics
 {
-    [Route("api/endpoint")]
+    [Route("endpoint")]
     public class EndpointController : Controller
     {
         private readonly EndpointInfo _endpointInfo;

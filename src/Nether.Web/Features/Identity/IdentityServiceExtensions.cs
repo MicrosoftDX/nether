@@ -26,54 +26,7 @@ namespace Nether.Web.Features.Identity
 {
     public static class IdentityServiceExtensions
     {
-        public static IApplicationBuilder UseIdentityServices(
-            this IApplicationBuilder app,
-            IConfiguration configuration,
-            ILogger logger
-            )
-        {
-            // TODO - this code was copied from Identity Server sample. Need to understand why the map is cleared!
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
-            var idsvrConfig = configuration.GetSection("Identity:IdentityServer");
-            string authority = idsvrConfig["Authority"];
-            bool requireHttps = idsvrConfig.GetValue("RequireHttps", true);
-
-
-
-            // TODO - this code was copied from the Identity Server sample. Once working, revisit this config and see what is needed to wire up with the generic OpenIdConnect helpers
-            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
-            {
-                Authority = authority,
-                RequireHttpsMetadata = requireHttps,
-                AllowedScopes = { "nether-all" },
-                //AutomaticAuthenticate = true // TODO - understand this setting!
-            });
-
-            //implicit flow authentication
-            /*IdentityServerAuthenticationOptions identityServerValidationOptions = new IdentityServerAuthenticationOptions
-            {
-                Authority = "http://localhost:5000/",
-                AllowedScopes = new List<string> { "nether-all" },
-                RequireHttpsMetadata = false,
-                ApiSecret = "dataEventRecordsSecret",
-                ApiName = "dataEventRecords",
-                AutomaticAuthenticate = true,
-                SupportedTokens = SupportedTokens.Both,
-                // TokenRetriever = _tokenRetriever,
-                // required if you want to return a 403 and not a 401 for forbidden responses
-                AutomaticChallenge = true,
-            };
-
-            app.UseIdentityServerAuthentication(identityServerValidationOptions);*/
-
-
-            AddInitialAdminUser(app, configuration, logger);
-
-            return app;
-        }
-
-        private static void AddInitialAdminUser(IApplicationBuilder app, IConfiguration configuration, ILogger logger)
+        public static void EnsureInitialAdminUser(this IApplicationBuilder app, IConfiguration configuration, ILogger logger)
         {
             try
             {
@@ -145,8 +98,9 @@ namespace Nether.Web.Features.Identity
                 switch (wellKnownType)
                 {
                     case "default":
-                        var baseUri = scopedConfiguration["BaseUrl"];
-                        logger.LogInformation("Identity:PlayerManagementClient: using 'default' client with BaseUrl '{0}'", baseUri);
+                        var identityBaseUri = scopedConfiguration["IdentityBaseUrl"];
+                        var apiBaseUri = scopedConfiguration["ApiBaseUrl"];
+                        logger.LogInformation("Identity:PlayerManagementClient: using 'default' client with IdentityBaseUrl '{0}', ApiBaseUrl '{1}'", identityBaseUri, apiBaseUri);
 
                         // could simplify this by requiring the client secret in the properties for PlayerManagementClient, but that duplicates config
                         var clientSource = new ConfigurationBasedClientSource(logger);
@@ -159,7 +113,8 @@ namespace Nether.Web.Features.Identity
                         services.AddSingleton<IIdentityPlayerManagementClient, DefaultIdentityPlayerManagementClient>(serviceProvider =>
                         {
                             return new DefaultIdentityPlayerManagementClient(
-                                baseUri,
+                                identityBaseUri,
+                                apiBaseUri,
                                 clientSecret,
                                 serviceProvider.GetRequiredService<ILogger<DefaultIdentityPlayerManagementClient>>()
                                 );

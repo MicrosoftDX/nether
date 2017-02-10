@@ -79,7 +79,7 @@ namespace Nether.Web.IntegrationTests
                 password = GetPassword(username);
 
             //authenticate so it's ready for use
-            DiscoveryResponse disco = await DiscoveryClient.GetAsync(BaseUrl);
+            DiscoveryResponse disco = await DiscoveryClient.GetAsync($"{BaseUrl}identity");
             if (disco.TokenEndpoint == null)
             {
                 throw new AuthenticationException("GetClient: could not discover endpoint, server is offline?");

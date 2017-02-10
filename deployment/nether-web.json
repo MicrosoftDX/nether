@@ -145,7 +145,8 @@
                         "WEB_HOST_URL": "[concat('http://', reference(concat('Microsoft.Web/sites/', variables('webSiteName'))).hostNames[0])]",
 
                         "Identity:PlayerManagementClient:wellknown": "default",
-                        "Identity:PlayerManagementClient:properties:BaseUrl": "[concat('http://', reference(concat('Microsoft.Web/sites/', variables('webSiteName'))).hostNames[0])]",
+                        "Identity:PlayerManagementClient:properties:IdentityBaseUrl": "[concat('http://', reference(concat('Microsoft.Web/sites/', variables('webSiteName'))).hostNames[0], '/identity')]",
+                        "Identity:PlayerManagementClient:properties:ApiBaseUrl": "[concat('http://', reference(concat('Microsoft.Web/sites/', variables('webSiteName'))).hostNames[0], '/api')]",
 
                         "Identity:IdentityServer:RequireHttps": "false",
                         "Identity:IdentityServer:Authority": "[concat('http://', reference(concat('Microsoft.Web/sites/', variables('webSiteName'))).hostNames[0])]"
