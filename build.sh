@@ -88,6 +88,9 @@ do
   fi
 done < "build/build-order.txt"
 
+# Run gulp task for typescript
+src/Nether.Web/gulp compiletsforadminui
+
 if [ $buildExitCode -ne 0 ]
 then
   echo
