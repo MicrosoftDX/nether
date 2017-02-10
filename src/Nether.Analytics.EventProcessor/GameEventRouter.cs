@@ -14,28 +14,21 @@ namespace Nether.Analytics.EventProcessor
     /// </summary>
     public class GameEventRouter
     {
-        #region Private Properties
         private readonly Func<string, string> _gameEventTypeResolver;
-
         private readonly Dictionary<string, Action<string, string>> _gameEventTypeActions;
-
         private Action<string, string> _unknownGameEventTypeHandler;
         private Action<string> _unknownGameEventFormatHandler;
-        #endregion
+        private Action _flushHandler;
 
-        /// <summary>
-        /// Constructs a new GameEventRouter class
-        /// </summary>
-        /// <param name="gameEventTypeResolver">Function used to resolve/parse Game Event Types</param>
-        /// <param name="unknownGameEventFormatHandler">Action to be called in case an unknown format is encountered in a Game Event</param>
-        /// <param name="unknownGameEventTypeHandler">Action to be called in case of an unregistered game event is encountered</param>
         public GameEventRouter(Func<string, string> gameEventTypeResolver,
             Action<string> unknownGameEventFormatHandler = null,
-            Action<string, string> unknownGameEventTypeHandler = null)
+            Action<string, string> unknownGameEventTypeHandler = null,
+            Action flushHandler = null)
         {
             _gameEventTypeResolver = gameEventTypeResolver;
             _unknownGameEventFormatHandler = unknownGameEventFormatHandler;
             _unknownGameEventTypeHandler = unknownGameEventTypeHandler;
+            _flushHandler = flushHandler;
 
             _gameEventTypeActions = new Dictionary<string, Action<string, string>>();
         }
@@ -89,6 +82,11 @@ namespace Nether.Analytics.EventProcessor
             var handler = _gameEventTypeActions[type];
             // Pass game event data to correct action
             handler(type, data);
+        }
+
+        public void Flush()
+        {
+            _flushHandler();
         }
     }
 }

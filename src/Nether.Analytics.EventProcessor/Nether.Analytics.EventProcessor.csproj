@@ -62,6 +62,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
@@ -88,6 +89,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigResolver.cs" />
+    <Compile Include="NameResolver.cs" />
     <Compile Include="Output\Blob\BlobOutputFolderStructure.cs" />
     <Compile Include="Output\Blob\BlobOutputManager.cs" />
     <Compile Include="Output\EventHub\EventHubOutputManager.cs" />

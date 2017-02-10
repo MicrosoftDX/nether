@@ -7,30 +7,28 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 {
     public static class BlobOutputFolderStructure
     {
-        public static string YearMonthDayHourMinute()
-        {
-            return DateTime.UtcNow.ToString("yyyy/MM/dd/hh/mm");
-        }
-
-        public static string YearMonthDayHour()
+        public static string YearMonthDayHour(string gameEventType)
         {
             var now = DateTime.UtcNow;
-            return $"{now.Year:D4}/{now.Month:D2}/{now.Day:D2}/{now.Hour:D2}";
+            return $"{gameEventType}/{now.Year:D4}/{now.Month:D2}/{now.Day:D2}/{now.Hour:D2}/";
         }
 
-        public static string YearMonthDay()
+        public static string YearMonthDay(string gameEventType)
         {
-            return DateTime.UtcNow.ToString("yyyy/MM/dd");
+            var now = DateTime.UtcNow;
+            return $"{gameEventType}/{now.Year:D4}/{now.Month:D2}/{now.Day:D2}/";
         }
 
-        public static string YearMonth()
+        public static string YearMonth(string gameEventType)
         {
-            return DateTime.UtcNow.ToString("yyyy/MM");
+            var now = DateTime.UtcNow;
+            return $"{gameEventType}/{now.Year:D4}/{now.Month:D2}/";
         }
 
-        public static string Year()
+        public static string Year(string gameEventType)
         {
-            return DateTime.UtcNow.ToString("yyyy");
+            var now = DateTime.UtcNow;
+            return $"{gameEventType}/{now.Year:D4}/";
         }
     }
 }
