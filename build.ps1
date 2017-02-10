@@ -60,7 +60,9 @@ Get-Content "$here\build\build-order.txt" `
     }
 
 # Run gulp task for typescript
-.\src\Nether.Web\gulp compiletsforadminui
+Set-Location .\src\Nether.Web
+gulp compiletsforadminui
+Set-Location ..\..
 
 if($buildExitCode -ne 0) {
     Write-Output ""
