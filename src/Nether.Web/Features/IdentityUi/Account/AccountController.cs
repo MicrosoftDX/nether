@@ -13,6 +13,7 @@ using System.Linq;
 using System.Security.Claims;
 using IdentityModel;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace Nether.Web.Features.IdentityUi
 {
@@ -28,19 +29,22 @@ namespace Nether.Web.Features.IdentityUi
         private readonly IIdentityServerInteractionService _interaction;
         private readonly AccountService _account;
         private readonly IResourceOwnerPasswordValidator _passwordValidator;
+        private readonly ILogger _logger;
 
         public AccountController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IHttpContextAccessor httpContextAccessor,
             IUserStore userStore,
-            IResourceOwnerPasswordValidator passwordValidator)
+            IResourceOwnerPasswordValidator passwordValidator,
+            ILogger<AccountController> logger)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
             _userStore = userStore;
             _passwordValidator = passwordValidator;
             _interaction = interaction;
             _account = new AccountService(interaction, httpContextAccessor, clientStore);
+            _logger = logger;
         }
 
         /// <summary>
@@ -49,9 +53,12 @@ namespace Nether.Web.Features.IdentityUi
         [HttpGet]
         public async Task<IActionResult> Login(string returnUrl)
         {
+            // clear external cookie in case it's left lingering, otherwise we get AccessDenied redirect: https://github.com/aspnet/Templates/issues/686
+            await HttpContext.Authentication.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
+
             var vm = await _account.BuildLoginViewModelAsync(returnUrl);
 
-            if (vm.IsExternalLoginOnly)
+            if (vm.IsExternalLoginOnly && vm.ExternalProviders.Count() == 1)
             {
                 // only one option for logging in
                 return ExternalLogin(vm.ExternalProviders.First().AuthenticationScheme, returnUrl);
@@ -205,21 +212,34 @@ namespace Nether.Web.Features.IdentityUi
             // remove the user id claim from the claims collection and move to the userId property
             // also set the name of the external authentication provider
             claims.Remove(userIdClaim);
-            var providerId = info.Properties.Items["scheme"];
-            var userId = userIdClaim.Value;
+            var providerType = info.Properties.Items["scheme"];
+            var providerUserId = userIdClaim.Value;
 
             // check if the external user is already provisioned
-            var user = await _userStore.GetUserByLoginAsync(userId, providerId);
+            var user = await _userStore.GetUserByLoginAsync(providerType, providerUserId);
             if (user == null)
             {
                 // this sample simply auto-provisions new external user
                 // another common approach is to start a registrations workflow first
                 //user = _userStore.AutoProvisionUser(providerId, userId, claims);
-                //await _userStore.SaveUserAsync();
-                throw new NotImplementedException("TODO - provision user!");
+                user = new User
+                {
+                    Role = RoleNames.Player,
+                    IsActive = true,
+                    Logins  = new [] {
+                        new Login
+                        {
+                            ProviderType = providerType,
+                            ProviderId = providerUserId
+                        }
+                    }
+                };
+                _logger.LogInformation("Creating user from external source '{0}'", providerType);
+                await _userStore.SaveUserAsync(user);
             }
             // TODO check for a gamertag and direct to "registration" page if not
             // Need to think about re-auth flow to pick up the tag!! (or can we keep the temp cookie until then?)
+            throw new NotImplementedException("TODO - check and provision user with gamertag!");
 
             var additionalClaims = new List<Claim>();
 
@@ -240,7 +260,7 @@ namespace Nether.Web.Features.IdentityUi
             }
 
             // issue authentication cookie for user
-            await HttpContext.Authentication.SignInAsync(user.UserId, "TODO - username!!", providerId, props, additionalClaims.ToArray());
+            await HttpContext.Authentication.SignInAsync(user.UserId, "TODO - username!!", providerType, props, additionalClaims.ToArray());
 
             // delete temporary cookie used during external authentication
             await HttpContext.Authentication.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);

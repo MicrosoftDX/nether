@@ -91,7 +91,7 @@ namespace Nether.Web.Features.Identity
                 }
                 _logger.LogDebug("FacebookSignIn: Signing in: {0}", userId);
 
-                var user = await _userStore.GetUserByLoginAsync(LoginProvider.Facebook, userId);
+                var user = await _userStore.GetUserByLoginAsync(LoginProvider.FacebookUserAccessToken, userId);
                 if (user == null)
                 {
                     user = new User
@@ -102,7 +102,7 @@ namespace Nether.Web.Features.Identity
                         {
                             new Login
                             {
-                                ProviderType = LoginProvider.Facebook,
+                                ProviderType = LoginProvider.FacebookUserAccessToken,
                                 ProviderId = userId
                             }
                         }
