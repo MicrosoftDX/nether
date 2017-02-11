@@ -215,8 +215,11 @@ namespace Nether.Web.Features.IdentityUi
                 // this sample simply auto-provisions new external user
                 // another common approach is to start a registrations workflow first
                 //user = _userStore.AutoProvisionUser(providerId, userId, claims);
+                //await _userStore.SaveUserAsync();
                 throw new NotImplementedException("TODO - provision user!");
             }
+            // TODO check for a gamertag and direct to "registration" page if not
+            // Need to think about re-auth flow to pick up the tag!! (or can we keep the temp cookie until then?)
 
             var additionalClaims = new List<Claim>();
 

@@ -146,18 +146,24 @@ namespace Nether.Web.Features.Identity
             var clients = clientSource.LoadClients(configuration.GetSection("Identity:Clients"))
                                 .ToList();
 
-            services.AddIdentityServer(options =>
-            {
-                options.Endpoints.EnableAuthorizeEndpoint = true;
-                options.Endpoints.EnableTokenEndpoint = true;
-                options.UserInteraction.ErrorUrl = "/account/error";
-            })
+            var identityServerBuilder = services.AddIdentityServer(options =>
+                {
+                    options.Endpoints.EnableAuthorizeEndpoint = true;
+                    options.Endpoints.EnableTokenEndpoint = true;
+                    options.UserInteraction.ErrorUrl = "/account/error";
+                })
                 .AddTemporarySigningCredential() // using inbuilt signing cert, but we are explicitly a dev-only service at this point ;-)
                 .AddInMemoryClients(clients)
                 .AddInMemoryIdentityResources(Scopes.GetIdentityResources())
                 .AddInMemoryApiResources(Scopes.GetApiResources())
-                .AddExtensionGrantValidator<FacebookUserAccessTokenExtensionGrantValidator>()
             ;
+
+            var facebookUserAccessTokenEnabled = bool.Parse(configuration["Identity:SignInMethods:FacebookUserAccessToken:Enabled"] ?? "false");
+            if (facebookUserAccessTokenEnabled)
+            {
+                identityServerBuilder.AddExtensionGrantValidator<FacebookUserAccessTokenExtensionGrantValidator>();
+            }
+            
             services.AddTransient<IPasswordHasher, PasswordHasher>();
             services.AddTransient<IProfileService, StoreBackedProfileService>();
             services.AddTransient<IResourceOwnerPasswordValidator, StoreBackedResourceOwnerPasswordValidator>();

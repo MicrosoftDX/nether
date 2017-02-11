@@ -157,7 +157,31 @@ namespace Nether.Web
                 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
                 idapp.UseIdentityServer();
 
-                // TODO - add facebook!
+                idapp.UseCookieAuthentication(new CookieAuthenticationOptions
+                {
+                    AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+
+                    AutomaticAuthenticate = false,
+                    AutomaticChallenge = false
+                });
+
+                var facebookEnabled = bool.Parse(Configuration["Identity:SignInMethods:Facebook:Enabled"] ?? "false");
+                if (facebookEnabled)
+                {
+                    var appId = Configuration["Identity:SignInMethods:Facebook:AppId"];
+                    var appSecret = Configuration["Identity:SignInMethods:Facebook:AppSecret"];
+
+                    idapp.UseFacebookAuthentication(new FacebookOptions()
+                    {
+                        DisplayName = "Facebook",
+                        SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+
+                        CallbackPath = "/signin-facebook",
+
+                        AppId = appId,
+                        AppSecret = appSecret
+                    });
+                }
 
                 idapp.UseStaticFiles();
                 idapp.UseMvc(routes =>
