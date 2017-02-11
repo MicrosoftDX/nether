@@ -29,8 +29,8 @@ Nether is a project composed of reusable set of building blocks, projects, servi
  * Example scenarios: [Shooter Game](documentation/shooter.md)
 4.	[Architecture](documentation/architecture.md)
  * [Main components](documentation/architecture.md#main-components)
-5.	[Developer guide](documentation/developerguide.md)
- * [Set up the development environment](documentation/setup.md)
+5.	Getting Started
+ * [Set up the development environment](documentation/devsetup.md)
  * [Configuration](documentation/configuration.md)
  * [Test](documentation/test.md)
 6.	[Deploy to production](documentation/deployment.md)
