@@ -53,14 +53,21 @@ namespace Nether.Integration.Identity
         }
         public async Task<string> GetGamertagForUserIdAsync(string userId)
         {
-            return await GetGamertagForUserIdInternalAsync(userId);
-        }
-
-        private async Task<string> GetGamertagForUserIdInternalAsync(string userId)
-        {
             Func<Task<GamertagResponse>> apiCall = async () =>
             {
-                return await CallGamertagApiAsync(userId);
+                string gamertag = null;
+                var r = await _httpClient.GetAsync($"playeridentity/player/{userId}");
+                if (r.IsSuccessStatusCode)
+                {
+                    var gamertagResponse = await ParseGamerTagResponseAsync(r.Content);
+                    gamertag = gamertagResponse.Gamertag;
+                }
+                return new GamertagResponse
+                {
+                    Gamertag = gamertag,
+                    StatusCode = r.StatusCode,
+                    Success = r.IsSuccessStatusCode
+                };
             };
             var response = await CallApiAsync(apiCall, "GetGamertagFromUserId");
             return response.Gamertag;
@@ -147,22 +154,6 @@ namespace Nether.Integration.Identity
         private class GamertagResponse : ApiResponse
         {
             public string Gamertag;
-        }
-        private async Task<GamertagResponse> CallGamertagApiAsync(string userId)
-        {
-            string gamertag = null;
-            var response = await _httpClient.GetAsync($"playeridentity/player/{userId}");
-            if (response.IsSuccessStatusCode)
-            {
-                var gamertagResponse = await ParseGamerTagResponseAsync(response.Content);
-                gamertag = gamertagResponse.Gamertag;
-            }
-            return new GamertagResponse
-            {
-                Gamertag = gamertag,
-                StatusCode = response.StatusCode,
-                Success = response.IsSuccessStatusCode
-            };
         }
 
         private async Task<TokenResponse> GetTokenAsync()
