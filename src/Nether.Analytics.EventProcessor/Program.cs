@@ -5,6 +5,7 @@ using System;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.ServiceBus;
 using System.Configuration;
+using System.Globalization;
 
 namespace Nether.Analytics.EventProcessor
 {
@@ -20,12 +21,26 @@ namespace Nether.Analytics.EventProcessor
         public static void Main()
         {
             Greet();
+            SetupCultureInfo();
 
             var jobHostConfig = Configure();
 
             // Run and block
             var host = new JobHost(jobHostConfig);
             host.RunAndBlock();
+        }
+
+        private static void SetupCultureInfo()
+        {
+            // Create a unique culture for all threads inside the EventProcessor
+            // in order to make sure input and output of serialization and de-
+            // serialization all look according to expected.
+            // Nether uses a modified en-US culture
+            var netherCultureInfo = new CultureInfo("en-US");
+            netherCultureInfo.DateTimeFormat.ShortDatePattern = "yyyy-MM-dd";
+            netherCultureInfo.DateTimeFormat.LongTimePattern = "HH:mm:ss";
+
+            CultureInfo.DefaultThreadCurrentCulture = netherCultureInfo;
         }
 
         private static JobHostConfiguration Configure()
@@ -35,11 +50,11 @@ namespace Nether.Analytics.EventProcessor
 
             s_webJobDashboardAndStorageConnectionString = ConfigResolver.Resolve("NETHER_WEBJOB_DASHBOARD_AND_STORAGE_CONNECTIONSTRING");
             Console.WriteLine($"webJobDashboardAndStorageConnectionString:");
-            Console.WriteLine($"  {s_webJobDashboardAndStorageConnectionString}");
+            ConsoleEx.WriteConnectionString(s_webJobDashboardAndStorageConnectionString, 4);
 
             s_ingestEventHubConnectionString = ConfigResolver.Resolve("NETHER_INGEST_EVENTHUB_CONNECTIONSTRING");
             Console.WriteLine($"ingestEventHubConnectionString:");
-            Console.WriteLine($"  {s_ingestEventHubConnectionString}");
+            ConsoleEx.WriteConnectionString(s_ingestEventHubConnectionString, 4);
 
             s_ingestEventHubName = ConfigResolver.Resolve("NETHER_INGEST_EVENTHUB_NAME");
             Console.WriteLine($"ingestEventHubName:");

@@ -6,6 +6,7 @@ using Microsoft.Azure.WebJobs.ServiceBus;
 using Nether.Analytics.EventProcessor.Output.Blob;
 using Nether.Analytics.EventProcessor.Output.EventHub;
 using System.Configuration;
+using Microsoft.ServiceBus.Messaging;
 
 namespace Nether.Analytics.EventProcessor
 {
@@ -24,11 +25,18 @@ namespace Nether.Analytics.EventProcessor
 
             Console.WriteLine("Configuring GameEventReceiver (from Environment Variables");
 
-            var outputStorageAccountConnectionString = ConfigResolver.Resolve("NETHER_ANALYTICS_STORAGE_CONNECTIONSTRING");
-            Console.WriteLine($"outputStorageAccountConnectionString: {outputStorageAccountConnectionString}");
+            var storageAccountConnectionString = ConfigResolver.Resolve("NETHER_ANALYTICS_STORAGE_CONNECTIONSTRING");
+            Console.WriteLine($"outputStorageAccountConnectionString: {storageAccountConnectionString}");
 
             var outputContainer = ConfigResolver.Resolve("NETHER_ANALYTICS_STORAGE_CONTAINER");
+            if (string.IsNullOrWhiteSpace(outputContainer))
+                outputContainer = "gameevents";
             Console.WriteLine($"outputContainer: {outputContainer}");
+
+            var tmpContainer = ConfigResolver.Resolve("NETHER_ANALYTICS_STORAGE_TMP_CONTAINER");
+            if (string.IsNullOrWhiteSpace(tmpContainer))
+                tmpContainer = "tmp";
+            Console.WriteLine($"tmpContainer: {tmpContainer}");
 
             var outputEventHubConnectionString = ConfigResolver.Resolve("NETHER_INTERMEDIATE_EVENTHUB_CONNECTIONSTRING");
             Console.WriteLine($"outputEventHubConnectionString: {outputEventHubConnectionString}");
@@ -36,16 +44,16 @@ namespace Nether.Analytics.EventProcessor
             var outputEventHubName = ConfigResolver.Resolve("NETHER_INTERMEDIATE_EVENTHUB_NAME");
             Console.WriteLine($"outputEventHubName: {outputEventHubName}");
 
-            var maxBlobSize = 100 * 1024 * 1024;
+            var maxBlobSize = 1 * 1024 * 1024; // 1MB
 
             Console.WriteLine($"Max Blob Size: {maxBlobSize / 1024 / 1024}MB ({maxBlobSize}B)");
             Console.WriteLine();
 
             // Configure Blob Output
             var blobOutputManager = new BlobOutputManager(
-                outputStorageAccountConnectionString,
+                storageAccountConnectionString,
+                tmpContainer,
                 outputContainer,
-                BlobOutputFolderStructure.YearMonthDay,
                 maxBlobSize);
 
             // Configure EventHub Output
@@ -60,15 +68,15 @@ namespace Nether.Analytics.EventProcessor
                 GameEventHandler.UnknownGameEventTypeHandler,
                 handler.Flush);
 
-            s_router.RegEventTypeAction("count", "1.0.0", handler.HandleCountEvent);
-            s_router.RegEventTypeAction("game-heartbeat", "1.0.0", handler.HandleGameHeartbeat);
-            s_router.RegEventTypeAction("game-start", "1.0.0", handler.HandleGameStartEvent);
-            s_router.RegEventTypeAction("game-stop", "1.0.0", handler.HandleGameStopEvent);
-            s_router.RegEventTypeAction("location", "1.0.0", handler.HandleLocationEvent);
-            s_router.RegEventTypeAction("score", "1.0.0", handler.HandleScoreEvent);
-            s_router.RegEventTypeAction("start", "1.0.0", handler.HandleStartEvent);
-            s_router.RegEventTypeAction("stop", "1.0.0", handler.HandleStopEvent);
-            s_router.RegEventTypeAction("generic", "1.0.0", handler.HandleGenericEvent);
+            s_router.RegisterKnownGameEventTypeHandler("count/v1.0.0", handler.HandleCountEvent);
+            s_router.RegisterKnownGameEventTypeHandler("game-heartbeat/v1.0.0", handler.HandleGameHeartbeat);
+            s_router.RegisterKnownGameEventTypeHandler("game-start/v1.0.0", handler.HandleGameStartEvent);
+            s_router.RegisterKnownGameEventTypeHandler("game-stop/v1.0.0", handler.HandleGameStopEvent);
+            s_router.RegisterKnownGameEventTypeHandler("location/v1.0.0", handler.HandleLocationEvent);
+            s_router.RegisterKnownGameEventTypeHandler("score/v1.0.0", handler.HandleScoreEvent);
+            s_router.RegisterKnownGameEventTypeHandler("start/v1.0.0", handler.HandleStartEvent);
+            s_router.RegisterKnownGameEventTypeHandler("stop/v1.0.0", handler.HandleStopEvent);
+            s_router.RegisterKnownGameEventTypeHandler("generic/v1.0.0", handler.HandleGenericEvent);
         }
 
         //public void HandleOne([EventHubTrigger("%NETHER_INGEST_EVENTHUB_NAME%")] string data)
@@ -79,13 +87,17 @@ namespace Nether.Analytics.EventProcessor
         //    _router.HandleGameEvent(data);
         //}
 
-        public static void HandleBatch([EventHubTrigger("%NETHER_INGEST_EVENTHUB_NAME%")] string[] events)
+        public static void HandleBatch([EventHubTrigger("%NETHER_INGEST_EVENTHUB_NAME%")] EventData[] events)
         {
+            var dequeueTime = DateTime.UtcNow;
+
             if (events.Length > 1)
                 Console.WriteLine($"....Received batch of {events.Length} events");
-            foreach (var e in events)
+
+            foreach (var ev in events)
             {
-                s_router.HandleGameEvent(e);
+                var gameEventData = new GameEventData(ev, dequeueTime);
+                s_router.HandleGameEvent(gameEventData);
             }
 
             s_router.Flush();

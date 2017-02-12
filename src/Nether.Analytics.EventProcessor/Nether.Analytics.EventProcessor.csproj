@@ -90,8 +90,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigResolver.cs" />
+    <Compile Include="ConsoleEx.cs" />
+    <Compile Include="GameEventData.cs" />
     <Compile Include="NameResolver.cs" />
-    <Compile Include="Output\Blob\BlobOutputFolderStructure.cs" />
     <Compile Include="Output\Blob\BlobOutputManager.cs" />
     <Compile Include="Output\EventHub\EventHubOutputManager.cs" />
     <Compile Include="GameEventHandler.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="GameEventRouter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringBuilderExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

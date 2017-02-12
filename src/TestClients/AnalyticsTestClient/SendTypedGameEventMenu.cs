@@ -7,8 +7,9 @@ using System.Reflection;
 using Nether.Analytics.GameEvents;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using AnalyticsTestClient.Utils;
 
-namespace AnalyticsTestClient.Utils
+namespace AnalyticsTestClient
 {
     public class SendTypedGameEventMenu : ConsoleMenu
     {

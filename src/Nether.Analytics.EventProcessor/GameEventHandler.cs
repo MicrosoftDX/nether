@@ -32,74 +32,79 @@ namespace Nether.Analytics.EventProcessor
 
         //TODO: Fix Game Event Handlers to use reflection over properties if possible
         //TODO: Enrich events with knows facts, such as location on heartbeats, etc.
-        public void HandleCountEvent(string gameEventType, string jsonEvent)
+        public void HandleCountEvent(GameEventData data)
         {
-            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "displayName", "value",
-                "gameSessionId");
+            var serializedGameEvent = data.ToCsv("displayName", "value", "gameSessionId");
 
-            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
-            _eventHubOutputManager.SendToEventHub(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            _eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleGameHeartbeat(string gameEventType, string jsonEvent)
+        public void HandleGameHeartbeat(GameEventData data)
         {
-            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "gameSessionId");
+            var serializedGameEvent = data.ToCsv("gameSessionId");
 
-            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
-            _eventHubOutputManager.SendToEventHub(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            _eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleGameStartEvent(string gameEventType, string jsonEvent)
+        public void HandleGameStartEvent(GameEventData data)
         {
-            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "gameSessionId", "gamerTag");
+            var serializedGameEvent = data.ToCsv("gameSessionId", "gamerTag");
 
-            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleGameStopEvent(string gameEventType, string jsonEvent)
+        public void HandleGameStopEvent(GameEventData data)
         {
-            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "gameSessionId");
+            var serializedGameEvent = data.ToCsv("gameSessionId");
 
-            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleGenericEvent(string gameEventType, string jsonEvent)
+        public void HandleGenericEvent(GameEventData data)
         {
-            var csvEvent = jsonEvent.JsonToCsvString("type", "version");
+            var serializedGameEvent = data.ToCsv();
 
-            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleLocationEvent(string gameEventType, string jsonEvent)
+        public void HandleLocationEvent(GameEventData data)
         {
             //TODO: Implement more properties on Location Event
-            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "gameSessionId");
+            var serializedGameEvent = data.ToCsv("gameSessionId");
 
-            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleScoreEvent(string gameEventType, string jsonEvent)
+        public void HandleScoreEvent(GameEventData data)
         {
-            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "gameSessionId", "score");
+            var serializedGameEvent = data.ToCsv("gameSessionId", "score");
 
-            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleStartEvent(string gameEventType, string jsonEvent)
+        public void HandleStartEvent(GameEventData data)
         {
-            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "eventCorrelationId",
-                "displayName", "gameSessionId");
+            var serializedGameEvent = data.ToCsv("eventCorrelationId", "displayName", "gameSessionId");
 
-            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleStopEvent(string gameEventType, string jsonEvent)
+        public void HandleStopEvent(GameEventData data)
         {
-            var csvEvent = jsonEvent.JsonToCsvString("type", "version", "clientUtcTime", "eventCorrelationId",
-                "gameSessionId");
+            var serializedGameEvent = data.ToCsv("eventCorrelationId");
 
-            _blobOutputManager.QueueAppendToBlob(gameEventType, csvEvent);
+            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
+
 
         /// <summary>
         ///     Inspects gameEvent to figure out what GameEventType we are working with.
@@ -108,9 +113,9 @@ namespace Nether.Analytics.EventProcessor
         /// </summary>
         /// <param name="gameEvent">The JSON Game Event to inspect</param>
         /// <returns>The Game Event Type</returns>
-        public static string ResolveEventType(string gameEvent)
+        public static void ResolveEventType(GameEventData gameEvent)
         {
-            var json = JObject.Parse(gameEvent);
+            var json = JObject.Parse(gameEvent.Data);
             var gameEventType = (string)json["type"];
             var version = (string)json["version"];
 
@@ -118,20 +123,21 @@ namespace Nether.Analytics.EventProcessor
                 throw new ApplicationException(
                     "Unable to resolve Game Event Type, since game event doesn't contain type and/or version property");
 
-            return VersionedName(gameEventType, version);
+            gameEvent.EventType = gameEventType;
+            gameEvent.EventVersion = version;
         }
 
 
-        public static void UnknownGameEventFormatHandler(string data)
+        public static void UnknownGameEventFormatHandler(GameEventData gameEvent)
         {
             Console.WriteLine("Unknown Game Event Format found in ...");
-            Console.WriteLine(data);
+            Console.WriteLine(gameEvent.Data);
         }
 
-        public static void UnknownGameEventTypeHandler(string gameEventType, string data)
+        public static void UnknownGameEventTypeHandler(GameEventData gameEvent)
         {
-            Console.WriteLine("Unknown and unhandled Game Event Type found in ...");
-            Console.WriteLine(data);
+            Console.WriteLine($"Unknown and unhandled Game Event Type [{gameEvent.VersionedType}] found in event ...");
+            Console.WriteLine(gameEvent.Data);
         }
 
         /// <summary>

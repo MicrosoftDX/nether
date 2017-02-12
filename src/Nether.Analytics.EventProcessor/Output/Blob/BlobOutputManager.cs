@@ -11,63 +11,94 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using System.Diagnostics;
 
 namespace Nether.Analytics.EventProcessor.Output.Blob
 {
     public class BlobOutputManager
     {
-        private Dictionary<string, ConcurrentQueue<string>> _messageQueues = new Dictionary<string, ConcurrentQueue<string>>();
+        private ConcurrentDictionary<string, ConcurrentQueue<string>> _writeQueues = new ConcurrentDictionary<string, ConcurrentQueue<string>>();
+
+        private ConcurrentDictionary<string, CloudAppendBlob> _tmpBlobs = new ConcurrentDictionary<string, CloudAppendBlob>();
 
         private const string BlobNameFormat = "D6";
-        private readonly string _containerName;
-        private readonly Dictionary<string, string> _currentBlobs = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _tmpBlobNameCache = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _currentFolders = new Dictionary<string, string>();
-        private readonly Func<string, string> _getFolderStructureFunc;
         private readonly long _maxBlobSize;
         private readonly string _storageAccountConnectionString;
-        private CloudBlobContainer _container;
-        private bool _isConnected;
+        private CloudBlobContainer _tmpContainer;
+        private CloudBlobContainer _outputContainer;
 
-        public BlobOutputManager(string storageAccountConnectionString, string containerName,
-            Func<string, string> getFolderStructureFunc, long maxBlobBlobSize)
+        public BlobOutputManager(string storageAccountConnectionString, string tmpContainerName, string outputContainerName, long maxBlobBlobSize)
         {
             _storageAccountConnectionString = storageAccountConnectionString;
-            _containerName = containerName;
-            _getFolderStructureFunc = getFolderStructureFunc;
             _maxBlobSize = maxBlobBlobSize;
+
+            Setup(tmpContainerName, outputContainerName);
         }
 
-        public void QueueAppendToBlob(string gameEventType, params string[] lines)
+        private void Setup(string tmpContainerName, string outputContainerName)
         {
-            ConcurrentQueue<string> queue;
+            var cloudStorageAccount = CloudStorageAccount.Parse(_storageAccountConnectionString);
+            var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
 
-            if (!_messageQueues.ContainsKey(gameEventType))
-            {
-                queue = new ConcurrentQueue<string>();
-                _messageQueues[gameEventType] = queue;
-            }
-            else
-            {
-                queue = _messageQueues[gameEventType];
-            }
+            _tmpContainer = cloudBlobClient.GetContainerReference(tmpContainerName);
+            _outputContainer = cloudBlobClient.GetContainerReference(outputContainerName);
 
-            foreach (var line in lines)
-            {
-                queue.Enqueue(line);
-            }
+            var createTmpContainer = _tmpContainer.CreateIfNotExistsAsync();
+            var createOutputContainer = _outputContainer.CreateIfNotExistsAsync();
+
+            Task.WaitAll(createTmpContainer, createOutputContainer);
+
+            if (createTmpContainer.Result) Console.WriteLine($"Container {_tmpContainer.Name} created");
+            if (createOutputContainer.Result) Console.WriteLine($"Container {_outputContainer.Name} created");
+        }
+
+        public void QueueAppendToBlob(GameEventData data, string line)
+        {
+            var queue = GetQueueForGameEvent(data);
+            queue.Enqueue(line);
+        }
+
+        private ConcurrentQueue<string> GetQueueForGameEvent(GameEventData data)
+        {
+            var writeToFolderName = GetTmpFolderForGameEvent(data.VersionedType, data.EnqueuedTime);
+
+            if (_writeQueues.TryGetValue(writeToFolderName, out ConcurrentQueue<string> queue))
+                return queue;
+
+            queue = new ConcurrentQueue<string>();
+            _writeQueues[writeToFolderName] = queue;
+
+            return queue;
+        }
+
+        private string GetTmpFolderForGameEvent(string versionedType, DateTime enqueueTime)
+        {
+            return $"{versionedType}/{enqueueTime.Year:D4}/{enqueueTime.Month:D2}/{enqueueTime.Day:D2}/";
         }
 
         public void FlushWriteQueues()
         {
-            Parallel.ForEach(_messageQueues, q =>
+            ConcurrentDictionary<string, ConcurrentQueue<string>> writeQueuesToFlush;
+
+            lock (_writeQueues)
             {
-                var gameEventType = q.Key;
+                if (_writeQueues.Count == 0)
+                    return;
+
+                writeQueuesToFlush = _writeQueues;
+                _writeQueues = new ConcurrentDictionary<string, ConcurrentQueue<string>>();
+            }
+
+            Parallel.ForEach(writeQueuesToFlush, q =>
+            {
+                var folder = q.Key;
                 var queue = q.Value;
 
                 var lines = new List<string>();
-                string line;
 
-                while (queue.TryDequeue(out line))
+                while (queue.TryDequeue(out string line))
                 {
                     lines.Add(line);
                 }
@@ -75,70 +106,134 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                 // Only flush queues that had messages
                 if (lines.Count > 0)
                 {
-                    AppendToBlob(gameEventType, lines.ToArray());
+                    AppendToFolder(folder, lines.ToArray());
                 }
             });
         }
 
-        public void AppendToBlob(string gameEventType, params string[] lines)
+        private void AppendToFolder(string folder, params string[] lines)
         {
-            if (!_isConnected)
-                ConnectToBlobContainer();
+            var blob = GetTmpAppendBlob(folder);
 
-            var folderName = GetFolderForEventType(gameEventType);
-            var lastUsedBlobName = GetBlobNameToUse(gameEventType, folderName);
-            const string extension = ".csv";
+            var data = string.Join("\n", lines) + "\n";
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 
-            var name = string.IsNullOrEmpty(lastUsedBlobName) ? 0.ToString(BlobNameFormat) : lastUsedBlobName;
-            // Set name to zeros if new blob
-            var blob = _container.GetAppendBlobReference(folderName + name + extension);
-
-            if (lastUsedBlobName == "")
+            while (true)
             {
-                CreateBlob(blob);
-                _currentBlobs[gameEventType] = name;
+                stream.Position = 0;
+                if (AppendToBlob(blob, stream))
+                    break;
+
+                // Blob reached max size
+                Console.WriteLine($"Blob {blob.Name} har reached max size of {_maxBlobSize}B");
+                HandleFullBlob(blob);
+
+                blob = GetNewTmpAppendBlob(folder);
+                Console.WriteLine($"Rolling over to new blob {blob.Name}");
             }
+        }
 
-            // Append all lines into one string with \n as separator
-            var builder = new StringBuilder();
-            foreach (var line in lines)
-                builder.Append(line + "\n");
+        private void HandleFullBlob(CloudAppendBlob fullBlob)
+        {
+            FlagsAsFull(fullBlob);
 
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(builder.ToString()));
+            var targetBlob = GetTargetBlockBlob(fullBlob);
 
+            CopyBlob(fullBlob, targetBlob).Wait();
+
+        }
+
+        private void FlagsAsFull(CloudAppendBlob fullBlob)
+        {
+            fullBlob.FetchAttributes();
+            fullBlob.Metadata["full"] = "true";
+            fullBlob.SetMetadata();
+        }
+
+        private static async Task CopyBlob(CloudAppendBlob source, CloudBlockBlob target)
+        {
+            Console.WriteLine($"Copying {source.Container.Name}/{source.Name} to {target.Container.Name}/{target.Name}");
+            var sw = new Stopwatch();
+            sw.Start();
+            using (var sourceStream = await source.OpenReadAsync())
+            {
+                await target.UploadFromStreamAsync(sourceStream);
+            }
+            sw.Stop();
+            Console.WriteLine($"Copy operation finished in {sw.Elapsed.TotalSeconds} second(s)");
+        }
+
+        private bool AppendToBlob(CloudAppendBlob blob, MemoryStream stream)
+        {
             try
             {
                 blob.AppendBlock(stream,
                     accessCondition: AccessCondition.GenerateIfMaxSizeLessThanOrEqualCondition(_maxBlobSize));
-                Console.WriteLine($"....Data written to: {blob.Uri}");
             }
             catch (StorageException ex)
             {
                 if (ex.RequestInformation.HttpStatusCode == 412) // HttpStatusCode.PreconditionFailed
                 {
-                    // Blob has become too large, append same data to next blob
-                    RolloverToNextBlob(gameEventType, name, folderName, extension, stream);
+                    return false;
                 }
                 else
                 {
                     throw;
                 }
             }
+
+            return true;
         }
 
-        private void ConnectToBlobContainer()
+        private CloudBlockBlob GetTargetBlockBlob(CloudAppendBlob source)
         {
-            var cloudStorageAccount = CloudStorageAccount.Parse(_storageAccountConnectionString);
-            var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
-            _container = cloudBlobClient.GetContainerReference(_containerName);
-            _container.CreateIfNotExists();
+            var name = source.Name;
+            var target = _outputContainer.GetBlockBlobReference(name);
+            return target;
+        }
 
-            _isConnected = true;
+        private CloudAppendBlob GetTmpAppendBlob(string folderName)
+        {
+            // Look for cached blob names
+            if (_tmpBlobNameCache.TryGetValue(folderName, out string cachedBlobName))
+                return _tmpContainer.GetAppendBlobReference(cachedBlobName);
+
+            // No cached name was found, look for last blobname in folder
+            var lastBlobNameInFolder = GetLastBlobNameInFolder(_tmpContainer, folderName);
+            if (!string.IsNullOrEmpty(lastBlobNameInFolder))
+            {
+                // Use the cached blob name to create a reference and return
+                var lastFullBlobName = $"{folderName}{lastBlobNameInFolder}.csv";
+                _tmpBlobNameCache[folderName] = lastFullBlobName;
+                return _tmpContainer.GetAppendBlobReference(lastFullBlobName);
+            }
+
+            // No blob exist in folder, create new and return
+            var newBlobName = $"{0:D6}";
+            var newFullBlobName = $"{folderName}{newBlobName}.csv";
+            _tmpBlobNameCache[folderName] = newFullBlobName;
+
+            // Create blob and return the reference
+            var blob = _tmpContainer.GetAppendBlobReference(newFullBlobName);
+            CreateBlob(blob);
+            return blob;
+        }
+
+        private CloudAppendBlob GetNewTmpAppendBlob(string folderName)
+        {
+            var lastBlobNameInFolder = GetLastBlobNameInFolder(_tmpContainer, folderName);
+            var newBlobName = GetNextBlobName(lastBlobNameInFolder);
+            var fullBlobName = $"{folderName}{newBlobName}.csv";
+            _tmpBlobNameCache[folderName] = fullBlobName;
+            
+            var newBlob = _tmpContainer.GetAppendBlobReference(fullBlobName);
+            CreateBlob(newBlob);
+            return newBlob;
         }
 
         private void CreateBlob(CloudAppendBlob blob)
         {
-            Console.WriteLine($"....Creating new blob: {blob.Uri}");
+            Console.WriteLine($"Creating new blob: {blob.Name}");
             try
             {
                 blob.CreateOrReplace(AccessCondition.GenerateIfNotExistsCondition());
@@ -148,50 +243,9 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             }
         }
 
-        private string GetBlobNameToUse(string gameEventType, string folderName)
+        private string GetLastBlobNameInFolder(CloudBlobContainer container, string folderName)
         {
-            string cachedBlobName;
-
-            if (_currentBlobs.TryGetValue(gameEventType, out cachedBlobName))
-                return cachedBlobName;
-
-            // Find "last" blobname in folder
-            var lastBlobNameInFolder = GetLastBlobNameInFolder(folderName) ?? "";
-            _currentBlobs[gameEventType] = lastBlobNameInFolder;
-
-            return lastBlobNameInFolder;
-        }
-
-        private string GetFolderForEventType(string gameEventType)
-        {
-            // Get folder structure for this event type (from current UTC time)
-            var proposedFolder = _getFolderStructureFunc(gameEventType);
-
-            if (!_currentFolders.ContainsKey(gameEventType))
-            {
-                // This is the first time this game event has occurred,
-                // save the proposed folder name
-                _currentFolders[gameEventType] = proposedFolder;
-                return proposedFolder;
-            }
-
-            var cachedFolder = _currentFolders[gameEventType];
-
-            if (cachedFolder == proposedFolder) return proposedFolder;
-
-            // We've moved to a new folder, make sure to reset blob name
-            _currentBlobs.Remove(gameEventType);
-
-            // Cache and use the new proposed folder
-            _currentFolders[gameEventType] = proposedFolder;
-
-            return proposedFolder;
-        }
-
-        private string GetLastBlobNameInFolder(string folderName)
-        {
-            var dir = _container.GetDirectoryReference(folderName);
-            var blobs = dir.ListBlobs();
+            var blobs = ListBlobs(container, folderName);
 
             var lastBlobPath = (from b in blobs
                                 orderby b.Uri.AbsolutePath descending
@@ -201,6 +255,13 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                 return ""; // No blob found
 
             return Path.GetFileNameWithoutExtension(lastBlobPath);
+        }
+
+        private IEnumerable<IListBlobItem> ListBlobs(CloudBlobContainer container, string folderName)
+        {
+            var dir = container.GetDirectoryReference(folderName);
+            var blobs = dir.ListBlobs();
+            return blobs;
         }
 
         private string GetNextBlobName(string name)
@@ -227,20 +288,6 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
             // recursive call to self
             return $"{xxxxxx}_{GetNextBlobName(yyyyyy)}";
-        }
-
-        private void RolloverToNextBlob(string gameEventType, string name, string folderName, string extension,
-            MemoryStream stream)
-        {
-            var nextName = GetNextBlobName(name);
-            _currentBlobs[gameEventType] = nextName;
-
-            var nextBlob = _container.GetAppendBlobReference(folderName + nextName + extension);
-            CreateBlob(nextBlob);
-            Console.WriteLine($"....Rolling over to new blob");
-            stream.Position = 0;
-            nextBlob.AppendBlock(stream);
-            Console.WriteLine($"....Data written to: {nextBlob.Uri}");
         }
     }
 }

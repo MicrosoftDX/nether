@@ -3,14 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Nether.Analytics.GameEvents;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
-
-namespace AnalyticsTestClient.Utils
+namespace AnalyticsTestClient
 {
     public class Program
     {
@@ -63,8 +57,8 @@ namespace AnalyticsTestClient.Utils
             {
                 {"GameSessionId", Guid.NewGuid().ToString()},
                 {"EventCorrelationId", Guid.NewGuid().ToString()},
-                {"GamerTag", "krist00fer" },
-                {"DisplayName", "MagicSwordFound" },
+                {"GamerTag", "gamer" },
+                {"DisplayName", "display" },
                 {"Value", 1 }
             };
         }
