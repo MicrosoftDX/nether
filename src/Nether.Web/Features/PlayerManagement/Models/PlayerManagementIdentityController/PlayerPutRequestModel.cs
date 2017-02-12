@@ -3,27 +3,17 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Nether.Web.Features.PlayerManagement
+namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagementIdentity
 {
     /// <summary>
     /// Player info request object
     /// </summary>
-    public class PlayerPutRequestModel
+    public class SetGamertagRequestModel
     {
         /// <summary>
         /// Gamertag
         /// </summary>
         [Required]
         public string Gamertag { get; set; }
-
-        /// <summary>
-        /// Country code
-        /// </summary>
-        public string Country { get; set; }
-
-        /// <summary>
-        /// Custom tag
-        /// </summary>
-        public string CustomTag { get; set; }
     }
 }

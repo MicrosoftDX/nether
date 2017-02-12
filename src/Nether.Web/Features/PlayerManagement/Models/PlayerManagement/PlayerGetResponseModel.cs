@@ -3,7 +3,7 @@
 
 using Nether.Data.PlayerManagement;
 
-namespace Nether.Web.Features.PlayerManagement
+namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
 {
     public class PlayerGetResponseModel
     {

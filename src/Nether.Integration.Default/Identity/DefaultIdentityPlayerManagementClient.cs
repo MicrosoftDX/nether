@@ -135,7 +135,7 @@ namespace Nether.Integration.Identity
         private async Task<GamerTagResponse> CallGamertagApiAsync(string userId)
         {
             string gamertag = null;
-            var response = await _httpClient.GetAsync($"playertag/{userId}");
+            var response = await _httpClient.GetAsync($"playeridentity/player/{userId}");
             if (response.IsSuccessStatusCode)
             {
                 var gamertagResponse = await ParseGamerTagResponseAsync(response.Content);

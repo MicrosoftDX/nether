@@ -115,7 +115,7 @@ namespace Nether.Data.Sql.PlayerManagement
             }).ToListAsync();
         }
 
-        public async Task<Player> GetPlayerDetailsAsync(string gamertag)
+        public async Task<Player> GetPlayerDetailsByGamertagAsync(string gamertag)
         {
             if (string.IsNullOrEmpty(gamertag))
             {

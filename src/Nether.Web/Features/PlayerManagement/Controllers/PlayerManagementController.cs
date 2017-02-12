@@ -11,10 +11,10 @@ using Nether.Web.Utilities;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System;
+using Nether.Web.Features.PlayerManagement.Models.PlayerManagement;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
-//TODO: Add authentication
 
 namespace Nether.Web.Features.PlayerManagement
 {
@@ -23,7 +23,6 @@ namespace Nether.Web.Features.PlayerManagement
     /// </summary>
     public class PlayerManagementController : Controller
     {
-        private const string ControllerName = "PlayerManagement";
         private readonly IPlayerManagementStore _store;
         private readonly ILogger _logger;
 
@@ -32,20 +31,6 @@ namespace Nether.Web.Features.PlayerManagement
             _store = store;
             _logger = logger;
         }
-
-
-        [ApiExplorerSettings(IgnoreApi = true)] // Suppress this from Swagger etc as it's designed to serve internal needs currently
-        [Authorize(Policy = PolicyName.NetherIdentityClientId)] // only allow this to be called from the 'nether-identity' client
-        [HttpGet("playertag/{playerid}")]
-        public async Task<ActionResult> GetGamertagFromPlayerId(string playerid)
-        {
-            // Call data store
-            var player = await _store.GetPlayerDetailsByUserIdAsync(playerid);
-
-            // Return result
-            return Ok(new { gamertag = player?.Gamertag });
-        }
-
 
         // Implementation of the player API
         // There are two views:
@@ -239,7 +224,7 @@ namespace Nether.Web.Features.PlayerManagement
         public async Task<ActionResult> GetPlayer(string gamertag)
         {
             // Call data store
-            var player = await _store.GetPlayerDetailsAsync(gamertag);
+            var player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
             if (player == null)
                 return NotFound();
 
@@ -338,7 +323,7 @@ namespace Nether.Web.Features.PlayerManagement
                 return BadRequest();
             }
 
-            Player player = await _store.GetPlayerDetailsAsync(playerName);
+            Player player = await _store.GetPlayerDetailsByGamertagAsync(playerName);
             if (player == null)
             {
                 _logger.LogWarning("player '{0}' not found", playerName);
@@ -375,7 +360,7 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpDelete("groups/{groupName}/players/{playerName}")]
         public async Task<ActionResult> DeletePlayerFromGroup(string groupName, string playerName)
         {
-            Player player = await _store.GetPlayerDetailsAsync(playerName);
+            Player player = await _store.GetPlayerDetailsByGamertagAsync(playerName);
             Group group = await _store.GetGroupDetailsAsync(groupName);
 
             await _store.RemovePlayerFromGroupAsync(group, player);

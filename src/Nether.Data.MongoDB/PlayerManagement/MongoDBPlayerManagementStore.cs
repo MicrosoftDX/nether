@@ -63,7 +63,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
             return group?.ToGroup();
         }
 
-        public async Task<Player> GetPlayerDetailsAsync(string gamertag)
+        public async Task<Player> GetPlayerDetailsByGamertagAsync(string gamertag)
         {
             var getPlayer = from s in PlayersCollection.AsQueryable()
                             where s.Gamertag == gamertag

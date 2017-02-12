@@ -4,7 +4,7 @@
 using Nether.Data.PlayerManagement;
 using System.Collections.Generic;
 
-namespace Nether.Web.Features.PlayerManagement
+namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
 {
     public class GroupGetResponseModel
     {

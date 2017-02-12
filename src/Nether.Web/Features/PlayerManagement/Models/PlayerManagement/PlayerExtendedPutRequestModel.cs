@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
-namespace Nether.Web.Features.PlayerManagement
+namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
 {
     public class PlayerExtendedPutRequestModel
     {

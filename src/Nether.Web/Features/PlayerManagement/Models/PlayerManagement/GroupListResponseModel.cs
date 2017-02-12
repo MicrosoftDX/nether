@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Nether.Data.PlayerManagement;
 using System.Linq;
 
-namespace Nether.Web.Features.PlayerManagement
+namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
 {
     public class GroupListResponseModel
     {

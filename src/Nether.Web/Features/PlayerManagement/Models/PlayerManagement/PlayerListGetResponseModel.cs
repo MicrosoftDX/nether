@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Nether.Data.PlayerManagement;
 
-namespace Nether.Web.Features.PlayerManagement
+namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
 {
     public class PlayerListGetResponseModel
     {
