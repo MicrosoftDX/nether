@@ -64,7 +64,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
         {
             var writeToFolderName = GetTmpFolderForGameEvent(data.VersionedType, data.EnqueuedTime);
 
-            if (_writeQueues.TryGetValue(writeToFolderName, out ConcurrentQueue<string> queue))
+            if (_writeQueues.TryGetValue(writeToFolderName, out ConcurrentQueue < string > queue))
                 return queue;
 
             queue = new ConcurrentQueue<string>();
@@ -140,7 +140,6 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             var targetBlob = GetTargetBlockBlob(fullBlob);
 
             CopyBlob(fullBlob, targetBlob).Wait();
-
         }
 
         private void FlagsAsFull(CloudAppendBlob fullBlob)
@@ -225,7 +224,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             var newBlobName = GetNextBlobName(lastBlobNameInFolder);
             var fullBlobName = $"{folderName}{newBlobName}.csv";
             _tmpBlobNameCache[folderName] = fullBlobName;
-            
+
             var newBlob = _tmpContainer.GetAppendBlobReference(fullBlobName);
             CreateBlob(newBlob);
             return newBlob;

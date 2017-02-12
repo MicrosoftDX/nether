@@ -36,7 +36,7 @@ namespace AnalyticsTestClient
 
         private void LoopAndSendRandom()
         {
-            while(true)
+            while (true)
             {
                 if (Console.KeyAvailable)
                 {
@@ -139,14 +139,14 @@ namespace AnalyticsTestClient
 
     public static class RandomExtensions
     {
-        private static Random random = new Random();
+        private static Random s_random = new Random();
 
         public static S TakeRandom<S>(this S[] array)
         {
             if (array == null || array.Length == 0)
                 return default(S);
 
-            return array[random.Next(array.Length)];
+            return array[s_random.Next(array.Length)];
         }
     }
 }

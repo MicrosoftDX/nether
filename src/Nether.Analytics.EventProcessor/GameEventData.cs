@@ -39,7 +39,7 @@ namespace Nether.Analytics.EventProcessor
             // Note: All times are in UTC
 
             line.AppendColumns(EventType, EventVersion, EnqueuedTime, DequeuedTime);
-            
+
             // Asume that EventData is provided as JSON
             var json = JObject.Parse(Data);
 

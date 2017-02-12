@@ -40,7 +40,5 @@ namespace AnalyticsTestClient
             Console.WriteLine($"  Event Hub Name/Path: {ConfigCache.EventHubName ?? "not specified"}");
             Console.WriteLine();
         }
-
-       
     }
 }
