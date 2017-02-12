@@ -3,6 +3,7 @@
 
 using System.Text;
 using Microsoft.ServiceBus.Messaging;
+using System;
 
 namespace Nether.Analytics.EventProcessor.Output.EventHub
 {
@@ -17,14 +18,23 @@ namespace Nether.Analytics.EventProcessor.Output.EventHub
             _eventHubName = eventHubName;
         }
 
-        public void SendToEventHub(string gameEventType, string data)
+        public void SendToEventHub(GameEventData data, string line)
         {
-            // All events are sent to the same Event Hub, so no need to look at gameEventType at this time
+            var now = DateTime.UtcNow;
+            var delay = now - data.EnqueuedTime;
+
+            //TODO: Discuss if this check is necessary at all
+
+            // Only send events to intermediate EventHub if events are newer than 90 seconds
+            // This prevents flooding of events if Event Processor has been turned off for a longer
+            // period of time
+            if (delay.TotalSeconds > 90)
+                return;
 
             var client = EventHubClient.CreateFromConnectionString(_eventHubConnectionString, _eventHubName);
 
             //TODO: Implement Async Sending and caching of connection
-            client.Send(new EventData(Encoding.UTF8.GetBytes(data)));
+            client.Send(new EventData(Encoding.UTF8.GetBytes(line)));
         }
     }
 }

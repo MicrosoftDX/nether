@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.EventHubs;
 
-namespace AnalyticsTestClient.Utils
+namespace AnalyticsTestClient
 {
     public static class EventHubManager
     {

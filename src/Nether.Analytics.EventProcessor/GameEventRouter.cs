@@ -14,23 +14,23 @@ namespace Nether.Analytics.EventProcessor
     /// </summary>
     public class GameEventRouter
     {
-        private readonly Func<string, string> _gameEventTypeResolver;
-        private readonly Dictionary<string, Action<string, string>> _gameEventTypeActions;
-        private Action<string, string> _unknownGameEventTypeHandler;
-        private Action<string> _unknownGameEventFormatHandler;
-        private Action _flushHandler;
+        private readonly Action<GameEventData> _resolveGameEventTypeAction;
+        private readonly Dictionary<string, Action<GameEventData>> _gameEventTypeActions;
+        private Action<GameEventData> _unknownGameEventTypeAction;
+        private Action<GameEventData> _unknownGameEventFormatAction;
+        private Action _flushWriteQueuesAction;
 
-        public GameEventRouter(Func<string, string> gameEventTypeResolver,
-            Action<string> unknownGameEventFormatHandler = null,
-            Action<string, string> unknownGameEventTypeHandler = null,
-            Action flushHandler = null)
+        public GameEventRouter(Action<GameEventData> resolveGameEventTypeAction,
+            Action<GameEventData> unknownGameEventFormatAction = null,
+            Action<GameEventData> unknownGameEventTypeAction = null,
+            Action flushWriteQueuesAction = null)
         {
-            _gameEventTypeResolver = gameEventTypeResolver;
-            _unknownGameEventFormatHandler = unknownGameEventFormatHandler;
-            _unknownGameEventTypeHandler = unknownGameEventTypeHandler;
-            _flushHandler = flushHandler;
+            _resolveGameEventTypeAction = resolveGameEventTypeAction;
+            _unknownGameEventFormatAction = unknownGameEventFormatAction;
+            _unknownGameEventTypeAction = unknownGameEventTypeAction;
+            _flushWriteQueuesAction = flushWriteQueuesAction;
 
-            _gameEventTypeActions = new Dictionary<string, Action<string, string>>();
+            _gameEventTypeActions = new Dictionary<string, Action<GameEventData>>();
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Nether.Analytics.EventProcessor
         /// </summary>
         /// <param name="gameEventType">Game Event Type</param>
         /// <param name="action">Action(gameEventType, data) to be called when Game Event is received</param>
-        public void RegisterKnownGameEventTypeHandler(string gameEventType, Action<string, string> action)
+        public void RegisterKnownGameEventTypeHandler(string gameEventType, Action<GameEventData> action)
         {
             _gameEventTypeActions.Add(gameEventType, action);
         }
@@ -48,45 +48,45 @@ namespace Nether.Analytics.EventProcessor
         /// correct registered action.
         /// </summary>
         /// <param name="data">Game Event Data</param>
-        public void HandleGameEvent(string data)
+        public void HandleGameEvent(GameEventData gameEventData)
         {
-            string type;
-
             try
             {
-                type = _gameEventTypeResolver(data);
+                _resolveGameEventTypeAction(gameEventData);
             }
             catch (Exception)
             {
                 // Resolving game event type failed. Unknown Game Event format?!?!
                 // Invoke action to handle Unknown Game Event Formats if registered (not null)
-                _unknownGameEventFormatHandler?.Invoke(data);
+                _unknownGameEventFormatAction?.Invoke(gameEventData);
 
                 // No more can be done, so return
                 return;
             }
 
+            // GameEventData object from now on contains game event type and version information
+            // since it was set by the _gameEventTypeResolver
 
             // Check if game event type is known
-            if (!_gameEventTypeActions.ContainsKey(type))
+            if (!_gameEventTypeActions.ContainsKey(gameEventData.VersionedType))
             {
                 // No registered action found for the found Game Event Type
                 // Invoke action to handle Unknown Game Event Type if registered (not null)
-                _unknownGameEventTypeHandler?.Invoke(type, data);
+                _unknownGameEventTypeAction?.Invoke(gameEventData);
 
                 // No more can be done, so return
                 return;
             }
 
             // Get correct game event handler from dictionary of registered handlers
-            var handler = _gameEventTypeActions[type];
+            var handler = _gameEventTypeActions[gameEventData.VersionedType];
             // Pass game event data to correct action
-            handler(type, data);
+            handler(gameEventData);
         }
 
         public void Flush()
         {
-            _flushHandler();
+            _flushWriteQueuesAction();
         }
     }
 }
