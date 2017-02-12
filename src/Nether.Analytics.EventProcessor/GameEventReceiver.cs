@@ -44,7 +44,7 @@ namespace Nether.Analytics.EventProcessor
             var outputEventHubName = ConfigResolver.Resolve("NETHER_INTERMEDIATE_EVENTHUB_NAME");
             Console.WriteLine($"outputEventHubName: {outputEventHubName}");
 
-            var maxBlobSize = 1 * 1024 * 1024; // 1MB
+            var maxBlobSize = 10 * 1024; // 10kB
 
             Console.WriteLine($"Max Blob Size: {maxBlobSize / 1024 / 1024}MB ({maxBlobSize}B)");
             Console.WriteLine();

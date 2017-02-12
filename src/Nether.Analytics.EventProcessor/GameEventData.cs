@@ -55,7 +55,7 @@ namespace Nether.Analytics.EventProcessor
 
             // All IGameEvents includes a properties-tag that should be automatically included in output as the last column
             var properties = json["properties"];
-            if (properties != null)
+            if (properties != null & properties.HasValues)
             {
                 var propDict = properties.ToObject<Dictionary<string, string>>();
                 var propertiesColumn = new StringBuilder();
