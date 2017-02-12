@@ -58,11 +58,14 @@ namespace Nether.Integration.Identity
 
         private async Task<string> GetGamertagForUserIdInternalAsync(string userId, bool retryAuth)
         {
-            // TODO security ;-)
             GamerTagResponse response = null;
             if (_healthy) // if healthy then proceed
             {
                 response = await CallGamertagApiAsync(userId);
+                if (response.SuccessStatusCode)
+                {
+                    return response.Gamertag;
+                }
             }
 
             // if not healthy or the last call failed with auth issues..
@@ -149,7 +152,6 @@ namespace Nether.Integration.Identity
             };
         }
 
-
         private async Task<TokenResponse> GetTokenAsync()
         {
             _logger.LogInformation("Attempting to get access token...");
@@ -173,16 +175,17 @@ namespace Nether.Integration.Identity
             return tokenResponse;
         }
 
-        private async Task<GamerTagResponseMessage> ParseGamerTagResponseAsync(HttpContent content)
+        private async Task<GetGamerTagResponseMessage> ParseGamerTagResponseAsync(HttpContent content)
         {
             // This would use System.Net.Http.Formatting which is in the Microsoft.AspNet.WebApi.Client package
             // but at the point of writing that doesn't support netstandard1.6
 
             var contentString = await content.ReadAsStringAsync();
-            var responseObject = JsonConvert.DeserializeObject<GamerTagResponseMessage>(contentString);
+            var responseObject = JsonConvert.DeserializeObject<GetGamerTagResponseMessage>(contentString);
             return responseObject;
         }
-        private class GamerTagResponseMessage
+
+        private class GetGamerTagResponseMessage
         {
             public string Gamertag { get; set; }
         }
