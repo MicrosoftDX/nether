@@ -15,5 +15,7 @@ namespace Nether.Integration.Identity
     public interface IIdentityPlayerManagementClient
     {
         Task<string> GetGamertagForUserIdAsync(string userId);
+        Task<bool> GamertagIsAvailableAsync(string gamertag);
+        Task SetGamertagforUserIdAsync(string userId, string gamertag);
     }
 }

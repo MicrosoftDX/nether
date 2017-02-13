@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Nether.Integration.Identity
@@ -70,7 +71,52 @@ namespace Nether.Integration.Identity
                 };
             };
             var response = await CallApiAsync(apiCall, "GetGamertagFromUserId");
+            if (!response.Success)
+            {
+                _logger.LogError("Failed to get gamertag for user. Status code = '{0}'", response.StatusCode);
+                throw new Exception($"Failed to get gamertag for user. Status code = {response.StatusCode}");
+            }
             return response.Gamertag;
+        }
+        public async Task SetGamertagforUserIdAsync(string userId, string gamertag)
+        {
+            Func<Task<ApiResponse>> apiCall = async () =>
+            {
+                var json = JsonConvert.SerializeObject(new { gamertag });
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var r = await _httpClient.PostAsync($"playeridentity/player/{userId}", content);
+                return new ApiResponse
+                {
+                    StatusCode = r.StatusCode,
+                    Success = r.IsSuccessStatusCode
+                };
+            };
+            var response = await CallApiAsync(apiCall, "SetGamertagForUserId");
+            if (!response.Success)
+            {
+                _logger.LogError("Failed to set gamertag for user. Status code = '{0}'", response.StatusCode);
+                throw new Exception($"Failed to set gamertag for user. Status code = {response.StatusCode}");
+            }
+        }
+
+        public async Task<bool> GamertagIsAvailableAsync(string gamertag)
+        {
+            Func<Task<ApiResponse>> apiCall = async () =>
+            {
+                var r = await _httpClient.GetAsync($"playeridentity/gamertag/{gamertag}");
+                return new ApiResponse
+                {
+                    StatusCode = r.StatusCode,
+                    Success = r.IsSuccessStatusCode || r.StatusCode == HttpStatusCode.NotFound
+                };
+            };
+            var response = await CallApiAsync(apiCall, "TestGamerTag");
+            if (!response.Success)
+            {
+                _logger.LogError("Failed to test gamertag existence. Status code = '{0}'", response.StatusCode);
+                throw new Exception($"Failed to test gamertag existence. Status code = {response.StatusCode}");
+            }
+            return response.StatusCode == HttpStatusCode.NotFound; // tag not found => tag available
         }
 
         /// <summary>
@@ -88,7 +134,8 @@ namespace Nether.Integration.Identity
             if (_healthy) // if healthy then proceed
             {
                 response = await apiCall();
-                if (response.Success)
+                if (response.StatusCode != HttpStatusCode.Forbidden
+                    && response?.StatusCode != HttpStatusCode.Unauthorized)
                 {
                     return response;
                 }
@@ -102,7 +149,8 @@ namespace Nether.Integration.Identity
                 if (_healthy) // if healthy then proceed
                 {
                     response = await apiCall();
-                    if (response.Success)
+                    if (response.StatusCode != HttpStatusCode.Forbidden
+                        && response?.StatusCode != HttpStatusCode.Unauthorized)
                     {
                         return response;
                     }
@@ -128,7 +176,8 @@ namespace Nether.Integration.Identity
                         _httpClient.SetBearerToken(tokenResponse.AccessToken);
                         // retry the API call!
                         response = await apiCall();
-                        if (response.Success)
+                        if (response.StatusCode != HttpStatusCode.Forbidden
+                            && response?.StatusCode != HttpStatusCode.Unauthorized)
                         {
                             _logger.LogInformation("Successfully called the API");
                             _healthy = true;
@@ -149,7 +198,7 @@ namespace Nether.Integration.Identity
         private class ApiResponse
         {
             public HttpStatusCode StatusCode;
-            public bool Success; 
+            public bool Success;
         }
         private class GamertagResponse : ApiResponse
         {
