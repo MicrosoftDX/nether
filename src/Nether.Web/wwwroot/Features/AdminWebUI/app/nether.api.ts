@@ -17,6 +17,7 @@ import "rxjs/add/observable/of";
 export class NetherApiService {
 
     private _serverUrl: string;
+    private _authServerUrl: string;
     private authCacheKey: string = "cachedToken";
     private _clientId: string = "resourceowner-test";
     private _clientSecret: string = "devsecret";
@@ -26,6 +27,7 @@ export class NetherApiService {
 
     constructor(private _http: Http, private _config: Configuration) {
         this._serverUrl = _config.ResourceServerUrl;
+        this._authServerUrl = _config.AuthServerUrl;
     }
 
     isLoggedIn(): boolean {
@@ -38,7 +40,7 @@ export class NetherApiService {
     }
 
     login(username: string, password: string): Observable<string> {
-        return this._http.get(this._serverUrl + ".well-known/openid-configuration")
+        return this._http.get(this._authServerUrl + ".well-known/openid-configuration")
             .map((response: Response) => <EndpointConfiguration>response.json())
             .flatMap((config: EndpointConfiguration) => {
 
