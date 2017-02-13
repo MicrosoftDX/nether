@@ -80,7 +80,5 @@ namespace Nether.Web.Features.PlayerManagement
             }
             return Ok();
         }
-
-
     }
 }

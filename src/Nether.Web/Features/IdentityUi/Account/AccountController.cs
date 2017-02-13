@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Nether.Data.Identity;
 using IdentityServer4.Validation;
@@ -378,7 +381,6 @@ namespace Nether.Web.Features.IdentityUi
             await _playerManagementClient.SetGamertagforUserIdAsync(user.UserId, model.Gamertag);
 
             return await SwitchToNetherAuthAndRedirectAsync(model.ReturnUrl, info, claims, providerType, user, model.Gamertag);
-
         }
         private async Task<IActionResult> SwitchToNetherAuthAndRedirectAsync(string returnUrl, AuthenticateInfo info, List<Claim> claims, string providerType, User user, string gamertag)
         {

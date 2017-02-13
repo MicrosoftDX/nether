@@ -2,12 +2,12 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.ComponentModel.DataAnnotations;
- 
+
 namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
 {
-     /// <summary>
-     /// Player info request object
-     /// </summary>
+    /// <summary>
+    /// Player info request object
+    /// </summary>
     public class PlayerPutRequestModel
     {
         /// <summary>

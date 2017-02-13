@@ -163,7 +163,7 @@ namespace Nether.Web.Features.Identity
             {
                 identityServerBuilder.AddExtensionGrantValidator<FacebookUserAccessTokenExtensionGrantValidator>();
             }
-            
+
             services.AddTransient<IPasswordHasher, PasswordHasher>();
             services.AddTransient<IProfileService, StoreBackedProfileService>();
             services.AddTransient<IResourceOwnerPasswordValidator, StoreBackedResourceOwnerPasswordValidator>();
