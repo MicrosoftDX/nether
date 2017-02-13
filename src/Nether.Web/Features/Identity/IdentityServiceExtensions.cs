@@ -36,7 +36,7 @@ namespace Nether.Web.Features.Identity
 
                 // construct a context to test if we have a user
                 var identityContext = serviceProvider.GetRequiredService<IdentityContextBase>();
-                bool gotUsers = identityContext.Users.Any(u=>u.Role == RoleNames.Admin);
+                bool gotUsers = identityContext.Users.Any(u => u.Role == RoleNames.Admin);
                 if (gotUsers)
                 {
                     logger.LogInformation("Identity:Store: users exist - no action");
