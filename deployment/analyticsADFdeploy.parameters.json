@@ -7,6 +7,18 @@
         },
         "hiveScriptStorageAccountKey": {
             "value": ""
+        },
+        "sqlServerName": {
+            "value": ""
+        },
+        "sqlDBName": {
+            "value": ""
+        },
+        "sqlServerAdminName": {
+            "value": ""
+        },
+        "sqlServerAdminPassword": {
+            "value": ""
         }
     }
 }
