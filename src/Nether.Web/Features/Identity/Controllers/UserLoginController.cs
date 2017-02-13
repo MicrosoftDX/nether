@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Nether.Web.Features.Identity
 {
-    [Route("api/identity/users/{userId}/logins")]
+    [Route("identity/users/{userId}/logins")]
     [Authorize(Roles = RoleNames.Admin)]
     public class UserLoginController : ControllerBase
     {

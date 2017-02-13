@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Nether.Web.Utilities;
 using Swashbuckle.AspNetCore.Swagger;
+using IdentityServer4;
 
 namespace Nether.Web
 {
@@ -54,7 +55,29 @@ namespace Nether.Web
             services
                 .AddMvc(options =>
                 {
+                    options.Conventions.Add(new FeatureConvention());
                     options.Filters.AddService(typeof(ExceptionLoggingFilterAttribute));
+                })
+                .AddRazorOptions(options =>
+                {
+                    // {0} - Action Name
+                    // {1} - Controller Name
+                    // {2} - Area Name
+                    // {3} - Feature Name
+                    options.AreaViewLocationFormats.Clear();
+                    options.AreaViewLocationFormats.Add("/Areas/{2}/Features/{3}/Views/{1}/{0}.cshtml");
+                    options.AreaViewLocationFormats.Add("/Areas/{2}/Features/{3}/Views/{0}.cshtml");
+                    options.AreaViewLocationFormats.Add("/Areas/{2}/Features/Views/Shared/{0}.cshtml");
+                    options.AreaViewLocationFormats.Add("/Areas/Shared/{0}.cshtml");
+
+                    // replace normal view location entirely
+                    options.ViewLocationFormats.Clear();
+                    options.ViewLocationFormats.Add("/Features/{3}/Views/{1}/{0}.cshtml");
+                    options.ViewLocationFormats.Add("/Features/{3}/Views/Shared/{0}.cshtml");
+                    options.ViewLocationFormats.Add("/Features/{3}/Views/{0}.cshtml");
+                    options.ViewLocationFormats.Add("/Features/Views/Shared/{0}.cshtml");
+
+                    options.ViewLocationExpanders.Add(new FeatureViewLocationExpander());
                 })
                 .AddJsonOptions(options =>
                 {
@@ -85,6 +108,7 @@ namespace Nether.Web
                         Url = "https://github.com/dx-ted-emea/nether/blob/master/LICENSE"
                     }
                 });
+                //options.OperationFilter<ApiPrefixFilter>();
                 options.CustomSchemaIds(type => type.FullName);
                 //options.AddSecurityDefinition("oauth2", new OAuth2Scheme
                 //{
@@ -122,41 +146,121 @@ namespace Nether.Web
         {
             var logger = loggerFactory.CreateLogger<Startup>();
 
-            app.UseIdentityServices(Configuration, logger);
 
+            app.EnsureInitialAdminUser(Configuration, logger);
 
+            // Set up separate web pipelines for identity, MVC UI, and API
+            // as they each have different auth requirements!
 
-            #region [ Admin Web UI ]
-            // Create a custom route for Admin Web UI
-            // todo: make it nicer
-            const string adminFeatureSubstringUrl = "/features/adminwebui";
-            app.Use(async (context, next) =>
+            app.Map("/identity", idapp =>
             {
-                await next();
+                JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+                idapp.UseIdentityServer();
 
-                string path = context.Request.Path.Value;
-                if (path.Contains(adminFeatureSubstringUrl))
+                idapp.UseCookieAuthentication(new CookieAuthenticationOptions
                 {
-                    context.Request.Path = adminFeatureSubstringUrl + "/index.html";
+                    AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
 
-                    await next();
+                    AutomaticAuthenticate = false,
+                    AutomaticChallenge = false
+                });
+
+                var facebookEnabled = bool.Parse(Configuration["Identity:SignInMethods:Facebook:Enabled"] ?? "false");
+                if (facebookEnabled)
+                {
+                    var appId = Configuration["Identity:SignInMethods:Facebook:AppId"];
+                    var appSecret = Configuration["Identity:SignInMethods:Facebook:AppSecret"];
+
+                    idapp.UseFacebookAuthentication(new FacebookOptions()
+                    {
+                        DisplayName = "Facebook",
+                        SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+
+                        CallbackPath = "/signin-facebook",
+
+                        AppId = appId,
+                        AppSecret = appSecret
+                    });
                 }
-            });
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-            #endregion
 
-            app.UseIdentityServer();
-            app.UseMvc();
-
-            app.UseSwagger(options =>
-            {
-                options.RouteTemplate = "api/swagger/{documentName}/swagger.json";
+                idapp.UseStaticFiles();
+                idapp.UseMvc(routes =>
+                {
+                    routes.MapRoute(
+                        name: "account",
+                        template: "account/{action}",
+                        defaults: new { controller = "Account" });
+                });
             });
-            app.UseSwaggerUi(options =>
+
+
+            app.Map("/api", apiapp =>
             {
-                options.RoutePrefix = "api/swagger/ui";
-                options.SwaggerEndpoint("/api/swagger/v0.1/swagger.json", "v0.1 Docs");
+                JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+                var idsvrConfig = Configuration.GetSection("Identity:IdentityServer");
+                string authority = idsvrConfig["Authority"];
+                bool requireHttps = idsvrConfig.GetValue("RequireHttps", true);
+
+                apiapp.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
+                {
+                    Authority = authority,
+                    RequireHttpsMetadata = requireHttps,
+
+                    ApiName = "nether-all",
+                    AllowedScopes = { "nether-all" },
+                });
+
+                // TODO filter which routes this matches (i.e. only API routes)
+                apiapp.UseMvc();
+
+                apiapp.UseSwagger(options =>
+                {
+                    options.RouteTemplate = "swagger/{documentName}/swagger.json";
+                });
+                apiapp.UseSwaggerUi(options =>
+                {
+                    options.RoutePrefix = "swagger/ui";
+                    options.SwaggerEndpoint("/api/swagger/v0.1/swagger.json", "v0.1 Docs");
+                });
+            });
+
+            app.Map("/ui", uiapp =>
+            {
+                uiapp.UseCookieAuthentication(new CookieAuthenticationOptions
+                {
+                    AuthenticationScheme = "Cookies"
+                });
+
+                JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+
+                // hybrid
+                uiapp.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
+                {
+                    AuthenticationScheme = "oidc",
+                    SignInScheme = "Cookies",
+
+                    Authority = "http://localhost:5000/identity",
+                    RequireHttpsMetadata = false,
+
+                    PostLogoutRedirectUri = "http://localhost:5000/ui",
+
+                    ClientId = "mvc2",
+                    ClientSecret = "secret",
+
+                    ResponseType = "code id_token",
+                    Scope = { "api1", "offline_access" },
+
+                    GetClaimsFromUserInfoEndpoint = true,
+                    SaveTokens = true
+                });
+
+
+                uiapp.UseDefaultFiles();
+                uiapp.UseStaticFiles();
+
+                uiapp.UseMvc(); // TODO filter which routes this matches (i.e. only non-API routes)
             });
         }
     }

@@ -3,6 +3,7 @@
 
 using IdentityModel.Client;
 using Microsoft.Extensions.Logging;
+using Nether.Common;
 using Nether.Common.Async;
 using Newtonsoft.Json;
 using System;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Nether.Integration.Identity
@@ -29,18 +31,19 @@ namespace Nether.Integration.Identity
         // healthy flag and lock are used to avoid making multiple parallel failed calls when auth has failed and needs refreshing
         private AsyncLock _healthLock = new AsyncLock();
         private bool _healthy = false;
-        private readonly string _baseUri;
+        private readonly string _identityBaseUri;
 
         public DefaultIdentityPlayerManagementClient(
-            string baseUri, // e.g. localhost:5000
+            string identityBaseUri, // e.g. localhost:5000/identity
+            string apiBaseUri, // e.g. localhost:5000/api
             string clientSecret,
             ILogger<DefaultIdentityPlayerManagementClient> logger
             )
         {
-            _baseUri = baseUri;
+            _identityBaseUri = identityBaseUri.EnsureEndsWith("/");
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri(baseUri)
+                BaseAddress = new Uri(apiBaseUri.EnsureEndsWith("/"))
             };
             if (string.IsNullOrEmpty(clientSecret))
             {
@@ -51,16 +54,91 @@ namespace Nether.Integration.Identity
         }
         public async Task<string> GetGamertagForUserIdAsync(string userId)
         {
-            return await GetGamertagForUserIdInternalAsync(userId, retryAuth: true);
+            Func<Task<GamertagResponse>> apiCall = async () =>
+            {
+                string gamertag = null;
+                var r = await _httpClient.GetAsync($"playeridentity/player/{userId}");
+                if (r.IsSuccessStatusCode)
+                {
+                    var gamertagResponse = await ParseGamerTagResponseAsync(r.Content);
+                    gamertag = gamertagResponse.Gamertag;
+                }
+                return new GamertagResponse
+                {
+                    Gamertag = gamertag,
+                    StatusCode = r.StatusCode,
+                    Success = r.IsSuccessStatusCode
+                };
+            };
+            var response = await CallApiAsync(apiCall, "GetGamertagFromUserId");
+            if (!response.Success)
+            {
+                _logger.LogError("Failed to get gamertag for user. Status code = '{0}'", response.StatusCode);
+                throw new Exception($"Failed to get gamertag for user. Status code = {response.StatusCode}");
+            }
+            return response.Gamertag;
+        }
+        public async Task SetGamertagforUserIdAsync(string userId, string gamertag)
+        {
+            Func<Task<ApiResponse>> apiCall = async () =>
+            {
+                var json = JsonConvert.SerializeObject(new { gamertag });
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var r = await _httpClient.PostAsync($"playeridentity/player/{userId}", content);
+                return new ApiResponse
+                {
+                    StatusCode = r.StatusCode,
+                    Success = r.IsSuccessStatusCode
+                };
+            };
+            var response = await CallApiAsync(apiCall, "SetGamertagForUserId");
+            if (!response.Success)
+            {
+                _logger.LogError("Failed to set gamertag for user. Status code = '{0}'", response.StatusCode);
+                throw new Exception($"Failed to set gamertag for user. Status code = {response.StatusCode}");
+            }
         }
 
-        private async Task<string> GetGamertagForUserIdInternalAsync(string userId, bool retryAuth)
+        public async Task<bool> GamertagIsAvailableAsync(string gamertag)
         {
-            // TODO security ;-)
-            GamerTagResponse response = null;
+            Func<Task<ApiResponse>> apiCall = async () =>
+            {
+                var r = await _httpClient.GetAsync($"playeridentity/gamertag/{gamertag}");
+                return new ApiResponse
+                {
+                    StatusCode = r.StatusCode,
+                    Success = r.IsSuccessStatusCode || r.StatusCode == HttpStatusCode.NotFound
+                };
+            };
+            var response = await CallApiAsync(apiCall, "TestGamerTag");
+            if (!response.Success)
+            {
+                _logger.LogError("Failed to test gamertag existence. Status code = '{0}'", response.StatusCode);
+                throw new Exception($"Failed to test gamertag existence. Status code = {response.StatusCode}");
+            }
+            return response.StatusCode == HttpStatusCode.NotFound; // tag not found => tag available
+        }
+
+        /// <summary>
+        /// Helper to handle retrying auth (e.g. if token has expired)
+        /// </summary>
+        /// <typeparam name="TResponse"></typeparam>
+        /// <param name="apiCall"></param>
+        /// <param name="apiName"></param>
+        /// <param name="retryAuth"></param>
+        /// <returns></returns>
+        private async Task<TResponse> CallApiAsync<TResponse>(Func<Task<TResponse>> apiCall, string apiName)
+            where TResponse : ApiResponse
+        {
+            TResponse response = null;
             if (_healthy) // if healthy then proceed
             {
-                response = await CallGamertagApiAsync(userId);
+                response = await apiCall();
+                if (response.StatusCode != HttpStatusCode.Forbidden
+                    && response?.StatusCode != HttpStatusCode.Unauthorized)
+                {
+                    return response;
+                }
             }
 
             // if not healthy or the last call failed with auth issues..
@@ -70,90 +148,69 @@ namespace Nether.Integration.Identity
                 // double-check the healthy flag under the lock
                 if (_healthy) // if healthy then proceed
                 {
-                    response = await CallGamertagApiAsync(userId);
-                    if (response.SuccessStatusCode)
+                    response = await apiCall();
+                    if (response.StatusCode != HttpStatusCode.Forbidden
+                        && response?.StatusCode != HttpStatusCode.Unauthorized)
                     {
-                        return response.Gamertag;
+                        return response;
                     }
-                    _logger.LogInformation("Attempt to get gamertag from userid returned status code {0}", response.StatusCode);
+                    _logger.LogInformation("Attempt to call PlayerManagementIdentity API '{0}' returned status code {1}", apiName, response.StatusCode);
                 }
 
                 if (!_healthy
                 || response?.StatusCode == HttpStatusCode.Forbidden
                 || response?.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    if (retryAuth) // TODO - need to think about thread safety here...
-                    {
-                        _logger.LogInformation("Retrying auth...");
+                    _logger.LogInformation("Retrying auth...");
 
-                        var tokenResponse = await GetTokenAsync();
-                        if (tokenResponse.IsError)
-                        {
-                            _healthy = false;
-                            _logger.LogCritical("Failed to get token to call PlayerManagement!");
-                            throw new Exception("Failed to get token to call PlayerManagement - unable to look up gamertags");
-                        }
-                        else
-                        {
-                            _logger.LogInformation("Success - retrying API call");
-                            _httpClient.SetBearerToken(tokenResponse.AccessToken);
-                            // retry the API call!
-                            response = await CallGamertagApiAsync(userId);
-                            if (response.SuccessStatusCode)
-                            {
-                                _logger.LogInformation("Successfully called the API");
-                                _healthy = true;
-                                return response.Gamertag;
-                            }
-                            else
-                            {
-                                _logger.LogCritical("Failed to call PlayerManagement after refreshing token!");
-                            }
-                        }
+                    var tokenResponse = await GetTokenAsync();
+                    if (tokenResponse.IsError)
+                    {
+                        _healthy = false;
+                        _logger.LogCritical("Failed to get token to call PlayerManagementIdentity API '{0}'!", apiName);
+                        throw new Exception($"Failed to get token to call PlayerManagementIdentity API '{apiName}'");
                     }
                     else
                     {
-                        _healthy = false;
-                        _logger.LogCritical("Auth error calling PlayerManagement. RetryAuth set to false");
-                        throw new Exception("Auth error calling PlayerManagement. RetryAuth set to false");
+                        _logger.LogInformation("Success - retrying API call");
+                        _httpClient.SetBearerToken(tokenResponse.AccessToken);
+                        // retry the API call!
+                        response = await apiCall();
+                        if (response.StatusCode != HttpStatusCode.Forbidden
+                            && response?.StatusCode != HttpStatusCode.Unauthorized)
+                        {
+                            _logger.LogInformation("Successfully called the API");
+                            _healthy = true;
+                            return response;
+                        }
+                        else
+                        {
+                            _logger.LogCritical("Failed to call PlayerManagementIdentity API '{0}' after refreshing token!", apiName);
+                        }
                     }
                 }
-                _healthy = false;
-                _logger.LogCritical("Failed to look up gamertag with statuscode {0}", response.StatusCode);
-                throw new Exception($"Failed to look up gamertag with statuscode {response.StatusCode}");
+                _healthy = false; // TODO - we should consider some kind of back-off timeout here
+                _logger.LogCritical("Failed to call PlayerManagementIdentity API '{0}' with statuscode {1}", apiName, response.StatusCode);
+                throw new Exception($"Failed to call PlayerManagementIdentity API {apiName} with statuscode {response.StatusCode}");
             }
         }
 
-        private class GamerTagResponse
+        private class ApiResponse
+        {
+            public HttpStatusCode StatusCode;
+            public bool Success;
+        }
+        private class GamertagResponse : ApiResponse
         {
             public string Gamertag;
-            public HttpStatusCode StatusCode;
-            public bool SuccessStatusCode;
         }
-        private async Task<GamerTagResponse> CallGamertagApiAsync(string userId)
-        {
-            string gamertag = null;
-            var response = await _httpClient.GetAsync($"/api/playertag/{userId}");
-            if (response.IsSuccessStatusCode)
-            {
-                var gamertagResponse = await ParseGamerTagResponseAsync(response.Content);
-                gamertag = gamertagResponse.Gamertag;
-            }
-            return new GamerTagResponse
-            {
-                Gamertag = gamertag,
-                StatusCode = response.StatusCode,
-                SuccessStatusCode = response.IsSuccessStatusCode
-            };
-        }
-
 
         private async Task<TokenResponse> GetTokenAsync()
         {
             _logger.LogInformation("Attempting to get access token...");
 
             _logger.LogInformation("Querying token endpoint");
-            var disco = await DiscoveryClient.GetAsync(_baseUri);
+            var disco = await DiscoveryClient.GetAsync(_identityBaseUri);
 
             // request token
             _logger.LogInformation("Requesting token");
@@ -171,16 +228,17 @@ namespace Nether.Integration.Identity
             return tokenResponse;
         }
 
-        private async Task<GamerTagResponseMessage> ParseGamerTagResponseAsync(HttpContent content)
+        private async Task<GetGamerTagResponseMessage> ParseGamerTagResponseAsync(HttpContent content)
         {
             // This would use System.Net.Http.Formatting which is in the Microsoft.AspNet.WebApi.Client package
             // but at the point of writing that doesn't support netstandard1.6
 
             var contentString = await content.ReadAsStringAsync();
-            var responseObject = JsonConvert.DeserializeObject<GamerTagResponseMessage>(contentString);
+            var responseObject = JsonConvert.DeserializeObject<GetGamerTagResponseMessage>(contentString);
             return responseObject;
         }
-        private class GamerTagResponseMessage
+
+        private class GetGamerTagResponseMessage
         {
             public string Gamertag { get; set; }
         }

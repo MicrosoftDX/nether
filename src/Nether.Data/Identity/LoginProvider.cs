@@ -11,6 +11,6 @@ namespace Nether.Data.Identity
     public static class LoginProvider
     {
         public const string UserNamePassword = "password";
-        public const string Facebook = "facebook";
+        public const string FacebookUserAccessToken = "facebook-user-access-token";
     }
 }

@@ -13,6 +13,45 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\Features\identity-test\app.js" />
+    <Content Include="wwwroot\Features\identity-test\callback.html" />
+    <Content Include="wwwroot\Features\identity-test\index.html" />
+    <Content Include="wwwroot\Features\identity-ui\css\site.css" />
+    <Content Include="wwwroot\Features\identity-ui\css\site.less" />
+    <Content Include="wwwroot\Features\identity-ui\css\site.min.css" />
+    <Content Include="wwwroot\Features\identity-ui\favicon.ico" />
+    <Content Include="wwwroot\Features\identity-ui\icon.jpg" />
+    <Content Include="wwwroot\Features\identity-ui\icon.png" />
+    <Content Include="wwwroot\Features\identity-ui\js\signout-redirect.js" />
+    <Content Include="wwwroot\Features\identity-ui\lib\bootstrap\css\bootstrap.css" />
+    <Content Include="wwwroot\Features\identity-ui\lib\bootstrap\css\bootstrap.css.map" />
+    <Content Include="wwwroot\Features\identity-ui\lib\bootstrap\css\bootstrap.min.css" />
+    <Content Include="wwwroot\Features\identity-ui\lib\bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="wwwroot\Features\identity-ui\lib\bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="wwwroot\Features\identity-ui\lib\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="wwwroot\Features\identity-ui\lib\bootstrap\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="wwwroot\Features\identity-ui\lib\bootstrap\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="wwwroot\Features\identity-ui\lib\bootstrap\js\bootstrap.js" />
+    <Content Include="wwwroot\Features\identity-ui\lib\bootstrap\js\bootstrap.min.js" />
+    <Content Include="wwwroot\Features\identity-ui\lib\jquery\jquery.js" />
+    <Content Include="wwwroot\Features\identity-ui\lib\jquery\jquery.min.js" />
+    <Content Include="wwwroot\Features\identity-ui\lib\jquery\jquery.min.map" />
+    <Content Include="wwwroot\Features\identity-ui\lib\oidc-client\.bower.json" />
+    <Content Include="wwwroot\Features\identity-ui\lib\oidc-client\bower.json" />
+    <Content Include="wwwroot\Features\identity-ui\lib\oidc-client\dist\oidc-client.js" />
+    <Content Include="wwwroot\Features\identity-ui\lib\oidc-client\dist\oidc-client.min.js" />
+    <Content Include="wwwroot\Features\identity-ui\lib\oidc-client\GitReleaseManager.yaml" />
+    <Content Include="wwwroot\Features\identity-ui\lib\oidc-client\gulpfile.js" />
+    <Content Include="wwwroot\Features\identity-ui\lib\oidc-client\index.js" />
+    <Content Include="wwwroot\Features\identity-ui\lib\oidc-client\jsconfig.json" />
+    <Content Include="wwwroot\Features\identity-ui\lib\oidc-client\LICENSE" />
+    <Content Include="wwwroot\Features\identity-ui\lib\oidc-client\oidc-client.d.ts" />
+    <Content Include="wwwroot\Features\identity-ui\lib\oidc-client\package.json" />
+    <Content Include="wwwroot\Features\identity-ui\lib\oidc-client\README.md" />
+    <Content Include="wwwroot\Features\identity-ui\lib\oidc-client\webpack.base.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="wwwroot\**\*;Views;Areas\**\Views;appsettings.json;web.config">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
@@ -30,24 +69,26 @@
   <ItemGroup>
     <PackageReference Include="IdentityServer4" Version="1.0.0" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="1.0.1" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="1.1.0" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.0" />
     <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="1.0.0-rc1" />
-    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="1.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
