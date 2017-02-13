@@ -50,16 +50,18 @@ namespace Nether.Web.Features.PlayerManagement
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogInformation("Invalid model state in SetGamertagForPlayerId");
                 return BadRequest();
             }
 
             var player = await _store.GetPlayerDetailsByUserIdAsync(playerid);
             if (player == null)
             {
-                return BadRequest();
+                player = new Player { UserId = playerid };
             }
             if (!string.IsNullOrEmpty(player.Gamertag))
             {
+                _logger.LogInformation("Player already has gamertag (cannot update) in SetGamertagForPlayerId");
                 return BadRequest();
             }
 
