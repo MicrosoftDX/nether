@@ -4,7 +4,7 @@
     "parameters": { 
         "sqlServerName": {
             "type": "string",
-            "minLength": 3,
+            "minLength": 8,
             "maxLength": 63,
             "metadata": {
                 "description": "Database server name (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'."
@@ -33,7 +33,7 @@
         }, 
         "sqlAdministratorLogin": {
             "type": "string",
-            "defaultValue": "netheradmin",
+            "minLength": 8,
             "metadata": {
                 "description": "The admin user of the SQL Server"
             }
@@ -44,16 +44,24 @@
                 "description": "The password of the admin user of the SQL Server"
             }
         },
-        "templateBaseUrl": {
+        "templateBaseURL": {
             "type": "string",
-            "default": "deployment().properties.templateLink.uri/",
+            "defaultValue": "[deployment().properties.templateLink.uri]",
+            "metadata": {
+                "description": "The base location for all linked templates."
+            }   
+        },
+        "templateSASToken": {
+            "type": "string",
+            "defaultValue": "",
             "metadata": {
                 "description": "The base location for all linked templates."
             }   
         }
     },
     "variables": {
-        "dbTemplateURL": "[uri(parameters('templateBaseUrl'), 'nether-db-deploy.json')]"
+        "baseTemplateURI" : "[concat(parameters('templateBaseURL'), '')]",
+        "dbTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-db-deploy.json'), parameters('templateSASToken'))]"
     },
     "resources": [ 
         { 
@@ -63,7 +71,7 @@
             "properties": { 
                 "mode": "Incremental", 
                 "templateLink": {
-                    "uri": "[variables('dbTemplateURL')]",
+                    "uri": "[variables('dbTemplateURI')]",
                     "contentVersion": "1.0.0.0"
                 }, 
                 "parameters": { 
