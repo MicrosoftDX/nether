@@ -114,10 +114,10 @@
                     "type": "databases",
                     "name": "[variables('databaseName')]",
                     "apiVersion": "[variables('sqlResourceAPI')]",
+                    "location": "[resourceGroup().location]",
                     "dependsOn": [
                         "[variables('sqlDBServerName')]"
                     ],
-                    "location": "[resourceGroup().location]",
                     "tags": {
                         "displayName": "Database"
                     },
@@ -127,10 +127,10 @@
                     "type": "firewallrules",
                     "name": "AllowAllWindowsAzureIps",
                     "apiVersion": "[variables('sqlResourceAPI')]",
+                    "location": "[resourceGroup().location]",
                     "dependsOn": [
                         "[variables('sqlDBServerName')]"
                     ],
-                    "location": "[resourceGroup().location]",
                     "properties": {
                         "startIpAddress": "0.0.0.0",
                         "endIpAddress": "0.0.0.0"
@@ -140,9 +140,13 @@
         }
     ],
     "outputs": {
-        "DatabaseFQDN" : {
+        "DatabaseServerFQDN" : {
             "type" : "string",
             "value": "[reference(variables('sqlDBServerName')).fullyQualifiedDomainName]"
+        },
+        "DatabaseName" : {
+            "type" : "string",
+            "value": "[variables('databaseName')]"
         }
     }
 }

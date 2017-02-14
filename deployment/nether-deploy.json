@@ -2,6 +2,47 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": { 
+        "NetherWebDomainPrefix": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 12,
+            "metadata": {
+                "description": "The begining portion of the Nether web deployment URL (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'." 
+            }
+        },
+        "WebHostingPlan": { 
+            "type": "string", 
+            "defaultValue": "Free (no 'always on')", 
+            "allowedValues": [ 
+                "Free (no 'always on')", 
+                "Shared", 
+                "Basic B1", 
+                "Basic B2", 
+                "Basic B3", 
+                "Standard S1", 
+                "Standard S2", 
+                "Standard S3", 
+                "Premium P1", 
+                "Premium P2", 
+                "Premium P3"
+            ], 
+            "metadata": { 
+                "description": "Specifies the database pricing/performance." 
+            } 
+        }, 
+        "InstanceCount": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Number of copies of the application. Limited based on hosting plan. "
+            }
+        },
+        "webZipUri": {
+            "type": "string",
+            "metadata": {
+                "description": "(Optional) Absolute URI containing the Nether API's deployment package (ZIP). If not included, you'll need to deploy the package seperately."
+            }
+        },
         "sqlServerName": {
             "type": "string",
             "minLength": 8,
@@ -59,14 +100,15 @@
         }
     },
     "variables": {
-        "baseTemplateURI" : "[concat(parameters('templateBaseURL'), '')]",
-        "dbTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-db-deploy.json'), parameters('templateSASToken'))]"
+        "deploymentAPI" : "2015-01-01",
+        "dbTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-db.json'), parameters('templateSASToken'))]",
+        "WebTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-web.json'), parameters('templateSASToken'))]"
     },
     "resources": [ 
         { 
-            "apiVersion": "2015-01-01", 
-            "name": "SQLDatabaseTemplate", 
             "type": "Microsoft.Resources/deployments", 
+            "name": "SQLDatabaseTemplate", 
+            "apiVersion": "[variables('deploymentAPI')]", 
             "properties": { 
                 "mode": "Incremental", 
                 "templateLink": {
@@ -80,6 +122,26 @@
                     "sqlAdministratorPassword": { "value": "[parameters('sqlAdministratorPassword')]" }
                 } 
             } 
+        },
+        { 
+            "type": "Microsoft.Resources/deployments", 
+            "name": "WebTemplate", 
+            "apiVersion": "[variables('deploymentAPI')]", 
+            "properties": { 
+                "mode": "Incremental", 
+                "templateLink": {
+                    "uri": "[variables('WebTemplateURI')]",
+                    "contentVersion": "1.0.0.0"
+                }, 
+                "parameters": { 
+                    "NetherWebDomainPrefix": { "value": "[parameters('NetherWebDomainPrefix')]" },
+                    "WebHostingPlan": { "value": "[parameters('WebHostingPlan')]" },
+                    "InstanceCount": { "value": "[parameters('InstanceCount')]" },
+                    "webZipUri": { "value": "[parameters('webZipUri')]" },
+                    "sqlConnectionString": "[concat('Data Source=tcp:', reference('SQLDatabaseTemplate').outputs.DatabaseServerFQDN, ',1433;Initial Catalog=', reference('SQLDatabaseTemplate').outputs.DatabaseName, ';User Id=', parameters('sqlAdministratorLogin'), '@', reference('SQLDatabaseTemplate').outputs.DatabaseServerFQDN, ';Password=', parameters('sqlAdministratorPassword'), ';')]"
+                } 
+            } 
         } 
+
     ]
 }
