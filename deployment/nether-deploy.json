@@ -127,6 +127,9 @@
             "type": "Microsoft.Resources/deployments", 
             "name": "WebTemplate", 
             "apiVersion": "[variables('deploymentAPI')]", 
+            "dependsOn": [
+                "SQLDatabaseTemplate"
+            ],
             "properties": { 
                 "mode": "Incremental", 
                 "templateLink": {
@@ -137,8 +140,8 @@
                     "NetherWebDomainPrefix": { "value": "[parameters('NetherWebDomainPrefix')]" },
                     "WebHostingPlan": { "value": "[parameters('WebHostingPlan')]" },
                     "InstanceCount": { "value": "[parameters('InstanceCount')]" },
-                    "DatabaseServerFQDN": { "value": "[reference('SQLDatabaseTemplate').Outputs.databaseServerFQDN]" },
-                    "sqlServerDatabaseName": { "value": "[reference('SQLDatabaseTemplate').Outputs.databaseName]" },
+                    "DatabaseServerFQDN": { "value": "[reference('SQLDatabaseTemplate').outputs.databaseServerFQDN.value]" },
+                    "sqlServerDatabaseName": { "value": "[reference('SQLDatabaseTemplate').outputs.databaseName.value]" },
                     "sqlAdministratorLogin": { "value": "[parameters('webZipUri')]" },
                     "sqlAdministratorPassword": { "value": "[parameters('webZipUri')]" },
                     "webZipUri": { "value": "[parameters('webZipUri')]" }
@@ -149,15 +152,15 @@
     "outputs": {
         "WebSiteFQDN" : {
             "type" : "string",
-            "value": "[reference('WebTemplate').Outputs.webSiteFQDN]"
+            "value": "[reference('WebTemplate').Outputs.webSiteFQDN.value]"
         },
         "DatabaseServerFQDN" : {
             "type" : "string",
-            "value": "[reference('SQLDatabaseTemplate').Outputs.databaseServerFQDN]"
+            "value": "[reference('SQLDatabaseTemplate').Outputs.databaseServerFQDN.value]"
         },
         "DatabaseName" : {
             "type" : "string",
-            "value": "[reference('SQLDatabaseTemplate').Outputs.databaseName]"
+            "value": "[reference('SQLDatabaseTemplate').Outputs.databaseName.value]"
         }
     }
 }

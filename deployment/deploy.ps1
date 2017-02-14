@@ -14,6 +14,18 @@ param
     $StorageAccountName,
 
     [Parameter(Mandatory=$true)]
+    [string]
+    $NetherWebDomainPrefix,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $sqlServerName,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $sqlAdministratorLogin,
+
+    [Parameter(Mandatory=$true)]
     [securestring]
     $SqlAdministratorPassword
 )
@@ -33,7 +45,7 @@ if (Test-Path $publishPath)
 {
     Remove-Item $publishPath -Recurse -Force
 }
-dotnet publish src/Nether.Web -c $build
+dotnet publish "$netherRoot/src/Nether.Web" -c $build
 
 # Create ZIP (requires PowerShell 5.0 upwards)
 Write-Host
@@ -102,10 +114,24 @@ $blob = Set-AzureStorageBlobContent `
 Write-Host
 
 $templateParameters = @{
+    NetherWebDomainPrefix = $NetherWebDomainPrefix
+    sqlServerName = $sqlServerName
+    sqlAdministratorLogin = $sqlAdministratorLogin
     sqlAdministratorPassword = $SqlAdministratorPassword
     webZipUri = $blob.ICloudBlob.Uri.AbsoluteUri
     # webZipUri = "https://netherassets.blob.core.windows.net/packages/package261.zip"
     # webZipUri = "https://netherbits.blob.core.windows.net/deployment/Nether.Web.zip"
+    # templateBaseURL is used for linked template deployments, see deployment/readme.md
+    templateBaseURL = "https://raw.githubusercontent.com/brentstineman/nether/bms-deployment/deployment/"  
+    
+    #
+    ### to customize your deployment, uncomment and provide values for the following parameters
+    ### you can find sample value by looking at nether-deploy.json's parameters
+    #
+    # WebHostingPlan = "Free (no 'always on')"
+    # InstanceCount = 1
+    # databaseSKU = "Basic"
+    # templateSASToken = "" #used for linked template deployments from private locations, see deployment/readme.md
 }
 
 $deploymentName = "Nether-Deployment-{0:yyyy-MM-dd-HH-mm-ss}" -f (Get-Date)
@@ -114,7 +140,7 @@ Write-Host "Deploying application... ($deploymentName)"
 $result = New-AzureRmResourceGroupDeployment `
             -ResourceGroupName $ResourceGroupName `
             -Name $deploymentName `
-            -TemplateFile "$PSScriptRoot\nether-web.json" `
+            -TemplateFile "$PSScriptRoot\nether-deploy.json" `
             -TemplateParameterObject $templateParameters
 
 Write-Host
