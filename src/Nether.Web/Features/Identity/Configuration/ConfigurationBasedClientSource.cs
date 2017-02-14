@@ -4,6 +4,7 @@
 using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Nether.Web.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace Nether.Web.Features.Identity.Configuration
             var configClient = configuration.GetSection(clientId);
             if (configClient != null)
             {
-                var secrets = ParseStringArray(configClient.GetSection("ClientSecrets")).ToArray();
+                var secrets = configClient.GetSection("ClientSecrets").ParseStringArray().ToArray();
                 if (secrets != null && secrets.Length > 0)
                 {
                     return secrets[0];
@@ -69,27 +70,27 @@ namespace Nether.Web.Features.Identity.Configuration
                         client.AccessTokenType = ParseEnum<AccessTokenType>(configValue.Value);
                         break;
                     case "AllowedCorsOrigins":
-                        client.AllowedCorsOrigins = ParseStringArray(configValue)
+                        client.AllowedCorsOrigins = configValue.ParseStringArray()
                                                         .ToList();
                         break;
                     case "AllowedGrantTypes":
-                        client.AllowedGrantTypes = ParseStringArray(configValue);
+                        client.AllowedGrantTypes = configValue.ParseStringArray();
                         break;
                     case "AllowedScopes":
-                        client.AllowedScopes = ParseStringArray(configValue)
+                        client.AllowedScopes = configValue.ParseStringArray()
                                                     .ToList();
                         break;
                     case "ClientSecrets":
-                        client.ClientSecrets = ParseStringArray(configValue)
+                        client.ClientSecrets = configValue.ParseStringArray()
                                                     .Select(v => new Secret(v.Sha256()))
                                                     .ToList();
                         break;
                     case "RedirectUris":
-                        client.RedirectUris = ParseStringArray(configValue)
+                        client.RedirectUris = configValue.ParseStringArray()
                                                     .ToList();
                         break;
                     case "PostLogoutRedirectUris":
-                        client.PostLogoutRedirectUris = ParseStringArray(configValue)
+                        client.PostLogoutRedirectUris = configValue.ParseStringArray()
                                                             .ToList();
                         break;
                     default:
@@ -113,22 +114,5 @@ namespace Nether.Web.Features.Identity.Configuration
             return bool.Parse(value);
         }
 
-        private IEnumerable<string> ParseStringArray(IConfigurationSection configSection)
-        {
-            if (configSection.Value == null)
-            {
-                // when the config is specified using JSON it can come as child config elements
-                // if specified in an arry
-                return configSection.GetChildren()
-                    .Select(v => v.Value);
-            }
-            else
-            {
-                // when specified via environment variables it comes in as a comma-delimited string
-                return configSection.Value
-                    .Split(',')
-                    .Select(s => s.Trim());
-            }
-        }
     }
 }
