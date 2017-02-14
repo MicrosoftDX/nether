@@ -20,6 +20,7 @@ using Newtonsoft.Json.Converters;
 using Nether.Web.Utilities;
 using Swashbuckle.AspNetCore.Swagger;
 using IdentityServer4;
+using System.Linq;
 
 namespace Nether.Web
 {
@@ -87,6 +88,8 @@ namespace Nether.Web
                     });
                 });
 
+            services.AddCors();
+
             services.ConfigureSwaggerGen(options =>
             {
                 string commentsPath = Path.Combine(
@@ -149,6 +152,7 @@ namespace Nether.Web
 
             app.EnsureInitialAdminUser(Configuration, logger);
 
+
             // Set up separate web pipelines for identity, MVC UI, and API
             // as they each have different auth requirements!
 
@@ -196,6 +200,22 @@ namespace Nether.Web
 
             app.Map("/api", apiapp =>
             {
+                apiapp.UseCors(options =>
+                {
+                    logger.LogInformation("CORS options:");
+                    var config = Configuration.GetSection("Common:Cors");
+
+                    var allowedOrigins = config.ParseStringArray("AllowedOrigins").ToArray();
+                    logger.LogInformation("AllowedOrigins: {0}", string.Join(",", allowedOrigins));
+                    options.WithOrigins(allowedOrigins);
+
+                    // TODO - allow configuration of headers/methods
+                    options
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+
                 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
                 var idsvrConfig = Configuration.GetSection("Identity:IdentityServer");
@@ -210,6 +230,8 @@ namespace Nether.Web
                     ApiName = "nether-all",
                     AllowedScopes = { "nether-all" },
                 });
+
+
 
                 // TODO filter which routes this matches (i.e. only API routes)
                 apiapp.UseMvc();
