@@ -137,7 +137,7 @@
                     "NetherWebDomainPrefix": { "value": "[parameters('NetherWebDomainPrefix')]" },
                     "WebHostingPlan": { "value": "[parameters('WebHostingPlan')]" },
                     "InstanceCount": { "value": "[parameters('InstanceCount')]" },
-                    "sqlServerFQDN": { "value": "[reference('SQLDatabaseTemplate').outputs.ServerFQDN]" },
+                    "sqlServerFQDN": { "value": "[reference('SQLDatabaseTemplate').outputs.DatabaseServerFQDN]" },
                     "sqlServerDatabaseName": { "value": "[reference('SQLDatabaseTemplate').outputs.DatabaseName]" },
                     "sqlAdministratorLogin": { "value": "[parameters('webZipUri')]" },
                     "sqlAdministratorPassword": { "value": "[parameters('webZipUri')]" },
