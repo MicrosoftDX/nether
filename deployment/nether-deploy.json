@@ -153,11 +153,11 @@
         },
         "DatabaseServerFQDN" : {
             "type" : "string",
-            "value": "[reference('SQLDatabaseTemplate').outputs.databaseServerFQDN]"
+            "value": "[reference('SQLDatabaseTemplate').Outputs.databaseServerFQDN]"
         },
         "DatabaseName" : {
             "type" : "string",
-            "value": "[reference('SQLDatabaseTemplate').outputs.databaseName]"
+            "value": "[reference('SQLDatabaseTemplate').Outputs.databaseName]"
         }
     }
 }

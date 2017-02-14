@@ -140,11 +140,11 @@
         }
     ],
     "outputs": {
-        "DatabaseServerFQDN" : {
+        "databaseServerFQDN" : {
             "type" : "string",
             "value": "[reference(variables('sqlDBServerName')).fullyQualifiedDomainName]"
         },
-        "DatabaseName" : {
+        "databaseName" : {
             "type" : "string",
             "value": "[variables('databaseName')]"
         }
