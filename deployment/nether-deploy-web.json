@@ -230,7 +230,7 @@
         }
     ],
     "outputs": {
-        "WebSiteFQDN" : {
+        "webSiteFQDN" : {
             "type" : "string",
             "value": "[reference(variables('webSiteName')).hostNames[0]]"
         }
