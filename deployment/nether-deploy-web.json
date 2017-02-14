@@ -37,10 +37,28 @@
                 "description": "Number of copies of the application. Limited based on hosting plan. "
             }
         },
-        "sqlConnectionString": {
+        "sqlServerFQDN": {
+            "type": "string",
+            "metadata": {
+                "description": "The FQDN URI of the Azure DB Server"
+            }
+        },
+        "sqlServerDatabaseName": {
+            "type": "string",
+            "metadata": {
+                "description": "The FQDN URI of the Azure DB Server"
+            }
+        },
+        "sqlAdministratorLogin": {
+            "type": "string",
+            "metadata": {
+                "description": "The admin user of the Azure DB Server"
+            }
+        },
+        "sqlAdministratorPassword": {
             "type": "securestring",
             "metadata": {
-                "description": "the connection string for the web site's Azure SQL DB"
+                "description": "The password of the admin user of the SQL Server"
             }
         },
         "webZipUri": {
@@ -110,7 +128,8 @@
                 "size": "P3",
                 "enableAlwaysOn": true
             }
-        }
+        },
+        "sqlConnString": "[concat('Data Source=tcp:', parameters('sqlServerFQDN'), ',1433;Initial Catalog=', parameters('sqlServerDatabaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', parameters('sqlServerFQDN'), ';Password=', parameters('sqlAdministratorPassword'), ';')]"
     },
     "resources": [
         {
@@ -174,13 +193,13 @@
                         "alwaysOn": "[variables('HostingSKUs')[parameters('WebHostingPlan')].enableAlwaysOn]",
 
                         "Identity:Store:wellknown": "sql",
-                        "Identity:Store:properties:ConnectionString": "[parameters('sqlConnectionString')]",
+                        "Identity:Store:properties:ConnectionString": "[variables('sqlConnString')]",
 
                         "Leaderboard:Store:wellknown": "sql",
-                        "Leaderboard:Store:properties:ConnectionString": "[parameters('sqlConnectionString')]",
+                        "Leaderboard:Store:properties:ConnectionString": "[variables('sqlConnString')]",
 
                         "PlayerManagement:Store:wellknown": "sql",
-                        "PlayerManagement:Store:properties:ConnectionString": "[parameters('sqlConnectionString')]",
+                        "PlayerManagement:Store:properties:ConnectionString": "[variables('sqlConnString')]",
 
                         "ASPNETCORE_ENVIRONMENT": "Development",
 

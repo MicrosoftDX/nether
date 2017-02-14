@@ -34,13 +34,13 @@
             "type": "string",
             "defaultValue": "netheradmin",
             "metadata": {
-                "description": "The admin user of the SQL Server"
+                "description": "The admin user of the Azure DB Server"
             }
         },
         "sqlAdministratorPassword": {
             "type": "securestring",
             "metadata": {
-                "description": "The password of the admin user of the SQL Server"
+                "description": "The password of the admin user of the Azure DB Server"
             }
         }
     },
@@ -140,9 +140,13 @@
         }
     ],
     "outputs": {
-        "DatabaseFQDN" : {
+        "ServerFQDN" : {
             "type" : "string",
             "value": "[reference(variables('sqlDBServerName')).fullyQualifiedDomainName]"
+        },
+        "DatabaseName" : {
+            "type" : "string",
+            "value": "[variables('databaseName')]"
         }
     }
 }
