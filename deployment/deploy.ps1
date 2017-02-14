@@ -122,7 +122,7 @@ $templateParameters = @{
     # webZipUri = "https://netherassets.blob.core.windows.net/packages/package261.zip"
     # webZipUri = "https://netherbits.blob.core.windows.net/deployment/Nether.Web.zip"
     # templateBaseURL is used for linked template deployments, see deployment/readme.md
-    templateBaseURL = "https://raw.githubusercontent.com/brentstineman/nether/bms-deployment/deployment/"  
+    templateBaseURL = "https://raw.githubusercontent.com/MicrosoftDX/nether/master/deployment/"  
     
     #
     ### to customize your deployment, uncomment and provide values for the following parameters
