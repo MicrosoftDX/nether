@@ -37,7 +37,7 @@
                 "description": "Number of copies of the application. Limited based on hosting plan. "
             }
         },
-        "sqlServerFQDN": {
+        "DatabaseServerFQDN": {
             "type": "string",
             "metadata": {
                 "description": "The FQDN URI of the Azure DB Server"
@@ -46,7 +46,7 @@
         "sqlServerDatabaseName": {
             "type": "string",
             "metadata": {
-                "description": "The FQDN URI of the Azure DB Server"
+                "description": "The name of the database on the server to use"
             }
         },
         "sqlAdministratorLogin": {
@@ -129,7 +129,7 @@
                 "enableAlwaysOn": true
             }
         },
-        "sqlConnString": "[concat('Data Source=tcp:', parameters('sqlServerFQDN'), ',1433;Initial Catalog=', parameters('sqlServerDatabaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', parameters('sqlServerFQDN'), ';Password=', parameters('sqlAdministratorPassword'), ';')]"
+        "sqlConnString": "[concat('Data Source=tcp:', parameters('DatabaseServerFQDN'), ',1433;Initial Catalog=', parameters('sqlServerDatabaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', parameters('DatabaseServerFQDN'), ';Password=', parameters('sqlAdministratorPassword'), ';')]"
     },
     "resources": [
         {
@@ -228,5 +228,11 @@
                 }
             ]
         }
-    ]
+    ],
+    "outputs": {
+        "WebSiteFQDN" : {
+            "type" : "string",
+            "value": "[reference(variables('webSiteName')).hostNames[0]]"
+        }
+    }
 }
