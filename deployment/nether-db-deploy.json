@@ -15,17 +15,16 @@
             "defaultValue": "Basic", 
             "allowedValues": [ 
                 "Basic", 
-                "Standard1", 
                 "Standard", 
-                "Standard1", 
-                "Standard2", 
-                "Standard3", 
-                "Premium1", 
-                "Premium2", 
-                "Premium4", 
-                "Premium6", 
-                "Premium11", 
-                "Premium15"
+                "Standard S1", 
+                "Standard S2", 
+                "Standard S3", 
+                "Premium P1", 
+                "Premium P2", 
+                "Premium P4", 
+                "Premium P6", 
+                "Premium P11", 
+                "Premium P15"
             ], 
             "metadata": { 
                 "description": "Specifies the database pricing/performance." 
@@ -58,39 +57,39 @@
                 "edition": "Standard",
                 "requestedServiceObjectiveName": "S0"
             },
-            "Standard1" : {
+            "Standard S1" : {
                 "edition": "Standard",
                 "requestedServiceObjectiveName": "S1"
             },
-            "Standard2" : {
+            "Standard S2" : {
                 "edition": "Standard",
                 "requestedServiceObjectiveName": "S2"
             },
-            "Standard3" : {
+            "Standard S3" : {
                 "edition": "Standard",
                 "requestedServiceObjectiveName": "S3"
             },
-            "Premium1" : {
+            "Premium P1" : {
                 "edition": "Premium",
                 "requestedServiceObjectiveName": "P1"
             },
-            "Premium2" : {
+            "Premium P2" : {
                 "edition": "Premium",
                 "requestedServiceObjectiveName": "P2"
             },
-            "Premium4" : {
+            "Premium P4" : {
                 "edition": "Premium",
                 "requestedServiceObjectiveName": "P4"
             },
-            "Premium6" : {
+            "Premium P6" : {
                 "edition": "Premium",
                 "requestedServiceObjectiveName": "P6"
             },
-            "Premium11" : {
+            "Premium P11" : {
                 "edition": "Premium",
                 "requestedServiceObjectiveName": "P11"
             },
-            "Premium15" : {
+            "Premium P15" : {
                 "edition": "Premium",
                 "requestedServiceObjectiveName": "P15"
             }
@@ -140,5 +139,11 @@
                 }
             ]
         }
-    ]
+    ],
+    "outputs": {
+        "DatabaseFQDN" : {
+            "type" : "string",
+            "value": "[reference(variables('sqlDBServerName')).fullyQualifiedDomainName]"
+        }
+    }
 }

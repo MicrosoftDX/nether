@@ -9,3 +9,4 @@
 - what needs to be changed for customizations
 	- linked template base URL
 	- "deploy to Azure"
+- altering "deploy to Azure" url when testing

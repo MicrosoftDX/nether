@@ -15,17 +15,16 @@
             "defaultValue": "Basic", 
             "allowedValues": [ 
                 "Basic", 
-                "Standard1", 
                 "Standard", 
-                "Standard1", 
-                "Standard2", 
-                "Standard3", 
-                "Premium1", 
-                "Premium2", 
-                "Premium4", 
-                "Premium6", 
-                "Premium11", 
-                "Premium15"
+                "Standard S1", 
+                "Standard S2", 
+                "Standard S3", 
+                "Premium P1", 
+                "Premium P2", 
+                "Premium P4", 
+                "Premium P6", 
+                "Premium P11", 
+                "Premium P15"
             ], 
             "metadata": { 
                 "description": "Specifies the database pricing/performance." 
@@ -66,7 +65,7 @@
     "resources": [ 
         { 
             "apiVersion": "2015-01-01", 
-            "name": "linkedTemplate", 
+            "name": "SQLDatabaseTemplate", 
             "type": "Microsoft.Resources/deployments", 
             "properties": { 
                 "mode": "Incremental", 
