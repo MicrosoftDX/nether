@@ -20,6 +20,8 @@
         "node_modules",
         "typings",
         "wwwroot/lib",
-        "wwwroot/Features/identity-ui/lib"
+        "wwwroot/Features/identity-ui/lib",
+        "obj",
+        "bin"
     ]
 }
