@@ -1,4 +1,4 @@
---Creating all external tables
+﻿--Creating all external tables
 
 CREATE EXTERNAL TABLE IF NOT EXISTS starts(event string COMMENT 'event type',
        version string,

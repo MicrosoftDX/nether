@@ -1,9 +1,7 @@
 DROP TABLE IF EXISTS dailydurations;
 
 CREATE TABLE IF NOT EXISTS dailydurations(
-    year INT,
-    month INT,
-    day INT,
+    eventDate DATE,
     displayName STRING,
     avgduration BIGINT
 )
@@ -16,12 +14,10 @@ LOCATION '${hiveconf:dailydurations}';
 
 INSERT INTO TABLE dailydurations
 SELECT
-    year,
-    month,
-    day,
+    eventDate,
     displayName,
     avg(timeSpanSeconds) as avgduration
 FROM
     durations
 GROUP BY
-    year, month, day, displayName;
+    eventDate, displayName;

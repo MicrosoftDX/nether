@@ -1,4 +1,4 @@
-set mapred.reduce.tasks=1;
+﻿set mapred.reduce.tasks=1;
 
 -- Very raw event data straight from Azure Stream Analytics
 CREATE EXTERNAL TABLE IF NOT EXISTS rawevents(

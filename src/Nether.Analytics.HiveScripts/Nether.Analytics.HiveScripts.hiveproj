@@ -1,0 +1,48 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>1e982066-a6a2-434f-bff8-a4c09716d429</ProjectGuid>
+    <OutputType>File</OutputType>
+    <AssemblyName>Hive</AssemblyName>
+    <StartFile>externalTables.hql</StartFile>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <Name>Nether.Analytics.HiveScripts</Name>
+    <RootNamespace>Nether.Analytics.HiveScripts</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Script Include="externalTables.hql" />
+    <Script Include="DAU-MAU.hql" />
+    <Script Include="duration/durations.hql" />
+    <Script Include="duration/dailyDurations.hql" />
+    <Script Include="duration/monthlyDurations.hql" />
+    <Script Include="duration/yearlyDurations.hql" />
+    <Script Include="counts/aggcounters.hql" />
+    <Script Include="counts/countspersession.hql" />
+    <Script Include="counts/countspertags.hql" />
+    <Script Include="counts/strippedcounts.hql" />
+    <Script Include="gamesession/annualgameduration.hql" />
+    <Script Include="gamesession/dailygameduration.hql" />
+    <Script Include="gamesession/lastgameheartbeat.hql" />
+    <Script Include="gamesession/monthlygameduration.hql" />
+    <Script Include="gamesession/rawgameduration.hql" />
+    <Script Include="store-counts/aggregatedStoreCounts.hql" />
+    <Script Include="store-counts/storecountspersession.hql" />
+    <Script Include="store-counts/strippedstorecounts.hql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="duration\" />
+    <Folder Include="counts\" />
+    <Folder Include="gamesession\" />
+    <Folder Include="store-counts\" />	
+  </ItemGroup>
+  <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Hive.targets" />
+</Project>

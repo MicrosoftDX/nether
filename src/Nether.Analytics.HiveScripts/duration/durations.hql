@@ -1,4 +1,4 @@
-set hive.mapjoin.optimized.hashtable=FALSE;
+﻿set hive.mapjoin.optimized.hashtable=FALSE;
 --Creating all external tables
 drop table if EXISTS starts;
 drop table if exists stops;
@@ -36,6 +36,7 @@ LOCATION '${hiveconf:stopeventsloc}';
 
 
 CREATE TABLE IF NOT EXISTS durations(
+    eventDate DATE,
     startTime TIMESTAMP,
     stopTime TIMESTAMP,
     timeSpanSeconds BIGINT,
@@ -56,6 +57,7 @@ LOCATION '${hiveconf:rawdurationsloc}';
 INSERT INTO TABLE durations
 PARTITION (year, month, day)
 SELECT
+    to_date(start.clientutc) as eventDate,
     start.clientUtc as startTime,
     stop.clientUtc as stopTime,
     unix_timestamp(stop.clientUtc) - unix_timestamp(start.clientUtc) AS timeSpanSeconds,
