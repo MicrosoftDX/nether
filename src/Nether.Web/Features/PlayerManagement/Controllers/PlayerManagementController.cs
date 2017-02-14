@@ -35,7 +35,7 @@ namespace Nether.Web.Features.PlayerManagement
         // Implementation of the player API
         // There are two views:
         //  1. By Player
-        //  2. Admininstration  
+        //  2. Admininstration
 
         /// <summary>
         /// Gets the player information from currently logged in user
@@ -54,7 +54,7 @@ namespace Nether.Web.Features.PlayerManagement
             }
 
             // Call data store
-            var player = await _store.GetPlayerDetailsByUserIdAsync(gamertag);
+            var player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
             if (player == null)
                 return NotFound();
 
@@ -350,7 +350,7 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
-        /// Removes a player from a group. 
+        /// Removes a player from a group.
         /// </summary>
         /// <param name="groupName">Group name</param>
         /// <param name="playerName">Player name</param>
