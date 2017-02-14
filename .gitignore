@@ -267,3 +267,6 @@ paket-files/
 **/wwwroot/lib/**/*
 **/wwwroot/**/app/**/*.js
 **/wwwroot/**/app/**/*.js.map
+
+# Azure Resource Manager
+*.privateparams.json

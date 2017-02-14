@@ -1,0 +1,78 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": { 
+        "sqlServerName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "metadata": {
+                "description": "Database server name (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'."
+            }
+        },
+        "databaseSKU": { 
+            "type": "string", 
+            "defaultValue": "Basic", 
+            "allowedValues": [ 
+                "Basic", 
+                "Standard1", 
+                "Standard", 
+                "Standard1", 
+                "Standard2", 
+                "Standard3", 
+                "Premium1", 
+                "Premium2", 
+                "Premium4", 
+                "Premium6", 
+                "Premium11", 
+                "Premium15"
+            ], 
+            "metadata": { 
+                "description": "Specifies the database pricing/performance." 
+            } 
+        }, 
+        "sqlAdministratorLogin": {
+            "type": "string",
+            "defaultValue": "netheradmin",
+            "metadata": {
+                "description": "The admin user of the SQL Server"
+            }
+        },
+        "sqlAdministratorPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The password of the admin user of the SQL Server"
+            }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "default": "deployment().properties.templateLink.uri/",
+            "metadata": {
+                "description": "The base location for all linked templates."
+            }   
+        }
+    },
+    "variables": {
+        "dbTemplateURL": "[uri(parameters('templateBaseUrl'), 'nether-db-deploy.json')]"
+    },
+    "resources": [ 
+        { 
+            "apiVersion": "2015-01-01", 
+            "name": "linkedTemplate", 
+            "type": "Microsoft.Resources/deployments", 
+            "properties": { 
+                "mode": "Incremental", 
+                "templateLink": {
+                    "uri": "[variables('dbTemplateURL')]",
+                    "contentVersion": "1.0.0.0"
+                }, 
+                "parameters": { 
+                    "sqlServerName": { "value": "[parameters('sqlServerName')]" },
+                    "databaseSKU": { "value": "[parameters('databaseSKU')]" },
+                    "sqlAdministratorLogin": { "value": "[parameters('sqlAdministratorLogin')]" },
+                    "sqlAdministratorPassword": { "value": "[parameters('sqlAdministratorPassword')]" }
+                } 
+            } 
+        } 
+    ]
+}
