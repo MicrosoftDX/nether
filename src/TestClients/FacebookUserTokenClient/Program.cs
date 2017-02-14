@@ -103,7 +103,7 @@ namespace FacebookUserTokenClient
                         { "scope", scope }
                    }
                );
-            var response = await client.PostAsync("/connect/token", requestBody);
+            var response = await client.PostAsync("/identity/connect/token", requestBody);
             dynamic responseBody = await response.Content.ReadAsAsync<dynamic>();
 
             if (responseBody.error != null)
