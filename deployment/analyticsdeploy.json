@@ -425,7 +425,7 @@
             "typeProperties": {
               "clusterSize": 2,
               "version": "3.2",
-              "timeToLive": "00:30:00",
+              "timeToLive": "00:20:00",
               "osType": "linux",
               "linkedServiceName": "[variables('dfStorageLinkedServiceName')]",
               "hcatalogLinkedServiceName": "[variables('dfSqlLinkedServiceName')]"

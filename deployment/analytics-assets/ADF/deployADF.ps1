@@ -1,3 +1,4 @@
+# To be deprecated!
 #Note: set the variables according to your Azure environment
 
 Login-AzureRmAccount
