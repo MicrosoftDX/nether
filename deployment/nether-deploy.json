@@ -141,7 +141,7 @@
                     "sqlServerDatabaseName": { "value": "[reference('SQLDatabaseTemplate').outputs.DatabaseName]" },
                     "sqlAdministratorLogin": { "value": "[parameters('webZipUri')]" },
                     "sqlAdministratorPassword": { "value": "[parameters('webZipUri')]" },
-                    "webZipUri": { "value": "[parameters('webZipUri')]" },
+                    "webZipUri": { "value": "[parameters('webZipUri')]" }
                 } 
             } 
         } 
