@@ -113,6 +113,5 @@ namespace Nether.Web.Features.Identity.Configuration
         {
             return bool.Parse(value);
         }
-
     }
 }
