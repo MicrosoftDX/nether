@@ -109,7 +109,7 @@ namespace Nether.Web
                     License = new License
                     {
                         Name = "MIT",
-                        Url = "https://github.com/dx-ted-emea/nether/blob/master/LICENSE"
+                        Url = "https://github.com/MicrosoftDX/nether/blob/master/LICENSE"
                     }
                 });
                 //options.OperationFilter<ApiPrefixFilter>();
@@ -264,6 +264,8 @@ namespace Nether.Web
 
                 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
+                var authority = Configuration["Identity:IdentityServer:Authority"];
+                var uiBaseUrl = Configuration["Identity:IdentityServer:UiBaseUrl"];
 
                 // hybrid
                 uiapp.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
@@ -271,10 +273,10 @@ namespace Nether.Web
                     AuthenticationScheme = "oidc",
                     SignInScheme = "Cookies",
 
-                    Authority = "http://localhost:5000/identity",
+                    Authority = authority,
                     RequireHttpsMetadata = false,
 
-                    PostLogoutRedirectUri = "http://localhost:5000/ui",
+                    PostLogoutRedirectUri = uiBaseUrl,
 
                     ClientId = "mvc2",
                     ClientSecret = "secret",
