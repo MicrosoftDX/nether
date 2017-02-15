@@ -16,9 +16,12 @@
       ]
    },
    "compileOnSave": true,
-   "exclude": [
-      "node_modules",
-      "typings",
-      "wwwroot/lib"
-   ]
+    "exclude": [
+        "node_modules",
+        "typings",
+        "wwwroot/lib",
+        "wwwroot/Features/identity-ui/lib",
+        "obj",
+        "bin"
+    ]
 }

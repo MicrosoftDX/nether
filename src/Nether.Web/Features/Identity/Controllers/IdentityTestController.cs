@@ -14,7 +14,15 @@ namespace Nether.Web.Features.Identity
         [HttpGet]
         public IActionResult Get()
         {
-            return new JsonResult(from c in User.Claims select new { c.Type, c.Value });
+            // Convert claim type, value pairs into a dictionary for easier consumption as JSON
+            // Need to group as there can be multiple claims of the same type (e.g. 'scope')
+            var result = User.Claims
+                .GroupBy(c => c.Type)
+                .ToDictionary(
+                    keySelector: g => g.Key,
+                    elementSelector: g => g.Count() == 1 ? (object)g.First().Value : g.Select(t => t.Value).ToArray()
+                );
+            return new JsonResult(result);
         }
     }
 }

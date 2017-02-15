@@ -52,7 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\**\*;Views;Areas\**\Views;appsettings.json;web.config">
+    <Content Update="wwwroot\**\*;Views;Areas\**\Views;appsettings.json;web.config;Nether.Web.Xml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
