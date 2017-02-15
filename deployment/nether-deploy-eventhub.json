@@ -1,0 +1,147 @@
+/*
+* This template will create an Azure Event Hub for use by Nether.
+* 
+* For more information, please refer to the Nether repository at: https://github.com/MicrosoftDX/nether/tree/master/deployment
+*/
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": { 
+        "ServiceBusNamespace": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 15,
+            "metadata": {
+                "description": "The unique storage account for use by Nether. only allows alpha characters and '-'. Cannot start or end with '-'."
+            }
+        },
+        "EventHubName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 15,
+            "metadata": {
+                "description": ""
+            }
+        },
+        "ConsumerGroupName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 15,
+            "metadata": {
+                "description": ""
+            }
+        },
+        "ManagePolicyName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 15,
+            "defaultValue": "Manage",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "SenderPolicyName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 15,
+            "defaultValue": "Send",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "DayToRetain": {
+            "type": "int",
+            "defaultValue": 7,
+            "metadata": {
+                "description": ""
+            }
+        },
+        "PartitionCount": {
+            "type": "int",
+            "defaultValue": 4,
+            "metadata": {
+                "description": ""
+            }
+        }
+    },
+    "variables": {
+        "ehApiVersion": "2015-08-01",
+        "location":"[resourceGroup().location]",
+        "namespaceRef" : "[concat('Microsoft.EventHub/namespaces/', parameters('ServiceBusNamespace'))]",
+        "eventHubRef" : "[concat('Microsoft.EventHub/namespaces/', parameters('ServiceBusNamespace'),'/eventhubs/',parameters('eventHubName'))]"
+    },
+    "resources": [
+        /* The Azure Service Bus Namespace, Event Hub, and access policy */
+        {  
+            "type":"Microsoft.EventHub/Namespaces",
+            "name":"[parameters('ServiceBusNamespace')]",
+            "location":"[variables('location')]",
+            "apiVersion":"[variables('ehApiVersion')]",
+            "sku":{  
+                "name":"Standard",
+                "tier":"Standard"
+            },
+            "resources":[  
+                /* create the event hub */
+                {  
+                    "type":"EventHubs",
+                    "name":"[parameters('EventHubName')]",
+                    "apiVersion":"[variables('ehApiVersion')]",
+                    "dependsOn":[  
+                        "[variables('namespaceRef')]"
+                    ],
+                    "properties":{  
+                        "path":"[variables('EventHubRef')]",
+                        "messageRetentionInDays": "[parameters('DayToRetain')]",
+                        "partitionCount": "[parameters('PartitionCount')]"
+                    },
+                    "resources": [
+                        /* create a consumer group */
+                        {  
+                            "type":"ConsumerGroups",
+                            "name":"[parameters('ConsumerGroupName')]",
+                            "apiVersion":"[variables('ehApiVersion')]",
+                            "dependsOn":[  
+                                "[variables('eventHubRef')]"
+                            ],
+                            "properties":{
+                                "rights" : []
+                             }
+                        },
+                        /* create the consumer/manage policy */
+                        {
+                            "type": "authorizationRules",
+                            "name": "[parameters('ManagePolicyName')]",
+                            "apiVersion": "[variables('ehApiVersion')]",
+                            "dependsOn": [
+                                "[variables('eventHubRef')]"
+                            ],
+                            "properties": {
+                                "rights": [ "Send", "Listen", "Manage" ]
+                            }
+                        },
+                        /* create a "sender" policy */
+                        {
+                            "type": "authorizationRules",
+                            "name": "[parameters('SenderPolicyName')]",
+                            "apiVersion": "[variables('ehApiVersion')]",
+                            "dependsOn": [
+                                "[variables('eventHubRef')]"
+                            ],
+                            "properties": {
+                                "rights": [ "Send" ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    /* outputs: 
+    *   resourceId: the hdatabase server host name (URI)
+    *   accountKey: the database on the server for use by Nether
+    */
+    "outputs": {
+
+    }
+}
