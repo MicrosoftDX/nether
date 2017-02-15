@@ -1,0 +1,69 @@
+/*
+* This template will create an Azure Storage Account for use by Nether.
+* 
+* For more information, please refer to the Nether repository at: https://github.com/MicrosoftDX/nether/tree/master/deployment
+*/
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": { 
+        "storageAccountName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 15,
+            "metadata": {
+                "description": "The unique storage account for use by Nether. only allows alpha characters and '-'. Cannot start or end with '-'."
+            }
+        },
+        "storageAccountType": {
+            "type": "string",
+            "defaultValue": "Standard_GRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_ZRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Premium_LRS"
+            ],
+            "metadata": {
+                "description": "Account type, premium vs standard, and local, zone, global, global read only redundancy"
+            }
+        }
+    },
+    "variables": {
+        "stgApiVersion": "2015-06-15",
+        "storageAccountName" : "[toLower(parameters('storageAccountName'))]",
+        "accountResourceId" : "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+    },
+    "resources": [
+        /* The Azure SQL Database host server 
+        *   This server is a management container for individual databases
+        */
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('storageAccountName')]",
+            "apiVersion": "[variables('stgApiVersion')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "Storage Account"
+            },
+            "properties": {
+               "accountType": "[parameters('storageAccountType')]"
+            }
+        }
+    ],
+    /* outputs: 
+    *   resourceId: the hdatabase server host name (URI)
+    *   accountKey: the database on the server for use by Nether
+    */
+    "outputs": {
+        "resourceId" : {
+            "type" : "string",
+            "value": "[variables('accountResourceId')]"
+        },
+        "accountKey" : {
+            "type" : "string",
+            "value": "[listKeys(variables('accountResourceId'), variables('stgApiVersion')).key1]"
+        }
+    }
+}

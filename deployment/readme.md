@@ -40,12 +40,13 @@ The deployment templates follow a consistent naming convention based on nether-d
 **nether-deploy.json** - the "master" template which calls the linked templates
 **nether-deploy-db.json** - responsible for provisioning the Azure SQL Database
 **nether-deploy-web.json** - responsible for provisioning the Web Site and its associated hosting plan. Also configures the web site to point at other remote resources such as the Nether web deployment package and database connection
+**nether-deploy-storageaccount.json** - creates the storage account used by Nether Analytics
 
 You can use these templates directly from PowerShell. For more information, please see [Deploy resources with Resource Manager templates and Azure PowerShell](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-template-deploy).
 
 Linked Templates require that the child templates are hosted onlinesomewhere (accessible via a hyperlink). That location is designated by the *templateBaseURL* parameter found in the nether-deploy.json master template. If this parameter is not specified, it will default to the location of the master template. If the location is a private storage account, you can grant access by also specifing the optional *templateSASToken* parameter.
 
-When using the templates directly, you may opt to create your own [parameter files](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-template-deploy#parameters). To avoid accidently committing these files, the Nether repository has already been configured to ignore files that match the file mask ***.privateparams.json**.
+When using the templates directly, you may opt to create your own [parameter files](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-template-deploy#parameters). To assist inthis, we have provided a series of empty, sample parameter files using the naming convention **nether-deploy*.sampleparams.json**. To avoid accidently committing any senstive secrets like usernames and passwords, we sugggest you copy the samples and rename them using the **.privateparams.json** extension. The Nether repository has added this to its gitIgnore to help prevent accidental leakage.
 
 Additionally, you can deploy the entire cloud infrastructure of Nether by clicking on this button:
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoftDX%2Fnether%2Fmaster%2Fdeployment%2Fnether-deploy.json" target="_blank">

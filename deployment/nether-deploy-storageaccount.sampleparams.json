@@ -1,0 +1,19 @@
+/*
+* This is a sample parameter file for use in doing a Nether deployment via the nether-deploy-storageAccount.json template.
+* It will create an Azure Storage Account for use by Nether. Before using, you will need to provide valid values for 
+* each of the fields below. 
+*
+* For more information, please refer to the Nether repository at: https://github.com/MicrosoftDX/nether/tree/master/deployment
+*/
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "value": ""
+    },
+    "storageAccountType": {
+      "value": ""
+    }
+  }
+}
