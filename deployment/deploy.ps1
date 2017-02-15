@@ -63,7 +63,7 @@ if (Test-Path $zipPath){
 [System.IO.Compression.ZipFile]::CreateFromDirectory($publishPath, $zipPath, "Fastest", $false)
 
 Write-Host "Checking for resource group $ResourceGroupName..."
-$resourceGroup = Get-AzureRmResourceGroup -name workshare -ErrorAction SilentlyContinue
+$resourceGroup = Get-AzureRmResourceGroup -name $ResourceGroupName -ErrorAction SilentlyContinue
 if ($resourceGroup -eq $null){
     Write-Host "creating new resource group $ResourceGroupName ... in $Location"
     $resourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location
@@ -100,7 +100,7 @@ if ($container -eq $null){
 
 Write-Host
 Write-Host "Uploading Nether.Web.zip to storage..."
-$blob = Set-AzureStorageBlobContent `
+$webZipblob = Set-AzureStorageBlobContent `
         -Context $storageAccount.Context `
         -Container $containerName `
         -File $zipPath `
@@ -112,17 +112,23 @@ $blob = Set-AzureStorageBlobContent `
 #deploy from template
 
 Write-Host
+Write-Host "Uploading Deployment scripts to storage..."
+Get-ChildItem -File $netherRoot/deployment/* -Exclude *.privateparams.json -filter nether-deploy*.json | Set-AzureStorageBlobContent `
+        -Context $storageAccount.Context `
+        -Container $containerName `
+        -Force
 
 $templateParameters = @{
     NetherWebDomainPrefix = $NetherWebDomainPrefix
     sqlServerName = $sqlServerName
     sqlAdministratorLogin = $sqlAdministratorLogin
     sqlAdministratorPassword = $SqlAdministratorPassword
-    webZipUri = $blob.ICloudBlob.Uri.AbsoluteUri
+    webZipUri = $webZipblob.ICloudBlob.Uri.AbsoluteUri
     # webZipUri = "https://netherassets.blob.core.windows.net/packages/package261.zip"
     # webZipUri = "https://netherbits.blob.core.windows.net/deployment/Nether.Web.zip"
     # templateBaseURL is used for linked template deployments, see deployment/readme.md
-    templateBaseURL = "https://raw.githubusercontent.com/MicrosoftDX/nether/master/deployment/"  
+    #    This must end with "/" or it will break the linked templates
+    templateBaseURL = $container.CloudBlobContainer.StorageUri.PrimaryUri.AbsoluteUri + "/"
     
     #
     ### to customize your deployment, uncomment and provide values for the following parameters
