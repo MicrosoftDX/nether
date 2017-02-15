@@ -142,8 +142,8 @@
                     "InstanceCount": { "value": "[parameters('InstanceCount')]" },
                     "DatabaseServerFQDN": { "value": "[reference('SQLDatabaseTemplate').outputs.databaseServerFQDN.value]" },
                     "sqlServerDatabaseName": { "value": "[reference('SQLDatabaseTemplate').outputs.databaseName.value]" },
-                    "sqlAdministratorLogin": { "value": "[parameters('webZipUri')]" },
-                    "sqlAdministratorPassword": { "value": "[parameters('webZipUri')]" },
+                    "sqlAdministratorLogin": { "value": "[parameters('sqlAdministratorLogin')]" },
+                    "sqlAdministratorPassword": { "value": "[parameters('sqlAdministratorPassword')]" },
                     "webZipUri": { "value": "[parameters('webZipUri')]" }
                 } 
             } 
