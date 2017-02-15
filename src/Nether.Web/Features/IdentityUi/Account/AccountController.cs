@@ -54,6 +54,24 @@ namespace Nether.Web.Features.IdentityUi
             _logger = logger;
         }
 
+
+        /// <summary>
+        /// Shows the error page
+        /// </summary>
+        public async Task<IActionResult> Error(string errorId)
+        {
+            var vm = new ErrorViewModel();
+
+            // retrieve error details from identityserver
+            var message = await _interaction.GetErrorContextAsync(errorId);
+            if (message != null)
+            {
+                vm.Error = message;
+            }
+
+            return View("Error", vm);
+        }
+
         /// <summary>
         /// Show login page
         /// </summary>
@@ -89,7 +107,7 @@ namespace Nether.Web.Features.IdentityUi
                 if (!validationContext.Result.IsError)
                 {
                     AuthenticationProperties props = null;
-                    // only set explicit expiration here if persistent. 
+                    // only set explicit expiration here if persistent.
                     // otherwise we reply upon expiration configured in cookie middleware.
                     if (AccountOptions.AllowRememberLogin && model.RememberLogin)
                     {
@@ -186,100 +204,6 @@ namespace Nether.Web.Features.IdentityUi
             };
             return new ChallengeResult(provider, props);
         }
-
-        ///// <summary>
-        ///// Post processing of external authentication
-        ///// </summary>
-        //[HttpGet]
-        //public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
-        //{
-        //    // read external identity from the temporary cookie
-        //    var info = await HttpContext.Authentication.GetAuthenticateInfoAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
-        //    var tempUser = info?.Principal;
-        //    if (tempUser == null)
-        //    {
-        //        throw new Exception("External authentication error");
-        //    }
-
-        //    // retrieve claims of the external user
-        //    var claims = tempUser.Claims.ToList();
-
-        //    // try to determine the unique id of the external user - the most common claim type for that are the sub claim and the NameIdentifier
-        //    // depending on the external provider, some other claim type might be used
-        //    var userIdClaim = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Subject);
-        //    if (userIdClaim == null)
-        //    {
-        //        userIdClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-        //    }
-        //    if (userIdClaim == null)
-        //    {
-        //        throw new Exception("Unknown userid");
-        //    }
-
-        //    // remove the user id claim from the claims collection and move to the userId property
-        //    // also set the name of the external authentication provider
-        //    claims.Remove(userIdClaim);
-        //    var providerType = info.Properties.Items["scheme"];
-        //    var providerUserId = userIdClaim.Value;
-
-        //    // check if the external user is already provisioned
-        //    var user = await _userStore.GetUserByLoginAsync(providerType, providerUserId);
-        //    if (user == null)
-        //    {
-        //        // this sample simply auto-provisions new external user
-        //        // another common approach is to start a registrations workflow first
-        //        //user = _userStore.AutoProvisionUser(providerId, userId, claims);
-        //        user = new User
-        //        {
-        //            Role = RoleNames.Player,
-        //            IsActive = true,
-        //            Logins  = new [] {
-        //                new Login
-        //                {
-        //                    ProviderType = providerType,
-        //                    ProviderId = providerUserId
-        //                }
-        //            }
-        //        };
-        //        _logger.LogInformation("Creating user from external source '{0}'", providerType);
-        //        await _userStore.SaveUserAsync(user);
-        //    }
-        //    // TODO check for a gamertag and direct to "registration" page if not
-        //    // Need to think about re-auth flow to pick up the tag!! (or can we keep the temp cookie until then?)
-        //    throw new NotImplementedException("TODO - check and provision user with gamertag!");
-
-        //    var additionalClaims = new List<Claim>();
-
-        //    // if the external system sent a session id claim, copy it over
-        //    var sid = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.SessionId);
-        //    if (sid != null)
-        //    {
-        //        additionalClaims.Add(new Claim(JwtClaimTypes.SessionId, sid.Value));
-        //    }
-
-        //    // if the external provider issued an id_token, we'll keep it for signout
-        //    AuthenticationProperties props = null;
-        //    var id_token = info.Properties.GetTokenValue("id_token");
-        //    if (id_token != null)
-        //    {
-        //        props = new AuthenticationProperties();
-        //        props.StoreTokens(new[] { new AuthenticationToken { Name = "id_token", Value = id_token } });
-        //    }
-
-        //    // issue authentication cookie for user
-        //    await HttpContext.Authentication.SignInAsync(user.UserId, "TODO - username!!", providerType, props, additionalClaims.ToArray());
-
-        //    // delete temporary cookie used during external authentication
-        //    await HttpContext.Authentication.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
-
-        //    // validate return URL and redirect back to authorization endpoint
-        //    if (_interaction.IsValidReturnUrl(returnUrl))
-        //    {
-        //        return Redirect(returnUrl);
-        //    }
-
-        //    return Redirect("~/");
-        //}
 
         /// <summary>
         /// Post processing of external authentication
