@@ -1,8 +1,7 @@
 DROP TABLE IF EXISTS monthlygamedurations;
 
 CREATE TABLE IF NOT EXISTS monthlygamedurations(
-    year INT,
-    month INT,
+    eventMonth DATE,
     avgduration BIGINT
 )
 COMMENT 'average game session durations per day'
@@ -15,10 +14,9 @@ LOCATION '${hiveconf:monthlygamedurations}';
 
 INSERT INTO TABLE monthlygamedurations
 SELECT
-    year,
-    month,
+    to_date(eventMonth) AS eventMonth,
     avg(timeSpanSeconds) as avgduration
 FROM
     rawgamedurations
 GROUP BY
-    year, month;
+    eventMonth;

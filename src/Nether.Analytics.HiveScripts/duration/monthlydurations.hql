@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS monthlydurations;
 
 CREATE TABLE IF NOT EXISTS monthlydurations(
-    eventDate DATE,
+    eventMonth DATE,
     displayName STRING,
     avgduration BIGINT
 )
@@ -15,10 +15,10 @@ LOCATION '${hiveconf:monthlydurations}';
 
 INSERT INTO TABLE monthlydurations
 SELECT
-    trunc(eventDate,'MM') as eventDate,
+    to_date(eventMonth) AS eventMonth,
     displayName,
     avg(timeSpanSeconds) as avgduration
 FROM
     durations
 GROUP BY
-    year, month, displayName;
+    eventMonth, displayName;

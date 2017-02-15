@@ -1,9 +1,7 @@
 DROP TABLE IF EXISTS dailygamedurations;
 
 CREATE TABLE IF NOT EXISTS dailygamedurations(
-    year INT,
-    month INT,
-    day INT,
+    eventDate DATE,
     avgduration BIGINT
 )
 COMMENT 'average game session durations per day'
@@ -16,11 +14,9 @@ LOCATION '${hiveconf:dailygamedurations}';
 
 INSERT INTO TABLE dailygamedurations
 SELECT
-    year,
-    month,
-    day,
+    eventDate,
     avg(timeSpanSeconds) as avgduration
 FROM
     rawgamedurations
 GROUP BY
-    year, month, day;
+    eventDate;

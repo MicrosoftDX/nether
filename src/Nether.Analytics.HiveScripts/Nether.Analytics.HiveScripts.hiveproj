@@ -22,9 +22,9 @@
     <Script Include="externalTables.hql" />
     <Script Include="DAU-MAU.hql" />
     <Script Include="duration/durations.hql" />
-    <Script Include="duration/dailyDurations.hql" />
-    <Script Include="duration/monthlyDurations.hql" />
-    <Script Include="duration/yearlyDurations.hql" />
+    <Script Include="duration/dailydurations.hql" />
+    <Script Include="duration/monthlydurations.hql" />
+    <Script Include="duration/annualdurations.hql" />
     <Script Include="counts/aggcounters.hql" />
     <Script Include="counts/countspersession.hql" />
     <Script Include="counts/countspertags.hql" />
