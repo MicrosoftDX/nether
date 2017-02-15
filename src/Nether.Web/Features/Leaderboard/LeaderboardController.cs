@@ -51,6 +51,7 @@ namespace Nether.Web.Features.Leaderboard
         /// <returns>List of scores and gametags</returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LeaderboardGetResponseModel))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [Authorize(Roles = RoleNames.PlayerOrAdmin)]
         [HttpGet("{name}")]
         public async Task<ActionResult> Get(string name)
@@ -59,6 +60,10 @@ namespace Nether.Web.Features.Leaderboard
             var gamerTag = User.GetGamerTag();
 
             LeaderboardConfig config = _configuration.GetLeaderboardConfig(name);
+            if (config == null)
+            {
+                return NotFound();
+            }
             LeaderboardType type = config.Type;
             List<GameScore> scores;
             switch (type)
