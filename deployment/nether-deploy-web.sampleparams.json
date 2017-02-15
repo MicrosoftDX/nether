@@ -1,0 +1,30 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "NetherWebDomainPrefix": {
+      "value": "myplaycanvas"
+    },
+    "WebHostingPlan": {
+      "value": "Free (no 'always on')"
+    },
+    "InstanceCount": {
+      "value": 2
+    },
+    "DatabaseServerFQDN": {
+      "value": "myplaycanvas.database.windows.net"
+    },
+    "sqlServerDatabaseName": {
+      "value": "nether"
+    },
+    "sqlAdministratorLogin": {
+      "value": "bstineman"
+    },
+    "sqlAdministratorPassword": {
+      "value": "abbcSecur3"
+    },
+    "webZipUri": {
+      "value": ""
+    }
+  }
+}
