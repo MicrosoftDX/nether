@@ -44,7 +44,7 @@ namespace Nether.Data.Sql.Leaderboard
 
         public virtual async Task SaveScoreAsync(GameScore score)
         {
-            await Scores.AddAsync(new SavedGamerScore { Score = score.Score, CustomTag = score.CustomTag, GamerTag = score.GamerTag, DateAchieved = DateTime.UtcNow });
+            await Scores.AddAsync(new SavedGamerScore { Score = score.Score, CustomTag = score.CustomTag, GamerTag = score.Gamertag, DateAchieved = DateTime.UtcNow });
             await SaveChangesAsync();
         }
 

@@ -14,7 +14,7 @@ namespace Nether.Web.Features.Leaderboard
         {
             public static implicit operator LeaderboardEntry(GameScore score)
             {
-                return new LeaderboardEntry { Gamertag = score.GamerTag, Score = score.Score };
+                return new LeaderboardEntry { Gamertag = score.Gamertag, Score = score.Score };
             }
 
             /// <summary>

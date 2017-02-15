@@ -51,7 +51,7 @@ namespace Nether.Web.Features.Leaderboard
         /// <returns>List of scores and gametags</returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LeaderboardGetResponseModel))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        [Authorize(Roles = RoleNames.Player)]
+        [Authorize(Roles = RoleNames.PlayerOrAdmin)]
         [HttpGet("{name}")]
         public async Task<ActionResult> Get(string name)
         {
@@ -115,7 +115,7 @@ namespace Nether.Web.Features.Leaderboard
             await Task.WhenAll(
                 _store.SaveScoreAsync(new GameScore
                 {
-                    GamerTag = gamertag,
+                    Gamertag = gamertag,
                     Country = request.Country,
                     CustomTag = request.CustomTag,
                     Score = request.Score

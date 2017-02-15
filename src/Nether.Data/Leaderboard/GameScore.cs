@@ -8,7 +8,7 @@ namespace Nether.Data.Leaderboard
     [DebuggerDisplay("GameScore (tag '{Gamertag}', score {Score})")]
     public class GameScore
     {
-        public string GamerTag { get; set; }
+        public string Gamertag { get; set; }
         public string Country { get; set; }
         public string CustomTag { get; set; }
         public int Score { get; set; }
