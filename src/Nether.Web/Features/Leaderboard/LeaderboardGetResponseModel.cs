@@ -14,7 +14,12 @@ namespace Nether.Web.Features.Leaderboard
         {
             public static implicit operator LeaderboardEntry(GameScore score)
             {
-                return new LeaderboardEntry { Gamertag = score.Gamertag, Score = score.Score };
+                return new LeaderboardEntry
+                {
+                    Gamertag = score.Gamertag,
+                    Score = score.Score,
+                    Rank = score.Rank
+                };
             }
 
             /// <summary>
@@ -26,6 +31,8 @@ namespace Nether.Web.Features.Leaderboard
             /// Scores
             /// </summary>
             public int Score { get; set; }
+
+            public long Rank { get; set; }
         }
     }
 }
