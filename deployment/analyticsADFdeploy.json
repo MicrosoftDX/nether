@@ -43,12 +43,13 @@
         "rawEventsContainer": "gameevents",
         "intermediateEventsContainer": "inter",
         "resultEventsContainer": "results",
-        "startsFolder": "start",
-        "stopsFolder": "stop",
-        "gamestartsFolder": "game-start",
-        "gamestopsFolder": "game-stop",
-        "gameheartbeatsFolder": "game-heartbeat",
-        "durationsFolder": "durations",
+        "versionNumber": "v1.0.0",
+        "startsFolder": "[concat('start', variables('versionNumber'))]",
+        "stopsFolder": "[concat('stop', variables('versionNumber'))]",
+        "gamestartsFolder": "[concat('game-start', variables('versionNumber'))]",
+        "gamestopsFolder": "[concat('game-stop', variables('versionNumber'))]",
+        "gameheartbeatsFolder": "[concat('game-heartbeat', variables('versionNumber'))]",
+        "durationsFolder": "[concat('durations', variables('versionNumber'))]",
         "dailyDurationsFolder": "aggdurations/daily",
         "monthlyDurationsFolder": "aggdurations/monthly",
         "yearlyDurationsFolder": "aggdurations/yearly",
@@ -345,7 +346,6 @@
                         "linkedServiceName": "[variables('dfStorageLS')]",
                         "typeProperties": {
                             "folderPath": "[concat(variables('intermediateEventsContainer'), '/', variables('durationsFolder'), '/')]",
-                            "fileName": "000000_0",
                             "format": {
                                 "type": "TextFormat",
                                 "rowDelimiter": "\n",
@@ -459,16 +459,8 @@
                     "properties": {
                         "structure": [
                             {
-                                "name": "Year",
-                                "type": "Int64"
-                            },
-                            {
-                                "name": "Month",
-                                "type": "Int64"
-                            },
-                            {
-                                "name": "Day",
-                                "type": "Int64"
+                                "name": "EventDate",
+                                "type": "DateTime"
                             },
                             {
                                 "name": "DisplayName",
@@ -510,12 +502,8 @@
                     "properties": {
                         "structure": [
                             {
-                                "name": "Year",
-                                "type": "Int64"
-                            },
-                            {
-                                "name": "Month",
-                                "type": "Int64"
+                                "name": "EventMonth",
+                                "type": "DateTime"
                             },
                             {
                                 "name": "DisplayName",
@@ -600,16 +588,8 @@
                     "properties": {
                         "structure": [
                             {
-                                "name": "Year",
-                                "type": "Int32"
-                            },
-                            {
-                                "name": "Month",
-                                "type": "Int32"
-                            },
-                            {
-                                "name": "Day",
-                                "type": "Int32"
+                                "name": "EventDate",
+                                "type": "Date"
                             },
                             {
                                 "name": "DisplayName",
@@ -642,12 +622,8 @@
                     "properties": {
                         "structure": [
                             {
-                                "name": "Year",
-                                "type": "Int32"
-                            },
-                            {
-                                "name": "Month",
-                                "type": "Int32"
+                                "name": "EventMonth",
+                                "type": "Date"
                             },
                             {
                                 "name": "DisplayName",
@@ -753,32 +729,6 @@
                                 "firstRowAsHeader": false
                             }
                         },
-                        "structure": [
-                            {
-                                "name": "StartTime",
-                                "type": "Datetime"
-                            },
-                            {
-                                "name": "StopTime",
-                                "type": "Datetime"
-                            },
-                            {
-                                "name": "Duration",
-                                "type": "Int64"
-                            },
-                            {
-                                "name": "GameSessionId",
-                                "type": "String"
-                            },
-                            {
-                                "name": "GamerTag",
-                                "type": "String"
-                            },
-                            {
-                                "name": "LastEventType",
-                                "type": "String"
-                            }
-                        ],
                         "availability": {
                             "frequency": "[variables('dfFrequency')]",
                             "interval": "[variables('dfInterval')]"
@@ -883,16 +833,8 @@
                     "properties": {
                         "structure": [
                             {
-                                "name": "Year",
-                                "type": "Int64"
-                            },
-                            {
-                                "name": "Month",
-                                "type": "Int64"
-                            },
-                            {
-                                "name": "Day",
-                                "type": "Int64"
+                                "name": "EventDate",
+                                "type": "DateTime"
                             },
                             {
                                 "name": "AverageGameDuration",
@@ -930,12 +872,8 @@
                     "properties": {
                         "structure": [
                             {
-                                "name": "Year",
-                                "type": "Int64"
-                            },
-                            {
-                                "name": "Month",
-                                "type": "Int64"
+                                "name": "EventMonth",
+                                "type": "DateTime"
                             },
                             {
                                 "name": "AverageGameDuration",
@@ -1012,16 +950,8 @@
                     "properties": {
                         "structure": [
                             {
-                                "name": "Year",
-                                "type": "Int32"
-                            },
-                            {
-                                "name": "Month",
-                                "type": "Int32"
-                            },
-                            {
-                                "name": "Day",
-                                "type": "Int32"
+                                "name": "EventDate",
+                                "type": "Date"
                             },
                             {
                                 "name": "AverageGameDuration",
@@ -1050,12 +980,8 @@
                     "properties": {
                         "structure": [
                             {
-                                "name": "Year",
-                                "type": "Int32"
-                            },
-                            {
-                                "name": "Month",
-                                "type": "Int32"
+                                "name": "EventMonth",
+                                "type": "Date"
                             },
                             {
                                 "name": "AverageGameDuration",

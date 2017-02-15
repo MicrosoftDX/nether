@@ -6,6 +6,8 @@ drop table if exists durations;
 
 CREATE EXTERNAL TABLE IF NOT EXISTS starts(event string COMMENT 'event type',
        version string,
+       enqueueTime TIMESTAMP,
+       dequeueTime TIMESTAMP,
        clientutc timestamp,
        eventCorrelationId string,
        displayName string,
@@ -22,6 +24,8 @@ LOCATION '${hiveconf:starteventsloc}';
 
 CREATE EXTERNAL TABLE IF NOT EXISTS stops(event string COMMENT 'event type',
        version string,
+       enqueueTime TIMESTAMP,
+       dequeueTime TIMESTAMP,
        clientutc timestamp,
        eventCorrelationId string,
        gameSessionId string,
@@ -37,6 +41,7 @@ LOCATION '${hiveconf:stopeventsloc}';
 
 CREATE TABLE IF NOT EXISTS durations(
     eventDate DATE,
+    eventMonth STRING,
     startTime TIMESTAMP,
     stopTime TIMESTAMP,
     timeSpanSeconds BIGINT,
@@ -57,17 +62,18 @@ LOCATION '${hiveconf:rawdurationsloc}';
 INSERT INTO TABLE durations
 PARTITION (year, month, day)
 SELECT
-    to_date(start.clientutc) as eventDate,
+    to_date(start.enqueueTime) as eventDate,
+    if(month(start.enqueueTime)<10, concat(year(start.enqueueTime), '-0', month(start.enqueueTime), '-01'), concat(year(start.enqueueTime), '-', month(start.enqueueTime), '-01')) as eventMonth,
     start.clientUtc as startTime,
     stop.clientUtc as stopTime,
-    unix_timestamp(stop.clientUtc) - unix_timestamp(start.clientUtc) AS timeSpanSeconds,
+    unix_timestamp(stop.enqueueTime) - unix_timestamp(start.enqueueTime) AS timeSpanSeconds,
     start.eventCorrelationId as eventCorrelationId,
     start.displayName AS displayName,
     start.gameSessionId AS gameSessionId,
     start.tags AS tags,
-    year(start.clientUtc) as year,
-    month(start.clientUtc) as month,
-    day(start.clientUtc) as day
+    year(start.enqueueTime) as year,
+    month(start.enqueueTime) as month,
+    day(start.enqueueTime) as day
 FROM
     starts start JOIN stops stop
 ON
