@@ -14,6 +14,18 @@ param
     $StorageAccountName,
 
     [Parameter(Mandatory=$true)]
+    [string]
+    $NetherWebDomainPrefix,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $sqlServerName,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $sqlAdministratorLogin,
+
+    [Parameter(Mandatory=$true)]
     [securestring]
     $SqlAdministratorPassword
 )
@@ -33,7 +45,7 @@ if (Test-Path $publishPath)
 {
     Remove-Item $publishPath -Recurse -Force
 }
-dotnet publish src/Nether.Web -c $build
+dotnet publish "$netherRoot/src/Nether.Web" -c $build
 
 # Create ZIP (requires PowerShell 5.0 upwards)
 Write-Host
@@ -51,7 +63,7 @@ if (Test-Path $zipPath){
 [System.IO.Compression.ZipFile]::CreateFromDirectory($publishPath, $zipPath, "Fastest", $false)
 
 Write-Host "Checking for resource group $ResourceGroupName..."
-$resourceGroup = Get-AzureRmResourceGroup -name workshare -ErrorAction SilentlyContinue
+$resourceGroup = Get-AzureRmResourceGroup -name $ResourceGroupName -ErrorAction SilentlyContinue
 if ($resourceGroup -eq $null){
     Write-Host "creating new resource group $ResourceGroupName ... in $Location"
     $resourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location
@@ -88,7 +100,7 @@ if ($container -eq $null){
 
 Write-Host
 Write-Host "Uploading Nether.Web.zip to storage..."
-$blob = Set-AzureStorageBlobContent `
+$webZipblob = Set-AzureStorageBlobContent `
         -Context $storageAccount.Context `
         -Container $containerName `
         -File $zipPath `
@@ -100,12 +112,32 @@ $blob = Set-AzureStorageBlobContent `
 #deploy from template
 
 Write-Host
+Write-Host "Uploading Deployment scripts to storage..."
+Get-ChildItem -File $netherRoot/deployment/* -Exclude *.privateparams.json -filter nether-deploy*.json | Set-AzureStorageBlobContent `
+        -Context $storageAccount.Context `
+        -Container $containerName `
+        -Force
 
 $templateParameters = @{
+    NetherWebDomainPrefix = $NetherWebDomainPrefix
+    sqlServerName = $sqlServerName
+    sqlAdministratorLogin = $sqlAdministratorLogin
     sqlAdministratorPassword = $SqlAdministratorPassword
-    webZipUri = $blob.ICloudBlob.Uri.AbsoluteUri
+    webZipUri = $webZipblob.ICloudBlob.Uri.AbsoluteUri
     # webZipUri = "https://netherassets.blob.core.windows.net/packages/package261.zip"
     # webZipUri = "https://netherbits.blob.core.windows.net/deployment/Nether.Web.zip"
+    # templateBaseURL is used for linked template deployments, see deployment/readme.md
+    #    This must end with "/" or it will break the linked templates
+    templateBaseURL = $container.CloudBlobContainer.StorageUri.PrimaryUri.AbsoluteUri + "/"
+    
+    #
+    ### to customize your deployment, uncomment and provide values for the following parameters
+    ### you can find sample value by looking at nether-deploy.json's parameters
+    #
+    # WebHostingPlan = "Free (no 'always on')"
+    # InstanceCount = 1
+    # databaseSKU = "Basic"
+    # templateSASToken = "" #used for linked template deployments from private locations, see deployment/readme.md
 }
 
 $deploymentName = "Nether-Deployment-{0:yyyy-MM-dd-HH-mm-ss}" -f (Get-Date)
@@ -114,7 +146,7 @@ Write-Host "Deploying application... ($deploymentName)"
 $result = New-AzureRmResourceGroupDeployment `
             -ResourceGroupName $ResourceGroupName `
             -Name $deploymentName `
-            -TemplateFile "$PSScriptRoot\nether-web.json" `
+            -TemplateFile "$PSScriptRoot\nether-deploy.json" `
             -TemplateParameterObject $templateParameters
 
 Write-Host

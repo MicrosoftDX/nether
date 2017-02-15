@@ -1,0 +1,238 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "NetherWebDomainPrefix": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 12,
+            "metadata": {
+                "description": "The begining portion of the Nether web deployment URL (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'." 
+            }
+        },
+        "WebHostingPlan": { 
+            "type": "string", 
+            "defaultValue": "Free (no 'always on')", 
+            "allowedValues": [ 
+                "Free (no 'always on')", 
+                "Shared", 
+                "Basic B1", 
+                "Basic B2", 
+                "Basic B3", 
+                "Standard S1", 
+                "Standard S2", 
+                "Standard S3", 
+                "Premium P1", 
+                "Premium P2", 
+                "Premium P3"
+            ], 
+            "metadata": { 
+                "description": "Specifies the database pricing/performance." 
+            } 
+        }, 
+        "InstanceCount": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Number of copies of the application. Limited based on hosting plan. "
+            }
+        },
+        "DatabaseServerFQDN": {
+            "type": "string",
+            "metadata": {
+                "description": "The FQDN URI of the Azure DB Server"
+            }
+        },
+        "sqlServerDatabaseName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the database on the server to use"
+            }
+        },
+        "sqlAdministratorLogin": {
+            "type": "string",
+            "metadata": {
+                "description": "The admin user of the Azure DB Server"
+            }
+        },
+        "sqlAdministratorPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The password of the admin user of the SQL Server"
+            }
+        },
+        "webZipUri": {
+            "type": "string",
+            "metadata": {
+                "description": "(Optional) Absolute URI containing the Nether API's deployment package (ZIP). If not included, you'll need to deploy the package seperately."
+            }
+        }
+    },
+    "variables": {
+        "WebResourceAPI": "2015-08-01",
+        "hostingPlanName": "[toLower(concat(parameters('NetherWebDomainPrefix'), '-hostingplan'))]",
+        "webSiteName": "[toLower(concat(parameters('NetherWebDomainPrefix'), '-website'))]",
+        "HostingSKUs" : {
+            "Free (no 'always on')" : {
+                "tier": "Free",
+                "size": "F1",
+                "enableAlwaysOn": false
+            },
+            "Shared" : {
+                "tier": "Shared",
+                "size": "D1",
+                "enableAlwaysOn": true
+            },
+            "Basic B1" : {
+                "tier": "Basic",
+                "size": "B1",
+                "enableAlwaysOn": true
+            },
+            "Basic B2" : {
+                "tier": "Basic",
+                "size": "B2",
+                "enableAlwaysOn": true
+            },
+            "Basic B3" : {
+                "tier": "Basic",
+                "size": "B3",
+                "enableAlwaysOn": true
+            },
+            "Standard S1" : {
+                "tier": "Standard",
+                "size": "S1",
+                "enableAlwaysOn": true
+            },
+            "Standard S2" : {
+                "tier": "Standard",
+                "size": "S2",
+                "enableAlwaysOn": true
+            },
+            "Standard S3" : {
+                "tier": "Standard",
+                "size": "S3",
+                "enableAlwaysOn": true
+            },
+            "Premium P1" : {
+                "tier": "Premium",
+                "size": "P1",
+                "enableAlwaysOn": true
+            },
+            "Premium P2" : {
+                "tier": "Premium",
+                "size": "P2",
+                "enableAlwaysOn": true
+            },
+            "Premium S3" : {
+                "tier": "Premium",
+                "size": "P3",
+                "enableAlwaysOn": true
+            }
+        },
+        "sqlConnString": "[concat('Data Source=tcp:', parameters('DatabaseServerFQDN'), ',1433;Initial Catalog=', parameters('sqlServerDatabaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', parameters('DatabaseServerFQDN'), ';Password=', parameters('sqlAdministratorPassword'), ';')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "name": "[variables('hostingPlanName')]",
+            "apiVersion": "[variables('WebResourceAPI')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "HostingPlan"
+            },
+            "sku":{
+                "name": "[variables('HostingSKUs')[parameters('WebHostingPlan')].size]",
+                "tier": "[variables('HostingSKUs')[parameters('WebHostingPlan')].tier]",
+                "size": "[variables('HostingSKUs')[parameters('WebHostingPlan')].size]",
+                "capacity": "[parameters('InstanceCount')]"
+            },
+            "properties": {
+                "name": "[variables('hostingPlanName')]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "name": "[variables('webSiteName')]",
+            "apiVersion": "[variables('WebResourceAPI')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('hostingPlanName')]"
+            ],
+            "tags": {
+                "displayName": "WebSite"
+            },
+            "properties":{
+                "name": "[variables('webSiteName')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+            },
+            "resources": [
+                {
+                    "type": "extensions",
+                    "name": "MSDeploy",
+                    "apiVersion": "[variables('WebResourceAPI')]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites/', variables('webSiteName'))]"
+                    ],
+                    "tags": {
+                        "displayName": "DeployTheZip"
+                    },
+                    "properties": {
+                        "packageUri": "[parameters('webZipUri')]"
+                    }
+                },
+                {
+                    "type": "config",
+                    "name": "appsettings",
+                    "apiVersion": "[variables('WebResourceAPI')]",
+                    "dependsOn": [
+                        "[variables('webSiteName')]",
+                        "MSDeploy"
+                    ],
+                    "properties": {
+                        "alwaysOn": "[variables('HostingSKUs')[parameters('WebHostingPlan')].enableAlwaysOn]",
+
+                        "Identity:Store:wellknown": "sql",
+                        "Identity:Store:properties:ConnectionString": "[variables('sqlConnString')]",
+
+                        "Leaderboard:Store:wellknown": "sql",
+                        "Leaderboard:Store:properties:ConnectionString": "[variables('sqlConnString')]",
+
+                        "PlayerManagement:Store:wellknown": "sql",
+                        "PlayerManagement:Store:properties:ConnectionString": "[variables('sqlConnString')]",
+
+                        "ASPNETCORE_ENVIRONMENT": "Development",
+
+                        "Identity:Clients:clientcreds-test:Name": "Test Client for client credentials flow",
+                        "Identity:Clients:clientcreds-test:AllowedGrantTypes": "client_credentials",
+                        "Identity:Clients:clientcreds-test:ClientSecrets": "devsecret",
+                        "Identity:Clients:clientcreds-test:AllowedScopes": "openid, profile, nether-all",
+
+                        "Identity:Clients:resourceowner-test:AllowedGrantTypes": "password",
+                        "Identity:Clients:resourceowner-test:ClientSecrets": "devsecret",
+                        "Identity:Clients:resourceowner-test:AllowedScopes": "nether-all",
+
+                        "Identity:Clients:customgrant-test:AllowedGrantTypes": "fb-usertoken",
+                        "Identity:Clients:customgrant-test:ClientSecrets": "devsecret",
+                        "Identity:Clients:customgrant-test:AllowedScopes": "nether-all",
+
+                        "WEB_HOST_URL": "[concat('http://', reference(concat('Microsoft.Web/sites/', variables('webSiteName'))).hostNames[0])]",
+
+                        "Identity:PlayerManagementClient:wellknown": "default",
+                        "Identity:PlayerManagementClient:properties:IdentityBaseUrl": "[concat('http://', reference(concat('Microsoft.Web/sites/', variables('webSiteName'))).hostNames[0], '/identity')]",
+                        "Identity:PlayerManagementClient:properties:ApiBaseUrl": "[concat('http://', reference(concat('Microsoft.Web/sites/', variables('webSiteName'))).hostNames[0], '/api')]",
+
+                        "Identity:IdentityServer:RequireHttps": "false",
+                        "Identity:IdentityServer:Authority": "[concat('http://', reference(concat('Microsoft.Web/sites/', variables('webSiteName'))).hostNames[0])]"
+                    }
+                }
+            ]
+        }
+    ],
+    "outputs": {
+        "webSiteFQDN" : {
+            "type" : "string",
+            "value": "[reference(variables('webSiteName')).hostNames[0]]"
+        }
+    }
+}

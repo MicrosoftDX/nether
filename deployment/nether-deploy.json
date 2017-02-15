@@ -1,0 +1,166 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": { 
+        "NetherWebDomainPrefix": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 12,
+            "metadata": {
+                "description": "The begining portion of the Nether web deployment URL (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'." 
+            }
+        },
+        "WebHostingPlan": { 
+            "type": "string", 
+            "defaultValue": "Free (no 'always on')", 
+            "allowedValues": [ 
+                "Free (no 'always on')", 
+                "Shared", 
+                "Basic B1", 
+                "Basic B2", 
+                "Basic B3", 
+                "Standard S1", 
+                "Standard S2", 
+                "Standard S3", 
+                "Premium P1", 
+                "Premium P2", 
+                "Premium P3"
+            ], 
+            "metadata": { 
+                "description": "Specifies the database pricing/performance." 
+            } 
+        }, 
+        "InstanceCount": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Number of copies of the application. Limited based on hosting plan. "
+            }
+        },
+        "webZipUri": {
+            "type": "string",
+            "metadata": {
+                "description": "(Optional) Absolute URI containing the Nether API's deployment package (ZIP). If not included, you'll need to deploy the package seperately."
+            }
+        },
+        "sqlServerName": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 63,
+            "metadata": {
+                "description": "Database server name (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'."
+            }
+        },
+        "databaseSKU": { 
+            "type": "string", 
+            "defaultValue": "Basic", 
+            "allowedValues": [ 
+                "Basic", 
+                "Standard", 
+                "Standard S1", 
+                "Standard S2", 
+                "Standard S3", 
+                "Premium P1", 
+                "Premium P2", 
+                "Premium P4", 
+                "Premium P6", 
+                "Premium P11", 
+                "Premium P15"
+            ], 
+            "metadata": { 
+                "description": "Specifies the database pricing/performance." 
+            } 
+        }, 
+        "sqlAdministratorLogin": {
+            "type": "string",
+            "minLength": 8,
+            "metadata": {
+                "description": "The admin user of the SQL Server"
+            }
+        },
+        "sqlAdministratorPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The password of the admin user of the SQL Server"
+            }
+        },
+        "templateBaseURL": {
+            "type": "string",
+            "defaultValue": "[deployment().properties.templateLink.uri]",
+            "metadata": {
+                "description": "The base location for all linked templates."
+            }   
+        },
+        "templateSASToken": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The base location for all linked templates."
+            }   
+        }
+    },
+    "variables": {
+        "deploymentAPI" : "2015-01-01",
+        "dbTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-db.json'), parameters('templateSASToken'))]",
+        "WebTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-web.json'), parameters('templateSASToken'))]"
+    },
+    "resources": [ 
+        { 
+            "type": "Microsoft.Resources/deployments", 
+            "name": "SQLDatabaseTemplate", 
+            "apiVersion": "[variables('deploymentAPI')]", 
+            "properties": { 
+                "mode": "Incremental", 
+                "templateLink": {
+                    "uri": "[variables('dbTemplateURI')]",
+                    "contentVersion": "1.0.0.0"
+                }, 
+                "parameters": { 
+                    "sqlServerName": { "value": "[parameters('sqlServerName')]" },
+                    "databaseSKU": { "value": "[parameters('databaseSKU')]" },
+                    "sqlAdministratorLogin": { "value": "[parameters('sqlAdministratorLogin')]" },
+                    "sqlAdministratorPassword": { "value": "[parameters('sqlAdministratorPassword')]" }
+                } 
+            } 
+        },
+        { 
+            "type": "Microsoft.Resources/deployments", 
+            "name": "WebTemplate", 
+            "apiVersion": "[variables('deploymentAPI')]", 
+            "dependsOn": [
+                "SQLDatabaseTemplate"
+            ],
+            "properties": { 
+                "mode": "Incremental", 
+                "templateLink": {
+                    "uri": "[variables('WebTemplateURI')]",
+                    "contentVersion": "1.0.0.0"
+                }, 
+                "parameters": { 
+                    "NetherWebDomainPrefix": { "value": "[parameters('NetherWebDomainPrefix')]" },
+                    "WebHostingPlan": { "value": "[parameters('WebHostingPlan')]" },
+                    "InstanceCount": { "value": "[parameters('InstanceCount')]" },
+                    "DatabaseServerFQDN": { "value": "[reference('SQLDatabaseTemplate').outputs.databaseServerFQDN.value]" },
+                    "sqlServerDatabaseName": { "value": "[reference('SQLDatabaseTemplate').outputs.databaseName.value]" },
+                    "sqlAdministratorLogin": { "value": "[parameters('webZipUri')]" },
+                    "sqlAdministratorPassword": { "value": "[parameters('webZipUri')]" },
+                    "webZipUri": { "value": "[parameters('webZipUri')]" }
+                } 
+            } 
+        } 
+    ],
+    "outputs": {
+        "WebSiteFQDN" : {
+            "type" : "string",
+            "value": "[reference('WebTemplate').Outputs.webSiteFQDN.value]"
+        },
+        "DatabaseServerFQDN" : {
+            "type" : "string",
+            "value": "[reference('SQLDatabaseTemplate').Outputs.databaseServerFQDN.value]"
+        },
+        "DatabaseName" : {
+            "type" : "string",
+            "value": "[reference('SQLDatabaseTemplate').Outputs.databaseName.value]"
+        }
+    }
+}

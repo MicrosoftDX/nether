@@ -1,0 +1,152 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": { 
+        "sqlServerName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "metadata": {
+                "description": "Database server name (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'."
+            }
+        },
+        "databaseSKU": { 
+            "type": "string", 
+            "defaultValue": "Basic", 
+            "allowedValues": [ 
+                "Basic", 
+                "Standard", 
+                "Standard S1", 
+                "Standard S2", 
+                "Standard S3", 
+                "Premium P1", 
+                "Premium P2", 
+                "Premium P4", 
+                "Premium P6", 
+                "Premium P11", 
+                "Premium P15"
+            ], 
+            "metadata": { 
+                "description": "Specifies the database pricing/performance." 
+            } 
+        }, 
+        "sqlAdministratorLogin": {
+            "type": "string",
+            "defaultValue": "netheradmin",
+            "metadata": {
+                "description": "The admin user of the SQL Server"
+            }
+        },
+        "sqlAdministratorPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The password of the admin user of the SQL Server"
+            }
+        }
+    },
+    "variables": {
+        "sqlDBServerName" : "[toLower(parameters('sqlServerName'))]",
+        "sqlResourceAPI": "2014-04-01",
+        "databaseName": "nether",
+        "databasePricingTiers" : {
+            "Basic" : {
+                "edition": "Basic",
+                "requestedServiceObjectiveName": "Basic"
+            },
+            "Standard" : {
+                "edition": "Standard",
+                "requestedServiceObjectiveName": "S0"
+            },
+            "Standard S1" : {
+                "edition": "Standard",
+                "requestedServiceObjectiveName": "S1"
+            },
+            "Standard S2" : {
+                "edition": "Standard",
+                "requestedServiceObjectiveName": "S2"
+            },
+            "Standard S3" : {
+                "edition": "Standard",
+                "requestedServiceObjectiveName": "S3"
+            },
+            "Premium P1" : {
+                "edition": "Premium",
+                "requestedServiceObjectiveName": "P1"
+            },
+            "Premium P2" : {
+                "edition": "Premium",
+                "requestedServiceObjectiveName": "P2"
+            },
+            "Premium P4" : {
+                "edition": "Premium",
+                "requestedServiceObjectiveName": "P4"
+            },
+            "Premium P6" : {
+                "edition": "Premium",
+                "requestedServiceObjectiveName": "P6"
+            },
+            "Premium P11" : {
+                "edition": "Premium",
+                "requestedServiceObjectiveName": "P11"
+            },
+            "Premium P15" : {
+                "edition": "Premium",
+                "requestedServiceObjectiveName": "P15"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Sql/servers",
+            "name": "[variables('sqlDBServerName')]",
+            "apiVersion": "[variables('sqlResourceAPI')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "SqlServer"
+            },
+            "properties": {
+                "administratorLogin": "[parameters('sqlAdministratorLogin')]",
+                "administratorLoginPassword": "[parameters('sqlAdministratorPassword')]",
+                "version": "12.0"
+            },
+            "resources": [
+                {
+                    "type": "databases",
+                    "name": "[variables('databaseName')]",
+                    "apiVersion": "[variables('sqlResourceAPI')]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[variables('sqlDBServerName')]"
+                    ],
+                    "tags": {
+                        "displayName": "Database"
+                    },
+                    "properties": "[variables('databasePricingTiers')[parameters('databaseSKU')]]"
+                },
+                {
+                    "type": "firewallrules",
+                    "name": "AllowAllWindowsAzureIps",
+                    "apiVersion": "[variables('sqlResourceAPI')]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[variables('sqlDBServerName')]"
+                    ],
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "0.0.0.0"
+                    }
+                }
+            ]
+        }
+    ],
+    "outputs": {
+        "databaseServerFQDN" : {
+            "type" : "string",
+            "value": "[reference(variables('sqlDBServerName')).fullyQualifiedDomainName]"
+        },
+        "databaseName" : {
+            "type" : "string",
+            "value": "[variables('databaseName')]"
+        }
+    }
+}
