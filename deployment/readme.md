@@ -56,11 +56,10 @@ Note that this link does not deploy the Nether application, or any other interna
 Lastly, the templates make use of more parameters then are required by the deploy.ps1 script. These additional parameters allow you to take steps like increasing the performance of your web site or database (scaling up), or scaling out the number of copies of your site. You can see more about these options by looking at the templates themselves.
 
 ## Customized deployments
-Hopefully, many of your customized deployment needs can be accomidated by simply specifying various values in the 
+Hopefully, many of your customized deployment needs can be accomidated by simply specifying various values in the parameters already exposed by the Nether templates. However, if you want to make your own changes, there's a couple items should be aware of.
 
+If you are calling the "non-master" templates individually, you can make any modifications you need and just deploy them via powershell. However, if you are attempting to use them from the master nether-deploy.json template, you'll need to make sure the modified versions of your templates are available online somewhere. There is code in deploy.ps1 that can be used to upload the templates to Azure storage so they can be asscessed from there. Alternatively, assuming you have forked the Nether repo, you can commit your changes to there and reference them.
 
+Regardless of where you put them, you can specify where hey are located by putting in the complete URI (it must end with a '/') as the value for the nether-deploy.json template's *templateBaseURL* parameter.
 
-- what needs to be changed for customizations
-	- linked template base URL
-	- "deploy to Azure"
-- altering "deploy to Azure" url when testing
+If your location is a private storage container (no public link), you can generate a [shared access signature](https://docs.microsoft.com/en-us/azure/storage/storage-dotnet-shared-access-signature-part-1). Specify the query string parameters for the *templateSASToken* parameter.

@@ -1,3 +1,8 @@
+/*
+* This template will create an Azure Web App web site and hosting plan for use by Nether.
+* 
+* For more information, please refer to the Nether repository at: https://github.com/MicrosoftDX/nether/tree/master/deployment
+*/
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
@@ -72,6 +77,7 @@
         "WebResourceAPI": "2015-08-01",
         "hostingPlanName": "[toLower(concat(parameters('NetherWebDomainPrefix'), '-hostingplan'))]",
         "webSiteName": "[toLower(concat(parameters('NetherWebDomainPrefix'), '-website'))]",
+        /* The webHostingPlan specified in the input parameter is translated into the app host plan settings via this array */
         "HostingSKUs" : {
             "Free (no 'always on')" : {
                 "tier": "Free",
@@ -132,6 +138,10 @@
         "sqlConnString": "[concat('Data Source=tcp:', parameters('DatabaseServerFQDN'), ',1433;Initial Catalog=', parameters('sqlServerDatabaseName'), ';User Id=', parameters('sqlAdministratorLogin'), '@', parameters('DatabaseServerFQDN'), ';Password=', parameters('sqlAdministratorPassword'), ';')]"
     },
     "resources": [
+        /* 
+        * The web hosting plan for the Nether web site.
+        * The hosting plan determines the performance and capacity of the web site.
+        */
         {
             "type": "Microsoft.Web/serverfarms",
             "name": "[variables('hostingPlanName')]",
@@ -150,6 +160,11 @@
                 "name": "[variables('hostingPlanName')]"
             }
         },
+        /* 
+        * Creates and configures the Nether Web Site host
+        * The site will be set up to allow MSDeploy (web deploy) and given configuration settings
+        * for use by the Nether application
+        */
         {
             "type": "Microsoft.Web/sites",
             "name": "[variables('webSiteName')]",
@@ -166,6 +181,7 @@
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
             },
             "resources": [
+                /* enable MSDeploy (web deploy) */
                 {
                     "type": "extensions",
                     "name": "MSDeploy",
@@ -181,6 +197,7 @@
                         "packageUri": "[parameters('webZipUri')]"
                     }
                 },
+                /* Set up the various Nether application configuration settings */
                 {
                     "type": "config",
                     "name": "appsettings",
@@ -229,6 +246,9 @@
             ]
         }
     ],
+    /* outputs: 
+    *   webSiteFQDN: the host name (URI) for the web site
+    */
     "outputs": {
         "webSiteFQDN" : {
             "type" : "string",

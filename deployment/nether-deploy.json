@@ -1,3 +1,12 @@
+/*
+* This is the "master" template used to provision the Azure resources for Nether.
+*
+* This leverages linked templates which requires that the templates it links to are available via a URL. By default, these 
+* will be pulled from the same location as this template. But this can be overridden by specifying a location via the pull 
+* them from by specifying the templateBaseURL parameter.
+* 
+* For more information, please refer to the Nether repository at: https://github.com/MicrosoftDX/nether/tree/master/deployment
+*/
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
