@@ -21,6 +21,7 @@ using Nether.Web.Utilities;
 using Swashbuckle.AspNetCore.Swagger;
 using IdentityServer4;
 using System.Linq;
+using IdentityServer4.Models;
 
 namespace Nether.Web
 {
@@ -113,12 +114,18 @@ namespace Nether.Web
                 });
                 //options.OperationFilter<ApiPrefixFilter>();
                 options.CustomSchemaIds(type => type.FullName);
-                //options.AddSecurityDefinition("oauth2", new OAuth2Scheme
-                //{
-                //    Type = "oauth2",
-                //    Flow = "implicit",
-                //    AuthorizationUrl = ""
-                //});
+                options.AddSecurityDefinition("oauth2", new OAuth2Scheme
+                {
+                    Type = "oauth2",
+                    Flow = "implicit",
+                    AuthorizationUrl = "/identity/connect/authorize",
+                    Scopes = new Dictionary<string, string>
+                    {
+                        { "nether-all", "nether API access" },
+                    }
+                });
+
+                options.OperationFilter<SecurityRequirementsOperationFilter>();
             });
 
             services.AddSingleton<ExceptionLoggingFilterAttribute>();
@@ -244,6 +251,7 @@ namespace Nether.Web
                 {
                     options.RoutePrefix = "swagger/ui";
                     options.SwaggerEndpoint("/api/swagger/v0.1/swagger.json", "v0.1 Docs");
+                    options.ConfigureOAuth2("swaggerui", "swaggeruisecret".Sha256(), "swagger-ui-realm", "Swagger UI");
                 });
             });
 
