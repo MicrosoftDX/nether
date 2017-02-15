@@ -24,7 +24,7 @@ The analytics part of Nether deploys an architecture using an ARM template and c
 ### 1. Event Ingest
 
 Game events are being sent from the client to a then deployed event hub. Information on what the structure of a game event is, refer to the [event APIs of analytics]](api/analytics/ReadMe.md).
-There is a simulator game event generator that sends such specified game events to be found [here](https://github.com/dx-ted-emea/nether-playground/tree/master/GameEventsGenerator).
+There is a simulator game event generator that sends such specified game events to be found [here](https://github.com/MicrosoftDX/nether-playground/tree/master/GameEventsGenerator).
 The event hub has the following consumer groups:
 * asaRaw: For stream analytics job on raw data.
 * asaCCU: For stream analytics job on concurrent users.

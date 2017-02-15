@@ -109,7 +109,7 @@ namespace Nether.Web
                     License = new License
                     {
                         Name = "MIT",
-                        Url = "https://github.com/dx-ted-emea/nether/blob/master/LICENSE"
+                        Url = "https://github.com/MicrosoftDX/nether/blob/master/LICENSE"
                     }
                 });
                 //options.OperationFilter<ApiPrefixFilter>();
