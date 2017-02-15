@@ -25,27 +25,42 @@ To leverage the script, simply clone this repository and change to the /deployme
 **SQL Administrator Login** - this is the username to be used to administer and access your SQL Database.
 **SQL Administer Password** - this is the password associated with the Administrator Login
 
-When run, Deploy.ps1 will build and package the Nether application. It will then Provision the Azure resources necessary for hosting Nether in your Azure subscription and deploy the application to them for you. 
+When run, Deploy.ps1 will build and package the Nether application. It will then Provision the Azure resources necessary for hosting Nether in your Azure subscription and deploy the application to them for you.
 
 **Note: At this time, the deploy does not create the Nether Database Schema.**
 
 ## ARM Templates (Provisioning Cloud Resources)
-- why we're breaking up the templates
 
-nether-deploy.json
-nether-deploy-db.json
-nether-deploy-web.json
-- how to ignore deployment parameter files
+Azure's Resource Manager allows you to create a JSON based tmeplate as a declarative way of describing what Azure Resources are needed and how they should be configured. To ensure maximum flexibility, we have opted to break the resources needed down into smaller components that are leveraged using an approach called [linked templates](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-linked-templates). This allows you to individually provision/update any component as needed.
+
+A benefit to the use of resource templates is that they can be run to either do a complete purge/rebuild of a set of resources (-mode complete) or just update existing items (like increasing the performance level of your hosting plan).
+
+The deployment templates follow a consistent naming convention based on nether-deploy*.json. The files are as follows:
+
+**nether-deploy.json** - the "master" template which calls the linked templates
+**nether-deploy-db.json** - responsible for provisioning the Azure SQL Database
+**nether-deploy-web.json** - responsible for provisioning the Web Site and its associated hosting plan. Also configures the web site to point at other remote resources such as the Nether web deployment package and database connection
+
+You can use these templates directly from PowerShell. For more information, please see [Deploy resources with Resource Manager templates and Azure PowerShell](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-template-deploy).
+
+Linked Templates require that the child templates are hosted onlinesomewhere (accessible via a hyperlink). That location is designated by the *templateBaseURL* parameter found in the nether-deploy.json master template. If this parameter is not specified, it will default to the location of the master template. If the location is a private storage account, you can grant access by also specifing the optional *templateSASToken* parameter.
+
+When using the templates directly, you may opt to create your own [parameter files](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-template-deploy#parameters). To avoid accidently committing these files, the Nether repository has already been configured to ignore files that match the file mask ***.privateparams.json**.
+
+Additionally, you can deploy the entire cloud infrastructure of Nether by clicking on this button:
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoftDX%2Fnether%2Fmaster%2Fdeployment%2Fnether-deploy.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+Note that this link does not deploy the Nether application, or any other internal dependencies. Its just a set of empty Azure resources. Additionally, this button will always deploy from the master branch of the Nether project on GitHub.
+
+Lastly, the templates make use of more parameters then are required by the deploy.ps1 script. These additional parameters allow you to take steps like increasing the performance of your web site or database (scaling up), or scaling out the number of copies of your site. You can see more about these options by looking at the templates themselves.
+
+## Customized deployments
+Hopefully, many of your customized deployment needs can be accomidated by simply specifying various values in the 
+
+
 
 - what needs to be changed for customizations
 	- linked template base URL
 	- "deploy to Azure"
 - altering "deploy to Azure" url when testing
-
-## Customized deployments
-
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoftDX%2Fnether%2Fmaster%2Fdeployment%2Fnether-deploy.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
-</a>
-
-- how to ignore deployment parameter files
