@@ -41,8 +41,6 @@ namespace Nether.Web.Features.Leaderboard
         }
 
         //TODO: Add versioning support
-        //TODO: Add authentication
-
 
         /// <summary>
         /// Gets leaderboard by leaderboard configured name
