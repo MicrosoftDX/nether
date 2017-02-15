@@ -1,5 +1,7 @@
 # Generic Start Event
 
+Note, it expects a stop event.
+
 ## When?
 
 ## Why?
@@ -9,10 +11,15 @@
 ### JSON Body
 ```json
 {
-    "event": "",
+    "event": "start",
     "version": "1.0.0",
-    "client-utc": "2016-09-07T13:37:00",
-    "gamertag": "gamertag"
+    "clientUtcTime": "2016-09-07T13:37:00",
+    "eventCorrelationId": "8630EAE1-6A83-4208-BB56-0530A6A75CF3",
+    "displayName": "room",
+    "gamerSessionId": "A3A22EE1-563A-4697-9EDF-B69B998CD214",
+    "properties": {
+        "country": "Germany"
+    }
 }
 ```
 
@@ -20,4 +27,8 @@ Element name       | Required | Type   | Description
 ------------------ | -------- | ------ | -----------
 event              | Yes      | String | Specifies the type of event being sent. Has to be "heartbeat".
 version            | Yes      | String | Specifies the version of event, based on how much information is being sent.
-gamertag           | Yes      | String | Specifies the player playing the game.
+clientUtcTime      | Yes      | String | Specifies the UTC timestamp of the client.
+eventCorrelationId | Yes      | String | GUID that uniquely identifies the event to be tracked.
+displayName        | Yes      | String | Entity that the developer wants to track, e.g. room or authentication journey started
+gamerSessionId     | No       | String | GUID that uniquely identifies the game session
+properties         | No       | String | Option for the developer to integrate more information, e.g. country, colour, etc.
