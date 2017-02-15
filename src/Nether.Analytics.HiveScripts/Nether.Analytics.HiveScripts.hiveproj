@@ -42,7 +42,13 @@
     <Folder Include="duration\" />
     <Folder Include="counts\" />
     <Folder Include="gamesession\" />
-    <Folder Include="store-counts\" />	
+    <Folder Include="level" />
+    <Folder Include="store-counts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="level\dailyLevelDistribution.hql">
+      <SubType>Content</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Hive.targets" />
 </Project>

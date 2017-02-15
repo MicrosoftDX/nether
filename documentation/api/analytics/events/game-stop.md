@@ -1,14 +1,12 @@
-# Session Start Event
+# Game Stop Event
 
-Event sent by the game client as application is started. Will be used together with Session End Event to calculate length of played sessions, etc.
+Event sent by the game client when it terminates. Will be used together with Session Start Event to calculate length of played sessions, etc.
 
 ## When?
-When player starts the game.
+When player terminates the game.
 
 ## Why?
-To calculate the session length in combination with the session stop event. 
-
-
+To calculate the session length in combination with the session start event. 
 
 ## Request
 
@@ -23,7 +21,7 @@ TODO: Write description of request here
 ### JSON Body
 ```json
 {
-    "event": "session-start",
+    "event": "session-stop",
     "version": "1.0.0",
     "client-utc": "2016-09-07T13:37:00",
     "gamertag": "gamertag"
@@ -32,6 +30,6 @@ TODO: Write description of request here
 
 Element name       | Required | Type   | Description
 ------------------ | -------- | ------ | -----------
-event              | Yes      | String | Specifies the type of event being sent. Has to be "session-start".
+event              | Yes      | String | Specifies the type of event being sent. Has to be "session-stop".
 version            | Yes      | String | Specifies the version of event, based on how much information is being sent.
 gamertag           | Yes      | String | Specifies the player playing the game.
