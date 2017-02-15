@@ -50,6 +50,10 @@ dotnet publish "$netherRoot/src/Nether.Web" -c $build
 # Create ZIP (requires PowerShell 5.0 upwards)
 Write-Host
 Write-Host "Creating Nether.Web.zip ..."
+
+# copy Nether.Web.xml to publish folder
+Copy-Item "$publishPath/../Nether.Web.xml" $publishPath
+
 $zipPath = "$publishPath/../Nether.Web.zip"
 if (Test-Path $zipPath){
     Remove-Item $zipPath
