@@ -48,7 +48,7 @@ namespace Nether.Sdk
         public async Task<OperationResult> LoginUserNamePasswordAsync(string username, string password)
         {
             // TODO - create a type so that the caller can determine success/failure (with message)
-            var disco = await DiscoveryClient.GetAsync(_baseUrl);
+            var disco = await DiscoveryClient.GetAsync(_baseUrl + "/identity");
 
             // request token
             var tokenClient = new TokenClient(disco.TokenEndpoint, _clientId, _clientSecret);
