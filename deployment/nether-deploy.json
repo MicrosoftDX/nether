@@ -197,7 +197,7 @@
         "deploymentAPI" : "2015-01-01",
         "dbTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-db.json'), parameters('templateSASToken'))]",
         "WebTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-web.json'), parameters('templateSASToken'))]",
-        "StorageTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-storageaccount.json'), parameters('templateSASToken'))]",
+        "StorageTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-storageAccount.json'), parameters('templateSASToken'))]",
         "EventHubTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-eventhub.json'), parameters('templateSASToken'))]"
     },
     "resources": [ 
