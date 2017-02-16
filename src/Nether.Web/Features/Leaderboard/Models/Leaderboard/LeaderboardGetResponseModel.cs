@@ -3,6 +3,8 @@
 
 using System.Collections.Generic;
 using Nether.Data.Leaderboard;
+using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace Nether.Web.Features.Leaderboard.Models.Leaderboard
 {
@@ -12,13 +14,14 @@ namespace Nether.Web.Features.Leaderboard.Models.Leaderboard
 
         public class LeaderboardEntry
         {
-            public static implicit operator LeaderboardEntry(GameScore score)
+            public static LeaderboardEntry Map(GameScore score, string currentGamertag)
             {
                 return new LeaderboardEntry
                 {
                     Gamertag = score.Gamertag,
                     Score = score.Score,
-                    Rank = score.Rank
+                    Rank = score.Rank,
+                    IsCurrentPlayer = currentGamertag == score.Gamertag
                 };
             }
 
@@ -32,7 +35,16 @@ namespace Nether.Web.Features.Leaderboard.Models.Leaderboard
             /// </summary>
             public int Score { get; set; }
 
+            /// <summary>
+            /// Player rank
+            /// </summary>
             public long Rank { get; set; }
+            /// <summary>
+            /// True if the score is for the current player
+            /// </summary>
+            [JsonProperty(DefaultValueHandling =DefaultValueHandling.Ignore)]
+            [DefaultValue(false)]
+            public bool IsCurrentPlayer { get;  set; }
         }
     }
 }

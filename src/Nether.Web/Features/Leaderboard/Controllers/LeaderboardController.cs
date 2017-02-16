@@ -81,7 +81,7 @@ namespace Nether.Web.Features.Leaderboard
         [HttpGet("{name}", Name = nameof(Get))]
         public async Task<IActionResult> Get(string name)
         {
-            var gamerTag = User.GetGamerTag();
+            var gamertag = User.GetGamerTag();
 
             LeaderboardConfig config = _leaderboardConfiguration.GetByName(name);
             if (config == null)
@@ -93,7 +93,11 @@ namespace Nether.Web.Features.Leaderboard
             switch (type)
             {
                 case LeaderboardType.AroundMe:
-                    scores = await _store.GetScoresAroundMeAsync(gamerTag, config.Radius);
+                    if (gamertag == null)
+                    {
+                        return BadRequest(); // need a gamertag to get scores!
+                    }
+                    scores = await _store.GetScoresAroundMeAsync(gamertag, config.Radius);
                     break;
                 case LeaderboardType.Top:
                     scores = await _store.GetTopHighScoresAsync(config.Top);
@@ -106,7 +110,9 @@ namespace Nether.Web.Features.Leaderboard
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
-                Entries = scores == null ? null : scores.Select(s => (LeaderboardGetResponseModel.LeaderboardEntry)s).ToList()
+                Entries = scores
+                            ?.Select(s => LeaderboardGetResponseModel.LeaderboardEntry.Map(s, gamertag))
+                            ?.ToList()
             };
 
             // Return result
