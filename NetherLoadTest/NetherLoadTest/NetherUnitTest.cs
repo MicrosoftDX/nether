@@ -172,7 +172,7 @@ namespace NetherLoadTest
 
         private async Task<HttpClient> GetClientAsync(string username, string password)
         {
-            var discoveryResponse = await DiscoveryClient.GetAsync(BaseUrl);
+            var discoveryResponse = await DiscoveryClient.GetAsync(BaseUrl + "identity/");
             if (discoveryResponse.TokenEndpoint == null)
             {
                 throw new AuthenticationException("GetClient: could not discover endpoint, server is offline?");

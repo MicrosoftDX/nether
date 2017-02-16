@@ -74,7 +74,7 @@ namespace Nether.Sdk
         // TODO - create result model rather than returning JSON string!
         public async Task<OperationResult<string>> GetScoresAsync(string leaderboardType = null)
         {
-            string uri = "/api/leaderboard";
+            string uri = "/api/leaderboards";
             if (leaderboardType != null)
             {
                 uri += "/" + leaderboardType;
@@ -106,7 +106,7 @@ namespace Nether.Sdk
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync(
-                "/api/leaderboard",
+                "/api/scores",
                 content
             );
 
