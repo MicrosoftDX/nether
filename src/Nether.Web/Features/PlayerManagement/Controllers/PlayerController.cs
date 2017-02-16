@@ -71,11 +71,38 @@ namespace Nether.Web.Features.PlayerManagement
         {
             string userId = User.GetId();
 
-            // TODO - need to prevent modifying gamertag
+            // prevent modifying gamertag
+            var existingPlayerForGamertag = await _store.GetPlayerDetailsByGamertagAsync(player.Gamertag);
+            if (existingPlayerForGamertag != null && existingPlayerForGamertag.UserId != userId)
+            {
+                // Can't use a gamertag from another user
+                return BadRequest();
+            }
+
+            var playerEntity = await _store.GetPlayerDetailsByUserIdAsync(userId);
+            if (playerEntity == null)
+            {
+                playerEntity = new Player
+                {
+                    UserId = userId,
+                    Gamertag = player.Gamertag,
+                    Country = player.Country,
+                    CustomTag = player.CustomTag
+                };
+            }
+            else
+            {
+                if (playerEntity.Gamertag != player.Gamertag)
+                {
+                    // can't change gamertag
+                    return BadRequest();
+                }
+                playerEntity.Country = player.Country;
+                playerEntity.CustomTag = player.CustomTag;
+            }
 
             // Update player
-            await _store.SavePlayerAsync(
-                new Player { UserId = userId, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
+            await _store.SavePlayerAsync(playerEntity);
 
             // Return result
             return NoContent();
