@@ -15,7 +15,8 @@ namespace Nether.Web.IntegrationTests.Leaderboard
     //todo: come up with better naming
     public class LeaderboardTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
     {
-        private const string BasePath = "/api/leaderboard";
+        private const string LeaderboardBasePath = "/api/leaderboards";
+        private const string ScoresBasePath = "/api/scores";
 
         public LeaderboardTests()
         {
@@ -25,8 +26,8 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         public async Task Get_leaderboard_call_succeeds()
         {
             var client = await GetClientAsync();
-            HttpResponseMessage response = await client.GetAsync(BasePath + "/Default");
-            Assert.True(response.IsSuccessStatusCode);
+            HttpResponseMessage response = await client.GetAsync(LeaderboardBasePath + "/Default");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -146,7 +147,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
         private async Task DeleteMyScoresAsync(HttpClient client)
         {
-            await client.DeleteAsync(BasePath);
+            await client.DeleteAsync(LeaderboardBasePath);
         }
 
         private async Task<LeaderboardGetResponse> GetLeaderboardAsync(
@@ -154,7 +155,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             string type = "Default",
             HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            HttpResponseMessage response = await client.GetAsync(BasePath + "/" + type);
+            HttpResponseMessage response = await client.GetAsync(LeaderboardBasePath + "/" + type);
             Assert.Equal(expectedCode, response.StatusCode);
 
             string content = await response.Content.ReadAsStringAsync();
@@ -166,7 +167,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             int score,
             HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            HttpResponseMessage response = await client.PostAsJsonAsync(BasePath,
+            HttpResponseMessage response = await client.PostAsJsonAsync(ScoresBasePath,
                 new
                 {
                     country = "UK",

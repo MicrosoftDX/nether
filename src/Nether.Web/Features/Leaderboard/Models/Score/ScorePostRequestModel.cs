@@ -3,9 +3,9 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Nether.Web.Features.Leaderboard
+namespace Nether.Web.Features.Leaderboard.Models.Score
 {
-    public class LeaderboardPostRequestModel
+    public class ScorePostRequestModel
     {
         /// <summary>
         /// Country code
