@@ -47,11 +47,11 @@ namespace Nether.Web.Features.Leaderboard
         /// </summary>
         /// <param name="name">Name of the leaderboard</param>
         /// <returns>List of scores and gametags</returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LeaderboardGetResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LeaderboardListResponseModel))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         [Authorize(Roles = RoleNames.PlayerOrAdmin)]
         [HttpGet("")]
-        public async Task<ActionResult> GetAll()
+        public IActionResult GetAll()
         {
             var gamerTag = User.GetGamerTag();
 
@@ -79,7 +79,7 @@ namespace Nether.Web.Features.Leaderboard
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [Authorize(Roles = RoleNames.PlayerOrAdmin)]
         [HttpGet("{name}", Name = nameof(Get))]
-        public async Task<ActionResult> Get(string name)
+        public async Task<IActionResult> Get(string name)
         {
             var gamerTag = User.GetGamerTag();
 
