@@ -15,7 +15,8 @@ ROW FORMAT DELIMITED
     COLLECTION ITEMS TERMINATED BY '\073'
     LINES TERMINATED BY '\n'
 STORED AS TEXTFILE
-LOCATION '${hiveconf:gameheartbeateventsloc}';
+location 'wasbs://gameevents@oknether.blob.core.windows.net/game-heartbeat/v1.0.0/2017/02/16/';
+--LOCATION '${hiveconf:gameheartbeateventsloc}';
 
 
 CREATE TABLE IF NOT EXISTS lastgameheartbeat
@@ -29,7 +30,8 @@ ROW FORMAT DELIMITED
     COLLECTION ITEMS TERMINATED BY '\073'
     LINES TERMINATED BY '\n'
 STORED AS TEXTFILE
-LOCATION '${hiveconf:lastheartbeats}';
+location 'wasbs://intermediate@oknether.blob.core.windows.net/lastgameheartbeat/';
+--LOCATION '${hiveconf:lastheartbeats}';
 
 
 INSERT INTO TABLE lastgameheartbeat
