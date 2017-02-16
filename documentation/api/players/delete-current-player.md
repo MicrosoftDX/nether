@@ -1,4 +1,4 @@
-# Get Current Player
+# Delete Current Player
 
 Delete information about currently logged in player.
 

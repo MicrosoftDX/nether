@@ -26,7 +26,7 @@ Empty body
 ```json
 {
     "gamertag": "string",
-    "state": "string"
+    "state": {}
 }
 
 ```
@@ -34,4 +34,4 @@ Empty body
 Element name        | Required  | Type       | Description
 ------------------- | --------- | ---------  | -----------
 gamertag            | Yes       | String     | Tag of the player
-extendedInformation | No        | String     | Extended player information (e.g. JSON)
+state               | No        | JSON Object     | Player state

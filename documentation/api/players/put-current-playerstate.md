@@ -15,18 +15,13 @@ No parameters
 
 ### JSON Body
 
-```json
-{
-  "gamertag": "string",
-  "extendedInformation": "string"
-}
-```
+The body should be the new JSON state.
 
 ### Response
 
 | Status Code | Description |
 |-------------|-------------|
-|204|Extend Player information (e.g. JSON) updated successfully|
+|200|Player state updated successfully|
 
 ### JSON Body
 

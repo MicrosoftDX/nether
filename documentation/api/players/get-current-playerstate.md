@@ -1,6 +1,6 @@
-# Get Current Player Extended
+# Get Current Player State
 
-Get extended information about currently logged in player.
+Get player state for the current player.
 
 ## Request
 
@@ -8,7 +8,7 @@ See Common parameters and headers that are used by all requests related to the L
 
 Method  | Request URI
 ------- | -----------
-GET     | `/api/playerextended`
+GET     | `/api/player/state`
 
 ### JSON Body
 
@@ -25,14 +25,13 @@ Empty body
 
 ```json
 {
-  "playerExtended": {
     "gamertag": "string",
-    "extendedInformation": "string"
-  }
+    "state": {}
+}
 
 ```
 
 Element name        | Required  | Type       | Description
 ------------------- | --------- | ---------  | -----------
 gamertag            | Yes       | String     | Tag of the player
-extendedInformation | No        | String     | Extended player information (e.g. JSON)
+state               | No        | JSON Object     | Player state
