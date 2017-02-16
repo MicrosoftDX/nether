@@ -27,7 +27,11 @@ param
 
     [Parameter(Mandatory=$true)]
     [securestring]
-    $SqlAdministratorPassword
+    $SqlAdministratorPassword,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $AnalyticsEventHubNamespace
 )
 $ErrorActionPreference = "Stop";
 
@@ -127,6 +131,7 @@ $templateParameters = @{
     sqlServerName = $sqlServerName
     sqlAdministratorLogin = $sqlAdministratorLogin
     sqlAdministratorPassword = $SqlAdministratorPassword
+    analyticsEventHubNamespace = $AnalyticsEventHubNamespace
     webZipUri = $webZipblob.ICloudBlob.Uri.AbsoluteUri
     # webZipUri = "https://netherassets.blob.core.windows.net/packages/package261.zip"
     # webZipUri = "https://netherbits.blob.core.windows.net/deployment/Nether.Web.zip"

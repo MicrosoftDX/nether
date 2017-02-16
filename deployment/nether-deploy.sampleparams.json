@@ -32,7 +32,34 @@
     "sqlAdministratorPassword": {
       "value": ""
     },
+    "analyticsEventHubNamespace" : {
+      "value" : ""
+    },
+    "serviceBusTier" : {
+      "value" : ""
+    },
+    "serviceBusCapacity" : {
+      "value" : ""
+    },
+    "eventHubName" : {
+      "value" : ""
+    },
+    "managePolicyName" : {
+      "value" : ""
+    },
+    "senderPolicyName" : {
+      "value" : ""
+    },
+    "dayToRetain" : {
+      "value" : ""
+    },
+    "partitionCount" : {
+      "value" : ""
+    },
     "templateBaseURL" : {
+      "value" : ""
+    },
+    "templateSASToken" : {
       "value" : ""
     }
   }

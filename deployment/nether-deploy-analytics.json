@@ -1,0 +1,135 @@
+/*
+* This template will create an Azure SQL DB for use by Nether.
+* 
+* For more information, please refer to the Nether repository at: https://github.com/MicrosoftDX/nether/tree/master/deployment
+*/
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": { 
+        "streamJobName": {
+            "type": "string",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "SKU": { 
+            "type": "string", 
+            "defaultValue": "Standard", 
+            "metadata": { 
+                "description": ""
+            } 
+        },
+        "streamingUnits": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": ""
+            }
+        },
+        "Query": { 
+            "type": "string", 
+            "metadata": { 
+                "description": ""
+            } 
+        },
+        "eventHubProperties": {
+            "type" : "object",
+            "metadata" : {
+                "description" : "a JSON object containing: eventHubName, serviceBusNamespace, sharedAccessPolicyName, sharedAccessPolicyKey, consumerGroupName"
+        }
+    },
+    "variables": {
+        "asaApiVersion": "2015-09-01",
+        "asaCCUJobName": "ccu",
+        "eventHubProperties": {
+            "eventHubName": "[parameters('eventHubName')]",
+            "serviceBusNamespace": "[variables('namespaceName')]",
+            "sharedAccessPolicyName": "[variables('defaultSASKeyName')]",
+            "sharedAccessPolicyKey": "[listkeys(variables('authRuleResourceId'), variables('ehApiVersion')).primaryKey]",
+            "consumerGroupName": "[variables('asaCCUConsumerGroupName')]"
+        }
+    },
+    "resources": [
+        /* Azure stream analytics job for calculating the concurrent users */
+        {
+            "type": "Microsoft.StreamAnalytics/StreamingJobs",
+            "name": "[variables('asaCCUJobName')]",
+            "apiVersion": "[variables('asaApiVersion')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "name": "[parameters('SKU')]"  
+                },
+                "outputStartMode": "LastOutputEventTime",
+                "inputs": [
+                    {
+                        "name": "Input",
+                        "properties": {
+                            "type": "stream",
+                            "serialization": {
+                                "type": "JSON",
+                                "properties": {
+                                    "encoding": "UTF8"
+                                }
+                            },
+                            "datasource": {
+                                "type": "Microsoft.ServiceBus/EventHub",
+                                "properties": "[variables('eventHubProperties')]"
+                            }
+                        }
+                    }
+                ],
+                "transformation": {
+                    "name": "[variables('asaCCUJobName')]",
+                    "properties": {
+                        "streamingUnits": 1,
+                        "query": "[variables('asaCCUJobQuery')]"
+                    }
+                },
+                "outputs": [
+                    {
+                        "name": "BlobSink",
+                        "properties": {
+                        "serialization": {
+                            "type": "CSV",
+                            "properties": {
+                            "fieldDelimiter": ",",
+                            "encoding": "UTF8"
+                            }
+                        },
+                        "datasource": {
+                            "type": "Microsoft.Storage/Blob",
+                            "properties": {
+                            "storageAccounts": [
+                                {
+                                "accountName": "[variables('storageAccountName')]",
+                                "accountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-06-15').key1]"
+                                }
+                            ],
+                            "container": "[variables('asaCCUContainerName')]",
+                            "pathPattern": "sessions/date={date}",
+                            "dateFormat": "yyyy-MM-dd"
+                            }
+                        }
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    /* outputs: 
+    *   databaseServerFQDN: the hdatabase server host name (URI)
+    *   databaseName: the database on the server for use by Nether
+    */
+    "outputs": {
+        "databaseServerFQDN" : {
+            "type" : "string",
+            "value": "[reference(variables('sqlDBServerName')).fullyQualifiedDomainName]"
+        },
+        "databaseName" : {
+            "type" : "string",
+            "value": "[variables('databaseName')]"
+        }
+    }
+}

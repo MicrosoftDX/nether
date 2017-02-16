@@ -66,6 +66,12 @@
                 "description": "The password of the admin user of the SQL Server"
             }
         },
+        "eventhubSendConnectionString": {
+            "type": "string",
+            "metadata": {
+                "description": "The connection string for sending to the event hub"
+            }
+        },
         "webZipUri": {
             "type": "string",
             "metadata": {
@@ -223,7 +229,7 @@
                         "PlayerManagement:Store:properties:ConnectionString": "[variables('sqlConnString')]",
 
                         /* TODO: Add explanation of section */
-                        "Analytics:EventHub": "",
+                        "Analytics:EventHub": "[parameters('eventhubSendConnectionString')]",
 
                         /* TODO: Add explanation of section */
                         "Identity:Store:wellknown": "sql",

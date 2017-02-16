@@ -15,13 +15,22 @@
     "EventHubName": {
       "value": ""
     },
-    "ConsumerGroupName": {
+    "ServiceBusTier": {
+      "value": ""
+    },
+    "Capacity": {
       "value": ""
     },
     "ManagePolicyName": {
       "value": ""
     },
     "SenderPolicyName": {
+      "value": ""
+    },
+    "DayToRetain": {
+      "value": ""
+    },
+    "PartitionCount": {
       "value": ""
     }
   }

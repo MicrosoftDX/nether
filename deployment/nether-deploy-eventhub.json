@@ -15,18 +15,23 @@
                 "description": "The unique storage account for use by Nether. only allows alpha characters and '-'. Cannot start or end with '-'."
             }
         },
+        "ServiceBusTier": {
+            "type": "string", 
+            "defaultValue": "Basic",
+            "allowedValues": [
+                "Basic",
+                "Standard"
+            ]
+        },
+        "Capacity": {
+            "type": "int", 
+            "defaultValue": 1,
+            "minValue": 1,
+            "maxValue": 20
+        },
         "EventHubName": {
             "type": "string",
-            "minLength": 3,
-            "maxLength": 15,
-            "metadata": {
-                "description": ""
-            }
-        },
-        "ConsumerGroupName": {
-            "type": "string",
-            "minLength": 3,
-            "maxLength": 15,
+            "defaultValue": "analyticevents",
             "metadata": {
                 "description": ""
             }
@@ -51,9 +56,11 @@
         },
         "DayToRetain": {
             "type": "int",
-            "defaultValue": 7,
+            "defaultValue": 1,
+            "minValue": 1,
+            "maxValue": 7,
             "metadata": {
-                "description": ""
+                "description": "For basic teir this must be 1. For standard tier this can be 1-7"
             }
         },
         "PartitionCount": {
@@ -78,10 +85,11 @@
             "location":"[variables('location')]",
             "apiVersion":"[variables('ehApiVersion')]",
             "sku":{  
-                "name":"Standard",
-                "tier":"Standard"
+                "name":"[parameters('ServiceBusTier')]",
+                "tier":"[parameters('ServiceBusTier')]",
+                "capacity": "[parameters('Capacity')]"
             },
-            "resources":[  
+            "resources":[                  
                 /* create the event hub */
                 {  
                     "type":"EventHubs",
@@ -91,23 +99,10 @@
                         "[variables('namespaceRef')]"
                     ],
                     "properties":{  
-                        "path":"[variables('EventHubRef')]",
                         "messageRetentionInDays": "[parameters('DayToRetain')]",
                         "partitionCount": "[parameters('PartitionCount')]"
                     },
                     "resources": [
-                        /* create a consumer group */
-                        {  
-                            "type":"ConsumerGroups",
-                            "name":"[parameters('ConsumerGroupName')]",
-                            "apiVersion":"[variables('ehApiVersion')]",
-                            "dependsOn":[  
-                                "[variables('eventHubRef')]"
-                            ],
-                            "properties":{
-                                "rights" : []
-                             }
-                        },
                         /* create the consumer/manage policy */
                         {
                             "type": "authorizationRules",
@@ -138,10 +133,17 @@
         }
     ],
     /* outputs: 
-    *   resourceId: the hdatabase server host name (URI)
-    *   accountKey: the database on the server for use by Nether
+    *   connstrManage: Connection String for listen/manage
+    *   constrSend: Connection String for senders
     */
     "outputs": {
-
+        "connstrManage" : {
+            "type" : "string",
+            "value": "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),parameters('ServiceBusNamespace'),parameters('EventHubName'),parameters('ManagePolicyName')),variables('ehApiVersion')).primaryConnectionString]"
+        },
+        "constrSend" : {
+            "type" : "string",
+            "value": "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),parameters('ServiceBusNamespace'),parameters('EventHubName'),parameters('SenderPolicyName')),variables('ehApiVersion')).primaryConnectionString]"
+        }
     }
 }
