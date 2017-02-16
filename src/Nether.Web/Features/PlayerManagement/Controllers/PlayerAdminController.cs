@@ -77,7 +77,6 @@ namespace Nether.Web.Features.PlayerManagement
         /// <summary>
         /// Creates a player. You have to be an administrator to perform this action.
         /// </summary>
-        /// <param name="gamertag">The gamertag</param>
         /// <param name="newPlayer">Player data</param>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.Created)]
