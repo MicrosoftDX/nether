@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
 {
-    public class PlayerExtendedPutRequestModel
+    public class PlayerStatePutRequestModel
     {
         /// <summary>
         /// Gamertag, must be uniqueue.

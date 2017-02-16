@@ -5,15 +5,15 @@ using Nether.Data.PlayerManagement;
 
 namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
 {
-    public class PlayerExtendedGetResponseModel
+    public class PlayerStateGetResponseModel
     {
         public PlayerExtendedEntry PlayerExtended { get; set; }
 
-        public static PlayerExtendedGetResponseModel FromPlayer(PlayerExtended player)
+        public static PlayerStateGetResponseModel FromPlayer(PlayerState player)
         {
-            return new PlayerExtendedGetResponseModel
+            return new PlayerStateGetResponseModel
             {
-                PlayerExtended = new PlayerExtendedEntry { Gamertag = player.Gamertag, ExtendedInformation = player.ExtendedInformation }
+                PlayerExtended = new PlayerExtendedEntry { Gamertag = player.Gamertag, ExtendedInformation = player.State }
             };
         }
 

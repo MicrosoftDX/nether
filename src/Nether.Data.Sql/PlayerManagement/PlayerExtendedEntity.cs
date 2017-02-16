@@ -18,13 +18,13 @@ namespace Nether.Data.Sql.PlayerManagement
         public string UserId { get; set; }
         public string Gamertag { get; set; }
         public string ExtendedInformation { get; set; }
-        public PlayerExtended ToPlayerExtended()
+        public PlayerState ToPlayerExtended()
         {
-            return new PlayerExtended
+            return new PlayerState
             {
                 UserId = UserId,
                 Gamertag = Gamertag,
-                ExtendedInformation = ExtendedInformation
+                State = ExtendedInformation
             };
         }
     }

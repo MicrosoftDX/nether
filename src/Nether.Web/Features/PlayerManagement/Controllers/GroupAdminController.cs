@@ -22,7 +22,7 @@ namespace Nether.Web.Features.PlayerManagement
     /// Player management admin API
     /// </summary>
     [Authorize(Roles = RoleNames.Admin)]
-    [Route("admin")]
+    [Route("admin/groups")]
     public class GroupAdminController : Controller
     {
         private readonly IPlayerManagementStore _store;
@@ -34,75 +34,46 @@ namespace Nether.Web.Features.PlayerManagement
             _logger = logger;
         }
 
-
         /// <summary>
-        /// Gets the list of group a player belongs to.
+        /// Get list of all groups. You must be an administrator to perform this action.
         /// </summary>
-        /// <param name="gamertag">Player's gamertag.</param>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupListResponseModel))]
-        [HttpGet("players/{gamertag}/groups")]
-        public async Task<ActionResult> GetPlayerGroups(string gamertag)
+        [HttpGet("")]
+        public async Task<ActionResult> GetGroupsAsync()
         {
             // Call data store
-            var groups = await _store.GetPlayersGroupsAsync(gamertag);
+            var groups = await _store.GetGroupsAsync();
 
             // Return result
             return Ok(GroupListResponseModel.FromGroups(groups));
         }
 
-
         /// <summary>
-        /// Adds player to a group.
+        /// Gets group by name.
         /// </summary>
-        /// <param name="gamertag">Player's gamer tag</param>
-        /// <param name="groupName">Group name.</param>
+        /// <param name="groupName"></param>
         /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [HttpPut("players/{gamertag}/groups/{groupName}")]
-        public async Task<ActionResult> AddPlayerToGroup(string gamertag, string groupName)
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupGetResponseModel))]
+        [HttpGet("{groupName}", Name = nameof(GetGroup))]
+        public async Task<ActionResult> GetGroup(string groupName)
         {
-            Group group = await _store.GetGroupDetailsAsync(groupName);
+            // Call data store
+            var group = await _store.GetGroupDetailsAsync(groupName);
             if (group == null)
             {
-                _logger.LogWarning("group '{0}' not found", groupName);
-                return BadRequest();
+                return NotFound();
             }
 
-            Player player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
-            if (player == null)
+            // Format response model
+            var resultModel = new GroupGetResponseModel
             {
-                _logger.LogWarning("player '{0}' not found", gamertag);
-                return BadRequest();
-            }
+                Group = group
+            };
 
-            await _store.AddPlayerToGroupAsync(group, player);
-
-            return NoContent();
+            // Return result
+            return Ok(resultModel);
         }
-
-
-
-        /// <summary>
-        /// Removes a player from a group.
-        /// </summary>
-        /// <param name="groupName">Group name</param>
-        /// <param name="gamertag">Player name</param>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [HttpDelete("groups/{groupName}/players/{gamertag}")]
-        public async Task<ActionResult> DeletePlayerFromGroup(string groupName, string gamertag)
-        {
-            Player player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
-            Group group = await _store.GetGroupDetailsAsync(groupName);
-
-            await _store.RemovePlayerFromGroupAsync(group, player);
-
-            return NoContent();
-        }
-
-        //Implementation of the group API
 
         /// <summary>
         /// Creates a new group.
@@ -110,7 +81,7 @@ namespace Nether.Web.Features.PlayerManagement
         /// <param name="group">Group object</param>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.Created)]
-        [HttpPost("groups")]
+        [HttpPost("")]
         public async Task<ActionResult> PostGroup([FromBody]GroupPostRequestModel group)
         {
             if (!ModelState.IsValid)
@@ -141,44 +112,27 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
-        /// Get list of all groups. You must be an administrator to perform this action.
+        /// Updates group information
         /// </summary>
+        /// <param name="group">Group name</param>
         /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupListResponseModel))]
-        [HttpGet("groups")]
-        public async Task<ActionResult> GetGroupsAsync()
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [HttpPut("{groupName}")]
+        public async Task<ActionResult> PutGroup([FromRoute] string groupName, [FromBody]GroupPutRequestModel group)
         {
-            // Call data store
-            var groups = await _store.GetGroupsAsync();
+            // Update group
+            await _store.SaveGroupAsync(
+                    new Group
+                    {
+                        Name = groupName,
+                        CustomType = group.CustomType,
+                        Description = group.Description,
+                        Members = group.Members
+                    }
+                );
 
             // Return result
-            return Ok(GroupListResponseModel.FromGroups(groups));
-        }
-
-        /// <summary>
-        /// Gets group by name.
-        /// </summary>
-        /// <param name="groupName"></param>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupGetResponseModel))]
-        [HttpGet("groups/{groupName}", Name = nameof(GetGroup))]
-        public async Task<ActionResult> GetGroup(string groupName)
-        {
-            // Call data store
-            var group = await _store.GetGroupDetailsAsync(groupName);
-            if (group == null)
-            {
-                return NotFound();
-            }
-
-            // Format response model
-            var resultModel = new GroupGetResponseModel
-            {
-                Group = group
-            };
-
-            // Return result
-            return Ok(resultModel);
+            return NoContent();
         }
 
         /// <summary>
@@ -187,7 +141,7 @@ namespace Nether.Web.Features.PlayerManagement
         /// <param name="groupName">Name of the group</param>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupMemberResponseModel))]
-        [HttpGet("groups/{groupName}/players")]
+        [HttpGet("{groupName}/players")]
         public async Task<ActionResult> GetGroupPlayers(string groupName)
         {
             // Call data store
@@ -201,30 +155,6 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Return result
             return Ok(resultModel);
-        }
-
-        /// <summary>
-        /// Updates group information
-        /// </summary>
-        /// <param name="group">Group name</param>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [HttpPut("groups/{name}")]
-        public async Task<ActionResult> PutGroup([FromBody]GroupPostRequestModel group)
-        {
-            // Update group
-            await _store.SaveGroupAsync(
-                    new Group
-                    {
-                        Name = group.Name,
-                        CustomType = group.CustomType,
-                        Description = group.Description,
-                        Members = group.Members
-                    }
-                );
-
-            // Return result
-            return NoContent();
         }
     }
 }

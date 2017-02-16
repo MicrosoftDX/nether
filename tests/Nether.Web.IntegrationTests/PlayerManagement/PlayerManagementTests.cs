@@ -66,7 +66,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
                                 Guid.NewGuid().ToString(),
                                 "IntegrationTestUser");
 
-            Assert.Equal($"{BaseUrl}api/players/" + gamertag, result.Response.Headers.GetValues("Location").First());
+            Assert.Equal($"{BaseUrl}api/admin/players/" + gamertag, result.Response.Headers.GetValues("Location").First());
 
             //check that I can get player by gamertag
             PlayerGetResponse response = await GetPlayerAsync(client, gamertag);
@@ -77,7 +77,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         {
             var client = await GetAdminClientAsync();
 
-            PlayerListGetResponse response = await GetPlayersAsync(client);
+            PlayerListGetResponse response = await GetPlayersAdminAsync(client);
 
             Assert.NotNull(response.Players);
             Assert.True(response.Players.Length > 0);
@@ -88,7 +88,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         {
             var client = await GetClientAsync();
 
-            PlayerListGetResponse response = await GetPlayersAsync(client, HttpStatusCode.Forbidden);
+            PlayerListGetResponse response = await GetPlayersAdminAsync(client, HttpStatusCode.Forbidden);
         }
 
         [Fact]
@@ -106,14 +106,14 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
             // validate group response
             var groupResponse = await CreateGroupAsync(client, group, HttpStatusCode.Created);
-            Assert.Equal($"{BaseUrl}api/groups/" + groupName, groupResponse.Response.Headers.GetValues("Location").First());
+            Assert.Equal($"{BaseUrl}api/admin/groups/" + groupName, groupResponse.Response.Headers.GetValues("Location").First());
 
             //list groups and check the created group is in the list
-            GroupListResponse allGroups = await GetAllGroupsAsync(client);
+            GroupListResponse allGroups = await GetAllGroupsAdminAsync(client);
             Assert.True(allGroups.Groups.Any(g => g.Name == groupName));
         }
 
-        [Fact]
+        [Fact(Skip = "Need to work out the permissions around group create/edit")]
         public async Task As_a_player_I_can_create_and_list_my_groups()
         {
             var client = await GetClientAsync();
@@ -150,7 +150,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
                 Name = name
             });
 
-            GroupGetResponse g = await GetGroupByNameAsync(client, name);
+            GroupGetResponse g = await GetGroupByNameAdminAsync(client, name);
 
             Assert.Equal(name, g.Group.Name);
         }
@@ -164,9 +164,9 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
             await CreateGroupAsync(client, new GroupEntry { Name = name, Description = "before change" });
 
-            await UpdateGroupAsync(client, new GroupEntry { Name = name, Description = "after change" });
+            await UpdateGroupAdminAsync(client, new GroupEntry { Name = name, Description = "after change" });
 
-            GroupGetResponse group = await GetGroupByNameAsync(client, name);
+            GroupGetResponse group = await GetGroupByNameAdminAsync(client, name);
 
             Assert.Equal("after change", group.Group.Description);
         }
@@ -187,24 +187,25 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             await AddPlayerToGroupAsync(client, groupName, "testuser");
 
             //check that i'm in the group now
-            GroupMembersResponseModel groupMembers = await GetGroupMembersAsync(client, groupName);
+            GroupMembersResponseModel groupMembers = await GetGroupMembersAdminAsync(client, groupName);
             Assert.True(groupMembers.Gamertags.Any(m => m == "testuser"));
 
             //remove me from this group
-            await DeletePlayerFromGroupAsync(client, groupName, "testuser");
+            await DeletePlayerFromGroupAdminAsync(client, groupName, "testuser");
 
             //check group has no gamertag of mine anymore
-            groupMembers = await GetGroupMembersAsync(client, groupName);
+            groupMembers = await GetGroupMembersAdminAsync(client, groupName);
             Assert.True(!groupMembers.Gamertags.Any(m => m == "testuser"));
         }
 
         [Fact]
         public async Task As_a_player_I_can_list_group_members()
         {
+            var adminClient = await GetAdminClientAsync();
             var client = await GetClientAsync(username: "testuser");
 
             string groupName = Guid.NewGuid().ToString();
-            await CreateGroupAsync(client, new GroupEntry { Name = groupName, Members = new[] { "testuser" } });
+            await CreateGroupAsync(adminClient, new GroupEntry { Name = groupName, Members = new[] { "testuser" } });
 
             GroupMembersResponseModel group = await GetGroupMembersAsync(client, groupName);
 
@@ -214,13 +215,14 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_a_player_I_can_find_out_which_groups_I_belong_to()
         {
+            var adminClient = await GetAdminClientAsync();
             var client = await GetClientAsync(username: "testuser");
 
             //first create two groups and add me to them
             string g1 = Guid.NewGuid().ToString();
             string g2 = Guid.NewGuid().ToString();
-            await CreateGroupAsync(client, new GroupEntry { Name = g1, Members = new[] { "testuser" } });
-            await CreateGroupAsync(client, new GroupEntry { Name = g2, Members = new[] { "testuser" } });
+            await CreateGroupAsync(adminClient, new GroupEntry { Name = g1, Members = new[] { "testuser" } });
+            await CreateGroupAsync(adminClient, new GroupEntry { Name = g2, Members = new[] { "testuser" } });
 
             //get my groups
             GroupListResponse groups = await GetPlayerGroupsAsync(client);
@@ -246,10 +248,14 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         {
             return await HttpGet<GroupMembersResponseModel>(client, $"{BasePath}groups/{groupName}/players", expectedCode);
         }
-
-        private async Task DeletePlayerFromGroupAsync(HttpClient client, string groupName, string playerName, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
+        private async Task<GroupMembersResponseModel> GetGroupMembersAdminAsync(HttpClient client, string groupName, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            HttpResponseMessage response = await client.DeleteAsync($"{BasePath}groups/{groupName}/players/{playerName}");
+            return await HttpGet<GroupMembersResponseModel>(client, $"{BasePath}admin/groups/{groupName}/players", expectedCode);
+        }
+
+        private async Task DeletePlayerFromGroupAdminAsync(HttpClient client, string groupName, string playerName, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
+        {
+            HttpResponseMessage response = await client.DeleteAsync($"{BasePath}admin/players/{playerName}/groups/{groupName}");
 
             Assert.Equal(expectedCode, response.StatusCode);
         }
@@ -264,7 +270,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             }
             else
             {
-                response = await client.PutAsync($"{BasePath}players/{playerName}/groups/{groupName}", null);
+                response = await client.PutAsync($"{BasePath}admin/players/{playerName}/groups/{groupName}", null);
             }
 
             Assert.Equal(expectedStatus, response.StatusCode);
@@ -272,7 +278,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
         private async Task<ApiResponse> CreateGroupAsync(HttpClient client, GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.Created)
         {
-            HttpResponseMessage response = await client.PostAsJsonAsync(BasePath + "groups", group);
+            HttpResponseMessage response = await client.PostAsJsonAsync(BasePath + "admin/groups", group);
 
             Assert.Equal(expectedCode, response.StatusCode);
 
@@ -281,26 +287,26 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             return new ApiResponse { Response = response, ResponseBody = r };
         }
 
-        private async Task UpdateGroupAsync(HttpClient client, GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
+        private async Task UpdateGroupAdminAsync(HttpClient client, GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
         {
-            HttpResponseMessage response = await client.PutAsJsonAsync(BasePath + "groups/" + group.Name, group);
+            HttpResponseMessage response = await client.PutAsJsonAsync(BasePath + "admin/groups/" + group.Name, group);
 
             Assert.Equal(expectedCode, response.StatusCode);
         }
 
-        private async Task<GroupListResponse> GetAllGroupsAsync(HttpClient client, HttpStatusCode expectedCode = HttpStatusCode.OK)
+        private async Task<GroupListResponse> GetAllGroupsAdminAsync(HttpClient client, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            return await HttpGet<GroupListResponse>(client, BasePath + "groups", expectedCode);
+            return await HttpGet<GroupListResponse>(client, BasePath + "admin/groups", expectedCode);
         }
 
-        private async Task<GroupGetResponse> GetGroupByNameAsync(HttpClient client, string name, HttpStatusCode expectedCode = HttpStatusCode.OK)
+        private async Task<GroupGetResponse> GetGroupByNameAdminAsync(HttpClient client, string name, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            return await HttpGet<GroupGetResponse>(client, BasePath + "groups/" + name, expectedCode);
+            return await HttpGet<GroupGetResponse>(client, BasePath + "admin/groups/" + name, expectedCode);
         }
 
-        private async Task<PlayerListGetResponse> GetPlayersAsync(HttpClient client, HttpStatusCode expectedCode = HttpStatusCode.OK)
+        private async Task<PlayerListGetResponse> GetPlayersAdminAsync(HttpClient client, HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            return await HttpGet<PlayerListGetResponse>(client, BasePath + "players", expectedCode);
+            return await HttpGet<PlayerListGetResponse>(client, BasePath + "admin/players", expectedCode);
         }
 
         private async Task<PlayerGetResponse> GetPlayerAsync(HttpClient client, string gamerTag = null, HttpStatusCode expectedCode = HttpStatusCode.OK)
@@ -310,7 +316,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
                 return await HttpGet<PlayerGetResponse>(client, BasePath + "player");
             }
 
-            return await HttpGet<PlayerGetResponse>(client, BasePath + "players/" + gamerTag);
+            return await HttpGet<PlayerGetResponse>(client, BasePath + "admin/players/" + gamerTag);
         }
 
         private async Task UpdatePlayerAsync(HttpClient client, string country, string gamertag, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
@@ -333,7 +339,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             string customTag,
             HttpStatusCode expectedCode = HttpStatusCode.Created)
         {
-            HttpResponseMessage response = await client.PostAsJsonAsync(BasePath + "players",
+            HttpResponseMessage response = await client.PostAsJsonAsync(BasePath + "admin/players",
                 new
                 {
                     UserId = userId,

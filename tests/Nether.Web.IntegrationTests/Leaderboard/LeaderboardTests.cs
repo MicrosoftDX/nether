@@ -142,14 +142,6 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             await PostScoreAsync(client, -5, HttpStatusCode.BadRequest);
         }
 
-        [Fact]
-        public async Task Cannot_get_leaderboard_if_im_not_in_Player_role()
-        {
-            var client = await GetAdminClientAsync();    //login as devadmin who is not in "Player" role
-
-            await GetLeaderboardAsync(client, "Default", HttpStatusCode.Forbidden);
-        }
-
         #region [ REST Wrappers ]
 
         private async Task DeleteMyScoresAsync(HttpClient client)

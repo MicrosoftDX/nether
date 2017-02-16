@@ -22,6 +22,7 @@ namespace Nether.Web.Features.PlayerManagement
     /// Player management
     /// </summary>
     [Authorize(Roles = RoleNames.Player)]
+    [Route("player")]
     public class PlayerController : Controller
     {
         private readonly IPlayerManagementStore _store;
@@ -39,7 +40,7 @@ namespace Nether.Web.Features.PlayerManagement
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerGetResponseModel))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [HttpGet("player")]
+        [HttpGet("")]
         public async Task<ActionResult> GetCurrentPlayer()
         {
             string gamertag = User.GetGamerTag();
@@ -58,12 +59,33 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
-        /// Gets the player information from currently logged in user
+        ///  Updates information about the current player
+        /// </summary>
+        /// <param name="player">Player data</param>
+        /// <returns></returns>
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [HttpPut("")]
+        public async Task<ActionResult> PutCurrentPlayer([FromBody]PlayerPutRequestModel player)
+        {
+            string userId = User.GetId();
+
+            // TODO - need to prevent modifying gamertag
+
+            // Update player
+            await _store.SavePlayerAsync(
+                new Player { UserId = userId, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
+
+            // Return result
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Deletes the player information for the currently logged in user
         /// </summary>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [HttpDelete("player")]
+        [HttpDelete("")]
         public async Task<ActionResult> DeleteCurrentPlayer()
         {
             string gamertag = User.GetGamerTag();
@@ -83,10 +105,10 @@ namespace Nether.Web.Features.PlayerManagement
         /// Gets the extended player information from currently logged in user
         /// </summary>
         /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerExtendedGetResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerStateGetResponseModel))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [HttpGet("playerextended")]
-        public async Task<ActionResult> GetCurrentPlayerExtended()
+        [HttpGet("state")]
+        public async Task<ActionResult> GetCurrentPlayerState()
         {
             string userId = User.GetId();
 
@@ -96,29 +118,9 @@ namespace Nether.Web.Features.PlayerManagement
                 return NotFound();
 
             // Return result
-            return Ok(PlayerExtendedGetResponseModel.FromPlayer(player));
+            return Ok(PlayerStateGetResponseModel.FromPlayer(player));
         }
 
-        /// <summary>
-        ///  Updates information about the current player
-        /// </summary>
-        /// <param name="player">Player data</param>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [HttpPut("player")]
-        public async Task<ActionResult> PutCurrentPlayer([FromBody]PlayerPutRequestModel player)
-        {
-            string userId = User.GetId();
-
-            // TODO - need to prevent modifying gamertag
-
-            // Update player
-            await _store.SavePlayerAsync(
-                new Player { UserId = userId, Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag });
-
-            // Return result
-            return NoContent();
-        }
 
         /// <summary>
         /// Updates extended (e.g. JSON) information about the current player
@@ -126,17 +128,61 @@ namespace Nether.Web.Features.PlayerManagement
         /// <param name="player">Player data</param>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [HttpPut("playerextended")]
-        public async Task<ActionResult> PutCurrentPlayerExtended([FromBody]PlayerExtendedPutRequestModel player)
+        [HttpPut("state")]
+        public async Task<ActionResult> PutCurrentPlayerState([FromBody]PlayerStatePutRequestModel player)
         {
             string userId = User.GetId();
 
             // Update extended player information
             // Update player
             await _store.SavePlayerExtendedAsync(
-                new PlayerExtended { UserId = userId, Gamertag = player.Gamertag, ExtendedInformation = player.ExtendedInformation });
+                new PlayerState { UserId = userId, Gamertag = player.Gamertag, State = player.ExtendedInformation });
 
             // Return result
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Gets the list of groups current player belongs to.
+        /// </summary>
+        /// <returns></returns>
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupListResponseModel))]
+        [HttpGet("groups")]
+        public async Task<ActionResult> GetPlayerGroups()
+        {
+            var gamertag = User.GetGamerTag();
+            var groups = await _store.GetPlayersGroupsAsync(gamertag);
+
+            return Ok(GroupListResponseModel.FromGroups(groups));
+        }
+
+        /// <summary>
+        /// Adds currently logged in player to a group.
+        /// </summary>
+        /// <param name="groupName">Group name.</param>
+        /// <returns></returns>
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [HttpPut("groups/{groupName}")]
+        public async Task<ActionResult> AddCurrentPlayerToGroup(string groupName)
+        {
+            var gamertag = User.GetGamerTag();
+            Group group = await _store.GetGroupDetailsAsync(groupName);
+            if (group == null)
+            {
+                _logger.LogWarning("group '{0}' not found", groupName);
+                return BadRequest();
+            }
+
+            Player player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
+            if (player == null)
+            {
+                _logger.LogWarning("player '{0}' not found", gamertag);
+                return BadRequest();
+            }
+
+            await _store.AddPlayerToGroupAsync(group, player);
+
             return NoContent();
         }
     }

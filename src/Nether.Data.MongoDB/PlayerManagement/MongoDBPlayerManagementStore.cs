@@ -202,22 +202,22 @@ namespace Nether.Data.MongoDB.PlayerManagement
             return g.Image;*/
         }
 
-        public async Task SavePlayerExtendedAsync(PlayerExtended player)
+        public async Task SavePlayerExtendedAsync(PlayerState player)
         {
             _logger.LogDebug("Saving Player Extended {0}", player.UserId);
             await PlayersExtendedCollection.ReplaceOneAsync(p => p.PlayerId == player.UserId, player, s_upsertOptions);
         }
 
-        public async Task<PlayerExtended> GetPlayerDetailsExtendedAsync(string userid)
+        public async Task<PlayerState> GetPlayerDetailsExtendedAsync(string userid)
         {
             var getPlayerExtended = from s in PlayersExtendedCollection.AsQueryable()
                                     where s.PlayerId == userid
                                     orderby s.Gamertag descending
-                                    select new PlayerExtended
+                                    select new PlayerState
                                     {
                                         UserId = s.PlayerId,
                                         Gamertag = s.Gamertag,
-                                        ExtendedInformation = s.ExtendedInformation
+                                        State = s.ExtendedInformation
                                     };
 
             return await getPlayerExtended.FirstOrDefaultAsync();

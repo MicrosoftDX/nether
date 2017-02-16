@@ -22,6 +22,7 @@ namespace Nether.Web.Features.PlayerManagement
     /// Player management
     /// </summary>
     [Authorize(Roles = RoleNames.Player)]
+    [Route("groups")]
     public class GroupController : Controller
     {
         private readonly IPlayerManagementStore _store;
@@ -34,57 +35,12 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
-        /// Gets the list of groups current player belongs to.
-        /// </summary>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupListResponseModel))]
-        [HttpGet("player/groups")]
-        public async Task<ActionResult> GetPlayerGroups()
-        {
-            var gamertag = User.GetGamerTag();
-            var groups = await _store.GetPlayersGroupsAsync(gamertag);
-
-            return Ok(GroupListResponseModel.FromGroups(groups));
-        }
-
-        /// <summary>
-        /// Adds currently logged in player to a group.
-        /// </summary>
-        /// <param name="groupName">Group name.</param>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [HttpPut("player/groups/{groupName}")]
-        public async Task<ActionResult> AddCurrentPlayerToGroup(string groupName)
-        {
-            var gamertag = User.GetGamerTag();
-            Group group = await _store.GetGroupDetailsAsync(groupName);
-            if (group == null)
-            {
-                _logger.LogWarning("group '{0}' not found", groupName);
-                return BadRequest();
-            }
-
-            Player player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
-            if (player == null)
-            {
-                _logger.LogWarning("player '{0}' not found", gamertag);
-                return BadRequest();
-            }
-
-            await _store.AddPlayerToGroupAsync(group, player);
-
-            return NoContent();
-
-        }
-
-        /// <summary>
         /// Gets the members of the group as player objects.
         /// </summary>
         /// <param name="groupName">Name of the group</param>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupMemberResponseModel))]
-        [HttpGet("groups/{groupName}/players")]
+        [HttpGet("{groupName}/players")]
         public async Task<ActionResult> GetGroupPlayers(string groupName)
         {
             // Call data store

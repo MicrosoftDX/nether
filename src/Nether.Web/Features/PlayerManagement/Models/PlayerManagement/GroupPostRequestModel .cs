@@ -9,12 +9,8 @@ namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
 {
     public class GroupPostRequestModel
     {
-        /// <summary>
-        /// Group name
-        /// </summary>
         [Required]
         public string Name { get; set; }
-
         /// <summary>
         /// Group custom type
         /// </summary>

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -18,15 +19,19 @@ namespace Nether.Web.IntegrationTests
 
         public IntegrationTestUsersFixture()
         {
+            Trace.WriteLine("**************************** IntegrationTestUsersFixture create starting  ****************************");
             foreach (var user in s_users)
             {
                 CreateUser(user.UserName, user.Password, user.Role, user.Gamertag);
             }
+            Trace.WriteLine("**************************** IntegrationTestUsersFixture create finished  ****************************");
         }
 
 
         public void Dispose()
         {
+            Trace.WriteLine("**************************** IntegrationTestUsersFixture cleanup starting  ****************************");
+
             foreach (var username in _createdUserNames)
             {
                 DeleteUser(username);
@@ -35,6 +40,7 @@ namespace Nether.Web.IntegrationTests
             {
                 DeletePlayer(gamertag);
             }
+            Trace.WriteLine("**************************** IntegrationTestUsersFixture cleanup finished ****************************");
         }
 
 
@@ -46,7 +52,7 @@ namespace Nether.Web.IntegrationTests
         {
             var client = await GetClientAsync(InitialAdminUserName, InitialAdminPassword).ConfigureAwait(false);
 
-            // create user 
+            // create user
             var response = await client.PutAsJsonAsync(
                 $"/api/identity/users/{username}",
                 new
