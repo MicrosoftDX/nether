@@ -27,5 +27,6 @@ namespace Nether.Data.Leaderboard
         public LeaderboardType Type { get; set; }
         public int Top { get; set; }
         public int Radius { get; set; }
+        public bool IncludeCurrentPlayer { get; set; }
     }
 }

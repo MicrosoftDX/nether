@@ -12,6 +12,10 @@ namespace Nether.Web.Features.Leaderboard.Models.Leaderboard
     {
         public List<LeaderboardEntry> Entries { get; set; }
 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DefaultValue((object)null)]
+        public LeaderboardEntry CurrentPlayer { get; set; }
+
         public class LeaderboardEntry
         {
             public static LeaderboardEntry Map(GameScore score, string currentGamertag)

@@ -45,7 +45,6 @@ namespace Nether.Web.Features.Leaderboard
         /// <summary>
         /// Gets leaderboard by leaderboard configured name
         /// </summary>
-        /// <param name="name">Name of the leaderboard</param>
         /// <returns>List of scores and gametags</returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LeaderboardListResponseModel))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
@@ -107,12 +106,19 @@ namespace Nether.Web.Features.Leaderboard
                     break;
             }
 
+            GameScore currentPlayer = null;
+            if (config.IncludeCurrentPlayer && gamertag != null)
+            {
+                currentPlayer = (await _store.GetScoresAroundMeAsync(gamertag, 0)).FirstOrDefault();
+            }
+
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
                 Entries = scores
                             ?.Select(s => LeaderboardGetResponseModel.LeaderboardEntry.Map(s, gamertag))
-                            ?.ToList()
+                            ?.ToList(),
+                CurrentPlayer = LeaderboardGetResponseModel.LeaderboardEntry.Map(currentPlayer, null)
             };
 
             // Return result

@@ -116,11 +116,13 @@ namespace Nether.Web.Features.Leaderboard
             foreach (var config in enumerable)
             {
                 string name = config["Name"];
+                bool includeCurrentPlayer = bool.Parse(config["IncludeCurrentPlayer"] ?? "false");
                 LeaderboardType type = (LeaderboardType)Enum.Parse(typeof(LeaderboardType), config["Type"]);
                 LeaderboardConfig leaderboardConfig = new LeaderboardConfig
                 {
                     Name = name,
-                    Type = type
+                    Type = type,
+                    IncludeCurrentPlayer = includeCurrentPlayer
                 };
 
                 switch (type)
