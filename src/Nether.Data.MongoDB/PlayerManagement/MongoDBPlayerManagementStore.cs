@@ -207,7 +207,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
             _logger.LogDebug("Saving Player Extended {0}", gamertag);
             await PlayersExtendedCollection.ReplaceOneAsync(
                 p => p.Gamertag == gamertag,
-                new MongoDBPlayerExtended { Gamertag = gamertag, ExtendedInformation = state},
+                new MongoDBPlayerExtended { Gamertag = gamertag, ExtendedInformation = state },
                 s_upsertOptions);
         }
 

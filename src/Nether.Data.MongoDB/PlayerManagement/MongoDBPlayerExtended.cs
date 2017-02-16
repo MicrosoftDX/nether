@@ -18,7 +18,7 @@ namespace Nether.Data.MongoDB.PlayerManagement
         // Implicit operator allows Player objects to be used as MongoDbPlayer objects
         public static implicit operator MongoDBPlayerExtended(PlayerState value)
         {
-            return new MongoDBPlayerExtended {Gamertag = value.Gamertag, ExtendedInformation = value.State };
+            return new MongoDBPlayerExtended { Gamertag = value.Gamertag, ExtendedInformation = value.State };
         }
 
         [BsonId]
