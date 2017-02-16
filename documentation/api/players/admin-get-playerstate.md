@@ -1,6 +1,6 @@
-# Get Player by Gamertag
+# Get Player State
 
-Get information about a player by gamertag.
+Get player state for the specified player.
 
 ## Request
 
@@ -8,12 +8,7 @@ See Common parameters and headers that are used by all requests related to the L
 
 Method  | Request URI
 ------- | -----------
-GET     | `/api/players/{gamerTag}`
-
-### Request Parameters
-Name        | Required |   Type   | Description
-------------|----------|----------|------------
-gamerTag|Yes|String|Tag of the player
+GET     | `/api/admin/players/{gamertag}/state`
 
 ### JSON Body
 
@@ -24,22 +19,19 @@ Empty body
 | Status Code | Description |
 |-------------|-------------|
 |200|Success|
-|404|Player not found|
+|404|Extended player information not found|
 
 ### JSON Body
 
 ```json
 {
-  "player": {
     "gamertag": "string",
-    "country": "string",
-    "customTag": "string"
-  }
+    "state": "string"
 }
+
 ```
 
 Element name        | Required  | Type       | Description
 ------------------- | --------- | ---------  | -----------
 gamertag            | Yes       | String     | Tag of the player
-country             | Yes       | String     | Country of the player
-customtag           | No        | String     | Custom tag
+extendedInformation | No        | String     | Extended player information (e.g. JSON)

@@ -8,7 +8,7 @@ See Common parameters and headers that are used by all requests related to the L
 
 Method  | Request URI
 ------- | -----------
-GET     | `/api/groups/{groupName}`
+GET     | `/api/admin/groups/{groupName}`
 
 ### JSON Body
 
@@ -28,6 +28,9 @@ Empty body
     "name": "string",
     "customType": "string",
     "description": "string",
+    "members": [
+      "string"
+    ]
   }
 }
 ```
@@ -37,3 +40,4 @@ Element name        | Type       | Description
 groupName|String|Name of the group
 customType|String|Custom type
 description|String|Group description
+members|String Array|List of gamertags who are members of this group

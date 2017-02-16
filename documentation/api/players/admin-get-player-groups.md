@@ -8,7 +8,7 @@ See Common parameters and headers that are used by all requests related to the L
 
 Method  | Request URI
 ------- | -----------
-GET     | `/api/players/{gamerTag}/groups`
+GET     | `/api/admin/players/{gamerTag}/groups`
 
 ### JSON Body
 

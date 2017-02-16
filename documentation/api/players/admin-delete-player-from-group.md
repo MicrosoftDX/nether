@@ -1,6 +1,6 @@
-# Add a Player to a Group
+# Removes a Player from a Group
 
-Adds a specific player to a group.
+Removes a player from a group. Administrator permissions are required to perform this action.
 
 ## Request
 
@@ -8,7 +8,7 @@ See Common parameters and headers that are used by all requests related to the L
 
 Method  | Request URI
 ------- | -----------
-PUT     | `/api/players/{playerName}/groups/{groupName} `
+DELETE  | `/api/admin/players/{playerName}/groups/{groupName}`
 
 ### Request parameters
 
@@ -19,13 +19,14 @@ groupName|Yes|String|Group name
 
 ### JSON Body
 
-Empty body
+empty body
+
 
 ## Response
 
 | Status Code | Description |
 |-------------|-------------|
-|200|Success|
+|204|Success|
 
 
 ### JSON Body

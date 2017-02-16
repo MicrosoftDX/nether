@@ -8,7 +8,7 @@ See Common parameters and headers that are used by all requests related to the L
 
 Method  | Request URI
 ------- | -----------
-POST    | `/api/players`
+POST    | `/api/admin/players`
 
 ### Request parameters
 

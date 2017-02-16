@@ -1,14 +1,14 @@
-# Get Player Extended by Gamertag
+# Get Player by Gamertag
 
-Get extended information about a player by gamertag.
+Get information about a player by gamertag.
 
 ## Request
 
-See Common parameters and headers that are used by all requests related to the Player Management Building Block.
+See Common parameters and headers that are used by all requests related to the Leaderboard Building Block.
 
 Method  | Request URI
 ------- | -----------
-GET     | `/api/playersextended/{gamerTag}`
+GET     | `/api/admin/players/{gamerTag}`
 
 ### Request Parameters
 Name        | Required |   Type   | Description
@@ -30,9 +30,10 @@ Empty body
 
 ```json
 {
-  "playerExtended": {
+  "player": {
     "gamertag": "string",
-    "extendedInformation": "string"
+    "country": "string",
+    "customTag": "string"
   }
 }
 ```
@@ -40,4 +41,5 @@ Empty body
 Element name        | Required  | Type       | Description
 ------------------- | --------- | ---------  | -----------
 gamertag            | Yes       | String     | Tag of the player
-extendedInformation | No        | String     | Extended information of the player
+country             | Yes       | String     | Country of the player
+customtag           | No        | String     | Custom tag

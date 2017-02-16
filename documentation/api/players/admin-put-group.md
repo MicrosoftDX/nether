@@ -8,7 +8,7 @@ See Common parameters and headers that are used by all requests related to the L
 
 Method  | Request URI
 ------- | -----------
-PUT     | `/api/groups/{name}`
+PUT     | `/api/admin/groups/{name}`
 
 ### Request parameters
 
@@ -20,7 +20,6 @@ name|Yes|String|Group name
 
 ```json
 {
-  "name": "string",
   "customType": "string",
   "description": "string",
   "members": [

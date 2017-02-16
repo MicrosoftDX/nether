@@ -1,6 +1,6 @@
-# Get Group by Name
+# Get Group Members
 
-Get a list of all groups.
+Get a list of all members of a group as a list of gamertags.
 
 ## Request
 
@@ -8,7 +8,7 @@ See Common parameters and headers that are used by all requests related to the L
 
 Method  | Request URI
 ------- | -----------
-GET     | `/api/groups/{groupName}`
+GET     | `/api/admin/groups/{groupName}/players`
 
 ### JSON Body
 
@@ -24,16 +24,12 @@ Empty body
 
 ```json
 {
-  "group": {
-    "name": "string",
-    "customType": "string",
-    "description": "string",
-  }
+  "gamertags": [
+    "string"
+  ]
 }
 ```
 
 Element name        | Type       | Description
 --------------------|------------|-------------
-groupName|String|Name of the group
-customType|String|Custom type
-description|String|Group description
+gamertags|String Array|Array of gamertags
