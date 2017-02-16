@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Nether.Data.PlayerManagement;
 
-namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
+namespace Nether.Web.Features.PlayerManagement.Models.PlayerAdmin
 {
     public class PlayerListGetResponseModel
     {
@@ -15,7 +15,7 @@ namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
 
         public class PlayersEntry
         {
-            public static implicit operator PlayersEntry(Player player)
+            public static implicit operator PlayersEntry(Data.PlayerManagement.Player player)
             {
                 return new PlayersEntry { Gamertag = player.Gamertag, Country = player.Country, CustomTag = player.CustomTag };
             }

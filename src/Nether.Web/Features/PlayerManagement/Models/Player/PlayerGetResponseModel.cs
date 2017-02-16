@@ -1,15 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Nether.Data.PlayerManagement;
-
-namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
+namespace Nether.Web.Features.PlayerManagement.Models.Player
 {
     public class PlayerGetResponseModel
     {
         public PlayerEntry Player { get; set; }
 
-        public static PlayerGetResponseModel FromPlayer(Player player)
+        public static PlayerGetResponseModel FromPlayer(Data.PlayerManagement.Player player)
         {
             return new PlayerGetResponseModel
             {

@@ -3,15 +3,15 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Nether.Data.PlayerManagement;
 using Nether.Web.Utilities;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System;
-using Nether.Web.Features.PlayerManagement.Models.PlayerManagement;
+using Nether.Web.Features.PlayerManagement.Models.Player;
+using System.IO;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -102,7 +102,7 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
-        /// Gets the extended player information from currently logged in user
+        /// Gets the player state for the current player
         /// </summary>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerStateGetResponseModel))]
@@ -110,36 +110,38 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpGet("state")]
         public async Task<ActionResult> GetCurrentPlayerState()
         {
-            string userId = User.GetId();
+            string gamertag = User.GetGamerTag();
 
             // Call data store
-            var player = await _store.GetPlayerDetailsExtendedAsync(userId);
-            if (player == null)
+            var state = await _store.GetPlayerStateByGamertagAsync(gamertag);
+            if (state == null)
                 return NotFound();
 
             // Return result
-            return Ok(PlayerStateGetResponseModel.FromPlayer(player));
+            return Ok(new PlayerStateGetResponseModel { Gamertag = gamertag, State = state });
         }
 
 
         /// <summary>
-        /// Updates extended (e.g. JSON) information about the current player
+        /// Updates JSON state for the current player
         /// </summary>
-        /// <param name="player">Player data</param>
+        /// <param name="state">Player data</param>
         /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         [HttpPut("state")]
-        public async Task<ActionResult> PutCurrentPlayerState([FromBody]PlayerStatePutRequestModel player)
+        public async Task<ActionResult> PutCurrentPlayerState([FromBody] JObject state) // TODO update binding to use raw string
         {
-            string userId = User.GetId();
+            string gamertag = User.GetGamerTag();
+
+            // TODO - update this to use model binding. Keeping param for now for API docs, but binding to it isn't working
+            var stateString = JsonConvert.SerializeObject(state);
 
             // Update extended player information
             // Update player
-            await _store.SavePlayerExtendedAsync(
-                new PlayerState { UserId = userId, Gamertag = player.Gamertag, State = player.ExtendedInformation });
+            await _store.SavePlayerStateByGamertagAsync(gamertag, stateString);
 
             // Return result
-            return NoContent();
+            return Ok();
         }
 
         /// <summary>

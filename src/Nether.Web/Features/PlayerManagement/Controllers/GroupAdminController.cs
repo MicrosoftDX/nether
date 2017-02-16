@@ -11,7 +11,7 @@ using Nether.Web.Utilities;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System;
-using Nether.Web.Features.PlayerManagement.Models.PlayerManagement;
+using Nether.Web.Features.PlayerManagement.Models.GroupAdmin;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -76,45 +76,10 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
-        /// Creates a new group.
+        /// Creates or updates the speicifed group
         /// </summary>
-        /// <param name="group">Group object</param>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.Created)]
-        [HttpPost("")]
-        public async Task<ActionResult> PostGroup([FromBody]GroupPostRequestModel group)
-        {
-            if (!ModelState.IsValid)
-            {
-                var messages = new List<string>();
-                var states = ModelState.Where(mse => mse.Value.Errors.Count > 0);
-                foreach (var state in states)
-                {
-                    var message = $"{state.Key}. Errors: {string.Join(", ", state.Value.Errors.Select(e => e.ErrorMessage))}\n";
-                    messages.Add(message);
-                }
-                _logger.LogError(string.Join("\n", messages));
-                return BadRequest();
-            }
-            // Save group
-            await _store.SaveGroupAsync(
-                new Group
-                {
-                    Name = group.Name,
-                    CustomType = group.CustomType,
-                    Description = group.Description,
-                    Members = group.Members
-                }
-            );
-
-            // Return result
-            return CreatedAtRoute(nameof(GetGroup), new { groupName = group.Name }, null);
-        }
-
-        /// <summary>
-        /// Updates group information
-        /// </summary>
-        /// <param name="group">Group name</param>
+        /// <param name="groupName">Group name</param>
+        /// <param name="group"></param>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [HttpPut("{groupName}")]

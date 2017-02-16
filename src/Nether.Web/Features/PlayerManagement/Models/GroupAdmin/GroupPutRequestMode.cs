@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Nether.Data.PlayerManagement;
 using System.ComponentModel.DataAnnotations;
 
-namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
+namespace Nether.Web.Features.PlayerManagement.Models.GroupAdmin
 {
     public class GroupPutRequestModel
     {

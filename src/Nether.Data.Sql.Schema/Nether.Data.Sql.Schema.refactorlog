@@ -70,4 +70,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[Gamertag]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="018bcb41-6993-41ea-af28-56deda4c6e2a" ChangeDateTime="02/16/2017 10:23:44">
+    <Property Name="ElementName" Value="[dbo].[PlayersExtended].[ExtendedInformation]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[PlayersExtended]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="State" />
+  </Operation>
 </Operations>

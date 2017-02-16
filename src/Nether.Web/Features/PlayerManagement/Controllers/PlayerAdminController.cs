@@ -11,7 +11,7 @@ using Nether.Web.Utilities;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System;
-using Nether.Web.Features.PlayerManagement.Models.PlayerManagement;
+using Nether.Web.Features.PlayerManagement.Models.PlayerAdmin;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -75,16 +75,17 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         /// <summary>
-        /// Creates or updates information about a player. You have to be an administrator to perform this action.
+        /// Creates a player. You have to be an administrator to perform this action.
         /// </summary>
+        /// <param name="gamertag">The gamertag</param>
         /// <param name="newPlayer">Player data</param>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [HttpPost("")]
-        public async Task<ActionResult> Post([FromBody]PlayerPostRequestModel newPlayer)
+        public async Task<ActionResult> Post([FromRoute]string gamertag, [FromBody]PlayerPostRequestModel newPlayer)
         {
-            if (string.IsNullOrWhiteSpace(newPlayer.Gamertag))
+            if (string.IsNullOrWhiteSpace(gamertag))
             {
                 return BadRequest(); //TODO: return error info in body
             }
@@ -92,7 +93,7 @@ namespace Nether.Web.Features.PlayerManagement
             // Save player
             var player = new Player
             {
-                UserId = newPlayer.UserId ?? Guid.NewGuid().ToString(),
+                UserId = newPlayer.UserId,
                 Gamertag = newPlayer.Gamertag,
                 Country = newPlayer.Country,
                 CustomTag = newPlayer.CustomTag
@@ -103,9 +104,40 @@ namespace Nether.Web.Features.PlayerManagement
             return CreatedAtRoute(nameof(GetPlayer), new { gamertag = player.Gamertag }, null);
         }
 
+        /// <summary>
+        /// Updates a player. You have to be an administrator to perform this action.
+        /// </summary>
+        /// <param name="gamertag">The gamertag</param>
+        /// <param name="newPlayer">Player data</param>
+        /// <returns></returns>
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [HttpPut("{gamertag}")]
+        public async Task<ActionResult> Put([FromRoute]string gamertag, [FromBody]PlayerPutRequestModel newPlayer)
+        {
+            if (string.IsNullOrWhiteSpace(gamertag))
+            {
+                return BadRequest(); //TODO: return error info in body
+            }
+
+            var player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
+            if (player == null)
+            {
+                return NotFound();
+            }
+            // Save player
+            player.Country = newPlayer.Country;
+            player.CustomTag = newPlayer.CustomTag;
+            await _store.SavePlayerAsync(player);
+
+            // Return result
+            return Ok();
+        }
+
 
         /// <summary>
-        /// Gets extended player information by player's gamer tag. You have to be an administrator to perform this action.
+        /// Gets player state. You have to be an administrator to perform this action.
         /// </summary>
         /// <param name="gamertag">Gamer tag</param>
         /// <returns>Player extended information</returns>
@@ -115,40 +147,35 @@ namespace Nether.Web.Features.PlayerManagement
         public async Task<ActionResult> GetPlayerState(string gamertag)
         {
             // Call data store
-            var player = await _store.GetPlayerDetailsExtendedAsync(gamertag);
-            if (player == null)
+            var state = await _store.GetPlayerStateByGamertagAsync(gamertag);
+            if (state == null)
                 return NotFound();
 
             // Return result
-            return Ok(PlayerStateGetResponseModel.FromPlayer(player));
+            return Ok(new PlayerStateGetResponseModel { Gamertag = gamertag, State = state });
         }
 
         /// <summary>
-        /// Adds/Update extend data to a player. You have to be an administrator to perform this action.
+        /// Set player state. You have to be an administrator to perform this action.
         /// </summary>
-        /// <param name="Player">Player data</param>
+        /// <param name="gamertag"></param>
+        /// <param name="state"></param>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [HttpPost("{gamertag}/state")]
-        public async Task<ActionResult> PostState([FromBody]PlayerStatePostRequestModel Player)
+        [HttpPut("{gamertag}/state")]
+        public async Task<ActionResult> PostState([FromRoute] string gamertag, [FromBody]string state)
         {
-            if (string.IsNullOrWhiteSpace(Player.Gamertag))
+            if (string.IsNullOrWhiteSpace(gamertag))
             {
                 return BadRequest(); //TODO: return error info in body
             }
 
             // Save player extended information
-            var player = new PlayerState
-            {
-                UserId = Player.UserId ?? Guid.NewGuid().ToString(),
-                Gamertag = Player.Gamertag,
-                State = Player.ExtendedInformation
-            };
-            await _store.SavePlayerExtendedAsync(player);
+            await _store.SavePlayerStateByGamertagAsync(gamertag, state);
 
             // Return result
-            return CreatedAtRoute(nameof(GetPlayer), new { gamertag = player.Gamertag }, null);
+            return CreatedAtRoute(nameof(GetPlayer), new { gamertag }, null);
         }
 
 

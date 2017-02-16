@@ -18,8 +18,8 @@ namespace Nether.Data.PlayerManagement
         Task<List<Group>> GetPlayersGroupsAsync(string gamertag);
         Task UploadPlayerImageAsync(string gamertag, byte[] image);
         Task<byte[]> GetPlayerImageAsync(string gamertag);
-        Task SavePlayerExtendedAsync(PlayerState player);
-        Task<PlayerState> GetPlayerDetailsExtendedAsync(string id);
+        Task SavePlayerStateByGamertagAsync(string gamertag, string state);
+        Task<string> GetPlayerStateByGamertagAsync(string gamertag);
         Task DeletePlayerDetailsAsync(string gamertag);
 
         //Group

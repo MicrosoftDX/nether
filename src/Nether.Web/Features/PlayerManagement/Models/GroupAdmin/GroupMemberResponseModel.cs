@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
+namespace Nether.Web.Features.PlayerManagement.Models.GroupAdmin
 {
     public class GroupMemberResponseModel
     {

@@ -12,19 +12,17 @@ using System.Diagnostics;
 
 namespace Nether.Data.Sql.PlayerManagement
 {
-    [DebuggerDisplay("PlayerExtendedEntity (tag '{Gamertag}', UserId '{UserId'})")]
+    [DebuggerDisplay("PlayerExtendedEntity ('{Gamertag}')")]
     public class PlayerExtendedEntity
     {
-        public string UserId { get; set; }
         public string Gamertag { get; set; }
-        public string ExtendedInformation { get; set; }
+        public string State { get; set; }
         public PlayerState ToPlayerExtended()
         {
             return new PlayerState
             {
-                UserId = UserId,
                 Gamertag = Gamertag,
-                State = ExtendedInformation
+                State = State
             };
         }
     }

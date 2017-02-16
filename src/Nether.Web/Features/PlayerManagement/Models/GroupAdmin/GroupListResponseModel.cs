@@ -2,10 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using Nether.Data.PlayerManagement;
 using System.Linq;
 
-namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
+namespace Nether.Web.Features.PlayerManagement.Models.GroupAdmin
 {
     public class GroupListResponseModel
     {
@@ -18,7 +17,7 @@ namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagement
             public string Description { get; set; }
         }
 
-        public static GroupListResponseModel FromGroups(IEnumerable<Group> groups)
+        public static GroupListResponseModel FromGroups(IEnumerable<Data.PlayerManagement.Group> groups)
         {
             if (groups == null) return null;
 

@@ -11,7 +11,7 @@ using Nether.Web.Utilities;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System;
-using Nether.Web.Features.PlayerManagement.Models.PlayerManagement;
+using Nether.Web.Features.PlayerManagement.Models.Group;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
