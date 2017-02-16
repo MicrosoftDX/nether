@@ -207,63 +207,69 @@
                         "MSDeploy"
                     ],
                     "properties": {
-                        /* TODO: Add explanation */
+                        /* TODO: Add explanation of section */
                         "alwaysOn": "[variables('HostingSKUs')[parameters('WebHostingPlan')].enableAlwaysOn]",
                         "WEB_HOST_URL": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
                         "ASPNETCORE_ENVIRONMENT": "Development",
 
-                        /* TODO: Add explanation */
+                        /* TODO: Add explanation of section */
                         "Identity:Store:wellknown": "sql",
                         "Identity:Store:properties:ConnectionString": "[variables('sqlConnString')]",
 
-                        /* TODO: Add explanation */
+                        /* TODO: Add explanation of section */
                         "Leaderboard:Store:wellknown": "sql",
                         "Leaderboard:Store:properties:ConnectionString": "[variables('sqlConnString')]",
                         "Leaderboard:AnalyticsIntegrationClient:wellknown" : "default",
                         "Leaderboard:AnalyticsIntegrationClient:properties:AnalyticsBaseUrl" : "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/')]",
 
-                        /* TODO: Add explanation */
+                        /* TODO: Add explanation of section */
                         "PlayerManagement:Store:wellknown": "sql",
                         "PlayerManagement:Store:properties:ConnectionString": "[variables('sqlConnString')]",
 
-                        /* TODO: Add explanation */
+                        /* TODO: Add explanation of section */
                         "Identity:Clients:clientcreds-test:Name": "Test Client for client credentials flow",
                         "Identity:Clients:clientcreds-test:AllowedGrantTypes": "client_credentials",
                         "Identity:Clients:clientcreds-test:ClientSecrets": "devsecret",
                         "Identity:Clients:clientcreds-test:AllowedScopes": "openid, profile, nether-all",
 
-                        /* TODO: Add explanation */
+                        /* TODO: Add explanation of section */
                         "Identity:Clients:resourceowner-test:AllowedGrantTypes": "password",
                         "Identity:Clients:resourceowner-test:ClientSecrets": "devsecret",
                         "Identity:Clients:resourceowner-test:AllowedScopes": "nether-all",
 
-                        /* TODO: Add explanation */
+                        /* TODO: Add explanation of section */
                         "Identity:Clients:customgrant-test:AllowedGrantTypes": "fb-usertoken",
                         "Identity:Clients:customgrant-test:ClientSecrets": "devsecret",
                         "Identity:Clients:customgrant-test:AllowedScopes": "nether-all",
 
-                        /* TODO: Add explanation */
+                        /* TODO: Add explanation of section */
                         "Identity:PlayerManagementClient:wellknown": "default",
                         "Identity:PlayerManagementClient:properties:IdentityBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/identity')]",
                         "Identity:PlayerManagementClient:properties:ApiBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api')]",
 
-                        /* TODO: Add explanation */
+                        /* TODO: Add explanation of section */
                         "Identity:IdentityServer:RequireHttps": "true",
                         "Identity:IdentityServer:Authority": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/identity')]",
                         "Identity:IdentityServer:UiBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui')]",
 
-                        /* TODO: Add explanation */
+                        /* TODO: Add explanation of section */
                         "Clients:swaggerui:RedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/o2c.html')]",
+                        "Clients:swaggerui:AllowedRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/o2c.html')]",
+
+                        /* TODO: Add explanation of section */
                         "Clients:devclient:RedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/signin-oidc')]",
+                        "Clients:devclient:AllowedRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/signin-oidc')]",
                         "Clients:devclient:PostLogoutRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
 
-                        /* TODO: Add explanation */
+                        /* TODO: Add explanation of section */
                         "Clients:angular2client:RedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
+                        "Clients:angular2client:AllowedRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
                         "Clients:angular2client:PostLogoutRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/login')]",
                         "Clients:angular2client:AllowedCorsOrigins": "[concat('http://', reference(variables('webSiteName')).hostNames[0],',https://', reference(variables('webSiteName')).hostNames[0])]",
 
-                        /* TODO: Add explanation */
+                        /* TODO: Add explanation of section */
                         "Clients:jstest:RedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/features/identity-test/callback.html')]",
+                        "Clients:jstest:AllowedRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/features/identity-test/callback.html')]",
                         "Clients:jstest:PostLogoutRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/features/identity-test/index.html')]",
                         "Clients:jstest:AllowedCorsOrigins": "[concat('http://', reference(variables('webSiteName')).hostNames[0],',https://', reference(variables('webSiteName')).hostNames[0])]"
                     }
