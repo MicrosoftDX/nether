@@ -3,25 +3,25 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "NetherWebDomainPrefix": {
-      "value": "myplaycanvas"
+      "value": ""
     },
     "WebHostingPlan": {
-      "value": "Free (no 'always on')"
+      "value": ""
     },
     "InstanceCount": {
-      "value": 2
+      "value": 1
     },
     "DatabaseServerFQDN": {
-      "value": "myplaycanvas.database.windows.net"
+      "value": ""
     },
     "sqlServerDatabaseName": {
-      "value": "nether"
+      "value": ""
     },
     "sqlAdministratorLogin": {
-      "value": "bstineman"
+      "value": ""
     },
     "sqlAdministratorPassword": {
-      "value": "abbcSecur3"
+      "value": ""
     },
     "webZipUri": {
       "value": ""
