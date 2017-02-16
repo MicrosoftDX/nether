@@ -96,7 +96,6 @@ namespace Nether.Sdk
 
         public async Task<OperationResult> PostScoreAsync(int score)
         {
-
             var json = JsonConvert.SerializeObject(new
             {
                 country = "missing",
