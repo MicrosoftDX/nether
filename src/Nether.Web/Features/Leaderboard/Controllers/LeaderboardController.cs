@@ -63,7 +63,7 @@ namespace Nether.Web.Features.Leaderboard
                                 .Select(l => new LeaderboardListResponseModel.LeaderboardSummaryModel
                                 {
                                     Name = l.Name,
-                                    _Link = Url.RouteUrl(nameof(Get), new { name = l.Name})
+                                    _Link = Url.RouteUrl(nameof(Get), new { name = l.Name })
                                 })
                                 .ToList()
             });

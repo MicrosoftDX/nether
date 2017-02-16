@@ -20,7 +20,7 @@ namespace Nether.Web.Features.Leaderboard.Configuration
 
         public IEnumerable<LeaderboardConfig> GetAll()
         {
-            return _leaderboards.Values.OrderBy(l=>l.Name);
+            return _leaderboards.Values.OrderBy(l => l.Name);
         }
 
         public LeaderboardConfig GetByName(string name)
