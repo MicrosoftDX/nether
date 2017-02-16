@@ -147,7 +147,8 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
         private async Task DeleteMyScoresAsync(HttpClient client)
         {
-            await client.DeleteAsync(LeaderboardBasePath);
+            var response = await client.DeleteAsync(ScoresBasePath);
+            response.EnsureSuccessStatusCode();
         }
 
         private async Task<LeaderboardGetResponse> GetLeaderboardAsync(
