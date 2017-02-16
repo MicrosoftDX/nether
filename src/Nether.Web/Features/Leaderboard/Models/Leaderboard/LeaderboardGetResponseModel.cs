@@ -46,9 +46,9 @@ namespace Nether.Web.Features.Leaderboard.Models.Leaderboard
             /// <summary>
             /// True if the score is for the current player
             /// </summary>
-            [JsonProperty(DefaultValueHandling =DefaultValueHandling.Ignore)]
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
             [DefaultValue(false)]
-            public bool IsCurrentPlayer { get;  set; }
+            public bool IsCurrentPlayer { get; set; }
         }
     }
 }
