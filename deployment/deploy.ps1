@@ -31,7 +31,11 @@ param
 
     [Parameter(Mandatory=$true)]
     [string]
-    $AnalyticsEventHubNamespace
+    $AnalyticsEventHubNamespace,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $AnalyticsStorageAccountName
 )
 $ErrorActionPreference = "Stop";
 
@@ -132,6 +136,8 @@ $templateParameters = @{
     sqlAdministratorLogin = $sqlAdministratorLogin
     sqlAdministratorPassword = $SqlAdministratorPassword
     analyticsEventHubNamespace = $AnalyticsEventHubNamespace
+    analyticsStorageAccountName = $AnalyticsStorageAccountName
+    
     webZipUri = $webZipblob.ICloudBlob.Uri.AbsoluteUri
     # webZipUri = "https://netherassets.blob.core.windows.net/packages/package261.zip"
     # webZipUri = "https://netherbits.blob.core.windows.net/deployment/Nether.Web.zip"
@@ -147,6 +153,7 @@ $templateParameters = @{
     # InstanceCount = 1
     # databaseSKU = "Basic"
     # templateSASToken = "" #used for linked template deployments from private locations, see deployment/readme.md
+    # ... and more! see nether-deploy.json template for full list of available parameters
 }
 
 $deploymentName = "Nether-Deployment-{0:yyyy-MM-dd-HH-mm-ss}" -f (Get-Date)

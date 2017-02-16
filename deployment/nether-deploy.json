@@ -156,6 +156,28 @@
                 "description": ""
             }
         },
+        "analyticsStorageAccountName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 15,
+            "metadata": {
+                "description": "The unique storage account for use by Nether. only allows alpha characters and '-'. Cannot start or end with '-'."
+            }
+        },
+        "storageAccountType": {
+            "type": "string",
+            "defaultValue": "Standard_GRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_ZRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Premium_LRS"
+            ],
+            "metadata": {
+                "description": "Account type, premium vs standard, and local, zone, global, global read only redundancy"
+            }
+        },
         "templateBaseURL": {
             "type": "string",
             "defaultValue": "[deployment().properties.templateLink.uri]",
@@ -175,6 +197,7 @@
         "deploymentAPI" : "2015-01-01",
         "dbTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-db.json'), parameters('templateSASToken'))]",
         "WebTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-web.json'), parameters('templateSASToken'))]",
+        "StorageTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-storageaccount.json'), parameters('templateSASToken'))]",
         "EventHubTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-eventhub.json'), parameters('templateSASToken'))]"
     },
     "resources": [ 
@@ -242,6 +265,22 @@
                     "sqlAdministratorPassword": { "value": "[parameters('sqlAdministratorPassword')]" },
                     "eventhubSendPolicy": { "value": "[reference('EventHubTemplate').outputs.sendPolicy.value]" },
                     "webZipUri": { "value": "[parameters('webZipUri')]" }
+                } 
+            } 
+        },
+        { 
+            "type": "Microsoft.Resources/deployments", 
+            "name": "AnalyticsStorage", 
+            "apiVersion": "[variables('deploymentAPI')]", 
+            "properties": { 
+                "mode": "Incremental", 
+                "templateLink": {
+                    "uri": "[variables('StorageTemplateURI')]",
+                    "contentVersion": "1.0.0.0"
+                }, 
+                "parameters": { 
+                    "storageAccountName": { "value": "[parameters('analyticsStorageAccountName')]" },
+                    "storageAccountType": { "value": "[parameters('storageAccountType')]" }
                 } 
             } 
         } 

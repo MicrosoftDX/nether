@@ -140,6 +140,8 @@
         "ManagePolicy" : {
             "type" : "object",
             "value": {
+                "namespace" : "[parameters('ServiceBusNamespace')]",
+                "hubname" : "[parameters('EventHubName')]",
                 "uri" : "[concat(reference(parameters('ServiceBusNamespace')).serviceBusEndpoint,parameters('EventHubName'),'/messages')]",
                 "policyName": "[parameters('ManagePolicyName')]",
                 "policyKey" : "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),parameters('ServiceBusNamespace'),parameters('EventHubName'),parameters('ManagePolicyName')),variables('ehApiVersion')).primaryKey]",
@@ -149,6 +151,8 @@
         "SendPolicy" : {
             "type" : "object",
             "value": {
+                "namespace" : "[parameters('ServiceBusNamespace')]",
+                "hubname" : "[parameters('EventHubName')]",
                 "uri" : "[concat(reference(parameters('ServiceBusNamespace')).serviceBusEndpoint,parameters('EventHubName'),'/messages')]",
                 "policyName": "[parameters('SenderPolicyName')]",
                 "policyKey" : "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),parameters('ServiceBusNamespace'),parameters('EventHubName'),parameters('SenderPolicyName')),variables('ehApiVersion')).primaryKey]",

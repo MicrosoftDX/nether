@@ -36,9 +36,7 @@
         "accountResourceId" : "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
     },
     "resources": [
-        /* The Azure SQL Database host server 
-        *   This server is a management container for individual databases
-        */
+        /* An Azure storage account */
         {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('storageAccountName')]",
@@ -53,17 +51,16 @@
         }
     ],
     /* outputs: 
-    *   resourceId: the hdatabase server host name (URI)
-    *   accountKey: the database on the server for use by Nether
+    *   properties: an object that describes details about the storage account
     */
     "outputs": {
-        "resourceId" : {
-            "type" : "string",
-            "value": "[variables('accountResourceId')]"
-        },
-        "accountKey" : {
-            "type" : "string",
-            "value": "[listKeys(variables('accountResourceId'), variables('stgApiVersion')).key1]"
+        "properties" : {
+            "type" : "object",
+            "value": {
+                "resourceId" : "[variables('accountResourceId')]",
+                "accountName" : "[variables('storageAccountName')]",
+                "primaryKey": "[listKeys(variables('accountResourceId'), variables('stgApiVersion')).key1]"
+            }
         }
     }
 }
