@@ -1,4 +1,4 @@
-# Delete Leaderboard for current user
+# Delete scores for current user
 
 Deletes all achieved scores for the current user.
 
@@ -10,7 +10,7 @@ See Common parameters and headers that are used by all requests related to the L
 
 |  Method  | Request URI |
 |----------|-------------|
-|DELETE|`/api/leaderboard`|
+|DELETE|`/api/scores`|
 
 ### Request Parameters
 
