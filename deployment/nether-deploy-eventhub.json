@@ -133,17 +133,27 @@
         }
     ],
     /* outputs: 
-    *   connstrManage: Connection String for listen/manage
-    *   constrSend: Connection String for senders
+    *   ManagePolicy: an object that describes details about using the listen/manage policy
+    *   SendPolicy: an object that describes details about using the send policy
     */
     "outputs": {
-        "connstrManage" : {
-            "type" : "string",
-            "value": "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),parameters('ServiceBusNamespace'),parameters('EventHubName'),parameters('ManagePolicyName')),variables('ehApiVersion')).primaryConnectionString]"
+        "ManagePolicy" : {
+            "type" : "object",
+            "value": {
+                "uri" : "[concat(reference(parameters('ServiceBusNamespace')).serviceBusEndpoint,parameters('EventHubName'),'/messages')]",
+                "policyName": "[parameters('ManagePolicyName')]",
+                "policyKey" : "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),parameters('ServiceBusNamespace'),parameters('EventHubName'),parameters('ManagePolicyName')),variables('ehApiVersion')).primaryKey]",
+                "connectionString" : "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),parameters('ServiceBusNamespace'),parameters('EventHubName'),parameters('ManagePolicyName')),variables('ehApiVersion')).primaryConnectionString]"
+            }
         },
-        "constrSend" : {
-            "type" : "string",
-            "value": "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),parameters('ServiceBusNamespace'),parameters('EventHubName'),parameters('SenderPolicyName')),variables('ehApiVersion')).primaryConnectionString]"
+        "SendPolicy" : {
+            "type" : "object",
+            "value": {
+                "uri" : "[concat(reference(parameters('ServiceBusNamespace')).serviceBusEndpoint,parameters('EventHubName'),'/messages')]",
+                "policyName": "[parameters('SenderPolicyName')]",
+                "policyKey" : "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),parameters('ServiceBusNamespace'),parameters('EventHubName'),parameters('SenderPolicyName')),variables('ehApiVersion')).primaryKey]",
+                "connectionString" : "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),parameters('ServiceBusNamespace'),parameters('EventHubName'),parameters('SenderPolicyName')),variables('ehApiVersion')).primaryConnectionString]"
+            }
         }
     }
 }

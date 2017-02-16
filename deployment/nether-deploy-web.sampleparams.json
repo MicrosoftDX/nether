@@ -23,8 +23,12 @@
     "sqlAdministratorPassword": {
       "value": ""
     },
-    "eventhubSendConnectionString": {
-      "value": ""
+    "eventhubSendPolicy": {
+      "value": {
+        "uri": "",
+        "policyName": "",
+        "policyKey": ""
+      }
     },
     "webZipUri": {
       "value": ""

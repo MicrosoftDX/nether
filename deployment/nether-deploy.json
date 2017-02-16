@@ -240,7 +240,7 @@
                     "sqlServerDatabaseName": { "value": "[reference('SQLDatabaseTemplate').outputs.databaseName.value]" },
                     "sqlAdministratorLogin": { "value": "[parameters('sqlAdministratorLogin')]" },
                     "sqlAdministratorPassword": { "value": "[parameters('sqlAdministratorPassword')]" },
-                    "eventhubSendConnectionString": { "value": "[reference('EventHubTemplate').outputs.constrSend.value]" },
+                    "eventhubSendPolicy": { "value": "[reference('EventHubTemplate').outputs.sendPolicy.value]" },
                     "webZipUri": { "value": "[parameters('webZipUri')]" }
                 } 
             } 
