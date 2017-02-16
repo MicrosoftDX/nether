@@ -83,11 +83,12 @@ namespace Nether.Web.Features.PlayerManagement
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [HttpPost("")]
-        public async Task<ActionResult> Post([FromRoute]string gamertag, [FromBody]PlayerPostRequestModel newPlayer)
+        public async Task<ActionResult> Post([FromBody]PlayerPostRequestModel newPlayer)
         {
-            if (string.IsNullOrWhiteSpace(gamertag))
+            if (!ModelState.IsValid)
             {
-                return BadRequest(); //TODO: return error info in body
+                // TODO log and return validation message
+                return BadRequest();
             }
 
             // Save player

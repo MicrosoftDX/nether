@@ -100,13 +100,11 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
             var group = new GroupEntry
             {
-                Name = groupName,
                 Description = "fake"
             };
 
             // validate group response
-            var groupResponse = await CreateGroupAsync(client, group, HttpStatusCode.Created);
-            Assert.Equal($"{BaseUrl}api/admin/groups/" + groupName, groupResponse.Response.Headers.GetValues("Location").First());
+            var groupResponse = await CreateGroupAsync(client, groupName, group);
 
             //list groups and check the created group is in the list
             GroupListResponse allGroups = await GetAllGroupsAdminAsync(client);
@@ -122,13 +120,12 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
             var group = new GroupEntry
             {
-                Name = groupName,
                 Description = "fake"
             };
 
             // validate group response
-            var groupResponse = await CreateGroupAsync(client, group, HttpStatusCode.Created);
-            Assert.Equal($"{BaseUrl}api/groups/" + groupName, groupResponse.Response.Headers.GetValues("Location").First());
+            var groupResponse = await CreateGroupAsync(client, groupName, group, HttpStatusCode.Created);
+            Assert.Equal($"{BaseUrl}api/groups/{groupName}", groupResponse.Response.Headers.GetValues("Location").First());
 
             await AddPlayerToGroupAsync(client, groupName);
 
@@ -143,16 +140,17 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         {
             var client = await GetAdminClientAsync();
 
-            string name = Guid.NewGuid().ToString();
+            string groupName = Guid.NewGuid().ToString();
 
-            await CreateGroupAsync(client, new GroupEntry
+            await CreateGroupAsync(client, groupName, new GroupEntry
             {
-                Name = name
+                Description = "testing..."
             });
 
-            GroupGetResponse g = await GetGroupByNameAdminAsync(client, name);
+            GroupGetResponse g = await GetGroupByNameAdminAsync(client, groupName);
 
-            Assert.Equal(name, g.Group.Name);
+            Assert.Equal(groupName, g.Group.Name);
+            Assert.Equal("testing...", g.Group.Description);
         }
 
         [Fact]
@@ -160,13 +158,13 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         {
             var client = await GetAdminClientAsync();
 
-            string name = Guid.NewGuid().ToString();
+            string groupName = Guid.NewGuid().ToString();
 
-            await CreateGroupAsync(client, new GroupEntry { Name = name, Description = "before change" });
+            await CreateGroupAsync(client, groupName, new GroupEntry { Description = "before change" });
 
-            await UpdateGroupAdminAsync(client, new GroupEntry { Name = name, Description = "after change" });
+            await UpdateGroupAdminAsync(client, groupName, new GroupEntry { Description = "after change" });
 
-            GroupGetResponse group = await GetGroupByNameAdminAsync(client, name);
+            GroupGetResponse group = await GetGroupByNameAdminAsync(client, groupName);
 
             Assert.Equal("after change", group.Group.Description);
         }
@@ -179,7 +177,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
             //create test group
             string groupName = Guid.NewGuid().ToString();
-            await CreateGroupAsync(client, new GroupEntry { Name = groupName });
+            await CreateGroupAsync(client, groupName, new GroupEntry { Description = "testing 123" });
 
             // TODO - clean this test up so that it's not relying on _gamertag shared state
 
@@ -205,7 +203,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             var client = await GetClientAsync(username: "testuser");
 
             string groupName = Guid.NewGuid().ToString();
-            await CreateGroupAsync(adminClient, new GroupEntry { Name = groupName, Members = new[] { "testuser" } });
+            await CreateGroupAsync(adminClient, groupName, new GroupEntry { Members = new[] { "testuser" } });
 
             GroupMembersResponseModel group = await GetGroupMembersAsync(client, groupName);
 
@@ -219,15 +217,15 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             var client = await GetClientAsync(username: "testuser");
 
             //first create two groups and add me to them
-            string g1 = Guid.NewGuid().ToString();
-            string g2 = Guid.NewGuid().ToString();
-            await CreateGroupAsync(adminClient, new GroupEntry { Name = g1, Members = new[] { "testuser" } });
-            await CreateGroupAsync(adminClient, new GroupEntry { Name = g2, Members = new[] { "testuser" } });
+            string groupName1 = Guid.NewGuid().ToString();
+            string groupName2 = Guid.NewGuid().ToString();
+            await CreateGroupAsync(adminClient, groupName1, new GroupEntry { Members = new[] { "testuser" } });
+            await CreateGroupAsync(adminClient, groupName2, new GroupEntry { Members = new[] { "testuser" } });
 
             //get my groups
             GroupListResponse groups = await GetPlayerGroupsAsync(client);
-            Assert.True(groups.Groups.Any(g => g.Name == g1));
-            Assert.True(groups.Groups.Any(g => g.Name == g2));
+            Assert.True(groups.Groups.Any(g => g.Name == groupName1));
+            Assert.True(groups.Groups.Any(g => g.Name == groupName2));
         }
 
         #region [ REST helpers ]
@@ -276,9 +274,9 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             Assert.Equal(expectedStatus, response.StatusCode);
         }
 
-        private async Task<ApiResponse> CreateGroupAsync(HttpClient client, GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.Created)
+        private async Task<ApiResponse> CreateGroupAsync(HttpClient client, string groupName, GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
         {
-            HttpResponseMessage response = await client.PostAsJsonAsync(BasePath + "admin/groups", group);
+            HttpResponseMessage response = await client.PutAsJsonAsync($"{BasePath}admin/groups/{groupName}", group);
 
             Assert.Equal(expectedCode, response.StatusCode);
 
@@ -287,9 +285,9 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
             return new ApiResponse { Response = response, ResponseBody = r };
         }
 
-        private async Task UpdateGroupAdminAsync(HttpClient client, GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
+        private async Task UpdateGroupAdminAsync(HttpClient client, string groupName, GroupEntry group, HttpStatusCode expectedCode = HttpStatusCode.NoContent)
         {
-            HttpResponseMessage response = await client.PutAsJsonAsync(BasePath + "admin/groups/" + group.Name, group);
+            HttpResponseMessage response = await client.PutAsJsonAsync($"{BasePath}admin/groups/{groupName}", group);
 
             Assert.Equal(expectedCode, response.StatusCode);
         }
@@ -372,7 +370,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
         public class GroupListResponse
         {
-            public GroupEntry[] Groups { get; set; }
+            public GroupResponseEntry[] Groups { get; set; }
         }
 
         public class PlayerGetResponse
@@ -382,7 +380,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
         public class GroupGetResponse
         {
-            public GroupEntry Group { get; set; }
+            public GroupResponseEntry Group { get; set; }
         }
 
         [DebuggerDisplay("Player: {Gamertag}")]
@@ -395,6 +393,14 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
         [DebuggerDisplay("Group: {Name}")]
         public class GroupEntry
+        {
+            public string CustomType { get; set; }
+            public string Description { get; set; }
+            public string[] Members { get; set; }
+        }
+
+        [DebuggerDisplay("GroupResponse: {Name}")]
+        public class GroupResponseEntry
         {
             public string Name { get; set; }
             public string CustomType { get; set; }
