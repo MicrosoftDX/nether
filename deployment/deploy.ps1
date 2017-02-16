@@ -117,7 +117,7 @@ $webZipblob = Set-AzureStorageBlobContent `
 
 Write-Host
 Write-Host "Uploading Deployment scripts to storage..."
-Get-ChildItem -File $netherRoot/deployment/* -Exclude *.privateparams.json -filter nether-deploy*.json | Set-AzureStorageBlobContent `
+Get-ChildItem -File $netherRoot/deployment/* -Exclude *params.json -filter nether-deploy*.json | Set-AzureStorageBlobContent `
         -Context $storageAccount.Context `
         -Container $containerName `
         -Force
