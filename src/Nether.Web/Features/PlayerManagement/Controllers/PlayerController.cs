@@ -52,7 +52,9 @@ namespace Nether.Web.Features.PlayerManagement
             // Call data store
             var player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
             if (player == null)
-                return NotFound();
+            {
+                return Ok(new PlayerGetResponseModel());
+            }
 
             // Return result
             return Ok(PlayerGetResponseModel.FromPlayer(player));
