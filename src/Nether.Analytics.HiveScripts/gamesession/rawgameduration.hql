@@ -17,8 +17,7 @@ ROW FORMAT DELIMITED
     COLLECTION ITEMS TERMINATED BY '\073'
     LINES TERMINATED BY '\n'
 STORED AS TEXTFILE
-location 'wasbs://gameevents@oknether.blob.core.windows.net/game-start/v1.0.0/2017/02/16/';
---LOCATION '${hiveconf:gamestarteventsloc}';
+LOCATION '${hiveconf:gamestarteventsloc}';
 
 
 CREATE EXTERNAL TABLE IF NOT EXISTS gamestop(
@@ -35,8 +34,7 @@ ROW FORMAT DELIMITED
     COLLECTION ITEMS TERMINATED BY '\073'
     LINES TERMINATED BY '\n'
 STORED AS TEXTFILE
-location 'wasbs://gameevents@oknether.blob.core.windows.net/game-stop/v1.0.0/2017/02/16/';
---LOCATION '${hiveconf:gamestopeventsloc}';
+LOCATION '${hiveconf:gamestopeventsloc}';
 
 
 CREATE TABLE IF NOT EXISTS rawgamedurations(
@@ -57,8 +55,7 @@ ROW FORMAT DELIMITED
     COLLECTION ITEMS TERMINATED BY '\073'
     LINES TERMINATED BY '\n'
 STORED AS TEXTFILE
-location 'wasbs://intermediate@oknether.blob.core.windows.net/gamedurations/';
---LOCATION '${hiveconf:rawgamedurations}';
+LOCATION '${hiveconf:rawgamedurations}';
 
 
 INSERT INTO TABLE rawgamedurations

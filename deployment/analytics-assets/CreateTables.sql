@@ -4,10 +4,8 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'DailyActiveUsers'))
 BEGIN
 CREATE TABLE [dbo].[DailyActiveUsers] (
-    [Year] INT NULL,
-    [Month]  INT NULL,
-    [Day] INT NULL,
-    [dau] INT NULL 
+    [EventDate] DATE NULL,
+    [ActiveUsers] INT NULL 
 );
 END
 
@@ -18,9 +16,56 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'MonthlyActiveUsers'))
 BEGIN
 CREATE TABLE [dbo].[MonthlyActiveUsers] (
+    [EventMonth] DATE NULL,
+    [ActiveUsers] INT NULL 
+);
+END
+
+
+-- Yearly active users
+IF (NOT EXISTS (SELECT * 
+                 FROM INFORMATION_SCHEMA.TABLES 
+                 WHERE TABLE_NAME = 'YearlyActiveUsers'))
+BEGIN
+CREATE TABLE [dbo].[YearlyDurations] (
     [Year] INT NULL,
-    [Month]  INT NULL,
-    [mau] INT NULL 
+    [ActiveUsers] INT NULL 
+);
+END
+
+
+-- Daily active sessions
+IF (NOT EXISTS (SELECT * 
+                 FROM INFORMATION_SCHEMA.TABLES 
+                 WHERE TABLE_NAME = 'DailyActiveSessions'))
+BEGIN
+CREATE TABLE [dbo].[DailyActiveSessions] (
+    [EventDate] DATE NULL,
+    [ActiveSessions] INT NULL 
+);
+END
+
+
+-- Monthly active sessions
+IF (NOT EXISTS (SELECT * 
+                 FROM INFORMATION_SCHEMA.TABLES 
+                 WHERE TABLE_NAME = 'MonthlyActiveSessions'))
+BEGIN
+CREATE TABLE [dbo].[MonthlyActiveSessions] (
+    [EventMonth] DATE NULL,
+    [ActiveSessions] INT NULL 
+);
+END
+
+
+-- Yearly active sessions
+IF (NOT EXISTS (SELECT * 
+                 FROM INFORMATION_SCHEMA.TABLES 
+                 WHERE TABLE_NAME = 'YearlyActiveSessions'))
+BEGIN
+CREATE TABLE [dbo].[YearlyActiveSessions] (
+    [Year] INT NULL,
+    [ActiveSessions] INT NULL 
 );
 END
 

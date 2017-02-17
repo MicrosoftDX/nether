@@ -4,6 +4,7 @@ Select-AzureRmSubscription -SubscriptionName "<subscription-name>" | Set-AzureRm
 $resourceGrp = "<resource-group>"
 $location = "<location>"
 $scriptStorageAccount = "<storage-account-for-scripts>"
+$storageAccount = "<storage-account-for-game-events>"
 $container = "scripts"
 $sqlServerName = "<sql-server-name>"
 $sqlDBName = "gameevents"
@@ -11,10 +12,11 @@ $sqlServerAdminName = "<sql-server-login-name>"
 $sqlServerAdminPassword = "<sql-server-login-password"
 $deploymentName = "<deployment-name>"
 
+$stgKey = Get-AzureRmStorageAccountKey -ResourceGroupName $resourceGrp -Name $storageAccount
 
 New-AzureRmStorageAccount -ResourceGroupName $resourceGrp -Name $scriptStorageAccount -SkuName "Standard_GRS" -Location $location
-$stgKey = Get-AzureRmStorageAccountKey -ResourceGroupName $resourceGrp -Name $scriptStorageAccount
-$ctx = New-AzureStorageContext -StorageAccountName $scriptStorageAccount -StorageAccountKey $stgKey[0].Value
+$scriptStgKey = Get-AzureRmStorageAccountKey -ResourceGroupName $resourceGrp -Name $scriptStorageAccount
+$ctx = New-AzureStorageContext -StorageAccountName $scriptStorageAccount -StorageAccountKey $scriptStgKey[0].Value
 New-AzureStorageContainer -Name $container -Context $ctx
 
 # Upload all duration hive scripts
@@ -31,6 +33,13 @@ foreach ($file in $files) {
     Set-AzureStorageBlobContent -File $file.FullName -Container $container -Blob $blobFileName -Context $ctx
 }
 
+# Upload all active users / sessions hive scripts
+$files = Get-ChildItem .\src\Nether.Analytics.HiveScripts\activeusers
+foreach ($file in $files) {
+    $blobFileName = "activeusers/" + $file
+    Set-AzureStorageBlobContent -File $file.FullName -Container $container -Blob $blobFileName -Context $ctx
+}
+
 # Create SQL Server
 $securePassword = ConvertTo-SecureString -String $sqlServerAdminPassword -AsPlainText -Force
 $serverCreds = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $sqlServerAdminName, $securePassword
@@ -43,13 +52,18 @@ New-AzureRmSqlServerFirewallRule -ResourceGroupName $resourceGrp -ServerName $sq
 # TO DO
 sqlcmd -U $sqlServerAdminName@$sqlServerName -P $sqlServerAdminPassword -S $sqlServerName.database.windows.net -d $sqlDBName -i .\deployment\analytics-assets\CreateTables.sql
 
-# Provision ARM template deployment
+# Provision ARM template deployments
 $parameters = @{
+    "storageAccountName" = $storageAccount;
+    "storageAccountKey" = $stgKey[0].Value;
     "hiveScriptStorageAccountName" = $scriptStorageAccount;
-    "hiveScriptStorageAccountKey" = $stgKey[0].Value;
+    "hiveScriptStorageAccountKey" = $scriptStgKey[0].Value;
     "sqlServerName" = $sqlServerName;
     "sqlDBName" = $sqlDBName;
     "sqlServerAdminName" = $sqlServerAdminName;
     "sqlServerAdminPassword" = $sqlServerAdminPassword
 }
-New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGrp -Name $deploymentName -TemplateFile .\deployment\analyticsADFdeploy.json -TemplateParameterObject $parameters
+# ADF pipeline for active users, active sessions, game durations
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGrp -Name $deploymentName -TemplateFile .\deployment\analyticsADFactiveUsers.json -TemplateParameterObject $parameters
+# ADF pipeline for generic durations
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGrp -Name $deploymentName -TemplateFile .\deployment\analyticsADFdurations.json -TemplateParameterObject $parameters

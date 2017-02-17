@@ -11,8 +11,7 @@ ROW FORMAT DELIMITED
         FIELDS TERMINATED BY '|'
         LINES TERMINATED BY '\n'
 STORED AS TEXTFILE
-location 'wasbs://intermediate@oknether.blob.core.windows.net/activesessions/hourly/';
---LOCATION '${hiveconf:hourlyactivesessions}';
+LOCATION '${hiveconf:hourlyactivesessions}';
 
 
 INSERT INTO TABLE hourlyactivesessions

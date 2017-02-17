@@ -10,8 +10,7 @@ ROW FORMAT DELIMITED
         FIELDS TERMINATED BY '|'
         LINES TERMINATED BY '\n'
 STORED AS TEXTFILE
-location 'wasbs://intermediate@oknether.blob.core.windows.net/activesessions/monthly/';
---LOCATION '${hiveconf:monthlyactivesessions}';
+LOCATION '${hiveconf:monthlyactivesessions}';
 
 
 INSERT INTO TABLE monthlyactivesessions

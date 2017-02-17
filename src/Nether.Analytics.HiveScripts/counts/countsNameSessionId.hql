@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS countsNameSessionId(
     totalCount BIGINT,
     properties MAP<STRING, STRING>
 )
-COMMENT 'At which level did a given game session end'
+COMMENT 'counts per DisplayName per game session'
 PARTITIONED BY (year INT, month INT, day INT)
 ROW FORMAT DELIMITED
     FIELDS TERMINATED BY '|'

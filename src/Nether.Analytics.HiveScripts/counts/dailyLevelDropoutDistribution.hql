@@ -1,6 +1,6 @@
-﻿DROP TABLE IF EXISTS levelDropoutDistribution;
+﻿DROP TABLE IF EXISTS dailyLevelDropoutDistribution;
 
-CREATE EXTERNAL TABLE IF NOT EXISTS levelDropoutDistribution(
+CREATE EXTERNAL TABLE IF NOT EXISTS dailyLevelDropoutDistribution(
     eventDate DATE,
     level INT,
     totalCount BIGINT
@@ -10,9 +10,9 @@ ROW FORMAT DELIMITED
     FIELDS TERMINATED BY '|'
     LINES TERMINATED BY '\n'
 STORED AS TEXTFILE
-LOCATION '${hiveconf:levelDropoutLoc}';
+LOCATION '${hiveconf:dailyLevelDropoutLoc}';
 
-INSERT INTO TABLE levelDropoutDistribution
+INSERT INTO TABLE dailyLevelDropoutDistribution
 SELECT
     eventDate,
     reachedLevel as level,
