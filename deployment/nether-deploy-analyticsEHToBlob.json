@@ -1,0 +1,148 @@
+/*
+* This template create an analytics job that will consume from event hub and write to blob storage
+* 
+* For more information, please refer to the Nether repository at: https://github.com/MicrosoftDX/nether/tree/master/deployment
+*/
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "streamJobName": {
+            "type": "string",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "SKU": { 
+            "type": "string", 
+            "defaultValue": "Standard", 
+            "metadata": { 
+                "description": ""
+            } 
+        },
+        "streamingUnits": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": ""
+            }
+        },
+        "Query": { 
+            "type": "string", 
+            "metadata": { 
+                "description": ""
+            } 
+        },
+        "eventHubProperties": {
+            "type" : "object",
+            "metadata" : {
+                "description" : "a JSON object containing: eventHubName, serviceBusNamespace, sharedAccessPolicyName, sharedAccessPolicyKey, consumerGroupName"
+            }
+        },
+        "consumerGroupName": {
+            "type": "string",
+            "defaultValue": "analytics",
+            "metadata": "the name of the consumer group to be used by this analytics job"
+        },
+        "storageProperties": {
+            "type" : "object",
+            "metadata" : {
+                "description" : "a JSON object containing: storage account name, and account key"
+            }
+        }
+    },
+    "variables": {
+        "ehApiVersion": "2015-08-01",
+        "asaApiVersion": "2015-09-01",
+        "analyticDataSourceProperties": {
+            "eventHubName": "[parameters('eventHubProperties')['hubname']]",
+            "serviceBusNamespace": "[parameters('eventHubProperties')['namespace']]",
+            "sharedAccessPolicyName": "[parameters('eventHubProperties')['policyName']]",
+            "sharedAccessPolicyKey": "[parameters('eventHubProperties')['policyKey']]",
+            "consumerGroupName": "[parameters('consumerGroupName')]"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.EventHub/ConsumerGroups",
+            "name": "[concat('Microsoft.EventHub/ConsumerGroups', parameters('consumerGroupName'))]",
+            "apiVersion": "[variables('ehApiVersion')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "path": "[concat(parameters('eventHubProperties')['namespace'],'/', parameters('eventHubProperties')['hubname'])]"
+            }
+        },
+        /* Azure stream analytics job for calculating the concurrent users */
+        {
+            "type": "Microsoft.StreamAnalytics/StreamingJobs",
+            "name": "[parameters('streamJobName')]",
+            "apiVersion": "[variables('asaApiVersion')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "name": "[parameters('SKU')]"  
+                },
+                "outputStartMode": "LastOutputEventTime",
+                "inputs": [
+                    {
+                        "name": "Input",
+                        "properties": {
+                            "type": "stream",
+                            "serialization": {
+                                "type": "JSON",
+                                "properties": {
+                                    "encoding": "UTF8"
+                                }
+                            },
+                            "datasource": {
+                                "type": "Microsoft.ServiceBus/EventHub",
+                                "properties": ["variables('analyticDataSourceProperties')"]
+                            }
+                        }
+                    }
+                ],
+                "transformation": {
+                    "name": "[parameters('streamJobName')]",
+                    "properties": {
+                        "streamingUnits": "[parameters('streamingUnits')]",
+                        "query": "[parameters('Query')]"
+                    }
+                },
+                "outputs": [
+                    {
+                        "name": "BlobSink",
+                        "properties": {
+                        "serialization": {
+                            "type": "CSV",
+                            "properties": {
+                            "fieldDelimiter": ",",
+                            "encoding": "UTF8"
+                            }
+                        },
+                        "datasource": {
+                            "type": "Microsoft.Storage/Blob",
+                            "properties": {
+                                "storageAccounts": [
+                                    {
+                                    "accountName": "[variables('storageAccountName')]",
+                                    "accountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-06-15').key1]"
+                                    }
+                                ],
+                                "container": "[variables('asaCCUContainerName')]",
+                                "pathPattern": "sessions/date={date}",
+                                "dateFormat": "yyyy-MM-dd"
+                            }
+                        }
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    /* outputs: 
+    *
+    */
+    "outputs": {
+
+    }
+}

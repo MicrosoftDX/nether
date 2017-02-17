@@ -40,12 +40,13 @@ The deployment templates follow a consistent naming convention based on nether-d
 **nether-deploy.json** - the "master" template which calls the linked templates
 **nether-deploy-db.json** - responsible for provisioning the Azure SQL Database
 **nether-deploy-web.json** - responsible for provisioning the Web Site and its associated hosting plan. Also configures the web site to point at other remote resources such as the Nether web deployment package and database connection
+**nether-deploy-storageaccount.json** - creates the storage account used by Nether Analytics
 
 You can use these templates directly from PowerShell. For more information, please see [Deploy resources with Resource Manager templates and Azure PowerShell](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-template-deploy).
 
 Linked Templates require that the child templates are hosted onlinesomewhere (accessible via a hyperlink). That location is designated by the *templateBaseURL* parameter found in the nether-deploy.json master template. If this parameter is not specified, it will default to the location of the master template. If the location is a private storage account, you can grant access by also specifing the optional *templateSASToken* parameter.
 
-When using the templates directly, you may opt to create your own [parameter files](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-template-deploy#parameters). To avoid accidently committing these files, the Nether repository has already been configured to ignore files that match the file mask ***.privateparams.json**.
+When using the templates directly, you may opt to create your own [parameter files](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-template-deploy#parameters). To assist inthis, we have provided a series of empty, sample parameter files using the naming convention **nether-deploy*.sampleparams.json**. To avoid accidently committing any senstive secrets like usernames and passwords, we sugggest you copy the samples and rename them using the **.privateparams.json** extension. The Nether repository has added this to its gitIgnore to help prevent accidental leakage.
 
 Additionally, you can deploy the entire cloud infrastructure of Nether by clicking on this button:
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoftDX%2Fnether%2Fmaster%2Fdeployment%2Fnether-deploy.json" target="_blank">
@@ -56,11 +57,10 @@ Note that this link does not deploy the Nether application, or any other interna
 Lastly, the templates make use of more parameters then are required by the deploy.ps1 script. These additional parameters allow you to take steps like increasing the performance of your web site or database (scaling up), or scaling out the number of copies of your site. You can see more about these options by looking at the templates themselves.
 
 ## Customized deployments
-Hopefully, many of your customized deployment needs can be accomidated by simply specifying various values in the 
+Hopefully, many of your customized deployment needs can be accomidated by simply specifying various values in the parameters already exposed by the Nether templates. However, if you want to make your own changes, there's a couple items should be aware of.
 
+If you are calling the "non-master" templates individually, you can make any modifications you need and just deploy them via powershell. However, if you are attempting to use them from the master nether-deploy.json template, you'll need to make sure the modified versions of your templates are available online somewhere. There is code in deploy.ps1 that can be used to upload the templates to Azure storage so they can be asscessed from there. Alternatively, assuming you have forked the Nether repo, you can commit your changes to there and reference them.
 
+Regardless of where you put them, you can specify where hey are located by putting in the complete URI (it must end with a '/') as the value for the nether-deploy.json template's *templateBaseURL* parameter.
 
-- what needs to be changed for customizations
-	- linked template base URL
-	- "deploy to Azure"
-- altering "deploy to Azure" url when testing
+If your location is a private storage container (no public link), you can generate a [shared access signature](https://docs.microsoft.com/en-us/azure/storage/storage-dotnet-shared-access-signature-part-1). Specify the query string parameters for the *templateSASToken* parameter.

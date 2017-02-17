@@ -1,0 +1,37 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "NetherWebDomainPrefix": {
+      "value": ""
+    },
+    "WebHostingPlan": {
+      "value": ""
+    },
+    "InstanceCount": {
+      "value": 1
+    },
+    "DatabaseServerFQDN": {
+      "value": ""
+    },
+    "sqlServerDatabaseName": {
+      "value": ""
+    },
+    "sqlAdministratorLogin": {
+      "value": ""
+    },
+    "sqlAdministratorPassword": {
+      "value": ""
+    },
+    "eventhubSendPolicy": {
+      "value": {
+        "uri": "",
+        "policyName": "",
+        "policyKey": ""
+      }
+    },
+    "webZipUri": {
+      "value": ""
+    }
+  }
+}

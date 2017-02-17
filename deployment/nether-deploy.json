@@ -1,3 +1,12 @@
+/*
+* This is the "master" template used to provision the Azure resources for Nether.
+*
+* This leverages linked templates which requires that the templates it links to are available via a URL. By default, these 
+* will be pulled from the same location as this template. But this can be overridden by specifying a location via the pull 
+* them from by specifying the templateBaseURL parameter.
+* 
+* For more information, please refer to the Nether repository at: https://github.com/MicrosoftDX/nether/tree/master/deployment
+*/
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
@@ -84,6 +93,91 @@
                 "description": "The password of the admin user of the SQL Server"
             }
         },
+        "analyticsEventHubNamespace": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 15,
+            "metadata": {
+                "description": "The unique storage account for use by Nether. only allows alpha characters and '-'. Cannot start or end with '-'."
+            }
+        },
+        "serviceBusTier": {
+            "type": "string", 
+            "defaultValue": "Basic",
+            "allowedValues": [
+                "Basic",
+                "Standard"
+            ]
+        },
+        "serviceBusCapacity": {
+            "type": "int", 
+            "defaultValue": 1,
+            "minValue": 1,
+            "maxValue": 20
+        },
+        "eventHubName": {
+            "type": "string",
+            "defaultValue": "analyticevents",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "managePolicyName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 15,
+            "defaultValue": "Manage",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "senderPolicyName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 15,
+            "defaultValue": "Send",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "dayToRetain": {
+            "type": "int",
+            "defaultValue": 1,
+            "minValue": 1,
+            "maxValue": 7,
+            "metadata": {
+                "description": "For basic teir this must be 1. For standard tier this can be 1-7"
+            }
+        },
+        "partitionCount": {
+            "type": "int",
+            "defaultValue": 4,
+            "metadata": {
+                "description": ""
+            }
+        },
+        "analyticsStorageAccountName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 15,
+            "metadata": {
+                "description": "The unique storage account for use by Nether. only allows alpha characters and '-'. Cannot start or end with '-'."
+            }
+        },
+        "storageAccountType": {
+            "type": "string",
+            "defaultValue": "Standard_GRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_ZRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Premium_LRS"
+            ],
+            "metadata": {
+                "description": "Account type, premium vs standard, and local, zone, global, global read only redundancy"
+            }
+        },
         "templateBaseURL": {
             "type": "string",
             "defaultValue": "[deployment().properties.templateLink.uri]",
@@ -102,7 +196,9 @@
     "variables": {
         "deploymentAPI" : "2015-01-01",
         "dbTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-db.json'), parameters('templateSASToken'))]",
-        "WebTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-web.json'), parameters('templateSASToken'))]"
+        "WebTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-web.json'), parameters('templateSASToken'))]",
+        "StorageTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-storageAccount.json'), parameters('templateSASToken'))]",
+        "EventHubTemplateURI": "[concat(uri(parameters('templateBaseURL'), 'nether-deploy-eventhub.json'), parameters('templateSASToken'))]"
     },
     "resources": [ 
         { 
@@ -125,10 +221,33 @@
         },
         { 
             "type": "Microsoft.Resources/deployments", 
+            "name": "EventHubTemplate", 
+            "apiVersion": "[variables('deploymentAPI')]", 
+            "properties": { 
+                "mode": "Incremental", 
+                "templateLink": {
+                    "uri": "[variables('EventHubTemplateURI')]",
+                    "contentVersion": "1.0.0.0"
+                }, 
+                "parameters": { 
+                    "ServiceBusNamespace": { "value": "[parameters('analyticsEventHubNamespace')]" },
+                    "ServiceBusTier": { "value": "[parameters('serviceBusTier')]" },
+                    "Capacity": { "value": "[parameters('serviceBusCapacity')]" },
+                    "EventHubName": { "value": "[parameters('eventHubName')]" },
+                    "ManagePolicyName": { "value": "[parameters('managePolicyName')]" },
+                    "SenderPolicyName": { "value": "[parameters('senderPolicyName')]" },
+                    "DayToRetain": { "value": "[parameters('dayToRetain')]" },
+                    "PartitionCount": { "value": "[parameters('partitionCount')]" }
+                } 
+            } 
+        },
+        { 
+            "type": "Microsoft.Resources/deployments", 
             "name": "WebTemplate", 
             "apiVersion": "[variables('deploymentAPI')]", 
             "dependsOn": [
-                "SQLDatabaseTemplate"
+                "SQLDatabaseTemplate",
+                "EventHubTemplate"
             ],
             "properties": { 
                 "mode": "Incremental", 
@@ -144,7 +263,24 @@
                     "sqlServerDatabaseName": { "value": "[reference('SQLDatabaseTemplate').outputs.databaseName.value]" },
                     "sqlAdministratorLogin": { "value": "[parameters('sqlAdministratorLogin')]" },
                     "sqlAdministratorPassword": { "value": "[parameters('sqlAdministratorPassword')]" },
+                    "eventhubSendPolicy": { "value": "[reference('EventHubTemplate').outputs.sendPolicy.value]" },
                     "webZipUri": { "value": "[parameters('webZipUri')]" }
+                } 
+            } 
+        },
+        { 
+            "type": "Microsoft.Resources/deployments", 
+            "name": "AnalyticsStorage", 
+            "apiVersion": "[variables('deploymentAPI')]", 
+            "properties": { 
+                "mode": "Incremental", 
+                "templateLink": {
+                    "uri": "[variables('StorageTemplateURI')]",
+                    "contentVersion": "1.0.0.0"
+                }, 
+                "parameters": { 
+                    "storageAccountName": { "value": "[parameters('analyticsStorageAccountName')]" },
+                    "storageAccountType": { "value": "[parameters('storageAccountType')]" }
                 } 
             } 
         } 

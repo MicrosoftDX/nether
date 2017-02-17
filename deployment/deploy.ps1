@@ -27,7 +27,15 @@ param
 
     [Parameter(Mandatory=$true)]
     [securestring]
-    $SqlAdministratorPassword
+    $SqlAdministratorPassword,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $AnalyticsEventHubNamespace,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $AnalyticsStorageAccountName
 )
 $ErrorActionPreference = "Stop";
 
@@ -117,7 +125,7 @@ $webZipblob = Set-AzureStorageBlobContent `
 
 Write-Host
 Write-Host "Uploading Deployment scripts to storage..."
-Get-ChildItem -File $netherRoot/deployment/* -Exclude *.privateparams.json -filter nether-deploy*.json | Set-AzureStorageBlobContent `
+Get-ChildItem -File $netherRoot/deployment/* -Exclude *params.json -filter nether-deploy*.json | Set-AzureStorageBlobContent `
         -Context $storageAccount.Context `
         -Container $containerName `
         -Force
@@ -127,6 +135,9 @@ $templateParameters = @{
     sqlServerName = $sqlServerName
     sqlAdministratorLogin = $sqlAdministratorLogin
     sqlAdministratorPassword = $SqlAdministratorPassword
+    analyticsEventHubNamespace = $AnalyticsEventHubNamespace
+    analyticsStorageAccountName = $AnalyticsStorageAccountName
+    
     webZipUri = $webZipblob.ICloudBlob.Uri.AbsoluteUri
     # webZipUri = "https://netherassets.blob.core.windows.net/packages/package261.zip"
     # webZipUri = "https://netherbits.blob.core.windows.net/deployment/Nether.Web.zip"
@@ -142,6 +153,7 @@ $templateParameters = @{
     # InstanceCount = 1
     # databaseSKU = "Basic"
     # templateSASToken = "" #used for linked template deployments from private locations, see deployment/readme.md
+    # ... and more! see nether-deploy.json template for full list of available parameters
 }
 
 $deploymentName = "Nether-Deployment-{0:yyyy-MM-dd-HH-mm-ss}" -f (Get-Date)
