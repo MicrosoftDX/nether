@@ -60,18 +60,50 @@ namespace Nether.Data.Sql.Leaderboard
             // Hit a limit in the query parsing in EF in-memory store
             // Since this is just for local dev/test let's keep it simple and pull the list back to massage!
             var scoresList = await Scores.ToListAsync();
-            return scoresList
+
+            // Not aiming for the most efficient in-memory operation here... ;-)
+
+            // filter down to just the best score for each player
+            var bestScoreList = scoresList
                     .GroupBy(s => s.GamerTag)
-                    .Select((g, index) => new GameScore
+                    .Select(g => new
                     {
                         Gamertag = g.Key,
-                        CustomTag = "TODO",// We haven't factored custom tags into the scores yet ;-)
+                        CustomTag = "TODO",// We haven't factored custom tags into the scores yet
                         Score = g.Max(s => s.Score),
-                        Rank = index
-                    })
+                    });
+
+            // now sort the list and track the ROW_NUMBER
+            var sortedBestScoreListWithIndex = bestScoreList
                     .OrderByDescending(s => s.Score)
+                    .Select((s, index)=> new
+                    {
+                        s.Gamertag,
+                        s.CustomTag,
+                        s.Score,
+                        RowNumber = index + 1
+                    })
                     .ToList();
+
+            // group the scores to aid adding rank
+            var groupedScores = sortedBestScoreListWithIndex.GroupBy(s => s.Score)
+                .Select(g => new
+                {
+                    Score = g.Key,
+                    StartRank = g.First().RowNumber,
+                    Players = g.OrderBy(s => s.Gamertag)
+                });
+
+            // now unroll the groups applying the rank
+            return groupedScores.SelectMany(g => g.Players.Select(p => new GameScore
+            {
+                Rank = g.StartRank,
+                Gamertag = p.Gamertag,
+                Score = p.Score,
+                CustomTag = p.CustomTag
+            })).ToList();
         }
+
     }
 }
 
