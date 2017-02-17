@@ -143,8 +143,6 @@ namespace Nether.Web.Features.PlayerManagement
 
             // Call data store
             var state = await _store.GetPlayerStateByGamertagAsync(gamertag);
-            if (state == null)
-                return NotFound();
 
             // Return result
             return Ok(new PlayerStateGetResponseModel { Gamertag = gamertag, State = state });
