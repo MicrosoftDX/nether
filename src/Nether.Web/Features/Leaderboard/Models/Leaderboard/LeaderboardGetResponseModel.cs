@@ -20,6 +20,9 @@ namespace Nether.Web.Features.Leaderboard.Models.Leaderboard
         {
             public static LeaderboardEntry Map(GameScore score, string currentGamertag)
             {
+                if (score == null)
+                    return null;
+
                 return new LeaderboardEntry
                 {
                     Gamertag = score.Gamertag,
