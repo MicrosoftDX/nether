@@ -1,4 +1,4 @@
-# Analytics Deployment
+# Analytics: Hive Tables
 
 TO DO
 

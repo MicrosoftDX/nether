@@ -1,4 +1,4 @@
-﻿DROP TABLE IF EXISTS monthlyactiveusers;
+DROP TABLE IF EXISTS monthlyactiveusers;
 
 CREATE TABLE monthlyactiveusers(
     eventMonth DATE,

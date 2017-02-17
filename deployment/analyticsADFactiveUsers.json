@@ -50,9 +50,9 @@
         "intermediateEventsContainer": "intermediate",
         "resultEventsContainer": "results",
         "versionNumber": "v1.0.0",
-        "gamestartsFolder": "[concat('game-start', variables('versionNumber'))]",
-        "gamestopsFolder": "[concat('game-stop', variables('versionNumber'))]",
-        "gameheartbeatsFolder": "[concat('game-heartbeat', variables('versionNumber'))]",
+        "gamestartsFolder": "[concat('game-start/', variables('versionNumber'))]",
+        "gamestopsFolder": "[concat('game-stop/', variables('versionNumber'))]",
+        "gameheartbeatsFolder": "[concat('game-heartbeat/', variables('versionNumber'))]",
         "lastGameHeartbeatsFolder": "lastgameheartbeats",
         "gameDurationsFolder": "gamedurations",
         "dailyGameDurationsFolder": "agggamedurations/daily",
@@ -73,7 +73,7 @@
         "dailyActiveSessionsSQLTable": "DailyActiveSessions",
         "monthlyActiveSessionsSQLTable": "MonthlyActiveSessions",
         "yearlyActiveSessionsSQLTable": "YearlyActiveSessions",
-        "dfName": "[concat(resourceGroup().name, variables('uniqueIdentifier'))]",
+        "dfName": "[concat(resourceGroup().name, 'AU', variables('uniqueIdentifier'))]",
         "dfFrequency": "Minute",
         "dfInterval": 30,
         "dfStorageLS": "StorageLinkedService",
@@ -121,7 +121,9 @@
         "dfYearlyActiveUsersPL": "YearlyActiveUsersPipeline",
         "dfDailyActiveSessionsPL": "DailyActiveSessionsPipeline",
         "dfMonthlyActiveSessionsPL": "MonthlyActiveSessionsPipeline",
-        "dfYearlyActiveSessionsPL": "YearlyActiveSessionsPipeline"
+        "dfYearlyActiveSessionsPL": "YearlyActiveSessionsPipeline",
+        "dfStartPL": "2017-02-01T00:00:00Z",
+        "dfEndPL": "2017-03-11T00:00:00Z" 
     },
     "resources": [
         {
@@ -135,8 +137,7 @@
                     "name": "[variables('dfStorageLS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
-                        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+                        "[variables('dfName')]"
                     ],
                     "properties": {
                         "type": "AzureStorage",
@@ -167,8 +168,7 @@
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
                         "[variables('dfName')]",
-                        "[variables('dfStorageLS')]",
-                        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+                        "[variables('dfStorageLS')]"
                     ],
                     "properties": {
                         "type": "HDInsightOnDemand",
@@ -1317,8 +1317,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -1367,8 +1367,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -1416,8 +1416,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -1465,8 +1465,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -1515,8 +1515,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -1564,8 +1564,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -1613,8 +1613,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -1663,8 +1663,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -1712,8 +1712,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -1761,8 +1761,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -1812,7 +1812,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -1860,7 +1862,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -1908,7 +1912,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 /* Active Users Pipelines to CSV: DAU, MAU, AAU */
@@ -1957,7 +1963,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -2005,7 +2013,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -2053,7 +2063,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 /* Active Sessions Pipelines to CSV: daily, monthly, annually */
@@ -2102,7 +2114,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -2150,7 +2164,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -2198,7 +2214,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 /* Game Durations Pipelines to SQL Tables: daily, monthly, annually */
@@ -2230,7 +2248,7 @@
                                     },
                                     "translator": {
                                         "type": "TabularTranslator",
-                                        "columnMappings": "Year:Year,Month:Month,Day:Day,AverageGameDuration:AverageGameDuration"
+                                        "columnMappings": "EventDate:EventDate,AverageGameDuration:AverageGameDuration"
                                     }
                                 },
                                 "inputs": [
@@ -2257,7 +2275,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -2288,7 +2308,7 @@
                                     },
                                     "translator": {
                                         "type": "TabularTranslator",
-                                        "columnMappings": "Year:Year,Month:Month,AverageGameDuration:AverageGameDuration"
+                                        "columnMappings": "EventMonth:EventMonth,AverageGameDuration:AverageGameDuration"
                                     }
                                 },
                                 "inputs": [
@@ -2315,7 +2335,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -2373,7 +2395,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 /* Active Sessions Pipelines to SQL Tables: daily, monthly, annually */
@@ -2432,7 +2456,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -2490,7 +2516,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -2548,7 +2576,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 /* Active Users Pipelines to SQL Tables: DAU, MAU, AAU */
@@ -2607,7 +2637,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -2665,7 +2697,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -2723,7 +2757,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 }
             ]

@@ -1,4 +1,4 @@
-﻿DROP TABLE IF EXISTS countsNameSessionId;
+DROP TABLE IF EXISTS countsNameSessionId;
 
 CREATE TABLE IF NOT EXISTS countsNameSessionId(
     eventDate DATE,

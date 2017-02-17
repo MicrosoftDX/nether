@@ -1,4 +1,4 @@
-﻿set mapred.reduce.tasks=1;
+set mapred.reduce.tasks=1;
 
 DROP TABLE IF EXISTS dailyactivesessions;
 

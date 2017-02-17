@@ -1,17 +1,40 @@
-Login-AzureRmAccount
-Select-AzureRmSubscription -SubscriptionName "<subscription-name>" | Set-AzureRmContext
+param
+(
+    [Parameter(Mandatory=$true)]
+    [string]
+    $resourceGrp,
 
-$resourceGrp = "<resource-group>"
-$location = "<location>"
-$scriptStorageAccount = "<storage-account-for-scripts>"
-$storageAccount = "<storage-account-for-game-events>"
+    # user Get-AzureRmLocation to get the list of valid location values
+    [Parameter(Mandatory=$true)]
+    [string]
+    $location,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $scriptStorageAccount,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $storageAccount,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $sqlServerName,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $sqlServerAdminName,
+
+    [Parameter(Mandatory=$true)]
+    [securestring]
+    $sqlServerAdminPassword
+)
+$ErrorActionPreference = "Stop";
+
+$netherRoot = "$PSScriptRoot/.."
+
 $container = "scripts"
-$sqlServerName = "<sql-server-name>"
 $sqlDBName = "gameevents"
-$sqlServerAdminName = "<sql-server-login-name>"
-$sqlServerAdminPassword = "<sql-server-login-password"
-$deploymentName = "<deployment-name>"
-
 $stgKey = Get-AzureRmStorageAccountKey -ResourceGroupName $resourceGrp -Name $storageAccount
 
 New-AzureRmStorageAccount -ResourceGroupName $resourceGrp -Name $scriptStorageAccount -SkuName "Standard_GRS" -Location $location
@@ -50,7 +73,7 @@ New-AzureRmSqlServerFirewallRule -ResourceGroupName $resourceGrp -ServerName $sq
 
 # Create tables in the Azure SQL DB
 # TO DO
-sqlcmd -U $sqlServerAdminName@$sqlServerName -P $sqlServerAdminPassword -S $sqlServerName.database.windows.net -d $sqlDBName -i .\deployment\analytics-assets\CreateTables.sql
+#sqlcmd -U $sqlServerAdminName@$sqlServerName -P $sqlServerAdminPassword -S $sqlServerName.database.windows.net -d $sqlDBName -i .\deployment\analytics-assets\CreateTables.sql
 
 # Provision ARM template deployments
 $parameters = @{
@@ -64,6 +87,6 @@ $parameters = @{
     "sqlServerAdminPassword" = $sqlServerAdminPassword
 }
 # ADF pipeline for active users, active sessions, game durations
-New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGrp -Name $deploymentName -TemplateFile .\deployment\analyticsADFactiveUsers.json -TemplateParameterObject $parameters
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGrp -Name "AnalyticsActiveUsers" -TemplateFile .\deployment\analyticsADFactiveUsers.json -TemplateParameterObject $parameters
 # ADF pipeline for generic durations
-New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGrp -Name $deploymentName -TemplateFile .\deployment\analyticsADFdurations.json -TemplateParameterObject $parameters
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGrp -Name "AnalyticsDurations" -TemplateFile .\deployment\analyticsADFdurations.json -TemplateParameterObject $parameters

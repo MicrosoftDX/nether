@@ -1,4 +1,4 @@
-﻿DROP TABLE IF EXISTS levelreached;
+DROP TABLE IF EXISTS levelreached;
 
 CREATE TABLE IF NOT EXISTS levelreached(
     eventDate DATE,

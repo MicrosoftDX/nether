@@ -50,16 +50,16 @@
         "intermediateEventsContainer": "intermediate",
         "resultEventsContainer": "results",
         "versionNumber": "v1.0.0",
-        "startsFolder": "[concat('start', variables('versionNumber'))]",
-        "stopsFolder": "[concat('stop', variables('versionNumber'))]",
-        "durationsFolder": "[concat('durations', variables('versionNumber'))]",
+        "startsFolder": "[concat('start/', variables('versionNumber'))]",
+        "stopsFolder": "[concat('stop/', variables('versionNumber'))]",
+        "durationsFolder": "[concat('durations')]",
         "dailyDurationsFolder": "aggdurations/daily",
         "monthlyDurationsFolder": "aggdurations/monthly",
         "yearlyDurationsFolder": "aggdurations/yearly",
         "dailyDurationsSQLTable": "DailyDurations",
         "monthlyDurationsSQLTable": "MonthlyDurations",
         "yearlyDurationsSQLTable": "YearlyDurations",
-        "dfName": "[concat(resourceGroup().name, variables('uniqueIdentifier'))]",
+        "dfName": "[concat(resourceGroup().name, 'Dur', variables('uniqueIdentifier'))]",
         "dfFrequency": "Minute",
         "dfInterval": 30,
         "dfStorageLS": "StorageLinkedService",
@@ -81,7 +81,9 @@
         "dfDurationsPL": "DurationsPipeline",
         "dfDailyDurationsPL": "DailyDurationsPipeline",
         "dfMonthlyDurationsPL": "MonthlyDurationsPipeline",
-        "dfYearlyDurationsPL": "YearlyDurationsPipeline"
+        "dfYearlyDurationsPL": "YearlyDurationsPipeline",
+        "dfStartPL": "2017-02-01T00:00:00Z",
+        "dfEndPL": "2017-03-11T00:00:00Z"
     },
     "resources": [
         {
@@ -95,8 +97,7 @@
                     "name": "[variables('dfStorageLS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
-                        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+                        "[variables('dfName')]"
                     ],
                     "properties": {
                         "type": "AzureStorage",
@@ -127,8 +128,7 @@
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
                         "[variables('dfName')]",
-                        "[variables('dfStorageLS')]",
-                        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+                        "[variables('dfStorageLS')]"
                     ],
                     "properties": {
                         "type": "HDInsightOnDemand",
@@ -610,8 +610,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -659,8 +659,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -708,8 +708,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -758,8 +758,8 @@
                                 }
                             }
                         ],
-                        "start": "2017-02-01T00:00:00Z",
-                        "end": "2017-03-11T00:00:00Z",
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
                         "isPaused": false
                     }
                 },
@@ -808,7 +808,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -856,7 +858,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -904,7 +908,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -962,7 +968,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -1020,7 +1028,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 },
                 {
@@ -1078,7 +1088,9 @@
                                     "interval": "[variables('dfInterval')]"
                                 }
                             }
-                        ]
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
                     }
                 }
             ]

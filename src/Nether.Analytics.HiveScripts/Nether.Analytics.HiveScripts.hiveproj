@@ -19,8 +19,6 @@
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Script Include="externalTables.hql" />
-    <Script Include="DAU-MAU.hql" />
     <Script Include="duration/durations.hql" />
     <Script Include="duration/dailydurations.hql" />
     <Script Include="duration/monthlydurations.hql" />

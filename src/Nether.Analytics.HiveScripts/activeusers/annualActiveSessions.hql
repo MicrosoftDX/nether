@@ -1,4 +1,4 @@
-﻿DROP TABLE IF EXISTS annualactivesessions;
+DROP TABLE IF EXISTS annualactivesessions;
 
 CREATE TABLE annualactivesessions(
     year INT,

@@ -1,4 +1,4 @@
-﻿DROP TABLE IF EXISTS dailyLevelDropoutDistribution;
+DROP TABLE IF EXISTS dailyLevelDropoutDistribution;
 
 CREATE EXTERNAL TABLE IF NOT EXISTS dailyLevelDropoutDistribution(
     eventDate DATE,

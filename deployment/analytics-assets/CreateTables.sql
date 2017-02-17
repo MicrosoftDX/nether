@@ -27,7 +27,7 @@ IF (NOT EXISTS (SELECT *
                  FROM INFORMATION_SCHEMA.TABLES 
                  WHERE TABLE_NAME = 'YearlyActiveUsers'))
 BEGIN
-CREATE TABLE [dbo].[YearlyDurations] (
+CREATE TABLE [dbo].[YearlyActiveUsers] (
     [Year] INT NULL,
     [ActiveUsers] INT NULL 
 );
@@ -143,7 +143,7 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'MonthlyGameDurations'))
 BEGIN
 CREATE TABLE [dbo].[MonthlyGameDurations] (
-    [EventDate] DATE NULL,
+    [EventMonth] DATE NULL,
     [AverageGameDuration] BIGINT NULL 
 );
 END
