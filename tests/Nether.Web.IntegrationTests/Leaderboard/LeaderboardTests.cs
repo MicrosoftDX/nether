@@ -98,19 +98,38 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
             var response = await GetLeaderboardAsync(client, leaderboardName);
             Assert.Collection(response.Entries,
-                entry => Assert.Equal("testuser12", entry.Gamertag),
-                entry => Assert.Equal("testuser11", entry.Gamertag),
-                entry => Assert.Equal("testuser10", entry.Gamertag),
-                entry => Assert.Equal("testuser9", entry.Gamertag),
-                entry => Assert.Equal("testuser8", entry.Gamertag),
-                entry => Assert.Equal("testuser", entry.Gamertag),
-                entry => Assert.Equal("testuser7", entry.Gamertag),
-                entry => Assert.Equal("testuser6", entry.Gamertag),
-                entry => Assert.Equal("testuser5", entry.Gamertag),
-                entry => Assert.Equal("testuser4", entry.Gamertag),
-                entry => Assert.Equal("testuser3", entry.Gamertag)
+                entry => { Assert.Equal("testuser12", entry.Gamertag); Assert.Equal(1, entry.Rank); },
+                entry => { Assert.Equal("testuser11", entry.Gamertag); Assert.Equal(2, entry.Rank); },
+                entry => { Assert.Equal("testuser10", entry.Gamertag); Assert.Equal(3, entry.Rank); },
+                entry => { Assert.Equal("testuser9", entry.Gamertag); Assert.Equal(4, entry.Rank); },
+                entry => { Assert.Equal("testuser8", entry.Gamertag); Assert.Equal(5, entry.Rank); },
+                entry => { Assert.Equal("testuser", entry.Gamertag); Assert.Equal(6, entry.Rank); },
+                entry => { Assert.Equal("testuser7", entry.Gamertag); Assert.Equal(7, entry.Rank); },
+                entry => { Assert.Equal("testuser6", entry.Gamertag); Assert.Equal(8, entry.Rank); },
+                entry => { Assert.Equal("testuser5", entry.Gamertag); Assert.Equal(9, entry.Rank); },
+                entry => { Assert.Equal("testuser4", entry.Gamertag); Assert.Equal(10, entry.Rank); },
+                entry => { Assert.Equal("testuser3", entry.Gamertag); Assert.Equal(11, entry.Rank); }
              );
 
+
+            // update score to one that matches another score
+            await PostScoreAsync(client, 900);
+            response = await GetLeaderboardAsync(client, leaderboardName);
+            Assert.Collection(response.Entries,
+                entry => { Assert.Equal("testuser12", entry.Gamertag); Assert.Equal(1, entry.Rank); },
+                entry => { Assert.Equal("testuser11", entry.Gamertag); Assert.Equal(2, entry.Rank); },
+                entry => { Assert.Equal("testuser10", entry.Gamertag); Assert.Equal(3, entry.Rank); },
+                entry => { Assert.Equal("testuser", entry.Gamertag); Assert.Equal(4, entry.Rank); }, // note equal to rank below
+                entry => { Assert.Equal("testuser9", entry.Gamertag); Assert.Equal(4, entry.Rank); },
+                entry => { Assert.Equal("testuser8", entry.Gamertag); Assert.Equal(6, entry.Rank); },
+                entry => { Assert.Equal("testuser7", entry.Gamertag); Assert.Equal(7, entry.Rank); },
+                entry => { Assert.Equal("testuser6", entry.Gamertag); Assert.Equal(8, entry.Rank); },
+                entry => { Assert.Equal("testuser5", entry.Gamertag); Assert.Equal(9, entry.Rank); }
+                // TODO - The current implementation filters rows based on rank...
+                // Should we change it to be smarter and return consistent numbers of row regardless of duplicate scores?
+                //entry => { Assert.Equal("testuser4", entry.Gamertag); Assert.Equal(10, entry.Rank); },
+                //entry => { Assert.Equal("testuser3", entry.Gamertag); Assert.Equal(11, entry.Rank); }
+             );
             // update testuser make their score similar to mine and check they are around me
             await PostScoreAsync(client, 1050);
             response = await GetLeaderboardAsync(client, leaderboardName);
@@ -188,13 +207,15 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
             public class LeaderboardEntry
             {
+                public int Rank { get; set; }
+
                 public string Gamertag { get; set; }
 
                 public int Score { get; set; }
 
                 public override string ToString()
                 {
-                    return $"{Gamertag}\t {Score}";
+                    return $"{Rank}: {Gamertag}\t {Score}";
                 }
             }
         }

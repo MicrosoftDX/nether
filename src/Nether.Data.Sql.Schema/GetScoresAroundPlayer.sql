@@ -26,6 +26,7 @@ BEGIN
 		GROUP BY GamerTag
 	) AS T
 	WHERE Ranking BETWEEN (@PlayerRank-@Radius) AND (@PlayerRank + @Radius)
+	ORDER BY Ranking, GamerTag
 END
 ELSE
 BEGIN
