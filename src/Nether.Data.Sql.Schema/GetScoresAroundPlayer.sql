@@ -21,7 +21,7 @@ BEGIN
 			Gamertag,
 			MAX(Score) AS Score,
 			MAX(CustomTag) AS CustomTag,
-			ROW_NUMBER() OVER (ORDER BY MAX(Score) DESC) AS Ranking
+			RANK() OVER (ORDER BY MAX(Score) DESC) AS Ranking
 		FROM Scores
 		GROUP BY GamerTag
 	) AS T
