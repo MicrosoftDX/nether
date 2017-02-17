@@ -30,7 +30,7 @@ namespace Nether.Data.Sql.Leaderboard
             base.OnModelCreating(builder);
 
             builder.Entity<QueriedGamerScore>()
-                .HasKey(c => c.GamerTag);
+                .HasKey(c => c.Gamertag);
 
             builder.Entity<SavedGamerScore>()
                 .ForSqlServerToTable("Scores");
@@ -53,7 +53,7 @@ namespace Nether.Data.Sql.Leaderboard
                 new GameScore
                 {
                     Score = s.Score,
-                    GamerTag = s.GamerTag,
+                    Gamertag = s.Gamertag,
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
                 }).ToListAsync();
@@ -66,7 +66,7 @@ namespace Nether.Data.Sql.Leaderboard
                 new GameScore
                 {
                     Score = s.Score,
-                    GamerTag = s.GamerTag,
+                    Gamertag = s.Gamertag,
                     CustomTag = s.CustomTag,
                     Rank = s.Ranking
                 }).ToListAsync();

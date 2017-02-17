@@ -25,7 +25,7 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task AddPlayerToGroupAsync(Group group, Player player)
         {
-            // assuming that thhe player and the group already exist 
+            // assuming that thhe player and the group already exist
             await AddPlayerToGroupAsync(group.Name, player.Gamertag);
         }
 
@@ -152,7 +152,7 @@ namespace Nether.Data.Sql.PlayerManagement
                 throw new ArgumentException($"{nameof(gamertag)} is required");
             }
 
-            // get all the group names for player 
+            // get all the group names for player
             List<string> playerGroups = await GetPlayerGroupsAsync(gamertag);
 
             return playerGroups.Select(g => GetGroupDetailsAsync(g).Result).ToList();
@@ -270,32 +270,24 @@ namespace Nether.Data.Sql.PlayerManagement
             throw new NotSupportedException();
         }
 
-        public async Task SavePlayerExtendedAsync(PlayerExtended player)
+        public async Task SavePlayerStateByGamertagAsync(string gamertag, string state)
         {
             // add only of the playerextended does not exist
-            PlayerExtendedEntity entity = player.UserId == null ? null : await _context.PlayersExtended.FindAsync(player.Gamertag);
+            PlayerExtendedEntity entity = await _context.PlayersExtended.FindAsync(gamertag);
             if (entity == null)
             {
-                await _context.PlayersExtended.AddAsync(new PlayerExtendedEntity
-                {
-                    UserId = player.UserId,
-                    Gamertag = player.Gamertag,
-                    ExtendedInformation = player.ExtendedInformation
-                });
-                await _context.SaveChangesAsync();
+                entity = new PlayerExtendedEntity();
+                _context.PlayersExtended.Add(entity);
             }
-            else
-            {
-                entity.Gamertag = player.Gamertag;
-                entity.ExtendedInformation = player.ExtendedInformation;
-                await _context.SaveChangesAsync();
-            }
+            entity.Gamertag = gamertag;
+            entity.State = state;
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<PlayerExtended> GetPlayerDetailsExtendedAsync(string gamertag)
+        public async Task<string> GetPlayerStateByGamertagAsync(string gamertag)
         {
             PlayerExtendedEntity player = await _context.PlayersExtended.SingleOrDefaultAsync(p => p.Gamertag.Equals(gamertag));
-            return player?.ToPlayerExtended();
+            return player?.State;
         }
     }
 }

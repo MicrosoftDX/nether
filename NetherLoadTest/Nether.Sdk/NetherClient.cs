@@ -48,7 +48,7 @@ namespace Nether.Sdk
         public async Task<OperationResult> LoginUserNamePasswordAsync(string username, string password)
         {
             // TODO - create a type so that the caller can determine success/failure (with message)
-            var disco = await DiscoveryClient.GetAsync(_baseUrl);
+            var disco = await DiscoveryClient.GetAsync(_baseUrl + "/identity");
 
             // request token
             var tokenClient = new TokenClient(disco.TokenEndpoint, _clientId, _clientSecret);
@@ -74,7 +74,7 @@ namespace Nether.Sdk
         // TODO - create result model rather than returning JSON string!
         public async Task<OperationResult<string>> GetScoresAsync(string leaderboardType = null)
         {
-            string uri = "/api/leaderboard";
+            string uri = "/api/leaderboards";
             if (leaderboardType != null)
             {
                 uri += "/" + leaderboardType;
@@ -106,7 +106,7 @@ namespace Nether.Sdk
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync(
-                "/api/leaderboard",
+                "/api/scores",
                 content
             );
 

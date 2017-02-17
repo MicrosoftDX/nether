@@ -10,10 +10,10 @@ using System.Diagnostics;
 namespace Nether.Data.PlayerManagement
 {
     [DebuggerDisplay("PlayerExtended (tag '{Gamertag}', UserId '{UserId}')")]
-    public class PlayerExtended
+    public class PlayerState
     {
         public string UserId { get; set; }
         public string Gamertag { get; set; }
-        public string ExtendedInformation { get; set; }
+        public string State { get; set; }
     }
 }

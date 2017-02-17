@@ -46,7 +46,7 @@ namespace NetherLoadTest
         public async Task<OperationResult> LoginUserNamePasswordAsync(string username, string password)
         {
             // TODO - create a type so that the caller can determine success/failure (with message)
-            var disco = await DiscoveryClient.GetAsync(_baseUrl);
+            var disco = await DiscoveryClient.GetAsync(_baseUrl + "/identity");
 
             // request token
             var tokenClient = new TokenClient(disco.TokenEndpoint, _clientId, _clientSecret);
@@ -72,7 +72,7 @@ namespace NetherLoadTest
         // TODO - create result model rather than returning JSON string!
         public async Task<OperationResult<string>> GetScoresAsync(string leaderboardType = null)
         {
-            string uri = "/api/leaderboard";
+            string uri = "/api/leaderboards";
             if (leaderboardType != null)
             {
                 uri += "/" + leaderboardType;
@@ -95,7 +95,7 @@ namespace NetherLoadTest
         public async Task<OperationResult> PostScoreAsync(int score)
         {
             var response = await _httpClient.PostAsJsonAsync(
-                "/api/leaderboard",
+                "/api/scores",
                 new
                 {
                     country = "missing",

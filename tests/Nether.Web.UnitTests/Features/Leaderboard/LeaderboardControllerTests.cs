@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Xunit;
 using IdentityModel;
 using Microsoft.Extensions.Logging;
+using Nether.Web.Features.Leaderboard.Models.Score;
 
 namespace Nether.Web.UnitTests.Features.Leaderboard
 {
@@ -28,17 +29,16 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
         {
             // Arrange
             var leaderboardStore = new Mock<ILeaderboardStore>();
-            var controller = CreateController<LeaderboardController>(
+            var controller = CreateController<ScoreController>(
                 services =>
                 {
                     services.Setup(s => s.GetService(typeof(ILeaderboardStore))).Returns(leaderboardStore.Object);
                     services.Setup(s => s.GetService(typeof(IAnalyticsIntegrationClient))).Returns(Mock.Of<IAnalyticsIntegrationClient>());
-                    services.Setup(s => s.GetService(typeof(ILogger<LeaderboardController>))).Returns(Mock.Of<ILogger<LeaderboardController>>());
-                    services.Setup(s => s.GetService(typeof(ILeaderboardConfiguration))).Returns(Mock.Of<ILeaderboardConfiguration>);
+                    services.Setup(s => s.GetService(typeof(ILogger<ScoreController>))).Returns(Mock.Of<ILogger<ScoreController>>());
                 });
 
             // Act
-            var result = await controller.Post(new LeaderboardPostRequestModel
+            var result = await controller.Post(new ScorePostRequestModel
             {
                 Score = -1
             });
@@ -52,19 +52,18 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
         {
             // Arrange
             var leaderboardStore = new Mock<ILeaderboardStore>();
-            var controller = CreateController<LeaderboardController>(
+            var controller = CreateController<ScoreController>(
                 services =>
                 {
                     services.Setup(s => s.GetService(typeof(ILeaderboardStore))).Returns(leaderboardStore.Object);
                     services.Setup(s => s.GetService(typeof(IAnalyticsIntegrationClient))).Returns(Mock.Of<IAnalyticsIntegrationClient>());
-                    services.Setup(s => s.GetService(typeof(ILogger<LeaderboardController>))).Returns(Mock.Of<ILogger<LeaderboardController>>());
-                    services.Setup(s => s.GetService(typeof(ILeaderboardConfiguration))).Returns(Mock.Of<ILeaderboardConfiguration>);
+                    services.Setup(s => s.GetService(typeof(ILogger<ScoreController>))).Returns(Mock.Of<ILogger<ScoreController>>());
                 }
             );
 
 
             // Act
-            var result = await controller.Post(new LeaderboardPostRequestModel
+            var result = await controller.Post(new ScorePostRequestModel
             {
                 //Gamertag = "anonymous",
                 Score = -1
@@ -80,13 +79,12 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
         {
             // Arrange
             var leaderboardStore = new Mock<ILeaderboardStore>();
-            var controller = CreateController<LeaderboardController>(
+            var controller = CreateController<ScoreController>(
                 services =>
                 {
                     services.Setup(s => s.GetService(typeof(ILeaderboardStore))).Returns(leaderboardStore.Object);
                     services.Setup(s => s.GetService(typeof(IAnalyticsIntegrationClient))).Returns(Mock.Of<IAnalyticsIntegrationClient>());
-                    services.Setup(s => s.GetService(typeof(ILogger<LeaderboardController>))).Returns(Mock.Of<ILogger<LeaderboardController>>());
-                    services.Setup(s => s.GetService(typeof(ILeaderboardConfiguration))).Returns(Mock.Of<ILeaderboardConfiguration>);
+                    services.Setup(s => s.GetService(typeof(ILogger<ScoreController>))).Returns(Mock.Of<ILogger<ScoreController>>());
                 },
                 user: new ClaimsPrincipal(
                         new ClaimsIdentity(new[]
@@ -98,7 +96,7 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
 
 
             // Act
-            var result = await controller.Post(new LeaderboardPostRequestModel
+            var result = await controller.Post(new ScorePostRequestModel
             {
                 //Gamertag = "anonymous",
                 Score = 10

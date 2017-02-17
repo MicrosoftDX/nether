@@ -15,7 +15,8 @@ namespace Nether.Web.IntegrationTests.Leaderboard
     //todo: come up with better naming
     public class LeaderboardTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
     {
-        private const string BasePath = "/api/leaderboard";
+        private const string LeaderboardBasePath = "/api/leaderboards";
+        private const string ScoresBasePath = "/api/scores";
 
         public LeaderboardTests()
         {
@@ -25,8 +26,8 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         public async Task Get_leaderboard_call_succeeds()
         {
             var client = await GetClientAsync();
-            HttpResponseMessage response = await client.GetAsync(BasePath + "/Default");
-            Assert.True(response.IsSuccessStatusCode);
+            HttpResponseMessage response = await client.GetAsync(LeaderboardBasePath + "/Default");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -142,19 +143,12 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             await PostScoreAsync(client, -5, HttpStatusCode.BadRequest);
         }
 
-        [Fact]
-        public async Task Cannot_get_leaderboard_if_im_not_in_Player_role()
-        {
-            var client = await GetAdminClientAsync();    //login as devadmin who is not in "Player" role
-
-            await GetLeaderboardAsync(client, "Default", HttpStatusCode.Forbidden);
-        }
-
         #region [ REST Wrappers ]
 
         private async Task DeleteMyScoresAsync(HttpClient client)
         {
-            await client.DeleteAsync(BasePath);
+            var response = await client.DeleteAsync(ScoresBasePath);
+            response.EnsureSuccessStatusCode();
         }
 
         private async Task<LeaderboardGetResponse> GetLeaderboardAsync(
@@ -162,7 +156,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             string type = "Default",
             HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            HttpResponseMessage response = await client.GetAsync(BasePath + "/" + type);
+            HttpResponseMessage response = await client.GetAsync(LeaderboardBasePath + "/" + type);
             Assert.Equal(expectedCode, response.StatusCode);
 
             string content = await response.Content.ReadAsStringAsync();
@@ -174,7 +168,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             int score,
             HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
-            HttpResponseMessage response = await client.PostAsJsonAsync(BasePath,
+            HttpResponseMessage response = await client.PostAsJsonAsync(ScoresBasePath,
                 new
                 {
                     country = "UK",

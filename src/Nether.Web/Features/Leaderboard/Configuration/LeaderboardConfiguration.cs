@@ -18,7 +18,12 @@ namespace Nether.Web.Features.Leaderboard.Configuration
             _leaderboards = leaderboards;
         }
 
-        public LeaderboardConfig GetLeaderboardConfig(string name)
+        public IEnumerable<LeaderboardConfig> GetAll()
+        {
+            return _leaderboards.Values.OrderBy(l => l.Name);
+        }
+
+        public LeaderboardConfig GetByName(string name)
         {
             LeaderboardConfig config = null;
             _leaderboards.TryGetValue(name, out config);

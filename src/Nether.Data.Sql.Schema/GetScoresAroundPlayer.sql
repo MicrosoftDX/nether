@@ -11,17 +11,29 @@ EXEC GetPlayerRank @Gamertag, @PlayerRank OUTPUT
 
 IF (@PlayerRank >= 0)
 BEGIN
-	SELECT 
-		* 
+	SELECT
+		Gamertag,
+        Score,
+        CustomTag,
+        Ranking
 	FROM (
-		SELECT 
-			Gamertag, 
-			MAX(Score) AS Score, 
-			MAX(CustomTag) AS CustomTag, 
+		SELECT
+			Gamertag,
+			MAX(Score) AS Score,
+			MAX(CustomTag) AS CustomTag,
 			ROW_NUMBER() OVER (ORDER BY MAX(Score) DESC) AS Ranking
-		FROM Scores 
+		FROM Scores
 		GROUP BY GamerTag
-	) AS T 
+	) AS T
 	WHERE Ranking BETWEEN (@PlayerRank-@Radius) AND (@PlayerRank + @Radius)
+END
+ELSE
+BEGIN
+    SELECT
+	    Gamertag=NULL,
+        Score = NULL,
+        CustomTag = NULL,
+        Ranking = NULL
+    WHERE 1=0
 END
 RETURN 0

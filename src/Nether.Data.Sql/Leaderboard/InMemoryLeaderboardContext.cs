@@ -45,7 +45,7 @@ namespace Nether.Data.Sql.Leaderboard
         public override async Task<List<GameScore>> GetScoresAroundMeAsync(string gamertag, int radius)
         {
             var scores = await GetRankedScoresAsync(); // Naive implementation
-            var gamerIndex = scores.FindIndex(s => s.GamerTag == gamertag);
+            var gamerIndex = scores.FindIndex(s => s.Gamertag == gamertag);
 
             int startIndex = Math.Max(0, gamerIndex - radius);
             int endIndex = Math.Min(scores.Count, gamerIndex + radius);
@@ -64,7 +64,7 @@ namespace Nether.Data.Sql.Leaderboard
                     .GroupBy(s => s.GamerTag)
                     .Select((g, index) => new GameScore
                     {
-                        GamerTag = g.Key,
+                        Gamertag = g.Key,
                         CustomTag = "TODO",// We haven't factored custom tags into the scores yet ;-)
                         Score = g.Max(s => s.Score),
                         Rank = index

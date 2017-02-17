@@ -10,7 +10,8 @@ namespace Nether.Data.Leaderboard
 {
     public interface ILeaderboardConfiguration
     {
-        LeaderboardConfig GetLeaderboardConfig(string name);
+        LeaderboardConfig GetByName(string name);
+        IEnumerable<LeaderboardConfig> GetAll();
     }
 
     public enum LeaderboardType
@@ -26,5 +27,6 @@ namespace Nether.Data.Leaderboard
         public LeaderboardType Type { get; set; }
         public int Top { get; set; }
         public int Radius { get; set; }
+        public bool IncludeCurrentPlayer { get; set; }
     }
 }

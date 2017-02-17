@@ -202,25 +202,28 @@ namespace Nether.Data.MongoDB.PlayerManagement
             return g.Image;*/
         }
 
-        public async Task SavePlayerExtendedAsync(PlayerExtended player)
+        public async Task SavePlayerStateByGamertagAsync(string gamertag, string state)
         {
-            _logger.LogDebug("Saving Player Extended {0}", player.UserId);
-            await PlayersExtendedCollection.ReplaceOneAsync(p => p.PlayerId == player.UserId, player, s_upsertOptions);
+            _logger.LogDebug("Saving Player Extended {0}", gamertag);
+            await PlayersExtendedCollection.ReplaceOneAsync(
+                p => p.Gamertag == gamertag,
+                new MongoDBPlayerExtended { Gamertag = gamertag, ExtendedInformation = state },
+                s_upsertOptions);
         }
 
-        public async Task<PlayerExtended> GetPlayerDetailsExtendedAsync(string userid)
+        public async Task<string> GetPlayerStateByGamertagAsync(string gamertag)
         {
             var getPlayerExtended = from s in PlayersExtendedCollection.AsQueryable()
-                                    where s.PlayerId == userid
+                                    where s.Gamertag == gamertag
                                     orderby s.Gamertag descending
-                                    select new PlayerExtended
+                                    select new PlayerState
                                     {
-                                        UserId = s.PlayerId,
                                         Gamertag = s.Gamertag,
-                                        ExtendedInformation = s.ExtendedInformation
+                                        State = s.ExtendedInformation
                                     };
 
-            return await getPlayerExtended.FirstOrDefaultAsync();
+            var playerState = await getPlayerExtended.FirstOrDefaultAsync();
+            return playerState?.State;
         }
 
         public Task DeletePlayerDetailsAsync(string gamertag)

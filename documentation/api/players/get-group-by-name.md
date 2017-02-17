@@ -28,9 +28,6 @@ Empty body
     "name": "string",
     "customType": "string",
     "description": "string",
-    "members": [
-      "string"
-    ]
   }
 }
 ```
@@ -40,4 +37,3 @@ Element name        | Type       | Description
 groupName|String|Name of the group
 customType|String|Custom type
 description|String|Group description
-members|String Array|List of gamertags who are members of this group

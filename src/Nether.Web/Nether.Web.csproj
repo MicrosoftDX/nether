@@ -13,6 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Features\Leaderboard\NewFolder\**" />
+    <Content Remove="Features\Leaderboard\NewFolder\**" />
+    <EmbeddedResource Remove="Features\Leaderboard\NewFolder\**" />
+    <None Remove="Features\Leaderboard\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="wwwroot\Features\identity-test\app.js" />
     <Content Include="wwwroot\Features\identity-test\callback.html" />
     <Content Include="wwwroot\Features\identity-test\index.html" />
