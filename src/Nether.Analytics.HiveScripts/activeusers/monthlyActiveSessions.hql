@@ -20,4 +20,4 @@ SELECT
 FROM
     rawgamedurations
 GROUP BY
-    eventDate;
+    eventMonth;

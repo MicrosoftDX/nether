@@ -61,6 +61,7 @@
         "dauFolder": "activeUsers/daily",
         "mauFolder": "activeUsers/monthly",
         "yearlyActiveUsersFolder": "activeUsers/yearly",
+        "hourlyActiveSessionsFolder": "activeSessions/hourly",
         "dailyActiveSessionsFolder": "activeSessions/daily",
         "monthlyActiveSessionsFolder": "activeSessions/monthly",
         "yearlyActiveSessionsFolder": "activeSessions/yearly",
@@ -70,6 +71,7 @@
         "dauSQLTable": "DailyActiveUsers",
         "mauSQLTable": "MonthlyActiveUsers",
         "yearlyActiveUsersSQLTable": "YearlyActiveUsers",
+        "hourlyActiveSessionsSQLTable": "HourlyActiveSessions",
         "dailyActiveSessionsSQLTable": "DailyActiveSessions",
         "monthlyActiveSessionsSQLTable": "MonthlyActiveSessions",
         "yearlyActiveSessionsSQLTable": "YearlyActiveSessions",
@@ -90,6 +92,7 @@
         "dfYearlyGameDurationsDS": "YearlyGameDurations",
         "dfDauDS": "DAU",
         "dfMauDS": "MAU",
+        "dfHourlyActiveSessionsDS": "HourlyActiveSessions",
         "dfDailyActiveSessionsDS": "DailyActiveSessions",
         "dfMonthlyActiveSessionsDS": "MonthlyActiveSessions",
         "dfYearlyActiveSessionsDS": "YearlyActiveSessions",
@@ -100,6 +103,7 @@
         "dfDauCsvDS": "DAUCsv",
         "dfMauCsvDS": "MAUCsv",
         "dfYearlyActiveUsersCsvDS": "YearlyActiveUsersCsv",
+        "dfHourlyActiveSessionsCsvDS": "HourlyActiveSessionsCsv",
         "dfDailyActiveSessionsCsvDS": "DailyActiveSessionsCsv",
         "dfMonthlyActiveSessionsCsvDS": "MonthlyActiveSessionsCsv",
         "dfYearlyActiveSessionsCsvDS": "YearlyActiveSessionsCsv",
@@ -109,6 +113,7 @@
         "dfDAUSqlDS": "DAUSql",
         "dfMAUSqlDS": "MAUSql",
         "dfYearlyActiveUsersSqlDS": "YearlyActiveUsersSql",
+        "dfHourlyActiveSessionsSqlDS": "HourlyActiveSessionsSql",
         "dfDailyActiveSessionsSqlDS": "DailyActiveSessionsSql",
         "dfMonthlyActiveSessionsSqlDS": "MonthlyActiveSessionsSql",
         "dfYearlyActiveSessionsSqlDS": "YearlyActiveSessionsSql",
@@ -119,6 +124,7 @@
         "dfDAUPL": "DAUPipeline",
         "dfMAUPL": "MAUPipeline",
         "dfYearlyActiveUsersPL": "YearlyActiveUsersPipeline",
+        "dfHourlyActiveSessionsPL": "HourlyActiveSessionsPipeline",
         "dfDailyActiveSessionsPL": "DailyActiveSessionsPipeline",
         "dfMonthlyActiveSessionsPL": "MonthlyActiveSessionsPipeline",
         "dfYearlyActiveSessionsPL": "YearlyActiveSessionsPipeline",
@@ -132,6 +138,7 @@
             "type": "Microsoft.DataFactory/datafactories",
             "location": "[variables('location')]",
             "resources": [
+                /* Linked Services: storage account, storage account with scripts, SQL DB, HDI on demand */
                 {
                     "type": "linkedservices",
                     "name": "[variables('dfStorageLS')]",
@@ -518,7 +525,36 @@
                         }
                     }
                 },
-                /* Active Sessions: daily, monthly, annually */
+                /* Active Sessions: hourly, daily, monthly, annually */
+                {
+                    "type": "datasets",
+                    "name": "[variables('dfHourlyActiveSessionsDS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]"
+                    ],
+                    "properties": {
+                        "type": "AzureBlob",
+                        "linkedServiceName": "[variables('dfStorageLS')]",
+                        "typeProperties": {
+                            "folderPath": "[concat(variables('intermediateEventsContainer'), '/', variables('hourlyActiveSessionsFolder'), '/')]",
+                            "fileName": "000000_0",
+                            "format": {
+                                "type": "TextFormat",
+                                "rowDelimiter": "\n",
+                                "columnDelimiter": "|",
+                                "treatEmptyAsNull": true,
+                                "skipLineCount": 0,
+                                "firstRowAsHeader": false
+                            }
+                        },
+                        "availability": {
+                            "frequency": "[variables('dfFrequency')]",
+                            "interval": "[variables('dfInterval')]"
+                        }
+                    }
+                },
                 {
                     "type": "datasets",
                     "name": "[variables('dfDailyActiveSessionsDS')]",
@@ -842,7 +878,50 @@
                         }
                     }
                 },
-                /* Active Sessions in CSV: daily, monthly, annually */
+                /* Active Sessions in CSV: hourly, daily, monthly, annually */
+                {
+                    "type": "datasets",
+                    "name": "[variables('dfHourlyActiveSessionsCsvDS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]"
+                    ],
+                    "properties": {
+                        "structure": [
+                            {
+                                "name": "EventDate",
+                                "type": "DateTime"
+                            },
+                            {
+                                "name": "Hour",
+                                "type": "Int32"
+                            },
+                            {
+                                "name": "ActiveSessions",
+                                "type": "Int64"
+                            }
+                        ],
+                        "type": "AzureBlob",
+                        "linkedServiceName": "[variables('dfStorageLS')]",
+                        "typeProperties": {
+                            "folderPath": "[concat(variables('resultEventsContainer'), '/activesessions/')]",
+                            "fileName": "hourlyActiveSessions.csv",
+                            "format": {
+                                "type": "TextFormat",
+                                "rowDelimiter": "\n",
+                                "columnDelimiter": "|",
+                                "treatEmptyAsNull": true,
+                                "skipLineCount": 0,
+                                "firstRowAsHeader": false
+                            }
+                        },
+                        "availability": {
+                            "frequency": "[variables('dfFrequency')]",
+                            "interval": "[variables('dfInterval')]"
+                        }
+                    }
+                },
                 {
                     "type": "datasets",
                     "name": "[variables('dfDailyActiveSessionsCsvDS')]",
@@ -1143,6 +1222,40 @@
                     }
                 },
                 /* Active Sessions in SQL Tables: daily, monthly, annually */
+                {
+                    "type": "datasets",
+                    "name": "[variables('dfHourlyActiveSessionsSqlDS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfSqlLS')]"
+                    ],
+                    "properties": {
+                        "structure": [
+                            {
+                                "name": "EventDate",
+                                "type": "Date"
+                            },
+                            {
+                                "name": "Hour",
+                                "type": "Int64"
+                            },
+                            {
+                                "name": "ActiveSessions",
+                                "type": "Int64"
+                            }
+                        ],
+                        "type": "AzureSqlTable",
+                        "linkedServiceName": "[variables('dfSqlLS')]",
+                        "typeProperties": {
+                            "tableName": "[variables('hourlyActiveSessionsSQLTable')]"
+                        },
+                        "availability": {
+                            "frequency": "[variables('dfFrequency')]",
+                            "interval": "[variables('dfInterval')]"
+                        }
+                    }
+                },
                 {
                     "type": "datasets",
                     "name": "[variables('dfDailyActiveSessionsSqlDS')]",
@@ -1618,7 +1731,56 @@
                         "isPaused": false
                     }
                 },
-                /* Active Sessions Pipelines: daily, monthly, annually */
+                /* Active Sessions Pipelines: hourly, daily, monthly, annually */
+                {
+                    "type": "dataPipelines",
+                    "name": "[variables('dfHourlyActiveSessionsPL')]",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]",
+                        "[variables('dfGameDurationsDS')]",
+                        "[variables('dfHourlyActiveSessionsDS')]"
+                    ],
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "DailyActiveSessionActivity",
+                                "linkedServiceName": "[variables('dfHDInsightLS')]",
+                                "description": "",
+                                "type": "HDInsightHive",
+                                "typeProperties": {
+                                    "scriptPath": "scripts/activeusers/hourlyActiveSessions.hql",
+                                    "scriptLinkedService": "[variables('dfScriptsStorageLS')]",
+                                    "defines": {
+                                        "dailyactivesessions": "[concat('wasbs://', variables('intermediateEventsContainer'), '@', parameters('storageAccountName'), '.blob.core.windows.net/', variables('hourlyActiveSessionsFolder'), '/')]"
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "name": "[variables('dfGameDurationsDS')]"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "[variables('dfHourlyActiveSessionsDS')]"
+                                    }
+                                ],
+                                "policy": {
+                                    "concurrency": 1,
+                                    "retry": 0
+                                },
+                                "scheduler": {
+                                    "frequency": "[variables('dfFrequency')]",
+                                    "interval": "[variables('dfInterval')]"
+                                }
+                            }
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]",
+                        "isPaused": false
+                    }
+                },
                 {
                     "type": "dataPipelines",
                     "name": "[variables('dfDailyActiveSessionsPL')]",
@@ -1632,7 +1794,7 @@
                     "properties": {
                         "activities": [
                             {
-                                "name": "DailyGameDurationsActivity",
+                                "name": "DailyActiveSessionActivity",
                                 "linkedServiceName": "[variables('dfHDInsightLS')]",
                                 "description": "",
                                 "type": "HDInsightHive",
@@ -1640,7 +1802,7 @@
                                     "scriptPath": "scripts/activeusers/dailyActiveSessions.hql",
                                     "scriptLinkedService": "[variables('dfScriptsStorageLS')]",
                                     "defines": {
-                                        "dailyactivesessions": "[concat('wasbs://', variables('intermediateEventsContainer'), '@', parameters('storageAccountName'), '.blob.core.windows.net/', variables('dailyGameDurationsFolder'), '/')]"
+                                        "dailyactivesessions": "[concat('wasbs://', variables('intermediateEventsContainer'), '@', parameters('storageAccountName'), '.blob.core.windows.net/', variables('dailyActiveSessionsFolder'), '/')]"
                                     }
                                 },
                                 "inputs": [
@@ -2071,6 +2233,56 @@
                 /* Active Sessions Pipelines to CSV: daily, monthly, annually */
                 {
                     "type": "datapipelines",
+                    "name": "HourlyActiveSessions2Csv",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]",
+                        "[variables('dfHourlyActiveSessionsDS')]",
+                        "[variables('dfHourlyActiveSessionsCsvDS')]"
+                    ],
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "properties": {
+                        "description": "Copies the hive table daily durations into csv format",
+                        "activities": [
+                            {
+                                "name": "HourlyActiveSessions2CsvActivity",
+                                "type": "Copy",
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "BlobSource"
+                                    },
+                                    "sink": {
+                                        "type": "BlobSink",
+                                        "writeBatchSize": 0,
+                                        "writeBatchTimeout": "00:00:00"
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "name": "[variables('dfHourlyActiveSessionsDS')]"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "[variables('dfHourlyActiveSessionsCsvDS')]"
+                                    }
+                                ],
+                                "policy": {
+                                    "concurrency": 1,
+                                    "retry": 0
+                                },
+                                "scheduler": {
+                                    "frequency": "[variables('dfFrequency')]",
+                                    "interval": "[variables('dfInterval')]"
+                                }
+                            }
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
+                    }
+                },
+                {
+                    "type": "datapipelines",
                     "name": "DailyActiveSessions2Csv",
                     "dependsOn": [
                         "[variables('dfName')]",
@@ -2400,7 +2612,67 @@
                         "end": "[variables('dfEndPL')]"
                     }
                 },
-                /* Active Sessions Pipelines to SQL Tables: daily, monthly, annually */
+                /* Active Sessions Pipelines to SQL Tables: hourly, daily, monthly, annually */
+                {
+                    "type": "datapipelines",
+                    "name": "HourlyActiveSessions2SQL",
+                    "dependsOn": [
+                        "[variables('dfName')]",
+                        "[variables('dfStorageLS')]",
+                        "[variables('dfSqlLS')]",
+                        "[variables('dfHourlyActiveSessionsCsvDS')]",
+                        "[variables('dfHourlyActiveSessionsSqlDS')]"
+                    ],
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "properties": {
+                        "description": "Copies the daily generic durations into Azure SQL",
+                        "activities": [
+                            {
+                                "name": "HourlyActiveSessions2SQLActivity",
+                                "type": "Copy",
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "BlobSource"
+                                    },
+                                    "sink": {
+                                        "type": "SqlSink",
+                                        "writeBatchSize": 0,
+                                        "writeBatchTimeout": "00:00:00"
+                                    },
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "columnMappings": "EventDate:EventDate,Hour:Hour,ActiveSessions:ActiveSessions"
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "name": "[variables('dfHourlyActiveSessionsCsvDS')]"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "[variables('dfHourlyActiveSessionsSqlDS')]"
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "1.00:00:00",
+                                    "concurrency": 1,
+                                    "executionPriorityOrder": "NewestFirst",
+                                    "style": "StartOfInterval",
+                                    "retry": 3,
+                                    "longRetry": 0,
+                                    "longRetryInterval": "00:00:00"
+                                },
+                                "scheduler": {
+                                    "frequency": "[variables('dfFrequency')]",
+                                    "interval": "[variables('dfInterval')]"
+                                }
+                            }
+                        ],
+                        "start": "[variables('dfStartPL')]",
+                        "end": "[variables('dfEndPL')]"
+                    }
+                },
                 {
                     "type": "datapipelines",
                     "name": "DailyActiveSessions2SQL",
