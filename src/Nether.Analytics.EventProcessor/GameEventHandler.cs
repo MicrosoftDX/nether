@@ -5,6 +5,10 @@ using System;
 using Nether.Analytics.EventProcessor.Output.Blob;
 using Nether.Analytics.EventProcessor.Output.EventHub;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System.Collections.Generic;
+using NGeoHash.Portable;
 
 namespace Nether.Analytics.EventProcessor
 {
@@ -74,11 +78,22 @@ namespace Nether.Analytics.EventProcessor
 
         public void HandleLocationEvent(GameEventData data)
         {
-            //TODO: Implement more properties on Location Event
-            var serializedGameEvent = data.ToCsv("gameSessionId");
+            var locationEvent = JsonConvert.DeserializeObject<LocationEvent>(data.Data);
+
+            var geoHash = GeoHash.Encode(locationEvent.Latitude, locationEvent.Longitude);
+            locationEvent.Geohash = geoHash;
+
+            //TODO: Optimize this so we don't serialize back to JSON first and then to CSV
+
+            data.Data = JsonConvert.SerializeObject(
+                locationEvent,
+                Formatting.Indented,
+                new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+
+            var serializedGameEvent = data.ToCsv("gameSessionId", "longitude", "latitude", "geohash");
 
             _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
-            //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
+            _eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
         public void HandleScoreEvent(GameEventData data)
@@ -150,5 +165,19 @@ namespace Nether.Analytics.EventProcessor
         {
             return $"{gameEventType}/v{version}";
         }
+    }
+
+    //TODO: Move file out of here as soon as we find a good way of sharing the Game Event Types between different projects.
+    // Right now this is a copy of how the event type look like in the Nether.Analytics.GameEvents 
+    public class LocationEvent
+    {
+        public string Type => "location";
+        public string Version => "1.0.0";
+        public DateTime ClientUtcTime { get; set; }
+        public string GameSessionId { get; set; }
+        public double Longitude { get; set; }
+        public double Latitude { get; set; }
+        public string Geohash { get; set; }
+        public Dictionary<string, string> Properties { get; set; }
     }
 }
