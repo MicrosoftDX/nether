@@ -113,6 +113,12 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
         private void AppendToFolder(string folder, params string[] lines)
         {
+            Console.WriteLine(folder);
+            foreach (var line in lines)
+            {
+                Console.WriteLine($"  {line}");
+            }
+
             var blob = GetTmpAppendBlob(folder);
 
             var data = string.Join("\n", lines) + "\n";

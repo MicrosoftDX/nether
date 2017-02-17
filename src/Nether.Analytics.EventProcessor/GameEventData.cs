@@ -13,18 +13,17 @@ namespace Nether.Analytics.EventProcessor
 {
     public class GameEventData
     {
-        private string _data;
         private DateTime _enqueuedTime;
         private DateTime _dequeuedTime;
 
         public GameEventData(EventData eventData, DateTime dequeuedTime)
         {
-            _data = Encoding.UTF8.GetString(eventData.GetBytes());
+            Data = Encoding.UTF8.GetString(eventData.GetBytes());
             _enqueuedTime = eventData.EnqueuedTimeUtc;
             _dequeuedTime = dequeuedTime;
         }
 
-        public string Data => _data;
+        public string Data { get; set; }
         public DateTime EnqueuedTime => _enqueuedTime;
         public DateTime DequeuedTime => _dequeuedTime;
         public string EventType { get; set; } = "Unknown";
@@ -55,7 +54,7 @@ namespace Nether.Analytics.EventProcessor
 
             // All IGameEvents includes a properties-tag that should be automatically included in output as the last column
             var properties = json["properties"];
-            if (properties != null & properties.HasValues)
+            if (properties != null && properties.HasValues)
             {
                 var propDict = properties.ToObject<Dictionary<string, string>>();
                 var propertiesColumn = new StringBuilder();
