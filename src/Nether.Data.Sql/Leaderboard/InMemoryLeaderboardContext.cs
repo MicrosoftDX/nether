@@ -76,7 +76,7 @@ namespace Nether.Data.Sql.Leaderboard
             // now sort the list and track the ROW_NUMBER
             var sortedBestScoreListWithIndex = bestScoreList
                     .OrderByDescending(s => s.Score)
-                    .Select((s, index)=> new
+                    .Select((s, index) => new
                     {
                         s.Gamertag,
                         s.CustomTag,
@@ -103,7 +103,6 @@ namespace Nether.Data.Sql.Leaderboard
                 CustomTag = p.CustomTag
             })).ToList();
         }
-
     }
 }
 
