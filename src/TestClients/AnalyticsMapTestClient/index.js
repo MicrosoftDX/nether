@@ -4,7 +4,7 @@ var netherClient;
 
 function loadMapScenario() {
     map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
-        credentials: 'AkSg8WKvYlSfF0u9-CSclN2m-v1SU9WkI4iwV9szphXqU6htZpcN4JWY4-pEbjTr'
+        credentials: ''
     });
 
     Microsoft.Maps.Events.addHandler(map, 'click', mapClick);
@@ -13,9 +13,20 @@ function loadMapScenario() {
 
 function mapClick(e) {
 
-    console.log(e);
-    console.log('Longitude: ' + e.location.longitude);
-    console.log('Latitude:  ' + e.location.latitude);
+    console.log('Click recorded at:');
+    console.log('  Longitude: ' + e.location.longitude);
+    console.log('  Latitude : ' + e.location.latitude);
 
-    netherClient.sendEvent({"type":"location"});
+    netherClient.sendEvent(
+        {
+            "type": "location",
+            "version": "1.0.0",
+            "clientUtcTime": "2017-02-17 14:00:00",
+            "gameSessionId": "session1",
+            "longitude": e.location.longitude,
+            "latitude": e.location.latitude,
+            "geohash": ""
+        }, function(){
+            console.log("done!");
+        });
 }

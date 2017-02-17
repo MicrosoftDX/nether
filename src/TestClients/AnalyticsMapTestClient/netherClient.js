@@ -8,7 +8,7 @@ function NetherClient(netherBaseUrl) {
     this.url = "";
     this.validUntil = new Date(-8640000000000000);
 
-    this.sendEvent = function (gameEvent, success) {
+    this.sendEvent = function (gameEvent, success = null) {
         var self = this;
         var now = new Date();
 
@@ -56,7 +56,10 @@ function NetherClient(netherBaseUrl) {
                 request.setRequestHeader("ContentType", self.contentType);
                 request.setRequestHeader("Authorization", self.authorization);
             },
-            success: dataSentToEventHub
+            success: function () {
+                if (success != null)
+                    success();
+            }
         });
     }
 }
