@@ -4,7 +4,7 @@ var netherClient;
 
 function loadMapScenario() {
     map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
-        credentials: ''
+        credentials: 'PUT_YOUR_BING_MAPS_KEY_HERE'
     });
 
     Microsoft.Maps.Events.addHandler(map, 'click', mapClick);
