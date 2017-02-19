@@ -82,14 +82,9 @@ namespace Nether.Web.Features.PlayerManagement
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [HttpPost("")]
+        [ReturnValidationFailureOnInvalidModelState]
         public async Task<ActionResult> Post([FromBody]PlayerPostRequestModel newPlayer)
         {
-            if (!ModelState.IsValid)
-            {
-                // TODO log and return validation message
-                return BadRequest();
-            }
-
             // Save player
             var player = new Player
             {
@@ -114,11 +109,11 @@ namespace Nether.Web.Features.PlayerManagement
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [HttpPut("{gamertag}")]
-        public async Task<ActionResult> Put([FromRoute]string gamertag, [FromBody]PlayerPutRequestModel newPlayer)
+        public async Task<IActionResult> Put([FromRoute]string gamertag, [FromBody]PlayerPutRequestModel newPlayer)
         {
             if (string.IsNullOrWhiteSpace(gamertag))
             {
-                return BadRequest(); //TODO: return error info in body
+                return this.ValidationFailed(new ErrorDetail("gamertag", "gamertag is required"));
             }
 
             var player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
@@ -164,11 +159,11 @@ namespace Nether.Web.Features.PlayerManagement
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [HttpPut("{gamertag}/state")]
-        public async Task<ActionResult> PostState([FromRoute] string gamertag, [FromBody]string state)
+        public async Task<IActionResult> PostState([FromRoute] string gamertag, [FromBody]string state)
         {
             if (string.IsNullOrWhiteSpace(gamertag))
             {
-                return BadRequest(); //TODO: return error info in body
+                return this.ValidationFailed(new ErrorDetail("gamertag", "gamertag is required"));
             }
 
             // Save player extended information
@@ -205,19 +200,19 @@ namespace Nether.Web.Features.PlayerManagement
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [HttpPut("{gamertag}/groups/{groupName}")]
-        public async Task<ActionResult> AddPlayerToGroup(string gamertag, string groupName)
+        public async Task<IActionResult> AddPlayerToGroup(string gamertag, string groupName)
         {
             Group group = await _store.GetGroupDetailsAsync(groupName);
             if (group == null)
             {
                 _logger.LogWarning("group '{0}' not found", groupName);
-                return BadRequest();
+                return this.ValidationFailed(new ErrorDetail("groupName", "group not found"));
             }
 
             Player player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
             if (player == null)
             {
-                _logger.LogWarning("player '{0}' not found", gamertag);
+                _logger.LogError("player '{0}' not found", gamertag);
                 return BadRequest();
             }
 

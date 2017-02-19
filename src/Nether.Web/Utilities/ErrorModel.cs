@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,10 +20,39 @@ namespace Nether.Web.Utilities
         public ErrorCode Code { get; set; }
 
         public string Message { get; set; }
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DefaultValue(null)]
+        public ErrorDetail[] Details { get; set; }
+    }
+
+    public class ErrorDetail
+    {
+        public ErrorDetail(string target, string message)
+        {
+            Target = target;
+            Message = message;
+        }
+
+        public string Target { get; set; }
+        public string Message { get; set; }
     }
 
     public enum ErrorCode
     {
-        UnhandledException
+        /// <summary>
+        /// an unhandled exception occurred
+        /// </summary>
+        UnhandledException,
+        /// <summary>
+        /// Request validation failed
+        /// </summary>
+        ValidationFailed
+    }
+
+    public static class DefaultErrorMessages
+    {
+        public static string UnhandledException(string id) => $"Unhandled exception. Check logs for error id '{id}'";
+        public const string ValidationFailed = "Request validation failed";
     }
 }

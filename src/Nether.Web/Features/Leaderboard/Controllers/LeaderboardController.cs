@@ -94,7 +94,7 @@ namespace Nether.Web.Features.Leaderboard
                 case LeaderboardType.AroundMe:
                     if (gamertag == null)
                     {
-                        return BadRequest(); // need a gamertag to get scores!
+                        return this.ValidationFailed(new ErrorDetail("gamertag", "Must be signed in as a player with a gamertag to retrive this leaderboard"));
                     }
                     scores = await _store.GetScoresAroundMeAsync(gamertag, config.Radius);
                     break;

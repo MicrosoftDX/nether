@@ -44,16 +44,11 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok(new { gamertag = player?.Gamertag });
         }
         [HttpPost("playeridentity/player/{playerid}")]
-        public async Task<ActionResult> SetGamertagForPlayerId(
+        [ReturnValidationFailureOnInvalidModelState]
+        public async Task<IActionResult> SetGamertagForPlayerId(
                 [FromRoute] string playerid,
                 [FromBody] SetGamertagRequestModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogInformation("Invalid model state in SetGamertagForPlayerId");
-                return BadRequest();
-            }
-
             var player = await _store.GetPlayerDetailsByUserIdAsync(playerid);
             if (player == null)
             {
@@ -62,7 +57,7 @@ namespace Nether.Web.Features.PlayerManagement
             if (!string.IsNullOrEmpty(player.Gamertag))
             {
                 _logger.LogInformation("Player already has gamertag (cannot update) in SetGamertagForPlayerId");
-                return BadRequest();
+                return this.ValidationFailed(new ErrorDetail("gamertag", "Cannot update gamertag"));
             }
 
             player.Gamertag = model.Gamertag;
