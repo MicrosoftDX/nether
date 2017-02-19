@@ -4,8 +4,8 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'DailyActiveUsers'))
 BEGIN
 CREATE TABLE [dbo].[DailyActiveUsers] (
-    [EventDate] DATE NULL,
-    [ActiveUsers] INT NULL 
+    [EventDate] DATE NOT NULL,
+    [ActiveUsers] INT NOT NULL 
 );
 END
 
@@ -16,8 +16,8 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'MonthlyActiveUsers'))
 BEGIN
 CREATE TABLE [dbo].[MonthlyActiveUsers] (
-    [EventMonth] DATE NULL,
-    [ActiveUsers] INT NULL 
+    [EventMonth] DATE NOT NULL,
+    [ActiveUsers] INT NOT NULL 
 );
 END
 
@@ -28,8 +28,8 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'YearlyActiveUsers'))
 BEGIN
 CREATE TABLE [dbo].[YearlyActiveUsers] (
-    [Year] INT NULL,
-    [ActiveUsers] INT NULL 
+    [Year] INT NOT NULL,
+    [ActiveUsers] INT NOT NULL 
 );
 END
 
@@ -40,8 +40,8 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'DailyActiveSessions'))
 BEGIN
 CREATE TABLE [dbo].[DailyActiveSessions] (
-    [EventDate] DATE NULL,
-    [ActiveSessions] INT NULL 
+    [EventDate] DATE NOT NULL,
+    [ActiveSessions] INT NOT NULL 
 );
 END
 
@@ -52,8 +52,8 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'MonthlyActiveSessions'))
 BEGIN
 CREATE TABLE [dbo].[MonthlyActiveSessions] (
-    [EventMonth] DATE NULL,
-    [ActiveSessions] INT NULL 
+    [EventMonth] DATE NOT NULL,
+    [ActiveSessions] INT NOT NULL 
 );
 END
 
@@ -64,8 +64,8 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'YearlyActiveSessions'))
 BEGIN
 CREATE TABLE [dbo].[YearlyActiveSessions] (
-    [Year] INT NULL,
-    [ActiveSessions] INT NULL 
+    [Year] INT NOT NULL,
+    [ActiveSessions] INT NOT NULL 
 );
 END
 
@@ -76,12 +76,12 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'Durations'))
 BEGIN
 CREATE TABLE [dbo].[Durations] (
-    [StartTime] DATETIME NOT NULL,
-    [StopTime]  DATETIME NOT NULL,
-    [Duration] BIGINT NOT NULL,
-    [EventCorrelationId] TEXT NOT NULL,
-    [DisplayName] TEXT NOT NULL,
-    [GameSessionId] TEXT NOT NULL
+    [StartTime] DATETIME NOT NOT NULL,
+    [StopTime]  DATETIME NOT NOT NULL,
+    [Duration] BIGINT NOT NOT NULL,
+    [EventCorrelationId] TEXT NOT NOT NULL,
+    [DisplayName] TEXT NOT NOT NULL,
+    [GameSessionId] TEXT NOT NOT NULL
 );
 END
 
@@ -92,9 +92,9 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'DailyDurations'))
 BEGIN
 CREATE TABLE [dbo].[DailyDurations] (
-    [EventDate] DATE NULL,
-    [DisplayName] TEXT NOT NULL,
-    [AverageGenericDuration] BIGINT NULL 
+    [EventDate] DATE NOT NULL,
+    [DisplayName] TEXT NOT NOT NULL,
+    [AverageGenericDuration] BIGINT NOT NULL 
 );
 END
 
@@ -105,9 +105,9 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'MonthlyDurations'))
 BEGIN
 CREATE TABLE [dbo].[MonthlyDurations] (
-    [EventMonth] DATE NULL,
-    [DisplayName] TEXT NOT NULL,
-    [AverageGenericDuration] BIGINT NULL 
+    [EventMonth] DATE NOT NULL,
+    [DisplayName] TEXT NOT NOT NULL,
+    [AverageGenericDuration] BIGINT NOT NULL 
 );
 END
 
@@ -118,9 +118,9 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'YearlyDurations'))
 BEGIN
 CREATE TABLE [dbo].[YearlyDurations] (
-    [Year] INT NULL,
-    [DisplayName] TEXT NOT NULL,
-    [AverageGenericDuration] BIGINT NULL 
+    [Year] INT NOT NULL,
+    [DisplayName] TEXT NOT NOT NULL,
+    [AverageGenericDuration] BIGINT NOT NULL 
 );
 END
 
@@ -131,8 +131,8 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'DailyGameDurations'))
 BEGIN
 CREATE TABLE [dbo].[DailyGameDurations] (
-    [EventDate] DATE NULL,
-    [AverageGameDuration] BIGINT NULL 
+    [EventDate] DATE NOT NULL,
+    [AverageGameDuration] BIGINT NOT NULL 
 );
 END
 
@@ -143,8 +143,8 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'MonthlyGameDurations'))
 BEGIN
 CREATE TABLE [dbo].[MonthlyGameDurations] (
-    [EventMonth] DATE NULL,
-    [AverageGameDuration] BIGINT NULL 
+    [EventMonth] DATE NOT NULL,
+    [AverageGameDuration] BIGINT NOT NULL 
 );
 END
 
@@ -155,7 +155,46 @@ IF (NOT EXISTS (SELECT *
                  WHERE TABLE_NAME = 'YearlyGameDurations'))
 BEGIN
 CREATE TABLE [dbo].[YearlyGameDurations] (
-    [Year] INT NULL,
-    [AverageGameDuration] BIGINT NULL 
+    [Year] INT NOT NULL,
+    [AverageGameDuration] BIGINT NOT NULL 
+);
+END
+
+
+-- Daily Level Dropoff Distribution
+IF (NOT EXISTS (SELECT * 
+                 FROM INFORMATION_SCHEMA.TABLES 
+                 WHERE TABLE_NAME = 'DailyLevelDropoff'))
+BEGIN
+CREATE TABLE [dbo].[DailyLevelDropoff] (
+    [EventDate] DATE NOT NULL,
+    [ReachedLevel] BIGINT NOT NULL,
+    [TotalCount] BIGINT NOT NULL 
+);
+END
+
+
+-- Monthly Level Dropoff Distribution
+IF (NOT EXISTS (SELECT * 
+                 FROM INFORMATION_SCHEMA.TABLES 
+                 WHERE TABLE_NAME = 'MonthlyLevelDropoff'))
+BEGIN
+CREATE TABLE [dbo].[MonthlyLevelDropoff] (
+    [EventMonth] DATE NOT NULL,
+    [ReachedLevel] BIGINT NOT NULL,
+    [TotalCount] BIGINT NOT NULL 
+);
+END
+
+
+-- Yearly Level Dropoff Distribution
+IF (NOT EXISTS (SELECT * 
+                 FROM INFORMATION_SCHEMA.TABLES 
+                 WHERE TABLE_NAME = 'YearlyLevelDropoff'))
+BEGIN
+CREATE TABLE [dbo].[YearlyLevelDropoff] (
+    [Year] INT NOT NULL,
+    [ReachedLevel] BIGINT NOT NULL,
+    [TotalCount] BIGINT NOT NULL 
 );
 END

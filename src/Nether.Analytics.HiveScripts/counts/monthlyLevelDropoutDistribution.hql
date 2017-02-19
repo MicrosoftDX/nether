@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS monthlyLevelDropoutDistribution;
 
 CREATE EXTERNAL TABLE IF NOT EXISTS monthlyLevelDropoutDistribution(
-    eventDate DATE,
+    evenMonth DATE,
     level INT,
     totalCount BIGINT
 )
@@ -14,10 +14,10 @@ LOCATION '${hiveconf:monthlyLevelDropoutLoc}';
 
 INSERT INTO TABLE monthlyLevelDropoutDistribution
 SELECT
-    eventDate,
+    eventMonth,
     reachedLevel as level,
     count(*) as totalCount
 FROM
     levelreached
 GROUP BY
-    eventDate, reachedLevel;
+    evenMonth, reachedLevel;

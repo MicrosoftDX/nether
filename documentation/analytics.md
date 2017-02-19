@@ -151,7 +151,18 @@ Both ADFs make use of 3 types of components:
 
 1. Already have a storage account that contains the raw game event data in the container "gameevents" in a given resource group.
 
-2. Run the PowerShell script [deployment/deployAnalyticsADF.ps1](../deployment/analyticsADFdurations.json) that does the following:
+2. Run the PowerShell script [deployment/deployAnalyticsADF.ps1](../deployment/analyticsADFdurations.json). The arguments it asks for are as follows:
+
+   * `resourceGrp`: Name of resource group that has already been created
+   * `location`: Location
+   * `scriptStorageAccount`: Name of storage account to be created for uploading Hive scripts
+   * `storageAccount`: Name of already existing storage account that contains the raw game event data
+   * `sqlServerName`: Name of Azure SQL Server yet to be created
+   * `sqlServerAdminName`: Login Username of Azure SQL Server
+   * `sqlServerAdminPassword`: Password to the Azure SQL Server
+   * `dataFactoryName`: Name of the data factory to be created
+
+   The PowerShell script does the following:
 
    * Creates another storage account to upload the Hive scripts
    * Creates an Azure SQL Server and Database

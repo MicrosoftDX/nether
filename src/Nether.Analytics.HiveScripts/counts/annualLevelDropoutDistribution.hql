@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS annualLevelDropoutDistribution;
 
 CREATE EXTERNAL TABLE IF NOT EXISTS annualLevelDropoutDistribution(
-    eventDate DATE,
+    year INT,
     level INT,
     totalCount BIGINT
 )
@@ -14,10 +14,10 @@ LOCATION '${hiveconf:annualLevelDropoutLoc}';
 
 INSERT INTO TABLE annualLevelDropoutDistribution
 SELECT
-    eventDate,
+    year,
     reachedLevel as level,
     count(*) as totalCount
 FROM
     levelreached
 GROUP BY
-    eventDate, reachedLevel;
+    year, reachedLevel;

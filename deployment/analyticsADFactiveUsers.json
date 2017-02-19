@@ -40,6 +40,9 @@
         },
         "sqlServerAdminPassword": {
             "type": "string"
+        },
+        "dataFactoryName": {
+            "type": "string"
         }
     },
     "variables": {
@@ -75,7 +78,6 @@
         "dailyActiveSessionsSQLTable": "DailyActiveSessions",
         "monthlyActiveSessionsSQLTable": "MonthlyActiveSessions",
         "yearlyActiveSessionsSQLTable": "YearlyActiveSessions",
-        "dfName": "[concat(resourceGroup().name, 'AU', variables('uniqueIdentifier'))]",
         "dfFrequency": "Minute",
         "dfInterval": 30,
         "dfStorageLS": "StorageLinkedService",
@@ -133,7 +135,7 @@
     },
     "resources": [
         {
-            "name": "[variables('dfName')]",
+            "name": "[parameters('dataFactoryName')]",
             "apiVersion": "[variables('dfApiVersion')]",
             "type": "Microsoft.DataFactory/datafactories",
             "location": "[variables('location')]",
@@ -144,7 +146,7 @@
                     "name": "[variables('dfStorageLS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]"
+                        "[parameters('dataFactoryName')]"
                     ],
                     "properties": {
                         "type": "AzureStorage",
@@ -159,7 +161,7 @@
                     "name": "[variables('dfScriptsStorageLS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]"
+                        "[parameters('dataFactoryName')]"
                     ],
                     "properties": {
                         "type": "AzureStorage",
@@ -174,7 +176,7 @@
                     "name": "[variables('dfHDInsightLS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -193,7 +195,7 @@
                     "name": "[variables('dfSqlLS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]"
+                        "[parameters('dataFactoryName')]"
                     ],
                     "properties": {
                         "type": "AzureSqlDatabase",
@@ -209,7 +211,7 @@
                     "name": "[variables('dfGameStartDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -238,7 +240,7 @@
                     "name": "[variables('dfGameStopDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -267,7 +269,7 @@
                     "name": "[variables('dfGameHeartbeartDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -297,7 +299,7 @@
                     "name": "[variables('dfLastGameHeartbeatsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -326,7 +328,7 @@
                     "name": "[variables('dfGameDurationsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -355,7 +357,7 @@
                     "name": "[variables('dfDailyGameDurationsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -384,7 +386,7 @@
                     "name": "[variables('dfMonthlyGameDurationsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -413,7 +415,7 @@
                     "name": "[variables('dfYearlyGameDurationsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -443,7 +445,7 @@
                     "name": "[variables('dfDauDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -472,7 +474,7 @@
                     "name": "[variables('dfMauDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -501,7 +503,7 @@
                     "name": "[variables('dfYearlyActiveUsersDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -531,7 +533,7 @@
                     "name": "[variables('dfHourlyActiveSessionsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -560,7 +562,7 @@
                     "name": "[variables('dfDailyActiveSessionsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -589,7 +591,7 @@
                     "name": "[variables('dfMonthlyActiveSessionsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -618,7 +620,7 @@
                     "name": "[variables('dfYearlyActiveSessionsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -648,7 +650,7 @@
                     "name": "[variables('dfDailyGameDurationsCsvDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -687,7 +689,7 @@
                     "name": "[variables('dfMonthlyGameDurationsCsvDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -726,7 +728,7 @@
                     "name": "[variables('dfYearlyGameDurationsCsvDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -766,7 +768,7 @@
                     "name": "[variables('dfDauCsvDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -805,7 +807,7 @@
                     "name": "[variables('dfMauCsvDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -844,7 +846,7 @@
                     "name": "[variables('dfYearlyActiveUsersCsvDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -884,7 +886,7 @@
                     "name": "[variables('dfHourlyActiveSessionsCsvDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -927,7 +929,7 @@
                     "name": "[variables('dfDailyActiveSessionsCsvDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -966,7 +968,7 @@
                     "name": "[variables('dfMonthlyActiveSessionsCsvDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -1005,7 +1007,7 @@
                     "name": "[variables('dfYearlyActiveSessionsCsvDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -1045,7 +1047,7 @@
                     "name": "[variables('dfDailyGameDurationsSqlDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfSqlLS')]"
                     ],
                     "properties": {
@@ -1075,7 +1077,7 @@
                     "name": "[variables('dfMonthlyGameDurationsSqlDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfSqlLS')]"
                     ],
                     "properties": {
@@ -1105,7 +1107,7 @@
                     "name": "[variables('dfYearlyGameDurationsSqlDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfSqlLS')]"
                     ],
                     "properties": {
@@ -1136,7 +1138,7 @@
                     "name": "[variables('dfDAUSqlDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfSqlLS')]"
                     ],
                     "properties": {
@@ -1166,7 +1168,7 @@
                     "name": "[variables('dfMAUSqlDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfSqlLS')]"
                     ],
                     "properties": {
@@ -1196,7 +1198,7 @@
                     "name": "[variables('dfYearlyActiveUsersSqlDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfSqlLS')]"
                     ],
                     "properties": {
@@ -1227,7 +1229,7 @@
                     "name": "[variables('dfHourlyActiveSessionsSqlDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfSqlLS')]"
                     ],
                     "properties": {
@@ -1261,7 +1263,7 @@
                     "name": "[variables('dfDailyActiveSessionsSqlDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfSqlLS')]"
                     ],
                     "properties": {
@@ -1291,7 +1293,7 @@
                     "name": "[variables('dfMonthlyActiveSessionsSqlDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfSqlLS')]"
                     ],
                     "properties": {
@@ -1321,7 +1323,7 @@
                     "name": "[variables('dfYearlyActiveSessionsSqlDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfSqlLS')]"
                     ],
                     "properties": {
@@ -1351,7 +1353,7 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfGameDurationsPL')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfGameHeartbeartDS')]",
                         "[variables('dfGameStartDS')]",
@@ -1440,7 +1442,7 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfDailyGameDurationsPL')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfGameDurationsDS')]",
                         "[variables('dfDailyGameDurationsDS')]"
@@ -1489,7 +1491,7 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfMonthlyGameDurationsPL')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfGameDurationsDS')]",
                         "[variables('dfMonthlyGameDurationsDS')]"
@@ -1538,7 +1540,7 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfYearlyGameDurationsPL')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfGameDurationsDS')]",
                         "[variables('dfYearlyGameDurationsDS')]"
@@ -1588,7 +1590,7 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfDAUPL')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfGameDurationsDS')]",
                         "[variables('dfDauDS')]"
@@ -1637,7 +1639,7 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfMAUPL')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfGameDurationsDS')]",
                         "[variables('dfMauDS')]"
@@ -1686,7 +1688,7 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfYearlyActiveUsersPL')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfGameDurationsDS')]",
                         "[variables('dfYearlyActiveUsersDS')]"
@@ -1736,7 +1738,7 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfHourlyActiveSessionsPL')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfGameDurationsDS')]",
                         "[variables('dfHourlyActiveSessionsDS')]"
@@ -1785,7 +1787,7 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfDailyActiveSessionsPL')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfGameDurationsDS')]",
                         "[variables('dfDailyActiveSessionsDS')]"
@@ -1834,7 +1836,7 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfMonthlyActiveSessionsPL')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfGameDurationsDS')]",
                         "[variables('dfMonthlyActiveSessionsDS')]"
@@ -1883,7 +1885,7 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfYearlyActiveSessionsPL')]",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfGameDurationsDS')]",
                         "[variables('dfYearlyActiveSessionsDS')]"
@@ -1933,7 +1935,7 @@
                     "type": "datapipelines",
                     "name": "DailyGameDurations2Csv",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfDailyGameDurationsDS')]",
                         "[variables('dfDailyGameDurationsCsvDS')]"
@@ -1983,7 +1985,7 @@
                     "type": "datapipelines",
                     "name": "MonthlyGameDurations2CSV",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfMonthlyGameDurationsDS')]",
                         "[variables('dfMonthlyGameDurationsCsvDS')]"
@@ -2033,7 +2035,7 @@
                     "type": "datapipelines",
                     "name": "YearlyGameDurations2CSV",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfYearlyGameDurationsDS')]",
                         "[variables('dfYearlyGameDurationsCsvDS')]"
@@ -2084,7 +2086,7 @@
                     "type": "datapipelines",
                     "name": "DAU2Csv",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfDauDS')]",
                         "[variables('dfDauCsvDS')]"
@@ -2134,7 +2136,7 @@
                     "type": "datapipelines",
                     "name": "MAU2CSV",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfMauDS')]",
                         "[variables('dfMauCsvDS')]"
@@ -2184,7 +2186,7 @@
                     "type": "datapipelines",
                     "name": "YearlyActiveUsers2CSV",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfYearlyActiveUsersDS')]",
                         "[variables('dfYearlyActiveUsersCsvDS')]"
@@ -2235,7 +2237,7 @@
                     "type": "datapipelines",
                     "name": "HourlyActiveSessions2Csv",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfHourlyActiveSessionsDS')]",
                         "[variables('dfHourlyActiveSessionsCsvDS')]"
@@ -2285,7 +2287,7 @@
                     "type": "datapipelines",
                     "name": "DailyActiveSessions2Csv",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfDailyActiveSessionsDS')]",
                         "[variables('dfDailyActiveSessionsCsvDS')]"
@@ -2335,7 +2337,7 @@
                     "type": "datapipelines",
                     "name": "MonthlyActiveSessions2CSV",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfMonthlyActiveSessionsDS')]",
                         "[variables('dfMonthlyActiveSessionsCsvDS')]"
@@ -2385,7 +2387,7 @@
                     "type": "datapipelines",
                     "name": "YearlyActiveSessions2CSV",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfYearlyActiveSessionsDS')]",
                         "[variables('dfYearlyActiveSessionsCsvDS')]"
@@ -2436,7 +2438,7 @@
                     "type": "datapipelines",
                     "name": "DailyGameDurations2SQL",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfSqlLS')]",
                         "[variables('dfDailyGameDurationsCsvDS')]",
@@ -2496,7 +2498,7 @@
                     "type": "datapipelines",
                     "name": "MonthlyGameDurations2SQL",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfSqlLS')]",
                         "[variables('dfMonthlyGameDurationsCsvDS')]",
@@ -2556,7 +2558,7 @@
                     "type": "datapipelines",
                     "name": "YearlyGameDurations2SQL",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfSqlLS')]",
                         "[variables('dfYearlyGameDurationsCsvDS')]",
@@ -2617,7 +2619,7 @@
                     "type": "datapipelines",
                     "name": "HourlyActiveSessions2SQL",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfSqlLS')]",
                         "[variables('dfHourlyActiveSessionsCsvDS')]",
@@ -2677,7 +2679,7 @@
                     "type": "datapipelines",
                     "name": "DailyActiveSessions2SQL",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfSqlLS')]",
                         "[variables('dfDailyActiveSessionsCsvDS')]",
@@ -2737,7 +2739,7 @@
                     "type": "datapipelines",
                     "name": "MonthlyActiveSessions2SQL",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfSqlLS')]",
                         "[variables('dfMonthlyActiveSessionsCsvDS')]",
@@ -2797,7 +2799,7 @@
                     "type": "datapipelines",
                     "name": "YearlyActiveSessions2SQL",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfSqlLS')]",
                         "[variables('dfYearlyActiveSessionsCsvDS')]",
@@ -2858,7 +2860,7 @@
                     "type": "datapipelines",
                     "name": "DAU2SQL",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfSqlLS')]",
                         "[variables('dfDauCsvDS')]",
@@ -2918,7 +2920,7 @@
                     "type": "datapipelines",
                     "name": "MAU2SQL",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfSqlLS')]",
                         "[variables('dfMauCsvDS')]",
@@ -2978,7 +2980,7 @@
                     "type": "datapipelines",
                     "name": "YearlyActiveUsers2SQL",
                     "dependsOn": [
-                        "[variables('dfName')]",
+                        "[parameters('dataFactoryName')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfSqlLS')]",
                         "[variables('dfYearlyActiveUsersCsvDS')]",

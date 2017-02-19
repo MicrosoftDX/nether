@@ -24,8 +24,11 @@
     <Script Include="duration/monthlydurations.hql" />
     <Script Include="duration/annualdurations.hql" />
     <Script Include="counts/aggcounters.hql" />
-    <Script Include="counts/countspersession.hql" />
-    <Script Include="counts\countsperproperty.hql" />
+    <Script Include="counts/annualLevelDropoutDistribution.hql" />
+    <Script Include="counts/countsNameSessionId.hql" />
+    <Script Include="counts/countsperproperty.hql" />
+    <Script Include="counts/dailyLevelDropoutDistribution.hql" />
+    <Script Include="counts/monthlyLevelDropoutDistribution.hql" />
     <Script Include="counts/strippedcounts.hql" />
     <Script Include="gamesession/annualgameduration.hql" />
     <Script Include="gamesession/dailygameduration.hql" />
@@ -66,9 +69,6 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="counts\countsNameSessionId.hql">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="counts\levelDropoutDistribution.hql">
       <SubType>Content</SubType>
     </Content>
     <Content Include="counts\levelup.hql">
