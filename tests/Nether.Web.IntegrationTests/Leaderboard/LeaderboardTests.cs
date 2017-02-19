@@ -27,7 +27,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         {
             var client = await GetClientAsync();
             HttpResponseMessage response = await client.GetAsync(LeaderboardBasePath + "/Default");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.OK);
         }
 
         [Fact]
@@ -167,7 +167,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         private async Task DeleteMyScoresAsync(HttpClient client)
         {
             var response = await client.DeleteAsync(ScoresBasePath);
-            response.EnsureSuccessStatusCode();
+            await response.AssertSuccessStatusCodeAsync();
         }
 
         private async Task<LeaderboardGetResponse> GetLeaderboardAsync(
@@ -176,7 +176,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
             HttpStatusCode expectedCode = HttpStatusCode.OK)
         {
             HttpResponseMessage response = await client.GetAsync(LeaderboardBasePath + "/" + type);
-            Assert.Equal(expectedCode, response.StatusCode);
+            await response.AssertStatusCodeAsync(expectedCode);
 
             string content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<LeaderboardGetResponse>(content);
@@ -194,7 +194,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
                     score = score
                 });
 
-            Assert.Equal(expectedCode, response.StatusCode);
+            await response.AssertStatusCodeAsync(expectedCode);
         }
 
         #endregion

@@ -60,7 +60,7 @@ namespace Nether.Web.IntegrationTests
                     role = role,
                     active = true
                 });
-            response.EnsureSuccessStatusCode();
+            await response.AssertSuccessStatusCodeAsync();
             var responseContent = await response.Content.ReadAsAsync<dynamic>();
             _createdUserNames.Add(username);
 
@@ -71,7 +71,7 @@ namespace Nether.Web.IntegrationTests
                 {
                     password
                 });
-            response.EnsureSuccessStatusCode();
+            await response.AssertSuccessStatusCodeAsync();
 
             if (!string.IsNullOrEmpty(gamertag))
             {
@@ -84,7 +84,7 @@ namespace Nether.Web.IntegrationTests
                     customTag = "IntegrationTestUser"
                 };
                 response = await playerClient.PutAsJsonAsync("api/player", player);
-                response.EnsureSuccessStatusCode();
+                await response.AssertSuccessStatusCodeAsync();
 
                 _createdPlayers.Add(gamertag);
             }
