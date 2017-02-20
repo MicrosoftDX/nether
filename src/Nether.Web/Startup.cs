@@ -297,8 +297,25 @@ namespace Nether.Web
                      FileProvider = new PhysicalFileProvider(Path.Combine(_hostingEnvironment.WebRootPath, "Features", "AdminWebUi"))
                 });
 
+
                 uiapp.UseMvc(); // TODO filter which routes this matches (i.e. only non-API routes)
             });
+
+            // serve Landing page static files at root
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                RequestPath = "",
+                FileProvider = new PhysicalFileProvider(Path.Combine(_hostingEnvironment.WebRootPath, "Features", "LandingPage"))
+            });
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "landing-page",
+                    template: "",
+                    defaults: new { controller = "LandingPage", action = "Index"}
+                    );
+            });
+
         }
     }
 }

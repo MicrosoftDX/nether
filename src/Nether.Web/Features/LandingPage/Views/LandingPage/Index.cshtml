@@ -1,0 +1,26 @@
+﻿@inject Microsoft.AspNetCore.Hosting.IHostingEnvironment HostingEnvironment
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nether</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/nether-logo-32x32.png" />
+    <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body>
+    <img src="/images/logo-title-1109x256.png" alt="Nether logo" />
+    <h1>Nether landing page</h1>
+    @if(HostingEnvironment.EnvironmentName == "Development")
+    {
+        <div class="dev-mode">NOTE: this site is currently configured for development mode</div>
+    }
+    <div>
+        <div class="title">Handy links</div>
+        <ul>
+            <li><a href="https://github.com/MicrosoftDX/nether">Source on GitHub</a></li>
+            <li><a href="/ui/admin">Admin UI</a></li>
+            <li><a href="/api/swagger/ui">Swagger UI</a>
+        </ul>
+    </div>
+</body>
+</html>
