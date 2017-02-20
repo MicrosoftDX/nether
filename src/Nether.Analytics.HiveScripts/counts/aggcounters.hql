@@ -19,7 +19,7 @@ LOCATION '${hiveconf:hourlycounts}';
 
 
 CREATE TABLE IF NOT EXISTS aggdailycounts(
-    day INT,
+    eventDate DATE,
     displayName STRING,
     sumcount BIGINT
 )
@@ -33,7 +33,7 @@ LOCATION '${hiveconf:dailycounts}';
 
 
 CREATE TABLE IF NOT EXISTS aggmonthlycounts(
-    month INT,
+    eventMonth DATE,
     displayName STRING,
     sumcount BIGINT
 )
@@ -77,7 +77,7 @@ GROUP BY
 INSERT INTO TABLE aggdailycounts
 PARTITION (year, month)
 SELECT
-    day,
+    eventDate,
     displayName,
     sum(value),
     year,
@@ -85,20 +85,20 @@ SELECT
 FROM
     strippedcounts
 GROUP BY
-    year, month, day, displayName;
+    year, month, eventDate, displayName;
 
 
 INSERT INTO TABLE aggmonthlycounts
 PARTITION (year)
 SELECT
-    month,
+    eventMonth,
     displayName,
     sum(value),
     year
 FROM
     strippedcounts
 GROUP BY
-    year, month, displayName;
+    year, eventMonth, displayName;
 
 
 INSERT INTO TABLE aggyearlycounts

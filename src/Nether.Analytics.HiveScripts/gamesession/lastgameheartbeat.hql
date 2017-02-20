@@ -29,7 +29,8 @@ ROW FORMAT DELIMITED
     COLLECTION ITEMS TERMINATED BY '\073'
     LINES TERMINATED BY '\n'
 STORED AS TEXTFILE
-LOCATION '${hiveconf:lastheartbeats}';
+location 'wasbs://intermediate@oknether.blob.core.windows.net/lastgameheartbeat/';
+--LOCATION '${hiveconf:lastheartbeats}';
 
 
 INSERT INTO TABLE lastgameheartbeat

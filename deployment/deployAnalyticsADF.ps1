@@ -1,21 +1,58 @@
-Login-AzureRmAccount
-Select-AzureRmSubscription -SubscriptionName "<subscription-name>" | Set-AzureRmContext
+param
+(
+    [Parameter(Mandatory=$true)]
+    [string]
+    $resourceGrp,
 
-$resourceGrp = "<resource-group>"
-$location = "<location>"
-$scriptStorageAccount = "<storage-account-for-scripts>"
+    # user Get-AzureRmLocation to get the list of valid location values
+    [Parameter(Mandatory=$true)]
+    [string]
+    $location,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $scriptStorageAccount,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $storageAccount,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $sqlServerName,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $sqlServerAdminName,
+
+    [Parameter(Mandatory=$true)]
+    [securestring]
+    $sqlServerAdminPassword,
+
+    [Parameter(Mandatory=$true)]
+    [string]
+    $dataFactoryName
+)
+$ErrorActionPreference = "Stop";
+
+$netherRoot = "$PSScriptRoot/.."
+
 $container = "scripts"
-$sqlServerName = "<sql-server-name>"
 $sqlDBName = "gameevents"
-$sqlServerAdminName = "<sql-server-login-name>"
-$sqlServerAdminPassword = "<sql-server-login-password"
-$deploymentName = "<deployment-name>"
+$stgKey = Get-AzureRmStorageAccountKey -ResourceGroupName $resourceGrp -Name $storageAccount
 
+# Creating a storage account to contain all Hive scripts
+Write-Host
+Write-Host "Creating a storage account to contain all Hive scripts"
 
 New-AzureRmStorageAccount -ResourceGroupName $resourceGrp -Name $scriptStorageAccount -SkuName "Standard_GRS" -Location $location
-$stgKey = Get-AzureRmStorageAccountKey -ResourceGroupName $resourceGrp -Name $scriptStorageAccount
-$ctx = New-AzureStorageContext -StorageAccountName $scriptStorageAccount -StorageAccountKey $stgKey[0].Value
+$scriptStgKey = Get-AzureRmStorageAccountKey -ResourceGroupName $resourceGrp -Name $scriptStorageAccount
+$ctx = New-AzureStorageContext -StorageAccountName $scriptStorageAccount -StorageAccountKey $scriptStgKey[0].Value
 New-AzureStorageContainer -Name $container -Context $ctx
+
+# Uploading all Hive scripts to recently created storage account
+Write-Host
+Write-Host "Uploading all Hive scripts to recently created storage account"
 
 # Upload all duration hive scripts
 $files = Get-ChildItem .\src\Nether.Analytics.HiveScripts\duration
@@ -31,9 +68,25 @@ foreach ($file in $files) {
     Set-AzureStorageBlobContent -File $file.FullName -Container $container -Blob $blobFileName -Context $ctx
 }
 
+# Upload all active users / sessions hive scripts
+$files = Get-ChildItem .\src\Nether.Analytics.HiveScripts\activeusers
+foreach ($file in $files) {
+    $blobFileName = "activeusers/" + $file
+    Set-AzureStorageBlobContent -File $file.FullName -Container $container -Blob $blobFileName -Context $ctx
+}
+
+# Upload all counts hive scripts
+$files = Get-ChildItem .\src\Nether.Analytics.HiveScripts\counts
+foreach ($file in $files) {
+    $blobFileName = "counts/" + $file
+    Set-AzureStorageBlobContent -File $file.FullName -Container $container -Blob $blobFileName -Context $ctx
+}
+
 # Create SQL Server
-$securePassword = ConvertTo-SecureString -String $sqlServerAdminPassword -AsPlainText -Force
-$serverCreds = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $sqlServerAdminName, $securePassword
+Write-Host
+Write-Host "Creating an Azure SQL DB"
+
+$serverCreds = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $sqlServerAdminName, $sqlServerAdminPassword
 $sqlServer = New-AzureRmSqlServer -ResourceGroupName $resourceGrp -ServerName $sqlServerName -Location $location -ServerVersion "12.0" -SqlAdministratorCredentials $serverCreds
 New-AzureRmSqlDatabase -ResourceGroupName $resourceGrp -ServerName $sqlServerName -DatabaseName $sqlDBName
 
@@ -41,15 +94,31 @@ New-AzureRmSqlServerFirewallRule -ResourceGroupName $resourceGrp -ServerName $sq
 
 # Create tables in the Azure SQL DB
 # TO DO
-sqlcmd -U $sqlServerAdminName@$sqlServerName -P $sqlServerAdminPassword -S $sqlServerName.database.windows.net -d $sqlDBName -i .\deployment\analytics-assets\CreateTables.sql
+#sqlcmd -U $sqlServerAdminName@$sqlServerName -P $sqlServerAdminPassword -S $sqlServerName.database.windows.net -d $sqlDBName -i .\deployment\analytics-assets\CreateTables.sql
 
-# Provision ARM template deployment
+# Provision ARM template deployments
 $parameters = @{
+    "storageAccountName" = $storageAccount;
+    "storageAccountKey" = $stgKey[0].Value;
     "hiveScriptStorageAccountName" = $scriptStorageAccount;
-    "hiveScriptStorageAccountKey" = $stgKey[0].Value;
+    "hiveScriptStorageAccountKey" = $scriptStgKey[0].Value;
     "sqlServerName" = $sqlServerName;
     "sqlDBName" = $sqlDBName;
     "sqlServerAdminName" = $sqlServerAdminName;
-    "sqlServerAdminPassword" = $sqlServerAdminPassword
+    "sqlServerAdminPassword" = $sqlServerAdminPassword;
+    "dataFactoryName" = $dataFactoryName
 }
-New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGrp -Name $deploymentName -TemplateFile .\deployment\analyticsADFdeploy.json -TemplateParameterObject $parameters
+# ADF pipeline for active users, active sessions, game durations
+Write-Host
+Write-Host "Deploying first Azure Data Factory to gather information on active users"
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGrp -Name "AnalyticsActiveUsers" -TemplateFile .\deployment\analyticsADFactiveUsers.json -TemplateParameterObject $parameters
+
+# ADF pipeline for generic durations
+Write-Host
+Write-Host "Deploying another Azure Data Factory to gather information on generic durations, integrated in the first one"
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGrp -Name "AnalyticsDurations" -TemplateFile .\deployment\analyticsADFdurations.json -TemplateParameterObject $parameters
+
+# ADF pipeline for generic durations
+Write-Host
+Write-Host "Deploying another Azure Data Factory to run aggregations on counts, integrated in the first one"
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGrp -Name "AnalyticsCounts" -TemplateFile .\deployment\analyticsADFcounts.json -TemplateParameterObject $parameters

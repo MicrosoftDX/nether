@@ -40,6 +40,7 @@ LOCATION '${hiveconf:gamestopeventsloc}';
 CREATE TABLE IF NOT EXISTS rawgamedurations(
     eventDate DATE,
     eventMonth STRING,
+    hour INT,
     startTime TIMESTAMP,
     stopTime TIMESTAMP,
     timeSpanSeconds BIGINT,
@@ -62,8 +63,9 @@ PARTITION (year, month, day)
 SELECT
     to_date(gamestart.enqueueTime) as eventDate,
     if(month(gamestart.enqueueTime)<10, concat(year(gamestart.enqueueTime), '-0', month(gamestart.enqueueTime), '-01'), concat(year(gamestart.enqueueTime), '-', month(gamestart.enqueueTime), '-01')) as eventMonth,
-    gamestart.clientUtc as startTime,
-    CASE WHEN isnotnull(gamestop.enqueueTime) THEN gamestop.clientUtc ELSE lastgameheartbeat.heartbeatTime END AS stopTime,
+    hour(gamestart.enqueueTime) as hour, 
+    gamestart.enqueueTime as startTime,
+    CASE WHEN isnotnull(gamestop.enqueueTime) THEN gamestop.enqueueTime ELSE lastgameheartbeat.heartbeatTime END AS stopTime,
     CASE WHEN isnotnull(gamestop.enqueueTime) THEN unix_timestamp(gamestop.enqueueTime) - unix_timestamp(gamestart.enqueueTime) ELSE unix_timestamp(lastgameheartbeat.heartbeatTime) - unix_timestamp(gamestart.enqueueTime) END AS timeSpanSeconds,
     gamestart.gameSessionId AS gameSessionId,
     gamestart.gamerTag AS gamerTag,

@@ -120,6 +120,19 @@ namespace Nether.Analytics.EventProcessor
             //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
+        public void HandleLevelCompletedEvent(GameEventData data)
+        {
+            var serializedGameEvent = data.ToCsv("gameSessionId", "level");
+
+            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+        }
+
+        public void HandleLevelStartEvent(GameEventData data)
+        {
+            var serializedGameEvent = data.ToCsv("gameSessionId", "level");
+
+            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+        }
 
         /// <summary>
         ///     Inspects gameEvent to figure out what GameEventType we are working with.

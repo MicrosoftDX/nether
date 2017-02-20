@@ -1,4 +1,4 @@
-﻿set hive.mapjoin.optimized.hashtable=FALSE;
+set hive.mapjoin.optimized.hashtable=FALSE;
 --Creating all external tables
 drop table if EXISTS starts;
 drop table if exists stops;

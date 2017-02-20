@@ -1,6 +1,5 @@
-# Game Level Distribution
+# Game Level Distribution per Day
 
-Game session durations provides the average session lengths per given time unit, e.g. day, month, year.
 
 ## Output folder in Blob Storage
 
@@ -19,4 +18,4 @@ Columns:
 
 * Date without time, e.g. 2017-02-14
 * Level
-* Number of active users dropping at given level
+* Number of users dropping at given level

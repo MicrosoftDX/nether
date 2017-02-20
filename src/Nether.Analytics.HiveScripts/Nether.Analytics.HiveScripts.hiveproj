@@ -19,15 +19,16 @@
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Script Include="externalTables.hql" />
-    <Script Include="DAU-MAU.hql" />
     <Script Include="duration/durations.hql" />
     <Script Include="duration/dailydurations.hql" />
     <Script Include="duration/monthlydurations.hql" />
     <Script Include="duration/annualdurations.hql" />
     <Script Include="counts/aggcounters.hql" />
-    <Script Include="counts/countspersession.hql" />
-    <Script Include="counts/countspertags.hql" />
+    <Script Include="counts/annualLevelDropoutDistribution.hql" />
+    <Script Include="counts/countsNameSessionId.hql" />
+    <Script Include="counts/countsperproperty.hql" />
+    <Script Include="counts/dailyLevelDropoutDistribution.hql" />
+    <Script Include="counts/monthlyLevelDropoutDistribution.hql" />
     <Script Include="counts/strippedcounts.hql" />
     <Script Include="gamesession/annualgameduration.hql" />
     <Script Include="gamesession/dailygameduration.hql" />
@@ -42,7 +43,37 @@
     <Folder Include="duration\" />
     <Folder Include="counts\" />
     <Folder Include="gamesession\" />
-    <Folder Include="store-counts\" />	
+    <Folder Include="activeusers" />
+    <Folder Include="store-counts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="activeusers\annualActiveSessions.hql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="activeusers\annualActiveUsers.hql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="activeusers\hourlyActiveSessions.hql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="activeusers\dailyActiveSessions.hql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="activeusers\DAU.hql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="activeusers\MAU.hql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="activeusers\monthlyActiveSessions.hql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="counts\countsNameSessionId.hql">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="counts\levelup.hql">
+      <SubType>Content</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Hive.targets" />
 </Project>
