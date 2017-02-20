@@ -67,7 +67,7 @@ namespace Nether.Web.Features.PlayerManagement
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [HttpPut("")]
-        public async Task<ActionResult> PutCurrentPlayer([FromBody]PlayerPutRequestModel player)
+        public async Task<IActionResult> PutCurrentPlayer([FromBody]PlayerPutRequestModel player)
         {
             string userId = User.GetId();
 
@@ -76,7 +76,7 @@ namespace Nether.Web.Features.PlayerManagement
             if (existingPlayerForGamertag != null && existingPlayerForGamertag.UserId != userId)
             {
                 // Can't use a gamertag from another user
-                return BadRequest();
+                return this.ValidationFailed(new ErrorDetail("gamertag", "Gamertag already in use"));
             }
 
             var playerEntity = await _store.GetPlayerDetailsByUserIdAsync(userId);
@@ -95,7 +95,7 @@ namespace Nether.Web.Features.PlayerManagement
                 if (playerEntity.Gamertag != player.Gamertag)
                 {
                     // can't change gamertag
-                    return BadRequest();
+                    return this.ValidationFailed(new ErrorDetail("gamertag", "Can't change gamertag"));
                 }
                 playerEntity.Country = player.Country;
                 playerEntity.CustomTag = player.CustomTag;
@@ -200,13 +200,13 @@ namespace Nether.Web.Features.PlayerManagement
             if (group == null)
             {
                 _logger.LogWarning("group '{0}' not found", groupName);
-                return BadRequest();
+                return NotFound();
             }
 
             Player player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
             if (player == null)
             {
-                _logger.LogWarning("player '{0}' not found", gamertag);
+                _logger.LogError("player '{0}' not found", gamertag);
                 return BadRequest();
             }
 

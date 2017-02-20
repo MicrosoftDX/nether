@@ -47,14 +47,14 @@ namespace Nether.Web.Features.Leaderboard
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(Roles = RoleNames.Player)]
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody]ScorePostRequestModel request)
+        public async Task<IActionResult> Post([FromBody]ScorePostRequestModel request)
         {
             //TODO: Make validation more sophisticated, perhaps some games want/need negative scores
             // Validate input
             if (request.Score < 0)
             {
                 _logger.LogError("score is negative ({0})", request.Score);
-                return BadRequest(); //TODO: return error info in body
+                return this.ValidationFailed(new ErrorDetail("score", "Score cannot be negative"));
             }
 
             //TODO: Handle exceptions and retries
@@ -62,7 +62,7 @@ namespace Nether.Web.Features.Leaderboard
             if (string.IsNullOrWhiteSpace(gamertag))
             {
                 _logger.LogError("user has no gamertag: '{0}'", User.GetId());
-                return BadRequest(); //TODO: return error info in body
+                return this.ValidationFailed(new ErrorDetail("gamertag", "The user doesn't have a gamertag"));
             }
 
             // Save score and call analytics in parallel
@@ -93,13 +93,13 @@ namespace Nether.Web.Features.Leaderboard
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(Roles = RoleNames.Player)]
         [HttpDelete("")]
-        public async Task<ActionResult> DropMyScores()
+        public async Task<IActionResult> DropMyScores()
         {
             var gamerTag = User.GetGamerTag();
             if (string.IsNullOrWhiteSpace(gamerTag))
             {
                 _logger.LogError("user has no gamertag: '{0}'", User.GetId());
-                return BadRequest(); //TODO: return error info in body
+                return this.ValidationFailed(new ErrorDetail("gamertag", "The user doesn't have a gamertag"));
             }
 
             await _store.DeleteAllScoresAsync(gamerTag);

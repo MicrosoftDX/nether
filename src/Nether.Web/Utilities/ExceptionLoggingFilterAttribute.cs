@@ -42,7 +42,7 @@ namespace Nether.Web.Utilities
                 // and write identifier to client
                 var id = Guid.NewGuid().ToString();
                 _logger.LogError("Unhandled exception (error-id = {0}): {1}", id, context.Exception);
-                message = $"Unhandled exception. Check logs for error id '{id}'";
+                message = DefaultErrorMessages.UnhandledException(id);
             }
 
             var error = new ErrorModel

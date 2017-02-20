@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nether.Data.Identity;
 using Nether.Web.Features.Identity.Models.UserLogin;
+using Nether.Web.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -80,7 +81,7 @@ namespace Nether.Web.Features.Identity
             if (providerType != LoginProvider.UserNamePassword)
             {
                 _logger.LogInformation("PutUserLogin: Unsupported ProviderType '{0}'", providerType);
-                return BadRequest();
+                return this.ValidationFailed(new ErrorDetail("providerType", "Unsupported provider type"));
             }
 
             // TODO Add password complexity options!
