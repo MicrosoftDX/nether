@@ -4,7 +4,7 @@ var netherClient;
 
 function loadMapScenario() {
     map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
-        credentials: 'PUT_YOUR_BING_MAPS_KEY_HERE'
+        credentials: 'YOUR-KEY-HERE'
     });
 
     Microsoft.Maps.Events.addHandler(map, 'click', mapClick);
@@ -24,8 +24,7 @@ function mapClick(e) {
             "clientUtcTime": "2017-02-17 14:00:00",
             "gameSessionId": "session1",
             "longitude": e.location.longitude,
-            "latitude": e.location.latitude,
-            "geohash": ""
+            "latitude": e.location.latitude
         }, function(){
             console.log("done!");
         });

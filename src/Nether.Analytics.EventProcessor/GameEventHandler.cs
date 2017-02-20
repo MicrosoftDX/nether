@@ -80,7 +80,7 @@ namespace Nether.Analytics.EventProcessor
         {
             var locationEvent = JsonConvert.DeserializeObject<LocationEvent>(data.Data);
 
-            var geoHash = GeoHash.Encode(locationEvent.Latitude, locationEvent.Longitude);
+            var geoHash = GeoHash.EncodeInt(locationEvent.Latitude, locationEvent.Longitude);
             locationEvent.Geohash = geoHash;
 
             //TODO: Optimize this so we don't serialize back to JSON first and then to CSV
@@ -190,7 +190,7 @@ namespace Nether.Analytics.EventProcessor
         public string GameSessionId { get; set; }
         public double Longitude { get; set; }
         public double Latitude { get; set; }
-        public string Geohash { get; set; }
+        public long Geohash { get; set; }
         public Dictionary<string, string> Properties { get; set; }
     }
 }

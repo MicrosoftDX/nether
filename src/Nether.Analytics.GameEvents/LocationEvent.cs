@@ -20,7 +20,7 @@ namespace Nether.Analytics.GameEvents
         public string GameSessionId { get; set; }
         public double Longitude { get; set; }
         public double Latitute { get; set; }
-        public string Geohash { get; set; }
+        public long Geohash { get; set; }
         public Dictionary<string, string> Properties { get; set; }
     }
 }
