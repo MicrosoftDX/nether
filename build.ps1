@@ -61,6 +61,7 @@ Get-Content "$here\build\build-order.txt" `
 
 # Run gulp task for typescript
 Set-Location .\src\Nether.Web
+npm install
 gulp compiletsforadminui
 Set-Location ..\..
 
