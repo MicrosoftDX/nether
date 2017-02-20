@@ -44,7 +44,7 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
             });
 
             // Assert
-            var statusCodeResult = Assert.IsType<BadRequestResult>(result);
+            var statusCodeResult = Assert.IsType<BadRequestObjectResult>(result);
         }
 
         [Fact]
