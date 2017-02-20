@@ -2,12 +2,6 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "location": {
-            "type": "string",
-            "metadata": {
-                "description": "Location of the ADF and all resources"
-            }
-        },
         "storageAccountName": {
             "type": "string",
             "metadata": {
@@ -52,6 +46,7 @@
         }
     },
     "variables": {
+        "location": "[resourceGroup().location]",
         "dfApiVersion": "2015-10-01",
         "uniqueIdentifier": "[uniqueString(resourceGroup().id)]",
         "rawEventsContainer": "gameevents",
@@ -107,7 +102,7 @@
             "name": "[parameters('dataFactoryName')]",
             "apiVersion": "[variables('dfApiVersion')]",
             "type": "Microsoft.DataFactory/datafactories",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "resources": [
                 /* Linked Services: Storage account containing the raw game events, storage account containing the scripts, HDI on demand, Azure SQL DB */
                 {

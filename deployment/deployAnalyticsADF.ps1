@@ -75,6 +75,13 @@ foreach ($file in $files) {
     Set-AzureStorageBlobContent -File $file.FullName -Container $container -Blob $blobFileName -Context $ctx
 }
 
+# Upload all counts hive scripts
+$files = Get-ChildItem .\src\Nether.Analytics.HiveScripts\counts
+foreach ($file in $files) {
+    $blobFileName = "counts/" + $file
+    Set-AzureStorageBlobContent -File $file.FullName -Container $container -Blob $blobFileName -Context $ctx
+}
+
 # Create SQL Server
 Write-Host
 Write-Host "Creating an Azure SQL DB"
