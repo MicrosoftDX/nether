@@ -293,8 +293,8 @@ namespace Nether.Web
                 // serve admin ui static files under /ui/admin
                 uiapp.UseStaticFiles(new StaticFileOptions
                 {
-                     RequestPath = "/admin",
-                     FileProvider = new PhysicalFileProvider(Path.Combine(_hostingEnvironment.WebRootPath, "Features", "AdminWebUi"))
+                    RequestPath = "/admin",
+                    FileProvider = new PhysicalFileProvider(Path.Combine(_hostingEnvironment.WebRootPath, "Features", "AdminWebUi"))
                 });
 
 
@@ -312,10 +312,9 @@ namespace Nether.Web
                 routes.MapRoute(
                     name: "landing-page",
                     template: "",
-                    defaults: new { controller = "LandingPage", action = "Index"}
+                    defaults: new { controller = "LandingPage", action = "Index" }
                     );
             });
-
         }
     }
 }
