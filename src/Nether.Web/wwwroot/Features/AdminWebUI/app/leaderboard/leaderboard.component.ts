@@ -33,7 +33,7 @@ export class LeaderboardComponent implements OnInit {
         this._api.getLeaderboard("Top-5")
             .subscribe((s: LeaderboardScore[]) => this.top5Scores = s);
 
-        this._api.getLeaderboard("5-aroundMe")
+        this._api.getLeaderboard("5-AroundMe")
             .subscribe((s: LeaderboardScore[]) => this.aroundMe5Scores = s);
     }
 
