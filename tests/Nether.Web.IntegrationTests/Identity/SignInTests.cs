@@ -50,7 +50,7 @@ namespace Nether.Web.IntegrationTests.Identity
             // PUT /api/players
             var player = new { gamertag = "testuser-notag", country = "UK", customTag = "IntegrationTestUser" };
             playerResponse = await client.PutAsJsonAsync("api/player", player);
-            playerResponse.EnsureSuccessStatusCode();
+            await playerResponse.AssertSuccessStatusCodeAsync();
 
             // Reauthenticate
             accessTokenResult = await GetAccessToken(client, username, password);
@@ -71,14 +71,14 @@ namespace Nether.Web.IntegrationTests.Identity
 
             // GET /api/player
             playerResponse = await client.GetAsync("api/player");
-            playerResponse.EnsureSuccessStatusCode();
+            await playerResponse.AssertSuccessStatusCodeAsync();
 
             // GET /api/player
             var playerGroupsResponse = await client.GetAsync("api/player/groups");
 
             // DELETE /api/player
             playerResponse = await client.DeleteAsync("api/player");
-            playerResponse.EnsureSuccessStatusCode();
+            await playerResponse.AssertSuccessStatusCodeAsync();
         }
 
 

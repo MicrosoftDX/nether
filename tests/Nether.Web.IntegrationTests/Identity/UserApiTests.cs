@@ -19,14 +19,14 @@ namespace Nether.Web.IntegrationTests.Identity
             var client = await AsPlayerAsync();
 
             var response = await client.GetAsync("/api/identity/users");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.Forbidden);
         }
         [Fact]
         public async Task As_a_player_I_get_Forbidden_response_calling_GetUser()
         {
             var client = await AsPlayerAsync();
             var response = await client.GetAsync("/api/identity/users/123");
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.Forbidden);
         }
         // ... should we fill out the other requests to check permissions, or not?
 
@@ -36,7 +36,7 @@ namespace Nether.Web.IntegrationTests.Identity
         {
             var client = await AsAdminAsync();
             var response = await client.GetAsync("/api/identity/users");
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.OK);
 
             dynamic responseContent = await response.Content.ReadAsAsync<dynamic>();
             var users = ((IEnumerable<dynamic>)responseContent.users).ToList();
@@ -69,7 +69,7 @@ namespace Nether.Web.IntegrationTests.Identity
                     active = true
                 });
 
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.Created);
 
             var userLocation = response.Headers.Location.LocalPath;
             Assert.StartsWith("/api/identity/users/", userLocation);
@@ -78,7 +78,7 @@ namespace Nether.Web.IntegrationTests.Identity
             // Get user
             response = await client.GetAsync(userLocation);
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.OK);
             dynamic userContent = await response.Content.ReadAsAsync<dynamic>();
             dynamic user = userContent.user;
 
@@ -97,7 +97,7 @@ namespace Nether.Web.IntegrationTests.Identity
                     active = false
                 });
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.OK);
             userContent = await response.Content.ReadAsAsync<dynamic>();
             user = userContent.user;
             Assert.Equal(userId, (string)user.userId);
@@ -108,7 +108,7 @@ namespace Nether.Web.IntegrationTests.Identity
             // Get user again
             response = await client.GetAsync(userLocation);
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.OK);
             userContent = await response.Content.ReadAsAsync<dynamic>();
             user = userContent.user;
             Assert.Equal(userId, (string)user.userId);
@@ -118,12 +118,12 @@ namespace Nether.Web.IntegrationTests.Identity
 
             // Remove user
             response = await client.DeleteAsync(userLocation);
-            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.NoContent);
 
 
             // Get user again (shouldn't exist)
             response = await client.GetAsync(userLocation);
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.NotFound);
         }
 
         private async Task<HttpClient> AsPlayerAsync()

@@ -20,7 +20,7 @@ namespace Nether.Web.IntegrationTests
 
             var response = await client.GetAsync($"{WebTestBase.BaseUrl}api/swagger/v0.1/swagger.json");
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.OK);
         }
     }
 }

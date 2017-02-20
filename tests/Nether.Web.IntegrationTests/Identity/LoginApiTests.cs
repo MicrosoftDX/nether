@@ -19,7 +19,7 @@ namespace Nether.Web.IntegrationTests.Identity
         {
             var client = await AsAdminAsync();
 
-            // create user 
+            // create user
             var response = await client.PostAsJsonAsync(
                 "/api/identity/users",
                 new
@@ -42,7 +42,7 @@ namespace Nether.Web.IntegrationTests.Identity
                     password
                 });
 
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.Created);
 
             var loginLocation = response.Headers.Location.LocalPath;
             Assert.NotNull(loginLocation);
@@ -50,7 +50,7 @@ namespace Nether.Web.IntegrationTests.Identity
             // Get the user again and verify the login is present in the returned data
             response = await client.GetAsync(userLocation);
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.OK);
             var userContent = await response.Content.ReadAsAsync<dynamic>();
             var user = userContent.user;
             var logins = ((JArray)user.logins).Cast<dynamic>().ToList();
@@ -67,7 +67,7 @@ namespace Nether.Web.IntegrationTests.Identity
 
             // delete the user
             response = await client.DeleteAsync(userLocation);
-            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            await response.AssertStatusCodeAsync(HttpStatusCode.NoContent);
         }
 
 
