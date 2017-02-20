@@ -22,6 +22,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using IdentityServer4;
 using System.Linq;
 using IdentityServer4.Models;
+using Microsoft.Extensions.FileProviders;
 
 namespace Nether.Web
 {
@@ -289,8 +290,12 @@ namespace Nether.Web
                 });
 
 
-                uiapp.UseDefaultFiles();
-                uiapp.UseStaticFiles();
+                // serve admin ui static files under /ui/admin
+                uiapp.UseStaticFiles(new StaticFileOptions
+                {
+                     RequestPath = "/admin",
+                     FileProvider = new PhysicalFileProvider(Path.Combine(_hostingEnvironment.WebRootPath, "Features", "AdminWebUi"))
+                });
 
                 uiapp.UseMvc(); // TODO filter which routes this matches (i.e. only non-API routes)
             });

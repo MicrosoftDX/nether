@@ -26,7 +26,7 @@ export class NetherApiService {
     loggedInChanged = new EventEmitter<boolean>();
 
     constructor(private _http: Http, private _config: Configuration) {
-        this._serverUrl = _config.ResourceServerUrl;
+        this._serverUrl = _config.ApiBaseUrl;
         this._authServerUrl = _config.AuthServerUrl;
     }
 
@@ -72,28 +72,23 @@ export class NetherApiService {
             });
     }
 
-    getCurrentPlayer(): Observable<Player> {
-        return this._http.get(this._serverUrl + "api/player", this.getRequestOptions())
-            .map((response: Response) => response.json().player);
-    }
-
     getPlayer(gamertag: string): Observable<Player> {
-        return this._http.get(this._serverUrl + "api/players/" + gamertag, this.getRequestOptions())
+        return this._http.get(this._serverUrl + "admin/players/" + gamertag, this.getRequestOptions())
             .map((r: Response) => r.json().player);
     }
 
     getAllPlayers(): Observable<Player[]> {
-        return this._http.get(this._serverUrl + "api/players", this.getRequestOptions())
+        return this._http.get(this._serverUrl + "admin/players", this.getRequestOptions())
             .map((response: Response) => response.json().players);
     }
 
     getLeaderboard(type: string): Observable<LeaderboardScore[]> {
-        return this._http.get(this._serverUrl + "api/leaderboard/" + type, this.getRequestOptions())
+        return this._http.get(this._serverUrl + "leaderboards/" + type, this.getRequestOptions())
             .map((response: Response) => response.json().entries);
     }
 
     postScore(score: number, country: string, customTag: string, gamerTag?: string): Observable<Response> {
-        return this._http.post(this._serverUrl + "api/leaderboard", {
+        return this._http.post(this._serverUrl + "scores", {
             score: score,
             country: country,
             customTag: customTag
@@ -101,49 +96,49 @@ export class NetherApiService {
     }
 
     createPlayer(player: Player): Observable<Response> {
-        return this._http.post(this._serverUrl + "api/players", player, this.getRequestOptions());
+        return this._http.post(this._serverUrl + "admin/players", player, this.getRequestOptions());
     }
 
     updatePlayer(player: Player): Observable<Response> {
-        return this._http.post(this._serverUrl + "api/players", player, this.getRequestOptions());
+        return this._http.post(this._serverUrl + "admin/players", player, this.getRequestOptions());
     }
 
     getAllGroups(): Observable<Group[]> {
-        return this._http.get(this._serverUrl + "api/groups", this.getRequestOptions())
+        return this._http.get(this._serverUrl + "admin/groups", this.getRequestOptions())
             .map((r: Response) => <Group[]>r.json().groups)
             .catch(this.catchErrors);
     }
 
     getGroup(name: string): Observable<Group> {
-        return this._http.get(this._serverUrl + "api/groups/" + name, this.getRequestOptions())
+        return this._http.get(this._serverUrl + "admin/groups/" + name, this.getRequestOptions())
             .map((r: Response) => <Group>r.json().group)
             .catch(this.catchErrors);
     }
 
     getGroupPlayers(name: string): Observable<string[]> {
-        return this._http.get(this._serverUrl + "api/groups/" + name + "/players", this.getRequestOptions())
+        return this._http.get(this._serverUrl + "admin/groups/" + name + "/players", this.getRequestOptions())
             .map((r: Response) => <string[]>r.json().gamertags);
     }
 
     updateGroup(group: Group): Observable<Response> {
-        return this._http.put(this._serverUrl + "api/groups/" + group.name, group, this.getRequestOptions());
+        return this._http.put(this._serverUrl + "admin/groups/" + group.name, group, this.getRequestOptions());
     }
 
     createGroup(group: Group): Observable<Response> {
-        return this._http.post(this._serverUrl + "api/groups", group, this.getRequestOptions());
+        return this._http.post(this._serverUrl + "admin/groups", group, this.getRequestOptions());
     }
 
     getPlayerGroups(gamertag: string): Observable<Group[]> {
-        return this._http.get(`${this._serverUrl}api/players/${gamertag}/groups`, this.getRequestOptions())
+        return this._http.get(`${this._serverUrl}admin/players/${gamertag}/groups`, this.getRequestOptions())
             .map((r: Response) => <Group[]>r.json().groups);
     }
 
     addPlayerToGroup(gamertag: string, groupName: string): Observable<Response> {
-        return this._http.put(`${this._serverUrl}api/players/${gamertag}/groups/${groupName}`, null, this.getRequestOptions());
+        return this._http.put(`${this._serverUrl}admin/players/${gamertag}/groups/${groupName}`, null, this.getRequestOptions());
     }
 
     removePlayerFromGroup(gamertag: string, groupName: string): Observable<Response> {
-        return this._http.delete(`${this._serverUrl}api/groups/${groupName}/players/${gamertag}`, this.getRequestOptions());
+        return this._http.delete(`${this._serverUrl}admin/groups/${groupName}/players/${gamertag}`, this.getRequestOptions());
     }
 
     private cachePlayer(): void {

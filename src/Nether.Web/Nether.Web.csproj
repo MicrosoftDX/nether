@@ -20,6 +20,62 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\Features\AdminWebUi\app\app.component.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\app.component.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\app.component.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\app.constants.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\app.constants.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\app.constants.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\app.html" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\app.module.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\app.module.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\app.module.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\groups\group-details.component.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\groups\group-details.component.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\groups\group-details.component.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\groups\group-details.html" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\groups\groups.component.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\groups\groups.component.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\groups\groups.component.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\groups\groups.html" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\leaderboard\leaderboard-scores.component.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\leaderboard\leaderboard-scores.component.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\leaderboard\leaderboard-scores.component.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\leaderboard\leaderboard-scores.html" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\leaderboard\leaderboard.component.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\leaderboard\leaderboard.component.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\leaderboard\leaderboard.component.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\leaderboard\leaderboard.html" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\login\login.component.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\login\login.component.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\login\login.component.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\login\login.html" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\main.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\main.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\main.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\model.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\model.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\model.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\nether.api.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\nether.api.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\nether.api.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\players\player-details.component.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\players\player-details.component.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\players\player-details.component.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\players\player-details.html" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\players\players.component.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\players\players.component.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\players\players.component.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\players\players.html" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\services\security.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\services\security.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\services\security.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\_guards\auth.guard.js" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\_guards\auth.guard.js.map" />
+    <Content Include="wwwroot\Features\AdminWebUi\app\_guards\auth.guard.ts" />
+    <Content Include="wwwroot\Features\AdminWebUi\css\site.css" />
+    <Content Include="wwwroot\Features\AdminWebUi\index.html" />
+    <Content Include="wwwroot\Features\AdminWebUi\systemjs.config.js" />
     <Content Include="wwwroot\Features\identity-test\app.js" />
     <Content Include="wwwroot\Features\identity-test\callback.html" />
     <Content Include="wwwroot\Features\identity-test\index.html" />
@@ -100,6 +156,10 @@
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0-msbuild3-final" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\AdminWebUi\" />
   </ItemGroup>
 
 </Project>

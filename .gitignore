@@ -193,6 +193,7 @@ ClientBin/
 *.pfx
 *.publishsettings
 node_modules/
+bower_components/
 orleans.codegen.cs
 
 
@@ -264,7 +265,7 @@ paket-files/
 .DS_Store
 
 # Web UI
-**/wwwroot/lib/**/*
+**/wwwroot/Features/AdminWebUi/lib/**/*
 **/wwwroot/**/app/**/*.js
 **/wwwroot/**/app/**/*.js.map
 
