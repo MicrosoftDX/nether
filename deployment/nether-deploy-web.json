@@ -217,6 +217,7 @@
                         "alwaysOn": "[variables('HostingSKUs')[parameters('WebHostingPlan')].enableAlwaysOn]",
                         "WEB_HOST_URL": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
                         "ASPNETCORE_ENVIRONMENT": "Development",
+                        "Common:Cors:AllowedOrigins": "",
 
                         /* TODO: Add explanation of section */
                         "Leaderboard:Store:wellknown": "sql",
