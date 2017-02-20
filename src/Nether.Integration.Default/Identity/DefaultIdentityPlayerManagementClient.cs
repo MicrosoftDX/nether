@@ -60,7 +60,7 @@ namespace Nether.Integration.Identity
                 var r = await _httpClient.GetAsync($"playeridentity/player/{userId}");
                 if (r.IsSuccessStatusCode)
                 {
-                    var gamertagResponse = await ParseGamerTagResponseAsync(r.Content);
+                    var gamertagResponse = await ParseAsAsync<GetGamertagResponseMessage>(r.Content);
                     gamertag = gamertagResponse.Gamertag;
                 }
                 return new GamertagResponse
@@ -101,13 +101,20 @@ namespace Nether.Integration.Identity
 
         public async Task<bool> GamertagIsAvailableAsync(string gamertag)
         {
-            Func<Task<ApiResponse>> apiCall = async () =>
+            Func<Task<GamertagAvailableResponse>> apiCall = async () =>
             {
                 var r = await _httpClient.GetAsync($"playeridentity/gamertag/{gamertag}");
-                return new ApiResponse
+                bool available = false;
+                if (r.IsSuccessStatusCode)
+                {
+                    var gamertagResponse = await ParseAsAsync<GetGamertagAvailableResponseMessage>(r.Content);
+                    available = gamertagResponse.Available;
+                }
+                return new GamertagAvailableResponse
                 {
                     StatusCode = r.StatusCode,
-                    Success = r.IsSuccessStatusCode || r.StatusCode == HttpStatusCode.NotFound
+                    Success = r.IsSuccessStatusCode,
+                    Available = available
                 };
             };
             var response = await CallApiAsync(apiCall, "TestGamerTag");
@@ -116,7 +123,7 @@ namespace Nether.Integration.Identity
                 _logger.LogError("Failed to test gamertag existence. Status code = '{0}'", response.StatusCode);
                 throw new Exception($"Failed to test gamertag existence. Status code = {response.StatusCode}");
             }
-            return response.StatusCode == HttpStatusCode.NotFound; // tag not found => tag available
+            return response.Available;
         }
 
         /// <summary>
@@ -204,6 +211,10 @@ namespace Nether.Integration.Identity
         {
             public string Gamertag;
         }
+        private class GamertagAvailableResponse : ApiResponse
+        {
+            public bool Available;
+        }
 
         private async Task<TokenResponse> GetTokenAsync()
         {
@@ -228,19 +239,23 @@ namespace Nether.Integration.Identity
             return tokenResponse;
         }
 
-        private async Task<GetGamerTagResponseMessage> ParseGamerTagResponseAsync(HttpContent content)
+        private async Task<T> ParseAsAsync<T>(HttpContent content)
         {
             // This would use System.Net.Http.Formatting which is in the Microsoft.AspNet.WebApi.Client package
             // but at the point of writing that doesn't support netstandard1.6
 
             var contentString = await content.ReadAsStringAsync();
-            var responseObject = JsonConvert.DeserializeObject<GetGamerTagResponseMessage>(contentString);
+            var responseObject = JsonConvert.DeserializeObject<T>(contentString);
             return responseObject;
         }
 
-        private class GetGamerTagResponseMessage
+        private class GetGamertagResponseMessage
         {
             public string Gamertag { get; set; }
+        }
+        private class GetGamertagAvailableResponseMessage
+        {
+            public bool Available { get; set; }
         }
     }
 }

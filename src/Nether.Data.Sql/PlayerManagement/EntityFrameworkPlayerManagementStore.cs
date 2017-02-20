@@ -224,6 +224,14 @@ namespace Nether.Data.Sql.PlayerManagement
 
         public async Task SavePlayerAsync(Player player)
         {
+            var existingPlayerForGamertag = await _context.Players.SingleOrDefaultAsync(p => p.Gamertag == player.Gamertag);
+            if (existingPlayerForGamertag != null && existingPlayerForGamertag.UserId != player.UserId)
+            {
+                // Can't use a gamertag from another user
+                _logger.LogDebug("Save player - gamertag already in use: UserId '{0}', Gamertag '{1}'", player.UserId, player.Gamertag);
+                throw new Exception("gamertag is already in use");
+            }
+
             // add only if the player does not exist
             PlayerEntity entity = player.UserId == null
                 ? null
@@ -242,6 +250,12 @@ namespace Nether.Data.Sql.PlayerManagement
             }
             else
             {
+                if (player.Gamertag != entity.Gamertag)
+                {
+                    // Can't change gamertag
+                    _logger.LogDebug("Save player - cannot change gamertag: UserId '{0}', Gamertag '{1}'", player.UserId, player.Gamertag);
+                    throw new Exception("Cannot change gamertag");
+                }
                 _logger.LogDebug("Update player: UserId '{0}', Gamertag '{1}'", player.UserId, player.Gamertag);
                 entity.Gamertag = player.Gamertag;
                 entity.Country = player.Country;
