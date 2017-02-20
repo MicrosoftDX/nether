@@ -5,21 +5,21 @@ Licensed under the MIT license. See LICENSE file in the project root for full li
 <div>
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Default</a></li>
-        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Top</a></li>
-        <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Around Me</a></li>
+        <li role="presentation" class="active"><a href="#Top-10" aria-controls="home" role="tab" data-toggle="tab">Top 10</a></li>
+        <li role="presentation"><a href="#Top-5" aria-controls="profile" role="tab" data-toggle="tab">Top 5</a></li>
+        <li role="presentation"><a href="#5-AroundMe" aria-controls="messages" role="tab" data-toggle="tab">5 Around Me</a></li>
     </ul>
 
     <!-- Tab panes -->
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active" id="home">
-            <nether-leaderboard-scores [scores]="defaultScores"></nether-leaderboard-scores>
+        <div role="tabpanel" class="tab-pane active" id="Top-10">
+            <nether-leaderboard-scores [scores]="top10Scores"></nether-leaderboard-scores>
         </div>
-        <div role="tabpanel" class="tab-pane" id="profile">
-            <nether-leaderboard-scores [scores]="topScores"></nether-leaderboard-scores>
+        <div role="tabpanel" class="tab-pane" id="Top-5">
+            <nether-leaderboard-scores [scores]="top5Scores"></nether-leaderboard-scores>
         </div>
-        <div role="tabpanel" class="tab-pane" id="messages">
-            <nether-leaderboard-scores [scores]="aroundMeScores"></nether-leaderboard-scores>
+        <div role="tabpanel" class="tab-pane" id="5-AroundMe">
+            <nether-leaderboard-scores [scores]="aroundMe5Scores"></nether-leaderboard-scores>
         </div>
     </div>
 </div>

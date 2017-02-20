@@ -11,9 +11,9 @@ import { LeaderboardScore } from "./../model";
 
 export class LeaderboardComponent implements OnInit {
 
-    defaultScores: LeaderboardScore[];
-    topScores: LeaderboardScore[];
-    aroundMeScores: LeaderboardScore[];
+    top5Scores: LeaderboardScore[];
+    top10Scores: LeaderboardScore[];
+    aroundMe5Scores: LeaderboardScore[];
     scoreToPost: number = 0;
     gamertagToPost: string = null;
     countryToPost: string = "UK";
@@ -27,14 +27,14 @@ export class LeaderboardComponent implements OnInit {
     }
 
     private refreshLeaderboard(): void {
-        this._api.getLeaderboard("default")
-            .subscribe((s: LeaderboardScore[]) => this.defaultScores = s);
+        this._api.getLeaderboard("Top-10")
+            .subscribe((s: LeaderboardScore[]) => this.top10Scores = s);
 
-        this._api.getLeaderboard("top")
-            .subscribe((s: LeaderboardScore[]) => this.topScores = s);
+        this._api.getLeaderboard("Top-5")
+            .subscribe((s: LeaderboardScore[]) => this.top5Scores = s);
 
-        this._api.getLeaderboard("aroundMe")
-            .subscribe((s: LeaderboardScore[]) => this.aroundMeScores = s);
+        this._api.getLeaderboard("5-AroundMe")
+            .subscribe((s: LeaderboardScore[]) => this.aroundMe5Scores = s);
     }
 
     private clearScore(): void {
