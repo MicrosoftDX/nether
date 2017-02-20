@@ -225,6 +225,11 @@
                         "Leaderboard:AnalyticsIntegrationClient:properties:AnalyticsBaseUrl" : "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/')]",
 
                         /* TODO: Add explanation of section */
+                        "AdminWebUi:AuthServerUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/identity/')]",
+                        "AdminWebUi:ApiBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/')]",
+                        "AdminWebUi:RedirectUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/admin/')]",
+
+                        /* TODO: Add explanation of section */
                         "PlayerManagement:Store:wellknown": "sql",
                         "PlayerManagement:Store:properties:ConnectionString": "[variables('sqlConnString')]",
 
