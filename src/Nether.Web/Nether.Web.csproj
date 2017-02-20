@@ -74,7 +74,6 @@
     <Content Include="wwwroot\Features\AdminWebUi\app\_guards\auth.guard.js.map" />
     <Content Include="wwwroot\Features\AdminWebUi\app\_guards\auth.guard.ts" />
     <Content Include="wwwroot\Features\AdminWebUi\css\site.css" />
-    <Content Include="wwwroot\Features\AdminWebUi\index.html" />
     <Content Include="wwwroot\Features\AdminWebUi\systemjs.config.js" />
     <Content Include="wwwroot\Features\identity-test\app.js" />
     <Content Include="wwwroot\Features\identity-test\callback.html" />
