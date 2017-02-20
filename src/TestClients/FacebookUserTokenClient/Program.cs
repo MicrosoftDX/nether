@@ -82,7 +82,7 @@ namespace FacebookUserTokenClient
 
         public static async Task PostScoreAsync(this HttpClient client, string bearerToken, int score)
         {
-            var response = await client.PostAsJsonAsync("/api/leaderboard", new { country = "missing", customTag = "testclient", score = score });
+            var response = await client.PostAsJsonAsync("/api/scores", new { country = "missing", customTag = "testclient", score = score });
 
             response.EnsureSuccessStatusCode();
         }

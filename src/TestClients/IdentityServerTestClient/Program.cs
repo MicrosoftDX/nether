@@ -214,7 +214,7 @@ namespace IdentityServerTestClient
         {
             var client = new HttpClient();
             client.SetBearerToken(accessToken);
-            var response = await client.PostAsJsonAsync("http://localhost:5000/api/leaderboard", new { country = "missing", score = score });
+            var response = await client.PostAsJsonAsync("http://localhost:5000/api/scores", new { country = "missing", score = score });
 
             response.EnsureSuccessStatusCode();
         }
