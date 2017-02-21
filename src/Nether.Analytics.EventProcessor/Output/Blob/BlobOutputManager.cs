@@ -170,6 +170,8 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
         {
             try
             {
+                if (!blob.Exists()) return false;
+
                 blob.AppendBlock(stream,
                     accessCondition: AccessCondition.GenerateIfMaxSizeLessThanOrEqualCondition(_maxBlobSize));
             }
