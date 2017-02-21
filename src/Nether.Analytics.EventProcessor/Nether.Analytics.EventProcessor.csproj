@@ -112,6 +112,7 @@
     <Compile Include="EventProcessorExtensions.cs" />
     <Compile Include="GameEventReceiver.cs" />
     <Compile Include="GameEventRouter.cs" />
+    <Compile Include="GameEvents\OutLocationEvent.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringBuilderExtensions.cs" />

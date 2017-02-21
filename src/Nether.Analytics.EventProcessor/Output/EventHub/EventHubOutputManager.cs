@@ -33,6 +33,9 @@ namespace Nether.Analytics.EventProcessor.Output.EventHub
 
             var client = EventHubClient.CreateFromConnectionString(_eventHubConnectionString, _eventHubName);
 
+            Console.WriteLine($"Sending to EventHub:");
+            Console.WriteLine(line);
+
             //TODO: Implement Async Sending and caching of connection
             client.Send(new EventData(Encoding.UTF8.GetBytes(line)));
         }
