@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Diagnostics;
+using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace Nether.Analytics.EventProcessor.Output.Blob
 {
@@ -28,6 +29,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
         private readonly string _storageAccountConnectionString;
         private CloudBlobContainer _tmpContainer;
         private CloudBlobContainer _outputContainer;
+        private CloudQueue _fullMessagesQueueName;
 
         public BlobOutputManager(string storageAccountConnectionString, string tmpContainerName, string outputContainerName, long maxBlobBlobSize)
         {
@@ -52,6 +54,11 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
             if (createTmpContainer.Result) Console.WriteLine($"Container {_tmpContainer.Name} created");
             if (createOutputContainer.Result) Console.WriteLine($"Container {_outputContainer.Name} created");
+
+            // create a queue for full blobs messages
+            CloudQueueClient queueClient = cloudStorageAccount.CreateCloudQueueClient();
+            _fullMessagesQueueName = queueClient.GetQueueReference("fullmessages");
+            _fullMessagesQueueName.CreateIfNotExists();
         }
 
         public void QueueAppendToBlob(GameEventData data, string line)
@@ -131,7 +138,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                     break;
 
                 // Blob reached max size
-                Console.WriteLine($"Blob {blob.Name} har reached max size of {_maxBlobSize}B");
+                Console.WriteLine($"Blob {blob.Name} has reached max size of {_maxBlobSize}B");
                 HandleFullBlob(blob);
 
                 blob = GetNewTmpAppendBlob(folder);
@@ -141,32 +148,18 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
         private void HandleFullBlob(CloudAppendBlob fullBlob)
         {
-            FlagsAsFull(fullBlob);
-
-            var targetBlob = GetTargetBlockBlob(fullBlob);
-
-            CopyBlob(fullBlob, targetBlob).Wait();
+            // update blob metadata
+            FlagsAsFull(fullBlob); 
+            
+            // put a message in the queue with the blob name
         }
 
         private void FlagsAsFull(CloudAppendBlob fullBlob)
         {
             fullBlob.FetchAttributes();
-            fullBlob.Metadata["full"] = "true";
+            fullBlob.Metadata["full"] = DateTime.Now.ToString();
             fullBlob.SetMetadata();
-        }
-
-        private static async Task CopyBlob(CloudAppendBlob source, CloudBlockBlob target)
-        {
-            Console.WriteLine($"Copying {source.Container.Name}/{source.Name} to {target.Container.Name}/{target.Name}");
-            var sw = new Stopwatch();
-            sw.Start();
-            using (var sourceStream = await source.OpenReadAsync())
-            {
-                await target.UploadFromStreamAsync(sourceStream);
-            }
-            sw.Stop();
-            Console.WriteLine($"Copy operation finished in {sw.Elapsed.TotalSeconds} second(s)");
-        }
+        }        
 
         private bool AppendToBlob(CloudAppendBlob blob, MemoryStream stream)
         {
@@ -188,14 +181,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             }
 
             return true;
-        }
-
-        private CloudBlockBlob GetTargetBlockBlob(CloudAppendBlob source)
-        {
-            var name = source.Name;
-            var target = _outputContainer.GetBlockBlobReference(name);
-            return target;
-        }
+        }        
 
         private CloudAppendBlob GetTmpAppendBlob(string folderName)
         {

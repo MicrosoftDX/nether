@@ -71,6 +71,7 @@ namespace Nether.Analytics.EventProcessor
             eventHubConfig.AddReceiver(s_ingestEventHubName, s_ingestEventHubConnectionString);
 
             jobHostConfig.UseEventHub(eventHubConfig);
+            jobHostConfig.UseTimers();
 
             if (jobHostConfig.IsDevelopment)
             {

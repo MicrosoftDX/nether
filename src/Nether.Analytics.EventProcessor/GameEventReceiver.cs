@@ -7,6 +7,11 @@ using Nether.Analytics.EventProcessor.Output.Blob;
 using Nether.Analytics.EventProcessor.Output.EventHub;
 using System.Configuration;
 using Microsoft.ServiceBus.Messaging;
+using Microsoft.Azure.WebJobs;
+using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage.Blob;
+using System.Diagnostics;
+using Microsoft.WindowsAzure.Storage;
 
 namespace Nether.Analytics.EventProcessor
 {
@@ -17,6 +22,8 @@ namespace Nether.Analytics.EventProcessor
     public static class GameEventReceiver
     {
         private static readonly GameEventRouter s_router;
+        private static CloudBlobContainer _tmpContainer;
+        private static CloudBlobContainer _outputContainer;
 
         static GameEventReceiver()
         {
@@ -44,7 +51,7 @@ namespace Nether.Analytics.EventProcessor
             var outputEventHubName = ConfigResolver.Resolve("NETHER_INTERMEDIATE_EVENTHUB_NAME");
             Console.WriteLine($"outputEventHubName: {outputEventHubName}");
 
-            var maxBlobSize = 10 * 1024; // 10kB
+            var maxBlobSize = 1024; // 10kB
 
             Console.WriteLine($"Max Blob Size: {maxBlobSize / 1024 / 1024}MB ({maxBlobSize}B)");
             Console.WriteLine();
@@ -79,15 +86,19 @@ namespace Nether.Analytics.EventProcessor
             s_router.RegisterKnownGameEventTypeHandler("generic/v1.0.0", handler.HandleGenericEvent);
             s_router.RegisterKnownGameEventTypeHandler("level-completed/v1.0.0", handler.HandleLevelCompletedEvent);
             s_router.RegisterKnownGameEventTypeHandler("level-start/v1.0.0", handler.HandleLevelStartEvent);
-        }
 
-        //public void HandleOne([EventHubTrigger("%NETHER_INGEST_EVENTHUB_NAME%")] string data)
-        //{
-        //    //TODO: Figure out how to configure above EventHubName now named ingest
+            // setup containers
+            var cloudStorageAccount = CloudStorageAccount.Parse(storageAccountConnectionString);
+            var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
 
-        //    // Forward data to "router" in order to handle the event
-        //    _router.HandleGameEvent(data);
-        //}
+            _tmpContainer = cloudBlobClient.GetContainerReference(tmpContainer);
+            _outputContainer = cloudBlobClient.GetContainerReference(outputContainer);
+
+            var createTmpContainer = _tmpContainer.CreateIfNotExistsAsync();
+            var createOutputContainer = _outputContainer.CreateIfNotExistsAsync();
+
+            Task.WaitAll(createTmpContainer, createOutputContainer);
+        }       
 
         public static void HandleBatch([EventHubTrigger("%NETHER_INGEST_EVENTHUB_NAME%")] EventData[] events)
         {
@@ -103,6 +114,56 @@ namespace Nether.Analytics.EventProcessor
             }
 
             s_router.Flush();
+        }
+        
+        /// <summary>
+        /// Time triggered function - goes over all the blobs in the tmp container and copies the ones marked as full to the final analytics container
+        /// </summary>        
+        public static void TimerJob([TimerTrigger("00:00:30")] TimerInfo timer)
+        {
+            Console.WriteLine("TimerJob triggered");
+            /*foreach(IListBlobItem b in _tmpContainer.ListBlobs(null, true))
+            {
+                // list all blob in temp container, filter the ones that have "full" metadata
+                if (b.GetType() == typeof(CloudAppendBlob))
+                {
+                    CloudAppendBlob item = (CloudAppendBlob)b;
+                    item.FetchAttributes();
+                    if (item.Metadata.Keys.Contains("full"))
+                    {
+                        var targetBlob = GetTargetBlockBlob(item);
+                        CopyBlob(item, targetBlob).Wait();
+                        FlagAsCopied(item);
+                    }
+                }
+            } */                                  
+        }
+
+        private static void FlagAsCopied(CloudAppendBlob fullBlob)
+        {
+            fullBlob.FetchAttributes();
+            fullBlob.Metadata["copied"] = DateTime.Now.ToString();
+            fullBlob.SetMetadata();
+        }
+
+        private static CloudBlockBlob GetTargetBlockBlob(CloudAppendBlob source)
+        {
+            var name = source.Name;
+            var target = _outputContainer.GetBlockBlobReference(name);
+            return target;
+        }
+
+        private static async Task CopyBlob(CloudAppendBlob source, CloudBlockBlob target)
+        {
+            Console.WriteLine($"Copying {source.Container.Name}/{source.Name} to {target.Container.Name}/{target.Name}");
+            var sw = new Stopwatch();
+            sw.Start();
+            using (var sourceStream = await source.OpenReadAsync())
+            {
+                await target.UploadFromStreamAsync(sourceStream);
+            }
+            sw.Stop();
+            Console.WriteLine($"Copy operation finished in {sw.Elapsed.TotalSeconds} second(s)");
         }
     }
 }
