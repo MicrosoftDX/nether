@@ -90,10 +90,10 @@ namespace Nether.Analytics.EventProcessor
                 Formatting.Indented,
                 new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
 
-            var serializedGameEvent = data.ToCsv("gameSessionId", "longitude", "latitude", "geohash");
+            //var serializedGameEvent = data.ToCsv("gameSessionId", "longitude", "latitude", "geohash");
 
-            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
-            _eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
+            _blobOutputManager.QueueAppendToBlob(data, data.Data);
+            _eventHubOutputManager.SendToEventHub(data, data.Data); 
         }
 
         public void HandleScoreEvent(GameEventData data)
