@@ -14,9 +14,9 @@ gulp.task('default', function () {
 // compiles ts files in js and outputs them in the same folder
 gulp.task("compiletsforadminui", function () {
     console.log('compile ts ui files into js');
-    var tsResult = gulp.src(["./wwwroot/Features/AdminWebUi/app/**/*.ts"], {base: "."}) 
-        .pipe(tsProject()); 
-    return tsResult.js.pipe(gulp.dest('.'));
+    var tsResult = gulp.src(["./wwwroot/Features/AdminWebUi/app/**/*.ts"], {base: "."}) 
+        .pipe(tsProject()); 
+    return tsResult.js.pipe(gulp.dest('.'));
 });
 
 gulp.task("npmtolib", () => {
