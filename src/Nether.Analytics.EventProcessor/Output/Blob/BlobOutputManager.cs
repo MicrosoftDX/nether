@@ -27,13 +27,16 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
         private readonly Dictionary<string, string> _currentFolders = new Dictionary<string, string>();
         private readonly long _maxBlobSize;
         private readonly string _storageAccountConnectionString;
+        private readonly string _webJobDashboardAndStorageConnectionString;
         private CloudBlobContainer _tmpContainer;
         private CloudBlobContainer _outputContainer;
-        private CloudQueue _fullMessagesQueueName;
+        private const string FullMessagesQueueName = "fullmessages";
+        private CloudQueue _fullMessagesQueue;        
 
-        public BlobOutputManager(string storageAccountConnectionString, string tmpContainerName, string outputContainerName, long maxBlobBlobSize)
+        public BlobOutputManager(string storageAccountConnectionString, string webJobDashboardAndStorageConnectionString, string tmpContainerName, string outputContainerName, long maxBlobBlobSize)
         {
             _storageAccountConnectionString = storageAccountConnectionString;
+            _webJobDashboardAndStorageConnectionString = webJobDashboardAndStorageConnectionString;
             _maxBlobSize = maxBlobBlobSize;
 
             Setup(tmpContainerName, outputContainerName);
@@ -56,9 +59,9 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             if (createOutputContainer.Result) Console.WriteLine($"Container {_outputContainer.Name} created");
 
             // create a queue for full blobs messages
-            CloudQueueClient queueClient = cloudStorageAccount.CreateCloudQueueClient();
-            _fullMessagesQueueName = queueClient.GetQueueReference("fullmessages");
-            _fullMessagesQueueName.CreateIfNotExists();
+            //CloudQueueClient queueClient = CloudStorageAccount.Parse(_webJobDashboardAndStorageConnectionString).CreateCloudQueueClient();
+            //_fullMessagesQueue = queueClient.GetQueueReference(FullMessagesQueueName);
+            //_fullMessagesQueue.CreateIfNotExists();
         }
 
         public void QueueAppendToBlob(GameEventData data, string line)
@@ -118,7 +121,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             });
         }
 
-        private void AppendToFolder(string folder, params string[] lines)
+        private async void AppendToFolder(string folder, params string[] lines)
         {
             Console.WriteLine(folder);
             foreach (var line in lines)
@@ -139,26 +142,28 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
                 // Blob reached max size
                 Console.WriteLine($"Blob {blob.Name} has reached max size of {_maxBlobSize}B");
-                HandleFullBlob(blob);
+                await HandleFullBlob(blob);
 
                 blob = GetNewTmpAppendBlob(folder);
                 Console.WriteLine($"Rolling over to new blob {blob.Name}");
             }
         }
 
-        private void HandleFullBlob(CloudAppendBlob fullBlob)
-        {
+        private async Task HandleFullBlob(CloudAppendBlob fullBlob)
+        {            
             // update blob metadata
-            FlagsAsFull(fullBlob); 
-            
+            await FlagsAsFull(fullBlob);
+
             // put a message in the queue with the blob name
+            //CloudQueueMessage message = new CloudQueueMessage(fullBlob.Uri.ToString());
+            //await _fullMessagesQueue.AddMessageAsync(message);
         }
 
-        private void FlagsAsFull(CloudAppendBlob fullBlob)
+        private async Task FlagsAsFull(CloudAppendBlob fullBlob)
         {
             fullBlob.FetchAttributes();
             fullBlob.Metadata["full"] = DateTime.Now.ToString();
-            fullBlob.SetMetadata();
+            await fullBlob.SetMetadataAsync();
         }        
 
         private bool AppendToBlob(CloudAppendBlob blob, MemoryStream stream)

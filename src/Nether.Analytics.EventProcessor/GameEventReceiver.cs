@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Diagnostics;
 using Microsoft.WindowsAzure.Storage;
+using System.Threading;
 
 namespace Nether.Analytics.EventProcessor
 {
@@ -24,6 +25,7 @@ namespace Nether.Analytics.EventProcessor
         private static readonly GameEventRouter s_router;
         private static CloudBlobContainer _tmpContainer;
         private static CloudBlobContainer _outputContainer;
+        private const string FullMessagesQueueName = "fullmessages";
 
         static GameEventReceiver()
         {
@@ -51,6 +53,8 @@ namespace Nether.Analytics.EventProcessor
             var outputEventHubName = ConfigResolver.Resolve("NETHER_INTERMEDIATE_EVENTHUB_NAME");
             Console.WriteLine($"outputEventHubName: {outputEventHubName}");
 
+            string webJobDashboardAndStorageConnectionString = ConfigResolver.Resolve("NETHER_WEBJOB_DASHBOARD_AND_STORAGE_CONNECTIONSTRING");
+
             var maxBlobSize = 1024; // 10kB
 
             Console.WriteLine($"Max Blob Size: {maxBlobSize / 1024 / 1024}MB ({maxBlobSize}B)");
@@ -59,6 +63,7 @@ namespace Nether.Analytics.EventProcessor
             // Configure Blob Output
             var blobOutputManager = new BlobOutputManager(
                 storageAccountConnectionString,
+                webJobDashboardAndStorageConnectionString,
                 tmpContainer,
                 outputContainer,
                 maxBlobSize);
@@ -116,34 +121,63 @@ namespace Nether.Analytics.EventProcessor
             s_router.Flush();
         }
         
+        //public async static void ProcessFullBlobsAsync([QueueTrigger("fullmessages")] string blobUri)
+        //{
+        //    // wait for 5 seconds before processing the blob to allow any thread writing to it to finish 
+        //    Thread.Sleep(5 * 1000);
+
+        //    try
+        //    {
+        //        // copy the append blob to a blobk blob
+        //        CloudAppendBlob blob = new CloudAppendBlob(new Uri(blobUri));
+                
+        //        var targetBlob = GetTargetBlockBlob(blob);
+        //        await CopyBlobAsync(blob, targetBlob);
+
+        //        await FlagAsCopiedAysnc(blob);
+        //    }
+        //    catch (StorageException e)
+        //    {
+        //        Console.WriteLine($"Failed to process full blob {blobUri} with expection: {e.Message}");
+        //    }
+        //}
+
         /// <summary>
-        /// Time triggered function - goes over all the blobs in the tmp container and copies the ones marked as full to the final analytics container
+        /// Time triggered function - goes over all the blobs in the tmp container ones marked as copied
         /// </summary>        
-        public static void TimerJob([TimerTrigger("00:00:30")] TimerInfo timer)
+        public static async Task TimerJob([TimerTrigger("00:00:30")] TimerInfo timer)
         {
             Console.WriteLine("TimerJob triggered");
-            /*foreach(IListBlobItem b in _tmpContainer.ListBlobs(null, true))
+            foreach (IListBlobItem b in _tmpContainer.ListBlobs(null, true))
             {
-                // list all blob in temp container, filter the ones that have "full" metadata
+                // list all blob in temp container, filter the ones that have "copied" metadata
                 if (b.GetType() == typeof(CloudAppendBlob))
                 {
                     CloudAppendBlob item = (CloudAppendBlob)b;
                     item.FetchAttributes();
-                    if (item.Metadata.Keys.Contains("full"))
+                    if (item.Metadata.Keys.Contains("copied"))
                     {
-                        var targetBlob = GetTargetBlockBlob(item);
-                        CopyBlob(item, targetBlob).Wait();
-                        FlagAsCopied(item);
+                        Console.WriteLine($"Delete blob {item.Uri.ToString()}");
+                        item.Delete(DeleteSnapshotsOption.IncludeSnapshots);
+                    }
+                    else
+                    {
+                        if (item.Metadata.Keys.Contains("full"))
+                        {
+                            var targetBlob = GetTargetBlockBlob(item);
+                            await CopyBlobAsync(item, targetBlob);
+                            await FlagAsCopiedAysnc(item);
+                        }
                     }
                 }
-            } */                                  
+            }
         }
 
-        private static void FlagAsCopied(CloudAppendBlob fullBlob)
-        {
-            fullBlob.FetchAttributes();
-            fullBlob.Metadata["copied"] = DateTime.Now.ToString();
-            fullBlob.SetMetadata();
+        private async static Task FlagAsCopiedAysnc(CloudAppendBlob blob)
+        {            
+            blob.FetchAttributes();            
+            blob.Metadata["copied"] = DateTime.Now.ToString();           
+            await blob.SetMetadataAsync();
         }
 
         private static CloudBlockBlob GetTargetBlockBlob(CloudAppendBlob source)
@@ -153,17 +187,18 @@ namespace Nether.Analytics.EventProcessor
             return target;
         }
 
-        private static async Task CopyBlob(CloudAppendBlob source, CloudBlockBlob target)
+        private static async Task CopyBlobAsync(CloudAppendBlob source, CloudBlockBlob target)
         {
             Console.WriteLine($"Copying {source.Container.Name}/{source.Name} to {target.Container.Name}/{target.Name}");
             var sw = new Stopwatch();
             sw.Start();
             using (var sourceStream = await source.OpenReadAsync())
             {
-                await target.UploadFromStreamAsync(sourceStream);
+                await target.UploadFromStreamAsync(sourceStream);                
             }
+            
             sw.Stop();
-            Console.WriteLine($"Copy operation finished in {sw.Elapsed.TotalSeconds} second(s)");
+            Console.WriteLine($"Copy operation finished in {sw.Elapsed.TotalSeconds} second(s)");          
         }
     }
 }
