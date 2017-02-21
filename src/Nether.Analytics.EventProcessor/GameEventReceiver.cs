@@ -182,8 +182,12 @@ namespace Nether.Analytics.EventProcessor
 
         private static CloudBlockBlob GetTargetBlockBlob(CloudAppendBlob source)
         {
-            var name = source.Name;
-            var target = _outputContainer.GetBlockBlobReference(name);
+            var name = source.Name;            
+            var target = _outputContainer.GetBlockBlobReference(name);  
+            if (target.Exists()) // if the file already exists
+            {
+                target = _outputContainer.GetBlockBlobReference(name + "v2");
+            }
             return target;
         }
 
