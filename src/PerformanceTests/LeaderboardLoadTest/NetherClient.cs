@@ -23,7 +23,7 @@ namespace LeaderboardLoadTest
         // TODO - figure out configuration to avoid these hard-coded strings
         public NetherClient(
             string baseUrl = "http://localhost:5000",
-            string clientId = "resourceowner-test",
+            string clientId = "resourceownertest",
             string clientSecret = "devsecret")
         {
             _baseUrl = baseUrl;

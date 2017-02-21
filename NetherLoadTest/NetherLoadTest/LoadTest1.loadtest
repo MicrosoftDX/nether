@@ -429,7 +429,7 @@
       </LoadGeneratorLocations>
       <ContextParameters>
         <ContextParameter Name="BaseUrl" Value="http://localhost:5000" />
-        <ContextParameter Name="ClientId" Value="resourceowner-test" />
+        <ContextParameter Name="ClientId" Value="resourceownertest" />
         <ContextParameter Name="ClientSecret" Value="devsecret" />
         <ContextParameter Name="AdminUserName" Value="netheradmin" />
         <ContextParameter Name="AdminPassword" Value="N3therAdm1n" />

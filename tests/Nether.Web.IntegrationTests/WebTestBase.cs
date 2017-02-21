@@ -26,7 +26,7 @@ namespace Nether.Web.IntegrationTests
         public static string BaseUrl => (Environment.GetEnvironmentVariable("NETHER_INTEGRATION_TEST_BASE")
             ?? "http://localhost:5000/").EnsureEndsWith("/");
 
-        private const string ClientId = "resourceowner-test";
+        private const string ClientId = "resourceownertest";
         private const string ClientSecret = "devsecret";
 
         protected class UserInfo

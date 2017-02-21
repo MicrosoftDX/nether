@@ -25,7 +25,7 @@ namespace Nether.Integration.Identity
         private readonly HttpClient _httpClient;
         private readonly ILogger<DefaultIdentityPlayerManagementClient> _logger;
 
-        private const string ClientId = "nether-identity";
+        private const string ClientId = "nether_identity";
         private readonly string _clientSecret;
 
         // healthy flag and lock are used to avoid making multiple parallel failed calls when auth has failed and needs refreshing

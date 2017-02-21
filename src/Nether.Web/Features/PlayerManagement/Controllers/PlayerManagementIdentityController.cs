@@ -21,7 +21,7 @@ namespace Nether.Web.Features.PlayerManagement
     /// Player management controller for Identity interactions
     /// </summary>
     [ApiExplorerSettings(IgnoreApi = true)] // Suppress this from Swagger etc as it's designed to serve internal needs currently
-    [Authorize(Policy = PolicyName.NetherIdentityClientId)] // only allow this to be called from the 'nether-identity' client
+    [Authorize(Policy = PolicyName.NetherIdentityClientId)] // only allow this to be called from the 'nether_identity' client
     public class PlayerManagementIdentityController : Controller
     {
         private readonly IPlayerManagementStore _store;

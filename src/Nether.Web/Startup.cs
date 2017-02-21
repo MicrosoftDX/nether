@@ -144,7 +144,7 @@ namespace Nether.Web
                     PolicyName.NetherIdentityClientId,
                     policy => policy.RequireClaim(
                         "client_id",
-                        "nether-identity"
+                        "nether_identity"
                         ));
             });
         }

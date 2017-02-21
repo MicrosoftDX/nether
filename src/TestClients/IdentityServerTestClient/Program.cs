@@ -25,8 +25,8 @@ namespace IdentityServerTestClient
         {
             try
             {
-                //var clientTokenResponse = await TestClientCredentialsAsync("clientcreds-test", "devsecret"); // this flow just identifies the client app
-                ////var clientTokenResponse = await TestClientCredentialsAsync("nether-identity", "secret"); // this flow just identifies the client app
+                //var clientTokenResponse = await TestClientCredentialsAsync("clientcredstest", "devsecret"); // this flow just identifies the client app
+                ////var clientTokenResponse = await TestClientCredentialsAsync("nether_identity", "secret"); // this flow just identifies the client app
                 //Console.WriteLine();
                 //Console.WriteLine("Dump claims:");
                 //await CallApiAsync(clientTokenResponse.AccessToken);
@@ -96,7 +96,7 @@ namespace IdentityServerTestClient
             var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
 
             // request token
-            var tokenClient = new TokenClient(disco.TokenEndpoint, "customgrant-test", "devsecret");
+            var tokenClient = new TokenClient(disco.TokenEndpoint, "customgranttest", "devsecret");
 
 
             var tokenResponse = await tokenClient.RequestCustomGrantAsync("fb-usertoken", "nether-all", new { token = facebookUserToken });
@@ -118,7 +118,7 @@ namespace IdentityServerTestClient
             var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
 
             // request token
-            var tokenClient = new TokenClient(disco.TokenEndpoint, "resourceowner-test", "devsecret");
+            var tokenClient = new TokenClient(disco.TokenEndpoint, "resourceownertest", "devsecret");
             var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync("devuser", "devuser", "nether-all");
 
             if (tokenResponse.IsError)
