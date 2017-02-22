@@ -104,6 +104,12 @@
   <ItemGroup>
     <Compile Include="ConfigResolver.cs" />
     <Compile Include="ConsoleEx.cs" />
+    <Compile Include="EventTypeHandlers\BingLocationLookupProvider.cs" />
+    <Compile Include="EventTypeHandlers\GoogleLocationLookupProvider.cs" />
+    <Compile Include="EventTypeHandlers\ILocationLookupProvider.cs" />
+    <Compile Include="EventTypeHandlers\LocationEventHandler.cs" />
+    <Compile Include="EventTypeHandlers\LocationLookupInfo.cs" />
+    <Compile Include="EventTypeHandlers\NullLocationLookupProvider.cs" />
     <Compile Include="GameEventData.cs" />
     <Compile Include="GameEvents\IncommingLocationEvent.cs" />
     <Compile Include="GameEvents\IOutGameEvent.cs" />

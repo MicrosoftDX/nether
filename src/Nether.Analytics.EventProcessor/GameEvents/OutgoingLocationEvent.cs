@@ -18,6 +18,9 @@ namespace Nether.Analytics.EventProcessor.GameEvents
         public int GeoHashPrecision { get; set; }
         public double GeoHashCenterLat { get; set; }
         public double GeoHashCenterLon { get; set; }
+        public string Country { get; set; }
+        public string District { get; set; }
+        public string City { get; set; }
         public Dictionary<string, string> Properties { get; set; }
     }
 }

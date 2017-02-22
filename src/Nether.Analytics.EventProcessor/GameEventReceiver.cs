@@ -13,6 +13,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using System.Diagnostics;
 using Microsoft.WindowsAzure.Storage;
 using System.Threading;
+using Nether.Analytics.EventProcessor.EventTypeHandlers;
 
 namespace Nether.Analytics.EventProcessor
 {
@@ -55,9 +56,22 @@ namespace Nether.Analytics.EventProcessor
 
             string webJobDashboardAndStorageConnectionString = ConfigResolver.Resolve("NETHER_WEBJOB_DASHBOARD_AND_STORAGE_CONNECTIONSTRING");
 
-            var maxBlobSize = 1024; // 10kB
+            var maxBlobSize = 100 * 1024 * 1024; // 100MB, USE CONFIG TO CHANGE MAX SIZE
+            var maxBlobSizeConfig = ConfigResolver.Resolve("NETHER_BLOB_MAX_SIZE");
+            if (!string.IsNullOrWhiteSpace(maxBlobSizeConfig))
+                maxBlobSize = int.Parse(maxBlobSizeConfig);
+
 
             Console.WriteLine($"Max Blob Size: {maxBlobSize / 1024 / 1024}MB ({maxBlobSize}B)");
+
+            var bingMapsKey = ConfigResolver.Resolve("NETHER_BING_MAPS_KEY");
+            if (string.IsNullOrWhiteSpace(bingMapsKey))
+                Console.WriteLine("Location lookup is not configured, please specify a configuration for NETHER_BING_MAPS_KEY");
+            else
+                Console.WriteLine($"Using Bing Maps to lookup locations with key: {bingMapsKey}");
+
+
+            Console.WriteLine();
             Console.WriteLine();
 
             // Configure Blob Output
@@ -71,8 +85,14 @@ namespace Nether.Analytics.EventProcessor
             // Configure EventHub Output
             var eventHubOutputManager = new EventHubOutputManager(outputEventHubConnectionString, outputEventHubName);
 
+            ILocationLookupProvider lookupProvider;
+            if (string.IsNullOrWhiteSpace(bingMapsKey))
+                lookupProvider = new NullLocationLookupProvider();
+            else
+                lookupProvider = new BingLocationLookupProvider(bingMapsKey);
+
             // Setup Handler to use above configured output managers
-            var handler = new GameEventHandler(blobOutputManager, eventHubOutputManager);
+            var handler = new GameEventHandler(blobOutputManager, eventHubOutputManager, lookupProvider);
 
             // Configure Router to switch handeling to correct method depending on game event type
             s_router = new GameEventRouter(GameEventHandler.ResolveEventType,

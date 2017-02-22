@@ -10,6 +10,7 @@ using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 using NGeoHash.Portable;
 using Nether.Analytics.EventProcessor.GameEvents;
+using Nether.Analytics.EventProcessor.EventTypeHandlers;
 
 namespace Nether.Analytics.EventProcessor
 {
@@ -23,11 +24,13 @@ namespace Nether.Analytics.EventProcessor
     {
         private readonly BlobOutputManager _blobOutputManager;
         private readonly EventHubOutputManager _eventHubOutputManager;
+        private readonly ILocationLookupProvider _locationLookupProvider;
 
-        public GameEventHandler(BlobOutputManager blobOutputManager, EventHubOutputManager eventHubOutputManager)
+        public GameEventHandler(BlobOutputManager blobOutputManager, EventHubOutputManager eventHubOutputManager, ILocationLookupProvider locationLookupProvider)
         {
             _blobOutputManager = blobOutputManager;
             _eventHubOutputManager = eventHubOutputManager;
+            _locationLookupProvider = locationLookupProvider;
         }
 
         public void Flush()
@@ -80,11 +83,16 @@ namespace Nether.Analytics.EventProcessor
         public void HandleLocationEvent(GameEventData data)
         {
             const int GeoHashBitPrecision = 32; //bits
+            const int LocationLookupGeoHashBitPrecistion = 30; //bits
 
             var inEvent = JsonConvert.DeserializeObject<IncommingLocationEvent>(data.Data);
 
             var geoHash = GeoHash.EncodeInt(inEvent.Lat, inEvent.Lon, GeoHashBitPrecision);
             var geoHashCenterCoordinates = GeoHash.DecodeInt(geoHash, GeoHashBitPrecision).Coordinates;
+            var locationLookupGeoHash = GeoHash.EncodeInt(inEvent.Lat, inEvent.Lon, LocationLookupGeoHashBitPrecistion);
+
+            var l = new LocationEventHandler(_locationLookupProvider);
+            var location = l.LookupGeoHash(locationLookupGeoHash, LocationLookupGeoHashBitPrecistion);
 
             var outEvent = new OutgoingLocationEvent
             {
@@ -98,6 +106,9 @@ namespace Nether.Analytics.EventProcessor
                 GeoHashPrecision = GeoHashBitPrecision,
                 GeoHashCenterLat = geoHashCenterCoordinates.Lat,
                 GeoHashCenterLon = geoHashCenterCoordinates.Lon,
+                Country = location.Country,
+                District = location.District,
+                City = location.City,
                 Properties = inEvent.Properties
             };
 
@@ -112,12 +123,14 @@ namespace Nether.Analytics.EventProcessor
 
             var csvObject = data.ToCsv("gameSessionId", "lat", "lon",
                 "geoHash", "geoHashPrecision",
-                "geoHashCenterLat", "geoHashCenterLon");
+                "geoHashCenterLat", "geoHashCenterLon", "country", "district", "city");
 
             // Output CSV to BLOB Storage and JSON to StreamAnalytics (via EventHub)
             _blobOutputManager.QueueAppendToBlob(data, csvObject);
             _eventHubOutputManager.SendToEventHub(data, jsonObject); 
         }
+
+        
 
         public void HandleScoreEvent(GameEventData data)
         {

@@ -17,15 +17,15 @@ function padLeft(nr, n, str){
 
 function mapClick(e) {
 
-    var now = new Date();
+    var d = new Date();
 
     var clientUtcTime = 
-        now.getUTCFullYear() + '-' +
-        padLeft((now.getUTCMonth() + 1), 2) + '-' +
-        padLeft(now.getUTCDate(), 2) + ' ' +
-        padLeft(now.getUTCHours(), 2) + ':' +
-        padLeft(now.getUTCMinutes(), 2) + ':' +
-        padLeft(now.getUTCSeconds(), 2);
+        d.getUTCFullYear() + '-' +
+        padLeft((d.getUTCMonth() + 1), 2) + '-' +
+        padLeft(d.getUTCDate(), 2) + ' ' +
+        padLeft(d.getUTCHours(), 2) + ':' +
+        padLeft(d.getUTCMinutes(), 2) + ':' +
+        padLeft(d.getUTCSeconds(), 2);
 
 
     console.log('At ' + clientUtcTime + '(UTC) a click recorded at:');
@@ -35,7 +35,7 @@ function mapClick(e) {
     netherClient.sendEvent({
             "type": "location",
             "version": "1.0.0",
-            "clientUtcTime": "2017-02-17 14:00:00",
+            "clientUtcTime": clientUtcTime,
             "gameSessionId": "sessionId123",
             "lat": e.location.latitude,
             "lon": e.location.longitude,
