@@ -39,21 +39,16 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerGetResponseModel))]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpGet("")]
         public async Task<ActionResult> GetCurrentPlayer()
         {
-            string gamertag = User.GetGamerTag();
-            if (string.IsNullOrWhiteSpace(gamertag))
-            {
-                return NotFound();
-            }
+            string userId = User.GetId();
 
             // Call data store
-            var player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
+            var player = await _store.GetPlayerDetailsByUserIdAsync(userId);
             if (player == null)
             {
-                return Ok(new PlayerGetResponseModel());
+                return Ok(new PlayerGetResponseModel { Player = new PlayerGetResponseModel.PlayerEntry() });
             }
 
             // Return result

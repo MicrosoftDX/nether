@@ -28,9 +28,12 @@ namespace Nether.Web.Utilities
 
                 context.Result = new BadRequestObjectResult(new ErrorModel
                 {
-                    Code = ErrorCode.ValidationFailed,
-                    Message = DefaultErrorMessages.ValidationFailed,
-                    Details = errorDetails
+                    Error = new ErrorInfo
+                    {
+                        Code = ErrorCode.ValidationFailed,
+                        Message = DefaultErrorMessages.ValidationFailed,
+                        Details = errorDetails
+                    }
                 });
             }
         }
