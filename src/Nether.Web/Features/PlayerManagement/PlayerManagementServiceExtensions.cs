@@ -10,6 +10,8 @@ using Nether.Common.DependencyInjection;
 using Nether.Data.PlayerManagement;
 using Nether.Data.MongoDB.PlayerManagement;
 using Nether.Data.Sql.PlayerManagement;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 
 namespace Nether.Web.Features.PlayerManagement
 {
@@ -61,6 +63,20 @@ namespace Nether.Web.Features.PlayerManagement
                 services.AddServiceFromConfiguration<IPlayerManagementStore>(configuration, logger, "PlayerManagement:Store");
             }
             return services;
+        }
+        // TODO - look at abstracting this behind a "UseIdentity" method or similar
+        public static void InitializePlayerManagementStore(this IApplicationBuilder app, IConfiguration configuration, ILogger logger)
+        {
+            var wellKnownType = configuration["PlayerManagement:Store:wellknown"];
+            if (wellKnownType == "sql")
+            {
+                logger.LogInformation("Run Migrations for SqlPlayerManagementContext");
+                using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+                {
+                    var context = (SqlPlayerManagementContext)serviceScope.ServiceProvider.GetRequiredService<PlayerManagementContextBase>();
+                    context.Database.Migrate();
+                }
+            }
         }
     }
 }

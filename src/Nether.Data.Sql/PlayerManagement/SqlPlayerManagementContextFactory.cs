@@ -9,29 +9,29 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Nether.Data.Sql.Identity
+namespace Nether.Data.Sql.PlayerManagement
 {
     /// <summary>
     /// Class added to enable creating EF Migrations
     /// See https://docs.microsoft.com/en-us/ef/core/api/microsoft.entityframeworkcore.infrastructure.idbcontextfactory-1
     /// </summary>
-    public class SqlIdentityContextFactory : IDbContextFactory<SqlIdentityContext>
+    public class SqlPlayerManagementContextFactory : IDbContextFactory<SqlPlayerManagementContext>
     {
-        public SqlIdentityContext Create(DbContextFactoryOptions options)
+        public SqlPlayerManagementContext Create(DbContextFactoryOptions options)
         {
             var loggerFactory = new LoggerFactory();
             loggerFactory.AddConsole();
-            var logger = loggerFactory.CreateLogger<SqlIdentityContextFactory>();
+            var logger = loggerFactory.CreateLogger<SqlPlayerManagementContextFactory>();
 
 
             var configuration = ConfigurationHelper.GetConfiguration(logger, options.ContentRootPath, options.EnvironmentName);
 
-            var connectionString = configuration["Identity:Store:properties:ConnectionString"];
+            var connectionString = configuration["PlayerManagement:Store:properties:ConnectionString"];
             logger.LogInformation("Using connection string: {0}", connectionString);
 
-            return new SqlIdentityContext(
+            return new SqlPlayerManagementContext(
                 loggerFactory,
-                new SqlIdentityContextOptions
+                new SqlPlayerManagementContextOptions
                 {
                     ConnectionString = connectionString
                 });

@@ -10,7 +10,7 @@ namespace Nether.Data.Sql.PlayerManagement
     {
         private readonly SqlPlayerManagementContextOptions _options;
 
-        public SqlPlayerManagementContext(SqlPlayerManagementContextOptions options, ILoggerFactory loggerFactory)
+        public SqlPlayerManagementContext(ILoggerFactory loggerFactory, SqlPlayerManagementContextOptions options)
             : base(loggerFactory)
         {
             _options = options;
