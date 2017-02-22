@@ -27,9 +27,12 @@ namespace Nether.Web.Utilities
         {
             return controller.BadRequest(new ErrorModel
             {
-                Code = ErrorCode.ValidationFailed,
-                Message = message ?? DefaultErrorMessages.ValidationFailed,
-                Details = errorDetails
+                Error = new ErrorInfo
+                {
+                    Code = ErrorCode.ValidationFailed,
+                    Message = message ?? DefaultErrorMessages.ValidationFailed,
+                    Details = errorDetails
+                }
             });
         }
     }

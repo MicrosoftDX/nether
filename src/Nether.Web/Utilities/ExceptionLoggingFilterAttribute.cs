@@ -47,8 +47,11 @@ namespace Nether.Web.Utilities
 
             var error = new ErrorModel
             {
-                Code = ErrorCode.UnhandledException,
-                Message = message
+                Error = new ErrorInfo
+                {
+                    Code = ErrorCode.UnhandledException,
+                    Message = message
+                }
             };
             context.Result = new ObjectResult(error) { StatusCode = (int)HttpStatusCode.InternalServerError };
         }

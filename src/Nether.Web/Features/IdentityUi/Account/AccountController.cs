@@ -302,6 +302,13 @@ namespace Nether.Web.Features.IdentityUi
                 throw new Exception("User should exist in Register action");
             }
 
+            bool gamertagAvailable = await _playerManagementClient.GamertagIsAvailableAsync(model.Gamertag);
+            if (!gamertagAvailable)
+            {
+                ModelState.AddModelError("gamertag", "gamertag already in use");
+                return View("Register", model);
+            }
+
             await _playerManagementClient.SetGamertagforUserIdAsync(user.UserId, model.Gamertag);
 
             return await SwitchToNetherAuthAndRedirectAsync(model.ReturnUrl, info, claims, providerType, user, model.Gamertag);

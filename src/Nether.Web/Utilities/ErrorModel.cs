@@ -15,6 +15,10 @@ namespace Nether.Web.Utilities
 
     public class ErrorModel
     {
+        public ErrorInfo Error { get; set; }
+    }
+    public class ErrorInfo
+    {
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
         public ErrorCode Code { get; set; }

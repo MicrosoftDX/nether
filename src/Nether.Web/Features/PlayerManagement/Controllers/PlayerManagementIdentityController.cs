@@ -65,15 +65,15 @@ namespace Nether.Web.Features.PlayerManagement
             return Ok();
         }
 
-        [HttpPost("playeridentity/gamertag/{gamertag}")]
+        [HttpGet("playeridentity/gamertag/{gamertag}")]
         public async Task<ActionResult> TestGamerTag([FromRoute]string gamertag)
         {
             var player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
-            if (player == null)
-            {
-                return NotFound();
-            }
-            return Ok();
+            return Ok(
+                new TestGamerTagResponseModel
+                {
+                    Available = player == null
+                });
         }
     }
 }
