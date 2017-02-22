@@ -121,7 +121,7 @@ else
   fi
 
   echo "*** gulp compiletsforadminui..."
-  gulp npmtolib
+  gulp compiletsforadminui
   lastexit=$?
   if [ $lastexit -ne 0 ]
   then

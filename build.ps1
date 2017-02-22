@@ -90,7 +90,7 @@ if ($NoWebClientRestore) {
         }
 
         Write-Output "*** gulp compiletsforadminui ..."
-        gulp npmtolib
+        gulp compiletsforadminui
         if ($LASTEXITCODE -ne 0){
             $buildExitCode = $LASTEXITCODE
             Write-Output "*** gulp compiletsforadminui failed"
