@@ -89,6 +89,14 @@ if ($NoWebClientRestore) {
             exit $buildExitCode
         }
 
+        Write-Output "*** gulp compiletsforadminui ..."
+        gulp npmtolib
+        if ($LASTEXITCODE -ne 0){
+            $buildExitCode = $LASTEXITCODE
+            Write-Output "*** gulp compiletsforadminui failed"
+            exit $buildExitCode
+        }
+
         Write-Output "*** done."
     }
     finally{
@@ -124,30 +132,6 @@ Get-Content "$here\build\build-order.txt" `
     if ($LASTEXITCODE -ne 0){
         $buildExitCode = $LASTEXITCODE
     }
-}
-
-# Run gulp task for typescript
-Push-Location
-Set-Location src/Nether.Web
-try{
-    Write-Output "*** npm install ..."
-    npm install
-    if ($LASTEXITCODE -ne 0){
-        $buildExitCode = $LASTEXITCODE
-        Write-Output "*** npm install failed"
-        exit $buildExitCode
-    }
-
-    Write-Output "*** gulp compiletsforadminui ..."
-    gulp compiletsforadminui
-    if ($LASTEXITCODE -ne 0){
-        $buildExitCode = $LASTEXITCODE
-        Write-Output "*** gulp compiletsforadminui failed"
-        exit $buildExitCode
-    }
-}
-finally{
-    Pop-Location
 }
 
 if($buildExitCode -ne 0) {

@@ -78,6 +78,7 @@ else
   command -v nodejs >/dev/null 2>&1 || { echo >&2 "Node.js is not installed. Aborting."; exit 1;}
   command -v npm >/dev/null 2>&1 || { echo >&2 "NPM is not installed. Aborting."; exit 1;}
   command -v npm >/dev/null 2>&1 || { echo >&2 "bower is not installed (run npm install -g bower). Aborting."; exit 1;}
+  command -v gulp >/dev/null 2>&1 || { echo >&2 "gulp is not installed (run npm install -g gulp). Aborting."; exit 1;}
 
   buildExitCode=0
 
@@ -89,14 +90,10 @@ else
   if [ $lastexit -ne 0 ]
   then
     buildExitCode=$lastexit
-  fi
-
-  # install gulp
-  if command gulp 2>/dev/null; then
-      echo "gulp already installed"
-  else
-      echo "gulp not present, run 'npm install -g gulp''"
-      exit 123
+    echo
+    echo "*** npm install failed"
+    popd
+    exit $buildExitCode
   fi
 
   echo "*** bower install ..."
@@ -105,6 +102,10 @@ else
   if [ $lastexit -ne 0 ]
   then
     buildExitCode=$lastexit
+    echo
+    echo "*** bower install failed"
+    popd
+    exit $buildExitCode
   fi
 
   echo "*** gulp npmtolib..."
@@ -113,6 +114,22 @@ else
   if [ $lastexit -ne 0 ]
   then
     buildExitCode=$lastexit
+    echo
+    echo "*** gulp npmtolib failed"
+    popd
+    exit $buildExitCode
+  fi
+
+  echo "*** gulp compiletsforadminui..."
+  gulp npmtolib
+  lastexit=$?
+  if [ $lastexit -ne 0 ]
+  then
+    buildExitCode=$lastexit
+    echo
+    echo "*** gulp compiletsforadminui failed"
+    popd
+    exit $buildExitCode
   fi
 
   echo "*** done."
