@@ -2,13 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.EntityFrameworkCore;
-using System;
-using Nether.Data.PlayerManagement;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
+using System.Reflection;
 
 namespace Nether.Data.Sql.Identity
 {
@@ -34,7 +29,10 @@ namespace Nether.Data.Sql.Identity
         {
             base.OnConfiguring(builder);
 
-            builder.UseSqlServer(_options.ConnectionString);
+            builder.UseSqlServer(_options.ConnectionString, options =>
+            {
+                options.MigrationsAssembly(typeof(SqlIdentityContext).GetTypeInfo().Assembly.GetName().Name);
+            });
         }
     }
 

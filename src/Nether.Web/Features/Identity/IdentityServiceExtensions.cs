@@ -209,5 +209,23 @@ namespace Nether.Web.Features.Identity
                 .LastOrDefault(d => d.ServiceType == typeof(T))
                 ?.ImplementationInstance;
         }
+
+
+        // TODO - look at abstracting this behind a "UseIdentity" method or similar
+        public static void InitializeIdentityStore(this IApplicationBuilder app, IConfiguration configuration, ILogger logger)
+        {
+            var wellKnownType = configuration["Identity:Store:wellknown"];
+            if (wellKnownType == "sql")
+            {
+                logger.LogInformation("Run Migrations for SqlIdentityContext");
+                using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+                {
+                    var context = (SqlIdentityContext)serviceScope.ServiceProvider.GetRequiredService<IdentityContextBase>();
+                    context.Database.Migrate();
+                }
+            }
+
+            app.EnsureInitialAdminUser(configuration, logger);
+        }
     }
 }
