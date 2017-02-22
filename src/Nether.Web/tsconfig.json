@@ -20,6 +20,7 @@
         "node_modules",
         "typings",
         "wwwroot/lib",
+        "wwwroot/Features/AdminWebUi/lib",
         "wwwroot/Features/identity-ui/lib",
         "obj",
         "bin"
