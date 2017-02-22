@@ -131,12 +131,24 @@ Push-Location
 Set-Location src/Nether.Web
 try{
     Write-Output "*** npm install ..."
+    npm install
+    if ($LASTEXITCODE -ne 0){
+        $buildExitCode = $LASTEXITCODE
+        Write-Output "*** npm install failed"
+        exit $buildExitCode
+    }
+
+    Write-Output "*** gulp compiletsforadminui ..."
+    gulp compiletsforadminui
+    if ($LASTEXITCODE -ne 0){
+        $buildExitCode = $LASTEXITCODE
+        Write-Output "*** gulp compiletsforadminui failed"
+        exit $buildExitCode
+    }
 }
-***************************************************
-Set-Location .\src\Nether.Web
-npm install
-gulp compiletsforadminui
-Set-Location ..\..
+finally{
+    Pop-Location
+}
 
 if($buildExitCode -ne 0) {
     Write-Output ""

@@ -75,20 +75,9 @@ else
   echo "*** Installing npm/bower packages..."
 
   # check node.js and NPM are installed
-  command -v nodejs >/dev/null 2>%1 || { echo >&2 "Node.js is not installed. Aborting."; exit 1;}
-  command -v npm >/dev/null 2>%1 || { echo >&2 "NPM is not installed. Aborting."; exit 1;}
-
-  # fix for Ubuntu (node binary is called nodejs)
-  # commenting out for now as we can use nodejs legacy
-  # ln -s /usr/bin/nodejs /usr/bin/node
-
-  # install bower
-  if command bower 2>/dev/null; then
-      echo "bower already installed"
-  else
-      echo "bower not present, run 'npm install -g bower'"
-      exit 123
-  fi
+  command -v nodejs >/dev/null 2>&1 || { echo >&2 "Node.js is not installed. Aborting."; exit 1;}
+  command -v npm >/dev/null 2>&1 || { echo >&2 "NPM is not installed. Aborting."; exit 1;}
+  command -v npm >/dev/null 2>&1 || { echo >&2 "bower is not installed (run npm install -g bower). Aborting."; exit 1;}
 
   buildExitCode=0
 
