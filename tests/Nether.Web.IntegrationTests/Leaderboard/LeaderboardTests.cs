@@ -64,7 +64,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Posting_similar_score_gets_around_me()
         {
-            const string leaderboardName = "5-AroundMe";
+            const string leaderboardName = "5_AroundMe";
 
             // note: this test assumes that radius is set to 5
             // meaning you get 5 players above and 5 below (11 elements in response in general)
@@ -149,7 +149,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         public async Task Limiting_top_scores_returns_limited_numer_of_rows()
         {
             var client = await GetClientAsync();
-            LeaderboardGetResponse response = await GetLeaderboardAsync(client, "Top-5", HttpStatusCode.OK);
+            LeaderboardGetResponse response = await GetLeaderboardAsync(client, "Top_5", HttpStatusCode.OK);
 
             Assert.True(response.Entries.Length <= 5);
         }

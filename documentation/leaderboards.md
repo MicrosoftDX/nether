@@ -59,17 +59,17 @@ In this configuration sample, we have 4 types of leaderboards:
         "Type": "All"        
       },
       {
-        "Name": "5-AroundMe",
+        "Name": "5_AroundMe",
         "Type": "AroundMe",
         "Radius": 5
       },
       {
-        "Name": "Top-5",
+        "Name": "Top_5",
         "Type": "Top",
         "Top" :  5
       }
       {
-        "Name": "Top-10",
+        "Name": "Top_10",
         "Type": "Top",
         "Top" :  10
       }
@@ -79,9 +79,9 @@ In this configuration sample, we have 4 types of leaderboards:
 **Usage:**
 
 1. Default (all ranks) leaderboard: /api/leaderboard or /api/leaderboard/Default
-2. Top 10 ranking players: /api/leaderboard/Top-10
-3. Top 5 ranking players: /api/Leaderboard/Top-5
-4. Players around me (5 below and 5 above the logged in player ranking): /api/leaderboard/5-AroundMe   
+2. Top 10 ranking players: /api/leaderboard/Top_10
+3. Top 5 ranking players: /api/Leaderboard/Top_5
+4. Players around me (5 below and 5 above the logged in player ranking): /api/leaderboard/5_AroundMe   
 
 
 

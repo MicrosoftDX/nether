@@ -27,13 +27,13 @@ export class LeaderboardComponent implements OnInit {
     }
 
     private refreshLeaderboard(): void {
-        this._api.getLeaderboard("Top-10")
+        this._api.getLeaderboard("Top_10")
             .subscribe((s: LeaderboardScore[]) => this.top10Scores = s);
 
-        this._api.getLeaderboard("Top-5")
+        this._api.getLeaderboard("Top_5")
             .subscribe((s: LeaderboardScore[]) => this.top5Scores = s);
 
-        this._api.getLeaderboard("5-AroundMe")
+        this._api.getLeaderboard("5_AroundMe")
             .subscribe((s: LeaderboardScore[]) => this.aroundMe5Scores = s);
     }
 
