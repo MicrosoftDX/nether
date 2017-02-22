@@ -31,6 +31,8 @@ ResourceGroupName | **Required.** The name of the resource group to deploy into
 Location | **Required.** The Azure location to create the resource group in if it doesn't already exist. You can list the available locations with the `Get-AzureRmLocation` cmdlet
 StorageAccountName | **Required.** The name of the storage account to create/use to upload the web application binaries to for deployment
 SqlAdministratorPassword | **Required.** The password to use for the adminstrator account for the SQL Database
+AnalyticsEventHubNamespace |  **Required.** The Event Hub name for the analytics ingestion
+AnalyticsStorageAccountName |  **Required.** The name of the storage account used to store the analytics events
 
 
 ## Deploying Database Schema
