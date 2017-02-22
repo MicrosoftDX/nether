@@ -3,6 +3,9 @@ version: 1.0.{build}
 build_script:
 - npm install -g bower
 - npm install -g gulp
+- npm --version
+- bower -version
+- gulp --version
 - ps: ./RunCodeFormatter.ps1
 - ps: ./build.ps1
 test_script:
