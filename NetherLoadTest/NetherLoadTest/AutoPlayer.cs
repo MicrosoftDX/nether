@@ -30,7 +30,7 @@ namespace NetherLoadTest
             _username = username;
             _password = password;
             // TODO: those values should be injected via config, not hard coded
-            _client = new NetherClient(uri, "resourceowner-test", "devsecret");
+            _client = new NetherClient(uri, "resourceownertest", "devsecret");
         }
 
         public List<string> CallNames => _callTimes.Keys.ToList();

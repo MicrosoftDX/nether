@@ -104,10 +104,10 @@ namespace Nether.Web.Features.Identity
 
                         // could simplify this by requiring the client secret in the properties for PlayerManagementClient, but that duplicates config
                         var clientSource = new ConfigurationBasedClientSource(logger);
-                        var clientSecret = clientSource.GetClientSecret(configuration.GetSection("Identity:Clients"), "nether-identity");
+                        var clientSecret = clientSource.GetClientSecret(configuration.GetSection("Identity:Clients"), "nether_identity");
                         if (string.IsNullOrEmpty(clientSecret))
                         {
-                            throw new Exception("Unable to determine the client secret for nether-identity");
+                            throw new Exception("Unable to determine the client secret for nether_identity");
                         }
 
                         services.AddSingleton<IIdentityPlayerManagementClient, DefaultIdentityPlayerManagementClient>(serviceProvider =>

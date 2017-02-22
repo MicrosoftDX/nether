@@ -19,7 +19,7 @@ export class NetherApiService {
     private _serverUrl: string;
     private _authServerUrl: string;
     private authCacheKey: string = "cachedToken";
-    private _clientId: string = "resourceowner-test";
+    private _clientId: string = "resourceownertest";
     private _clientSecret: string = "devsecret";
     private _endpointConfig: EndpointConfiguration;
 
