@@ -20,13 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="wwwroot\Features\AdminWebUi\app\**\*.ts" />
-    <Content Include="wwwroot\Features\AdminWebUi\app\**\*.html" />
-    <Content Include="wwwroot\Features\identity-test\**\*.*" />
-    <Content Include="wwwroot\Features\identity-ui\**\*.*" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Update="wwwroot\**\*;Views;Areas\**\Views;appsettings.json;web.config;Nether.Web.Xml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
