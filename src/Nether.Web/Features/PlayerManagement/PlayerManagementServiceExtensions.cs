@@ -64,7 +64,7 @@ namespace Nether.Web.Features.PlayerManagement
             }
             return services;
         }
-        // TODO - look at abstracting this behind a "UseIdentity" method or similar
+        // TODO - look at abstracting this behind a "UsePlayerManagement" method or similar
         public static void InitializePlayerManagementStore(this IApplicationBuilder app, IConfiguration configuration, ILogger logger)
         {
             var wellKnownType = configuration["PlayerManagement:Store:wellknown"];
