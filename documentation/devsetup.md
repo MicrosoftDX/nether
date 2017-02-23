@@ -11,20 +11,20 @@ These can be installed on your own compute but we suggest using one of the provi
 #### Prequisites
 
 **.NET Core**
-Nether is built on top of .NET Core 1.1. Install from [https://dot.net/core](https://dot.net/core). This is included in Visual Studio 2017. To install on Linux/OSX see the [RC4 release notes](https://github.com/dotnet/core/blob/master/release-notes/rc4-download.md)
+Nether is built on top of .NET Core 1.1. Make sure you install at least version 1.1 RC4 from [https://github.com/dotnet/core/blob/master/release-notes/download-archive.md](https://github.com/dotnet/core/blob/master/release-notes/download-archive.md). This is included in Visual Studio 2017. To install on Linux/OSX see the [RC4 release notes](https://github.com/dotnet/core/blob/master/release-notes/rc4-download.md)
 
 **SQL Server**
 The out-of-the-box configuration for nether uses in-memory data stores. You can configure it to run against SQL Server as per [the configuration docs](./configuration.md), and there is a partial implementation of MongoDB providers
 
 **Azure Powershell**
-Nether has been designed to take advantage of various services that are part of the WIndows Azure platform. This includes but is not limited to hosting the REST APIs that are Nether. As such, our default "production" deployment scripts are based on Azure and currently require use of the PowerShell cmdlets for Azure.
+Nether has been designed to take advantage of various services that are part of the Microsoft Azure platform. This includes but is not limited to hosting the REST APIs that are Nether. As such, our default "production" deployment scripts are based on Azure and currently require use of the PowerShell cmdlets for Azure.
 
 Azure Powershell is available via the [Web Platform Installer](https://www.microsoft.com/web/downloads/platform.aspx) or by issuing the command "install-module AzureRM" from the PowerShell command line. For more about the Azure Powershell Cmdlets, please see the [official documentation](https://docs.microsoft.com/en-us/powershell/).
 
 **Unity SDK (optional)**
 We support and plan to build SDKs for [Unity](http://unity3d.com). However, since Nether is exposed as a series of easily consumable REST API's, it is accesible by almost any platform/language.
 
-## User Authentication
+## Gamer Authentication
 
 Nether has been built using ASP.NET Core and leverages Facebook authentication. This requires you to create/register an application with Facebook then configure it for use by your instance of Nether.
 
@@ -51,11 +51,13 @@ Assuming you have installed the Prerequisites above, follow the steps to build a
 If you want to configure nether to use a different connection string or data store then see the [Configuration](documentation/configuration.md) section.
 
 **Visual Studio**
-Due to issues with the current version of ASP.NET Core tooling we are using, run `build.ps1` in the source root before loading the solution in Visual Studio (see PowerShell Command Line Instructions.
+Due to issues with the current version of ASP.NET Core tooling we are using, run `build.ps1` in the source root before loading the solution in Visual Studio (see PowerShell Command Line Instructions).
 
 To build Nether from Visual Studio, open `Nether.sln` and trigger a build of the entire solution. The first time may take some time as Visual Studio will download the necessary Nuget package. Once the build has completed, set Nether.Web as your startup project and start the solution (F5 to debug, or Ctrl+F5 to do so without debugging).
 
 **Visual Studio Code**
+Due to issues with the current version of ASP.NET Core tooling we are using, run `build.ps1` in the source root on Windows or `build.sh` on Mac  before loading and building the solution in Visual Studio Code.
+
 To build Nether from Visual Studio Code, open the root of the repo and run the `build` task (`Ctrl+Shift+B`, or `Cmd+Shift+B`).
 
 To run, either press F5 to start with debugging or Ctrl+F5 (Cmd+F5) to run without debugging
@@ -81,5 +83,5 @@ To run, set the `ASPNETCORE_ENVIRONMENT` environment variable to `Development` a
 ```
 
 # 3rd party packages
-[MongoDB.Driver](https://www.nuget.org/packages/MongoDB.Driver/2.3.0-rc1)
+[MongoDB.Driver](https://www.nuget.org/packages/MongoDB.Driver/2.3.0-rc1)  
 [IdentityServer4](http://identityserver4.readthedocs.io/en/release/)
