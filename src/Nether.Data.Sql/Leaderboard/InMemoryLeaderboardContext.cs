@@ -65,7 +65,7 @@ namespace Nether.Data.Sql.Leaderboard
 
             // filter down to just the best score for each player
             var bestScoreList = scoresList
-                    .GroupBy(s => s.GamerTag)
+                    .GroupBy(s => s.Gamertag)
                     .Select(g => new
                     {
                         Gamertag = g.Key,

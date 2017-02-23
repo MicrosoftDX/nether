@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.Logging;
 using Nether.Data.Leaderboard;
 using System;
@@ -27,6 +28,17 @@ namespace Nether.Data.Sql.Leaderboard
 
             builder.Entity<SavedGamerScore>()
                 .HasKey(c => c.Id);
+
+            builder.Entity<SavedGamerScore>()
+                .Property(s => s.Id).HasValueGenerator<GuidValueGenerator>();
+
+            builder.Entity<SavedGamerScore>()
+                .HasIndex(s => new { s.DateAchieved, s.Gamertag, s.Score });
+
+            builder.Entity<SavedGamerScore>().Property(s => s.DateAchieved).IsRequired();
+            builder.Entity<SavedGamerScore>().Property(s => s.Gamertag).IsRequired();
+            builder.Entity<SavedGamerScore>().Property(s => s.Gamertag).HasMaxLength(50);
+            builder.Entity<SavedGamerScore>().Property(s => s.CustomTag).HasMaxLength(50);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -44,13 +56,13 @@ namespace Nether.Data.Sql.Leaderboard
 
         public virtual async Task SaveScoreAsync(GameScore score)
         {
-            await Scores.AddAsync(new SavedGamerScore { Score = score.Score, CustomTag = score.CustomTag, GamerTag = score.Gamertag, DateAchieved = DateTime.UtcNow });
+            await Scores.AddAsync(new SavedGamerScore { Score = score.Score, CustomTag = score.CustomTag, Gamertag = score.Gamertag, DateAchieved = DateTime.UtcNow });
             await SaveChangesAsync();
         }
 
         public async Task DeleteScores(string gamerTag)
         {
-            List<SavedGamerScore> scores = await Scores.Where(_ => _.GamerTag == gamerTag).ToListAsync();
+            List<SavedGamerScore> scores = await Scores.Where(_ => _.Gamertag == gamerTag).ToListAsync();
             RemoveRange(scores);
             await SaveChangesAsync();
         }

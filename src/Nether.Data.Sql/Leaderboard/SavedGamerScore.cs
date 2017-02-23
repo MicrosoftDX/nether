@@ -12,7 +12,7 @@ namespace Nether.Data.Sql.Leaderboard
     {
         public Guid Id { get; set; }
         public int Score { get; set; }
-        public string GamerTag { get; set; }
+        public string Gamertag { get; set; }
         public string CustomTag { get; set; }
         public DateTime DateAchieved { get; set; }
     }

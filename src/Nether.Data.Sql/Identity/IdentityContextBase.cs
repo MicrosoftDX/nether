@@ -30,13 +30,20 @@ namespace Nether.Data.Sql.Identity
 
             builder.Entity<UserEntity>()
                 .HasKey(u => u.UserId);
+            builder.Entity<LoginEntity>()
+                .HasOne(l => l.User)
+                .WithMany(u => u.Logins)
+                .HasForeignKey(l => l.UserId);
 
             builder.Entity<LoginEntity>()
                 .HasKey(l => new { l.UserId, l.ProviderType, l.ProviderId });
 
-            builder.Entity<LoginEntity>().Property(l => l.UserId).IsRequired();
-            builder.Entity<LoginEntity>().Property(l => l.ProviderType).IsRequired();
-            builder.Entity<LoginEntity>().Property(l => l.ProviderId).IsRequired();
+            builder.Entity<UserEntity>().Property(u => u.UserId).HasMaxLength(50).IsRequired();
+            builder.Entity<UserEntity>().Property(u => u.Role).HasMaxLength(50).IsRequired();
+
+            builder.Entity<LoginEntity>().Property(l => l.UserId).HasMaxLength(50).IsRequired();
+            builder.Entity<LoginEntity>().Property(l => l.ProviderType).HasMaxLength(50).IsRequired();
+            builder.Entity<LoginEntity>().Property(l => l.ProviderId).HasMaxLength(50).IsRequired();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)

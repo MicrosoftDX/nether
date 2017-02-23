@@ -12,6 +12,8 @@ using Nether.Integration.Analytics;
 using Nether.Integration.Default.Analytics;
 using Nether.Web.Features.Leaderboard.Configuration;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 
 namespace Nether.Web.Features.Leaderboard
 {
@@ -157,6 +159,20 @@ namespace Nether.Web.Features.Leaderboard
             }
 
             return leaderboards;
+        }
+        // TODO - look at abstracting this behind a "UseLeaderboard" method or similar
+        public static void InitializeLeaderboardStore(this IApplicationBuilder app, IConfiguration configuration, ILogger logger)
+        {
+            var wellKnownType = configuration["Leaderboard:Store:wellknown"];
+            if (wellKnownType == "sql")
+            {
+                logger.LogInformation("Run Migrations for SqlLeaderboardContext");
+                using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+                {
+                    var context = (SqlLeaderboardContext)serviceScope.ServiceProvider.GetRequiredService<LeaderboardContextBase>();
+                    context.Database.Migrate();
+                }
+            }
         }
     }
 }
