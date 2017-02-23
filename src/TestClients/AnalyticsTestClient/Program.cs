@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace AnalyticsTestClient
 {
@@ -12,6 +13,7 @@ namespace AnalyticsTestClient
 
         public static void Main(string[] args)
         {
+            SetupCultureInfo();
             Greet();
             Configure();
             SetupPropertyCache();
@@ -20,6 +22,19 @@ namespace AnalyticsTestClient
 
             Console.WriteLine("Closing connection");
             EventHubManager.CloseConnectionToEventHub().Wait();
+        }
+
+        private static void SetupCultureInfo()
+        {
+            // Create a unique culture for all threads inside the EventProcessor
+            // in order to make sure input and output of serialization and de-
+            // serialization all look according to expected.
+            // Nether uses a modified en-US culture
+            var netherCultureInfo = new CultureInfo("en-US");
+            netherCultureInfo.DateTimeFormat.ShortDatePattern = "yyyy-MM-dd";
+            netherCultureInfo.DateTimeFormat.LongTimePattern = "HH:mm:ss";
+
+            CultureInfo.DefaultThreadCurrentCulture = netherCultureInfo;
         }
 
         private static void Greet()

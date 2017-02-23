@@ -11,7 +11,11 @@
     <script type="text/javascript" src="index.js"></script>
 </head>
 
-<body onload='loadMapScenario();'>
+<body onload='main();'>
+    <div id='header' style='width: 100vw; height: 50px'>
+        GameSessionId: <input type="text" id="gameSessionId"><br>
+        BingApiKey: <input type="text" id="bingApiKey">
+    </div>
     <div id='myMap' style='width: 100vw; height: 100vh;'></div> 
 </body>
 

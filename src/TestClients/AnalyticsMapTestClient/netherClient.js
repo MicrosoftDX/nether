@@ -43,8 +43,8 @@ function NetherClient(netherBaseUrl) {
         var self = this;
 
         var json = JSON.stringify(gameEvent);
-        console.log('Sending event:');
-        console.log(json);
+        // console.log('Sending event:');
+        // console.log(json);
 
         $.ajax({
             type: self.httpVerb,

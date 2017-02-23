@@ -2,20 +2,19 @@ var map;
 var endpointInfo;
 var netherClient;
 
-function loadMapScenario() {
+function main() {
     map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
-        credentials: 'YOUR-KEY-HERE'
+        credentials: 'YOUR_KEY_HERE'
     });
 
     Microsoft.Maps.Events.addHandler(map, 'click', mapClick);
     netherClient = new NetherClient("http://localhost:5000");
 }
 
-function padLeft(nr, n, str){
-    return Array(n-String(nr).length+1).join(str||'0')+nr;
-}
 
 function mapClick(e) {
+
+    var gameSessionId = $('#gameSessionId').val();
 
     var d = new Date();
 
@@ -31,12 +30,13 @@ function mapClick(e) {
     console.log('At ' + clientUtcTime + '(UTC) a click recorded at:');
     console.log('  lat : ' + e.location.latitude);
     console.log('  lon: ' + e.location.longitude);
+    console.log('  sessionId: ' + gameSessionId);
 
     netherClient.sendEvent({
             "type": "location",
             "version": "1.0.0",
             "clientUtcTime": clientUtcTime,
-            "gameSessionId": "sessionId123",
+            "gameSessionId": gameSessionId,
             "lat": e.location.latitude,
             "lon": e.location.longitude,
             "properties": {
