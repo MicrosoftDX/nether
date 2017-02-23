@@ -6,9 +6,9 @@ The goal of Nether is to be available on both Windows and OSX (Mac), hence any u
 
 Since this project strives for cross platform compatibility, we support both [Visual Studio Code](https://code.visualstudio.com) and [Visual Studio 2017](https://www.visualstudio.com/vs/). When using Visual Studio 2017, any edition (including the free community edition) will suffice.
 
-These can be installed on your own compute but we suggest using one of the provided Windows Azure VM Images that already contains Visual Studio 2017 and the Azure SDK 2.9.1 or later.
+These can be installed on your own computer, or you can use of the provided Windows Azure VM Images that already contains Visual Studio 2017 and the Azure SDK 2.9.1 or later.
 
-#### Prequisites
+#### Prerequisites
 
 **.NET Core**
 Nether is built on top of .NET Core 1.1. Make sure you install at least version 1.1 RC4 from [https://github.com/dotnet/core/blob/master/release-notes/download-archive.md](https://github.com/dotnet/core/blob/master/release-notes/download-archive.md). This is included in Visual Studio 2017. To install on Linux/OSX see the [RC4 release notes](https://github.com/dotnet/core/blob/master/release-notes/rc4-download.md)
@@ -26,9 +26,9 @@ We support and plan to build SDKs for [Unity](http://unity3d.com). However, sinc
 
 ## Gamer Authentication
 
-Nether has been built using ASP.NET Core and leverages Facebook authentication. This requires you to create/register an application with Facebook then configure it for use by your instance of Nether.
+Nether has been built using ASP.NET Core with a pluggable identity system. Currently, there is support for Facebook authentication (more to follow). To get set up with Facebook authentication you need to register an application with Facebook then configure it for use by your instance of Nether.
 
-Setting up your Facebook application has been full documented in the [Microsoft documentation](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/facebook-logins). Complete that process to obtain your Facebook Application Token (AppToken).
+Setting up your Facebook application has been documented in the [Microsoft documentation](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/facebook-logins). Complete that process to obtain your Facebook Application Token (AppToken).
 
 Once you've recieved your token, you have two options for making it available to your Nether application. The simple way is to add the value in the `appsettings.json`. However, this approach runs the risk of accidently committing your AppToken secret to a (possibly public) repository.
 
@@ -43,6 +43,8 @@ Alternatively, you can set the `Facebook:AppToken` or `Facebook__AppToken` envir
     # bash
     export Facebook__AppToken=<your token here>
 ```
+
+For more details on configuring the identity system see the [Nether identity configuration docs](identity/configuration.md).
 
 ## Building and running Nether
 
@@ -63,23 +65,25 @@ To build Nether from Visual Studio Code, open the root of the repo and run the `
 To run, either press F5 to start with debugging or Ctrl+F5 (Cmd+F5) to run without debugging
 
 **PowerShell Command Line**
-To build Nether from PowerShell, ensure you have installed the dependencies from the Development Machine Setup above and run `build.ps1`. Then to run, set the `ASPNETCORE_ENVIRONMENT` environment variable to `Development` and navigate to `src\Nether.Web` and execute `dotnet run`
+To build Nether from PowerShell, ensure you have installed the dependencies from the Development Machine Setup above and run `build.ps1`. Then to run, set the `ASPNETCORE_ENVIRONMENT` environment variable to `Development` and run `rundev.ps1`.
 
 ```powershell
     # PowerShell (from the folder that contains the cloned repository)
     ./build.ps1
     ${env:ASPNETCORE_ENVIRONMENT} = "Development"
-    ./src/Nether.Web/dotnet run
+    ./rundev.ps1
 ```
 
 **Bash Command Line**
 To build Nether from Bash, ensure you have installed the dependencies from the Development Machine Setup above and run `build.sh`
 
-To run, set the `ASPNETCORE_ENVIRONMENT` environment variable to `Development` and then navigate to `src/Nether.Web` and execute `dotnet run`
+To run, set the `ASPNETCORE_ENVIRONMENT` environment variable to `Development` and then run `rundev.sh`.
 
 ```bash
-    # bash
-    { TODO }
+    # bash (from the folder that contains the cloned repository)
+    ./build.sh
+    export ASPNETCORE_ENVIRONMENT="Development"
+    ./rundev.sh
 ```
 
 # 3rd party packages
