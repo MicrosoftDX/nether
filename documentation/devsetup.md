@@ -67,6 +67,7 @@ To build Nether from Visual Studio Code, open the root of the repo and run the `
 To run, either press F5 to start with debugging or Ctrl+F5 (Cmd+F5) to run without debugging
 
 **PowerShell Command Line**
+
 To build Nether from PowerShell, ensure you have installed the dependencies from the Development Machine Setup above and run `build.ps1`. Then to run, set the `ASPNETCORE_ENVIRONMENT` environment variable to `Development` and run `rundev.ps1`.
 
 ```powershell
@@ -77,6 +78,7 @@ To build Nether from PowerShell, ensure you have installed the dependencies from
 ```
 
 **Bash Command Line**
+
 To build Nether from Bash, ensure you have installed the dependencies from the Development Machine Setup above and run `build.sh`
 
 To run, set the `ASPNETCORE_ENVIRONMENT` environment variable to `Development` and then run `rundev.sh`.
