@@ -19,7 +19,7 @@ namespace Nether.Data.Sql.Leaderboard
 
         public DbSet<QueriedGamerScore> Ranks { get; set; }
 
-        public SqlLeaderboardContext(SqlLeaderboardContextOptions options, ILoggerFactory loggerFactory)
+        public SqlLeaderboardContext(ILoggerFactory loggerFactory, SqlLeaderboardContextOptions options)
             : base(loggerFactory)
         {
             _options = options;

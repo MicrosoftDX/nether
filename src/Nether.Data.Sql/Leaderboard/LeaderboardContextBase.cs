@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.Logging;
 using Nether.Data.Leaderboard;
 using System;
@@ -28,7 +29,16 @@ namespace Nether.Data.Sql.Leaderboard
             builder.Entity<SavedGamerScore>()
                 .HasKey(c => c.Id);
 
+            builder.Entity<SavedGamerScore>()
+                .Property(s => s.Id).HasValueGenerator<GuidValueGenerator>();
+
+            builder.Entity<SavedGamerScore>()
+                .HasIndex(s => new { s.DateAchieved, s.Gamertag, s.Score });
+
+            builder.Entity<SavedGamerScore>().Property(s => s.DateAchieved).IsRequired();
+            builder.Entity<SavedGamerScore>().Property(s => s.Gamertag).IsRequired();
             builder.Entity<SavedGamerScore>().Property(s => s.Gamertag).HasMaxLength(50);
+            builder.Entity<SavedGamerScore>().Property(s => s.CustomTag).HasMaxLength(50);
 
         }
 
