@@ -27,6 +27,9 @@ namespace Nether.Data.Sql.Leaderboard
 
             builder.Entity<SavedGamerScore>()
                 .HasKey(c => c.Id);
+
+            builder.Entity<SavedGamerScore>().Property(s => s.Gamertag).HasMaxLength(50);
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -44,13 +47,13 @@ namespace Nether.Data.Sql.Leaderboard
 
         public virtual async Task SaveScoreAsync(GameScore score)
         {
-            await Scores.AddAsync(new SavedGamerScore { Score = score.Score, CustomTag = score.CustomTag, GamerTag = score.Gamertag, DateAchieved = DateTime.UtcNow });
+            await Scores.AddAsync(new SavedGamerScore { Score = score.Score, CustomTag = score.CustomTag, Gamertag = score.Gamertag, DateAchieved = DateTime.UtcNow });
             await SaveChangesAsync();
         }
 
         public async Task DeleteScores(string gamerTag)
         {
-            List<SavedGamerScore> scores = await Scores.Where(_ => _.GamerTag == gamerTag).ToListAsync();
+            List<SavedGamerScore> scores = await Scores.Where(_ => _.Gamertag == gamerTag).ToListAsync();
             RemoveRange(scores);
             await SaveChangesAsync();
         }
