@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace AnalyticsTestClient
+namespace AnalyticsTestClient.Simulations
 {
     public class Walker
     {
@@ -81,7 +81,7 @@ namespace AnalyticsTestClient
 
             var enqueueTime = startTime + time;
             var dequeueTime = enqueueTime.AddMilliseconds(_random.Next(500));
-            var clientUtcTime = startTime.AddMilliseconds(-_random.Next(500));
+            var clientUtcTime = enqueueTime.AddMilliseconds(-_random.Next(500));
             // "yyyy-MM-dd HH:mm:ss"
             var hashPos = GeoHash.DecodeInt(pos.GeoHash, 32);
 

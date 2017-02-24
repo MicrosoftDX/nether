@@ -3,7 +3,7 @@
 
 using System;
 
-namespace AnalyticsTestClient
+namespace AnalyticsTestClient.Simulations
 {
     public class GeoCheckpoint
     {

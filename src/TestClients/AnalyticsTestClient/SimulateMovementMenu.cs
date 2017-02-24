@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using AnalyticsTestClient.Simulations;
 using AnalyticsTestClient.Utils;
-using NGeoHash;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace AnalyticsTestClient
@@ -19,79 +20,43 @@ namespace AnalyticsTestClient
 
         public void GenerateSimulatedOutput()
         {
-            var startTime = new DateTime(2017, 01, 01, 12, 00, 00);
-            var endTime = new DateTime(2017, 01, 01, 13, 00, 00);
+            var startTime = new DateTime(2017, 01, 01, 00, 00, 00);
+            var endTime = new DateTime(2017, 01, 31, 23, 59, 59);
+            var currentStartTime = startTime;
+            var rnd = new Random(0);
+            var fileName = @"C:\tmp\000000.csv";
 
-            var walkers = new[]
+            //TODO: FIX THIS TO BE INTEGRATED IN SIMULATOR
+            File.WriteAllText(fileName, "type|version|enqueueTime|dequeueTime|clientUtcTime|gameSessionId|lat|lon|geoHash|geoHashPrecision|geoHashCenterlat|geoHashCenterlon|country|district|city|properties" + Environment.NewLine);
+
+            while (currentStartTime < endTime)
             {
-                StockholmWalker.OldTown001,
-                StockholmWalker.OldTown002,
-                StockholmWalker.OldTown003,
-                StockholmWalker.OldTown004,
-                StockholmWalker.OldTown005,
-                StockholmWalker.OldTown006,
-            };
+                List<Walker> walkers = new List<Walker>();
 
-            var simulator = new WalkerSimulator(
-                startTime, endTime, TimeSpan.FromSeconds(20), 
-                @"C:\tmp\000000.csv", walkers);
-            simulator.RunSimulation();
-        }
-    }
-
-    public class WalkerSimulator
-    {
-        DateTime _startTime;
-        DateTime _endTime;
-        TimeSpan _tickInterval;
-
-        Walker[] _walkers;
-        string _outputFileName;
-
-        public WalkerSimulator(DateTime startTime, DateTime endTime, TimeSpan tickInterval, string outputFileName, params Walker[] walkers)
-        {
-            _startTime = startTime;
-            _endTime = endTime;
-            _tickInterval = tickInterval;
-            _walkers = walkers;
-            _outputFileName = outputFileName;
-
-        }
-
-        public void RunSimulation()
-        {
-            Console.WriteLine("Starting Walking Simulation");
-            Console.WriteLine();
-            var time = TimeSpan.FromSeconds(0);
-            var tick = 0;
-
-            using (var file = File.OpenWrite(_outputFileName))
-            {
-                using (var writer = new StreamWriter(file))
-                {
-                    while (_startTime + time < _endTime)
+                var walkersToChoseFrom = new[]
                     {
-                        WalkTheWalkers(time, writer);
+                    StockholmWalker.OldTown001,
+                    StockholmWalker.OldTown002,
+                    StockholmWalker.OldTown003,
+                    StockholmWalker.OldTown004,
+                    StockholmWalker.OldTown005,
+                    StockholmWalker.OldTown006,
+                    StockholmWalker.OldTown007
+                    };
 
-                        tick++;
-                        time += _tickInterval;
-                    }
-                }
-            }
-            Console.WriteLine("Done with Walking Simulation");
-            Console.WriteLine();
-        }
-
-        private void WalkTheWalkers(TimeSpan time, StreamWriter writer)
-        {
-            foreach (var walker in _walkers)
-            {
-                var line = walker.Walk(_startTime, time);
-                if (!string.IsNullOrWhiteSpace(line))
+                foreach (var walker in walkersToChoseFrom)
                 {
-                    Console.WriteLine($"{time} - {line}");
-                    writer.WriteLine(line);
+                    if (rnd.Next(100) > 50)
+                        walkers.Add(walker);
                 }
+
+
+                var simulator = new WalkerSimulator(
+                    currentStartTime, currentStartTime + TimeSpan.FromHours(1), TimeSpan.FromSeconds(10),
+                    fileName, walkers.ToArray());
+                simulator.RunSimulation();
+
+                currentStartTime += TimeSpan.FromHours(1);
             }
         }
     }

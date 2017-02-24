@@ -1,13 +1,16 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
 
-namespace AnalyticsTestClient
+namespace AnalyticsTestClient.Simulations
 {
     public static class StockholmWalker
     {
+        private static Random rnd = new Random(0);
+
         // Walker that walks around Old Town of Stockholm in about 25 minutes
-        public static Walker OldTown001 => new Walker("OldTown001", 0, 1,
+        public static Walker OldTown001 => new Walker("OldTown001", rnd.Next(), 0.25,
             new GeoCheckpoint(59.32672562179845, 18.068578779697432),
             new GeoCheckpoint(59.32649574546305, 18.068686068058028),
             new GeoCheckpoint(59.326145454723815, 18.068750441074386),
@@ -67,7 +70,7 @@ namespace AnalyticsTestClient
             new GeoCheckpoint(59.326539531551575, 18.06568199396135)
             );
 
-        public static Walker OldTown002 => new Walker("OldTown002", 0, 1,
+        public static Walker OldTown002 => new Walker("OldTown002", rnd.Next(), 0.25,
             new GeoCheckpoint(59.326576476019895, 18.070322215557113),
             new GeoCheckpoint(59.32643964445466, 18.07040804624559),
             new GeoCheckpoint(59.32650532367474, 18.070719182491317),
@@ -116,7 +119,7 @@ namespace AnalyticsTestClient
             );
 
 
-        public static Walker OldTown003 => new Walker("OldTown003", 0, 1,
+        public static Walker OldTown003 => new Walker("OldTown003", rnd.Next(), 0.25,
             new GeoCheckpoint(59.32588136595906, 18.068908691406264),
             new GeoCheckpoint(59.32595799296224, 18.069938659667983),
             new GeoCheckpoint(59.326242606032835, 18.070711135864272),
@@ -128,7 +131,7 @@ namespace AnalyticsTestClient
             new GeoCheckpoint(59.32615503303421, 18.072706699371352)
             );
 
-        public static Walker OldTown004 => new Walker("OldTown004", 0, 1,
+        public static Walker OldTown004 => new Walker("OldTown004", rnd.Next(), 0.25,
            new GeoCheckpoint(59.32516294722102, 18.070879988874644),
            new GeoCheckpoint(59.32522862890848, 18.07119112512037),
            new GeoCheckpoint(59.32548040753448, 18.07120185395643),
@@ -149,7 +152,7 @@ namespace AnalyticsTestClient
            new GeoCheckpoint(59.325053477459825, 18.070804887022227)
            );
 
-        public static Walker OldTown005 => new Walker("OldTown005", 0, 1,
+        public static Walker OldTown005 => new Walker("OldTown005", rnd.Next(), 0.25,
            new GeoCheckpoint(59.3263493353198, 18.068678021430983),
            new GeoCheckpoint(59.32613040308769, 18.068667292594924),
            new GeoCheckpoint(59.325873155912745, 18.06874239444734),
@@ -177,7 +180,7 @@ namespace AnalyticsTestClient
            new GeoCheckpoint(59.32518897841806, 18.070695042610183)
            );
 
-        public static Walker OldTown006 => new Walker("OldTown006", 0, 1,
+        public static Walker OldTown006 => new Walker("OldTown006", rnd.Next(), 0.25,
            new GeoCheckpoint(59.326456064271596, 18.069453179836287),
            new GeoCheckpoint(59.32625902594499, 18.06967848539354),
            new GeoCheckpoint(59.32641775135312, 18.070268571376815),
@@ -200,10 +203,100 @@ namespace AnalyticsTestClient
            new GeoCheckpoint(59.325717164656176, 18.06886309385301),
            new GeoCheckpoint(59.3258923126844, 18.06992524862291)
            );
+
+        public static Walker OldTown007 => new Walker("OldTown007", rnd.Next(), 0.25,
+            new GeoCheckpoint(59.3257965287183, 18.069160819053664),
+            new GeoCheckpoint(59.32526013351929, 18.069439768791213),
+            new GeoCheckpoint(59.32536960261483, 18.069761633873),
+            new GeoCheckpoint(59.32544623077192, 18.06999766826631),
+            new GeoCheckpoint(59.325238239657864, 18.070212244987502),
+            new GeoCheckpoint(59.325117823167936, 18.07049119472505),
+            new GeoCheckpoint(59.32515066407113, 18.070855975151076),
+            new GeoCheckpoint(59.325216345782344, 18.07126367092134),
+            new GeoCheckpoint(59.325435283902905, 18.0712207555771),
+            new GeoCheckpoint(59.32573084812839, 18.071134924888625),
+            new GeoCheckpoint(59.32589504936518, 18.071113467216506),
+            new GeoCheckpoint(59.32605924980862, 18.070898890495315),
+            new GeoCheckpoint(59.32637670174967, 18.07055556774141),
+            new GeoCheckpoint(59.326453327636, 18.07027661800386),
+            new GeoCheckpoint(59.32635480860756, 18.07004058361055),
+            new GeoCheckpoint(59.32623439607384, 18.06974017620088),
+            new GeoCheckpoint(59.32597167633752, 18.069847464561477),
+            new GeoCheckpoint(59.32585126244628, 18.069675803184523)
+            );
     }
 }
 
 
 /*
+        public static Walker TemplateWalker => new Walker("PUT_GAME_SESSION_ID_HERE", 0, 1,
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),
+            new GeoCheckpoint(),    
+            );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  */

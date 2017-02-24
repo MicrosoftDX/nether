@@ -12,6 +12,10 @@ function main() {
 }
 
 
+function padLeft(nr, n, str){
+    return Array(n-String(nr).length+1).join(str||'0')+nr;
+}
+
 function mapClick(e) {
 
     var gameSessionId = $('#gameSessionId').val();
@@ -26,6 +30,8 @@ function mapClick(e) {
         padLeft(d.getUTCMinutes(), 2) + ':' +
         padLeft(d.getUTCSeconds(), 2);
 
+// console.log(e.location.latitude + ', ' + e.location.longitude);
+// return;
 
     console.log('At ' + clientUtcTime + '(UTC) a click recorded at:');
     console.log('  lat : ' + e.location.latitude);
