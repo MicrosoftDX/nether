@@ -4,10 +4,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using Nether.Common.DependencyInjection;
-using Nether.Integration.Analytics;
-using Nether.Integration.Default.Analytics;
 using Microsoft.Extensions.Logging;
+using Nether.Web.Features.Analytics.Models.Endpoint;
 
 namespace Nether.Web.Features.Analytics
 {
