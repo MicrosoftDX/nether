@@ -1,0 +1,75 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {        
+        "Query": { 
+            "type": "string", 
+            "metadata": { 
+                "description": ""
+            } 
+        },
+        "eventHubProperties": {
+            "type" : "object",
+            "metadata" : {
+                "description" : "a JSON object containing: eventHubName, serviceBusNamespace, sharedAccessPolicyName, sharedAccessPolicyKey, consumerGroupName"
+            }
+        }            
+    },
+    "variables": {
+        "ehApiVersion": "2015-08-01",
+        "asaApiVersion": "2015-09-01",
+        "analyticDataSourceProperties": {
+            "eventHubName": "[parameters('eventHubProperties')['hubname']]",
+            "serviceBusNamespace": "[parameters('eventHubProperties')['namespace']]",
+            "sharedAccessPolicyName": "[parameters('eventHubProperties')['policyName']]",
+            "sharedAccessPolicyKey": "[parameters('eventHubProperties')['policyKey']]",
+            "consumerGroupName": "[parameters('eventHubProperties')['consumerGroupName']]"
+        },        
+        "streamJobName": "[concat('nether', uniquestring(resourceGroup().id))]",
+        "SKU": "Standard",          
+        "streamingUnits": 1
+    },
+    "resources": [               
+        {
+            "type": "Microsoft.StreamAnalytics/StreamingJobs",
+            "name": "[variables('streamJobName')]",
+            "apiVersion": "[variables('asaApiVersion')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "name": "[variables('SKU')]"  
+                },
+                "outputStartMode": "LastOutputEventTime",
+                "inputs": [
+                    {
+                        "name": "Input",
+                        "properties": {
+                            "type": "stream",
+                            "serialization": {
+                                "type": "JSON",
+                                "properties": {
+                                    "encoding": "UTF8"
+                                }
+                            },
+                            "datasource": {
+                                "type": "Microsoft.ServiceBus/EventHub",
+                                "properties": ["variables('analyticDataSourceProperties')"]
+                            }
+                        }
+                    }
+                ],
+                "transformation": {
+                    "name": "[variables('streamJobName')]",
+                    "properties": {
+                        "streamingUnits": "[variables('streamingUnits')]",
+                        "query": "[parameters('Query')]"
+                    }
+                },
+                "outputs": [                   
+                ]
+            }
+        }
+    ],  
+    "outputs": {
+    }
+}

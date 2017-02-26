@@ -1,0 +1,94 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+         "NetherWebDomainPrefix": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 12,
+            "metadata": {
+                "description": "The begining portion of the Nether web deployment URL (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'." 
+            }
+        },
+        "WebHostingPlan": { 
+            "type": "string", 
+            "defaultValue": "Free (no 'always on')", 
+            "allowedValues": [ 
+                "Free (no 'always on')", 
+                "Shared", 
+                "Basic B1", 
+                "Basic B2", 
+                "Basic B3", 
+                "Standard S1", 
+                "Standard S2", 
+                "Standard S3", 
+                "Premium P1", 
+                "Premium P2", 
+                "Premium P3"
+            ], 
+            "metadata": { 
+                "description": "Specifies the database pricing/performance." 
+            } 
+        },
+         "Query": { 
+            "type": "string", 
+            "metadata": { 
+                "description": ""
+            } 
+        },
+        "templateBaseURL": {
+            "type": "string",
+            "defaultValue": "[deployment().properties.templateLink.uri]",
+            "metadata": {
+                "description": "The base location for all linked templates."
+            }   
+        } 
+    },
+    "variables": {        
+        "deploymentAPI" : "2015-01-01",
+        "IngestUri": "(uri(parameters('templateBaseURL'), 'NetherAnalyticsIngest.json'))",
+        "HotPathUri": "(uri(parameters('templateBaseURL'), 'NetherAnalyticsHotPath.json'))"
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-01-01",
+            "name": "IngestTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('IngestUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "NetherWebDomainPrefix": {
+                        "value": "[parameters('NetherWebDomainPrefix')]"
+                    },
+                    "WebHostingPlan": {
+                        "value": "[parameters('WebHostingPlan')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "HotPathTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('HotPathUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "Query": {
+                        "value": "[parameters('Query')]"
+                    },
+                    "eventHubProperties": {
+                        "value": "[reference('IngestTemplate').outputs.IngestManagePolicy]"
+                    }
+                }
+            }
+        }
+    ]
+}
