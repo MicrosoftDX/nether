@@ -17,14 +17,7 @@
     },
     "variables": {
         "ehApiVersion": "2015-08-01",
-        "asaApiVersion": "2015-09-01",
-        "analyticDataSourceProperties": {
-            "eventHubName": "[parameters('eventHubProperties')['hubname']]",
-            "serviceBusNamespace": "[parameters('eventHubProperties')['namespace']]",
-            "sharedAccessPolicyName": "[parameters('eventHubProperties')['policyName']]",
-            "sharedAccessPolicyKey": "[parameters('eventHubProperties')['policyKey']]",
-            "consumerGroupName": "[parameters('eventHubProperties')['consumerGroupName']]"
-        },        
+        "asaApiVersion": "2015-09-01",              
         "streamJobName": "[concat('nether', uniquestring(resourceGroup().id))]",
         "SKU": "Standard",          
         "streamingUnits": 1
@@ -53,10 +46,11 @@
                             },
                             "datasource": {
                                 "type": "Microsoft.ServiceBus/EventHub",
-                                "properties": ["variables('analyticDataSourceProperties')"]
+                                "properties": "[parameters('eventHubProperties')]"                                 
                             }
                         }
                     }
+                    
                 ],
                 "transformation": {
                     "name": "[variables('streamJobName')]",

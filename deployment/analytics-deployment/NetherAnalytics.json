@@ -38,7 +38,7 @@
         },
         "templateBaseURL": {
             "type": "string",
-            "defaultValue": "[deployment().properties.templateLink.uri]",
+            "defaultValue": "https://raw.githubusercontent.com/navalev/nether/analytics-deployment/deployment/analytics-deployment/",
             "metadata": {
                 "description": "The base location for all linked templates."
             }   
@@ -46,8 +46,8 @@
     },
     "variables": {        
         "deploymentAPI" : "2015-01-01",
-        "IngestUri": "(uri(parameters('templateBaseURL'), 'NetherAnalyticsIngest.json'))",
-        "HotPathUri": "(uri(parameters('templateBaseURL'), 'NetherAnalyticsHotPath.json'))"
+        "IngestUri": "[concat(parameters('templateBaseURL'), 'NetherAnalyticsIngest.json')]",
+        "HotPathUri": "[concat(parameters('templateBaseURL'), 'NetherAnalyticsHotPath.json')]"
     },
     "resources": [
         {
@@ -74,6 +74,9 @@
             "apiVersion": "2015-01-01",
             "name": "HotPathTemplate",
             "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', 'IngestTemplate')]"
+            ],
             "properties": {
                 "mode": "incremental",
                 "templateLink": {
@@ -85,7 +88,7 @@
                         "value": "[parameters('Query')]"
                     },
                     "eventHubProperties": {
-                        "value": "[reference('IngestTemplate').outputs.IngestManagePolicy]"
+                        "value": "[reference('IngestTemplate').outputs.IngestEventHubProperties]"
                     }
                 }
             }

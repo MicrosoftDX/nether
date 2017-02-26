@@ -230,15 +230,13 @@
           "type" : "string",
           "value" : "[variables('intermidiateEventHub')]"
       },
-      "IngestManagePolicy" : {
+      "IngestEventHubProperties" : {
             "type" : "object",
             "value": {
-                "namespace" : "[variables('namespaceName')]",
-                "hubname" : "[variables('ingestEventHub')]",
-                "uri" : "[concat(reference(variables('namespaceName')).serviceBusEndpoint,variables('ingestEventHub'),'/messages')]",
-                "policyName": "[variables('ManagePolicyName')]",
-                "policyKey" : "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),variables('namespaceName'),variables('ingestEventHub'),variables('ManagePolicyName')),variables('ehApiVersion')).primaryKey]",
-                "connectionString" : "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),variables('namespaceName'),variables('ingestEventHub'),variables('ManagePolicyName')),variables('ehApiVersion')).primaryConnectionString]",
+                "serviceBusNamespace" : "[variables('namespaceName')]",
+                "eventHubName" : "[variables('ingestEventHub')]",                
+                "sharedAccessPolicyName": "[variables('ManagePolicyName')]",
+                "sharedAccessPolicyKey" : "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),variables('namespaceName'),variables('ingestEventHub'),variables('ManagePolicyName')),variables('ehApiVersion')).primaryKey]",                
                 "consumerGroupName" : "[variables('consumerGroupName')]"
             }
       }
