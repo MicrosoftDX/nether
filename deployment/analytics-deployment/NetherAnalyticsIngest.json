@@ -229,16 +229,26 @@
       "intermidiateEventHubName" : {
           "type" : "string",
           "value" : "[variables('intermidiateEventHub')]"
-      },
-      "IngestEventHubProperties" : {
-            "type" : "object",
-            "value": {
-                "serviceBusNamespace" : "[variables('namespaceName')]",
-                "eventHubName" : "[variables('ingestEventHub')]",                
-                "sharedAccessPolicyName": "[variables('ManagePolicyName')]",
-                "sharedAccessPolicyKey" : "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),variables('namespaceName'),variables('ingestEventHub'),variables('ManagePolicyName')),variables('ehApiVersion')).primaryKey]",                
-                "consumerGroupName" : "[variables('consumerGroupName')]"
-            }
-      }
+      },      
+     "serviceBusNamespace" : {
+        "type" : "string",
+        "value": "[variables('namespaceName')]"
+     },
+        "eventHubName" : {
+            "type": "string",
+            "value" : "[variables('ingestEventHub')]"
+        },
+        "sharedAccessPolicyName":  {
+            "type": "string",
+            "value" :"[variables('ManagePolicyName')]"
+        },
+        "sharedAccessPolicyKey" :  {
+            "type": "string",
+            "value" :"[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),variables('namespaceName'),variables('ingestEventHub'),variables('ManagePolicyName')),variables('ehApiVersion')).primaryKey]"
+        },
+        "consumerGroupName" :  {
+            "type": "string",
+            "value" :"[variables('consumerGroupName')]"
+        }                  
   }
 }

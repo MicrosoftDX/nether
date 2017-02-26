@@ -87,9 +87,21 @@
                     "Query": {
                         "value": "[parameters('Query')]"
                     },
-                    "eventHubProperties": {
-                        "value": "[reference('IngestTemplate').outputs.IngestEventHubProperties]"
-                    }
+                     "serviceBusNamespace" : {        
+        "value": "[reference('IngestTemplate').outputs.namespaceName]"
+     },
+        "eventHubName" : {            
+            "value" : "[reference('IngestTemplate').outputs.ingestEventHub]"
+        },
+        "sharedAccessPolicyName":  {            
+            "value" :"[reference('IngestTemplate').outputs.sharedAccessPolicyKey]"
+        },
+        "sharedAccessPolicyKey" :  {            
+           "value" :"[reference('IngestTemplate').outputs.sharedAccessPolicyKey]"
+        },
+        "consumerGroupName" :  {            
+           "value" :"[reference('IngestTemplate').outputs.consumerGroupName]"
+        } 
                 }
             }
         }

@@ -8,12 +8,21 @@
                 "description": ""
             } 
         },
-        "eventHubProperties": {
-            "type" : "object",
-            "metadata" : {
-                "description" : "a JSON object containing: eventHubName, serviceBusNamespace, sharedAccessPolicyName, sharedAccessPolicyKey, consumerGroupName"
-            }
-        }            
+         "serviceBusNamespace" : {
+        "type" : "string"        
+     },
+        "eventHubName" : {
+            "type": "string"          
+        },
+        "sharedAccessPolicyName":  {
+            "type": "string"
+        },
+        "sharedAccessPolicyKey" :  {
+            "type": "string"           
+        },
+        "consumerGroupName" :  {
+            "type": "string"            
+        }           
     },
     "variables": {
         "ehApiVersion": "2015-08-01",
@@ -46,7 +55,13 @@
                             },
                             "datasource": {
                                 "type": "Microsoft.ServiceBus/EventHub",
-                                "properties": "[parameters('eventHubProperties')]"                                 
+                                "properties": {
+                                    "eventHubName": "[parameters('eventHubName')]",
+                                    "serviceBusNamespace": "[parameters('serviceBusNamespace')]",
+                                    "sharedAccessPolicyName": "[parameters('sharedAccessPolicyName')]",
+                                    "sharedAccessPolicyKey": "[parameters('sharedAccessPolicyKey')]",
+                                    "consumerGroupName": "[parameters('consumerGroupName')]"
+                                }                               
                             }
                         }
                     }
