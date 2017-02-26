@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Nether.Web.Features.Analytics
+namespace Nether.Web.Features.Analytics.Models.Endpoint
 {
     public class EndpointInfo
     {
