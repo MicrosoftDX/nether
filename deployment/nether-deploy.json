@@ -53,6 +53,12 @@
                 "description": "(Optional) Absolute URI containing the Nether API's deployment package (ZIP). If not included, you'll need to deploy the package seperately."
             }
         },
+        "initialNetherAdministratorPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The initial password for the netheradmin user"
+            }
+        },
         "sqlServerName": {
             "type": "string",
             "minLength": 8,
@@ -265,7 +271,8 @@
                     "sqlAdministratorLogin": { "value": "[parameters('sqlAdministratorLogin')]" },
                     "sqlAdministratorPassword": { "value": "[parameters('sqlAdministratorPassword')]" },
                     "eventhubSendPolicy": { "value": "[reference('EventHubTemplate').outputs.sendPolicy.value]" },
-                    "webZipUri": { "value": "[parameters('webZipUri')]" }
+                    "webZipUri": { "value": "[parameters('webZipUri')]" },
+                    "initialNetherAdministratorPassword": { "value": "[parameters('initialNetherAdministratorPassword')]"}
                 } 
             } 
         },

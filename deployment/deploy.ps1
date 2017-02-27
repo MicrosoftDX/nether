@@ -18,6 +18,10 @@ param
     $NetherWebDomainPrefix,
 
     [Parameter(Mandatory=$true)]
+    [securestring]
+    $initialNetherAdministratorPassword,
+
+    [Parameter(Mandatory=$true)]
     [string]
     $sqlServerName,
 
@@ -132,6 +136,7 @@ Get-ChildItem -File $netherRoot/deployment/* -Exclude *params.json -filter nethe
 
 $templateParameters = @{
     NetherWebDomainPrefix = $NetherWebDomainPrefix
+    initialNetherAdministratorPassword = $initialNetherAdministratorPassword
     sqlServerName = $sqlServerName
     sqlAdministratorLogin = $sqlAdministratorLogin
     sqlAdministratorPassword = $SqlAdministratorPassword
