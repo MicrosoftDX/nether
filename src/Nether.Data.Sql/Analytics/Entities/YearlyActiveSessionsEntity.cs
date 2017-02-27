@@ -9,6 +9,5 @@ namespace Nether.Data.Sql.Analytics
         public int Year { get; set; }
         public int ActiveSessions { get; set; }
     }
-
 }
 

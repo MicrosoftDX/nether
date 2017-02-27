@@ -52,7 +52,7 @@ namespace Nether.Web.Features.Analytics
         }
 
 
-        
+
         private static void ConfigureAnalyticsStore(IServiceCollection services, IConfiguration configuration, ILogger logger)
         {
             if (configuration.Exists("Analytics:Store:wellKnown"))

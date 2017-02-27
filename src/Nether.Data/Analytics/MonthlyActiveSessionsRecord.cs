@@ -10,6 +10,5 @@ namespace Nether.Data.Analytics
         public DateTime EventDate { get; set; }
         public int ActiveSessions { get; set; }
     }
-
 }
 

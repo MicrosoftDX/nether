@@ -10,6 +10,5 @@ namespace Nether.Data.Sql.Analytics
         public DateTime EventDate { get; set; }
         public long AverageGameDuration { get; set; }
     }
-
 }
 

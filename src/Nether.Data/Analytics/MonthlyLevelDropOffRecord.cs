@@ -11,6 +11,5 @@ namespace Nether.Data.Analytics
         public int ReachedLevel { get; set; }
         public long TotalCount { get; set; }
     }
-
 }
 

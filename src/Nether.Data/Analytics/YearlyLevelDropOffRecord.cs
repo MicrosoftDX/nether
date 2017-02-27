@@ -6,10 +6,9 @@ namespace Nether.Data.Analytics
 {
     public class YearlyLevelDropOffRecord
     {
-        public int Year{ get; set; }
+        public int Year { get; set; }
         public int ReachedLevel { get; set; }
         public long TotalCount { get; set; }
     }
-
 }
 

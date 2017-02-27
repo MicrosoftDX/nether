@@ -12,6 +12,5 @@ namespace Nether.Data.Sql
         public string DisplayName { get; set; }
         public long AverageGenericDuration { get; set; }
     }
-
 }
 

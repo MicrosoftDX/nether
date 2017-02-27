@@ -10,6 +10,5 @@ namespace Nether.Data.Analytics
         public string DisplayName { get; set; }
         public long AverageGenericDuration { get; set; }
     }
-
 }
 

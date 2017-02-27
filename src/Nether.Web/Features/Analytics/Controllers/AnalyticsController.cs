@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +22,7 @@ namespace Nether.Web.Features.Analytics
         }
 
         [HttpGet("active-sessions/daily")]
-        [ProducesResponseType((int) HttpStatusCode.OK, Type = typeof(ActiveSessionsListResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ActiveSessionsListResponseModel))]
         public async Task<IActionResult> DailyActiveSessionsAsync()
         {
             var sessions = await _store.GetDailyActiveSessionsAsync();
@@ -38,7 +41,7 @@ namespace Nether.Web.Features.Analytics
             return base.Ok(response);
         }
         [HttpGet("active-sessions/monthly")]
-        [ProducesResponseType((int) HttpStatusCode.OK, Type = typeof(ActiveSessionsListResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ActiveSessionsListResponseModel))]
         public async Task<IActionResult> MonthlyActiveSessionsAsync()
         {
             var sessions = await _store.GetMonthlyActiveSessionsAsync();
@@ -56,7 +59,7 @@ namespace Nether.Web.Features.Analytics
             return base.Ok(response);
         }
         [HttpGet("active-sessions/yearly")]
-        [ProducesResponseType((int) HttpStatusCode.OK, Type = typeof(ActiveSessionsListResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ActiveSessionsListResponseModel))]
         public async Task<IActionResult> YearlyActiveSessionsAsync()
         {
             var sessions = await _store.GetYearlyActiveSessionsAsync();
@@ -76,7 +79,7 @@ namespace Nether.Web.Features.Analytics
 
 
         [HttpGet("active-users/daily")]
-        [ProducesResponseType((int) HttpStatusCode.OK, Type = typeof(ActiveUsersListResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ActiveUsersListResponseModel))]
         public async Task<IActionResult> DailyActiveUsersAsync()
         {
             var users = await _store.GetDailyActiveUsersAsync();
@@ -95,7 +98,7 @@ namespace Nether.Web.Features.Analytics
             return base.Ok(response);
         }
         [HttpGet("active-users/monthly")]
-        [ProducesResponseType((int) HttpStatusCode.OK, Type = typeof(ActiveUsersListResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ActiveUsersListResponseModel))]
         public async Task<IActionResult> MonthlyActiveUsersAsync()
         {
             var users = await _store.GetMonthlyActiveUsersAsync();
@@ -113,7 +116,7 @@ namespace Nether.Web.Features.Analytics
             return base.Ok(response);
         }
         [HttpGet("active-users/yearly")]
-        [ProducesResponseType((int) HttpStatusCode.OK, Type = typeof(ActiveUsersListResponseModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ActiveUsersListResponseModel))]
         public async Task<IActionResult> YearlyActiveUsersAsync()
         {
             var users = await _store.GetYearlyActiveUsersAsync();
@@ -305,6 +308,5 @@ namespace Nether.Web.Features.Analytics
             };
             return base.Ok(response);
         }
-
     }
 }
