@@ -4,12 +4,12 @@ using Newtonsoft.Json;
 
 namespace Nether.Web.Features.Analytics.Models.Analytics
 {
-    public class ActiveSessionsResponseModel
+    public class ActiveUsersListResponseModel
     {
-        public List<ActiveSessionResponseModel> ActiveSessions { get; set; }
+        public List<ActiveUsersResponseModel> ActiveUsers { get; set; }
     }
 
-    public class ActiveSessionResponseModel
+    public class ActiveUsersResponseModel
     {
         public int Year { get; set; }
 
@@ -21,6 +21,6 @@ namespace Nether.Web.Features.Analytics.Models.Analytics
         [DefaultValue(null)]
         public int? Day { get; set; }
 
-        public int ActiveSessions { get; set; }
+        public int ActiveUsers { get; set; }
     }
 }

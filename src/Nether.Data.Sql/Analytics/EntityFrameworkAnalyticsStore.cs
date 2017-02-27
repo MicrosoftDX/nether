@@ -38,9 +38,10 @@ namespace Nether.Data.Sql.Analytics
             return Map(entities);
         }
 
-        public async Task<IEnumerable<DailyDurationsRecord>> GetDailyDurationsAsync()
+        public async Task<IEnumerable<DailyDurationsRecord>> GetDailyDurationsAsync(string name)
         {
             var entities = await _context.DailyDurations
+                            .Where(d=>d.DisplayName == name)
                             .ToListAsync();
             return Map(entities);
         }
@@ -74,9 +75,10 @@ namespace Nether.Data.Sql.Analytics
             return Map(entities);
         }
 
-        public async Task<IEnumerable<MonthlyDurationsRecord>> GetMonthlyDurationsAsync()
+        public async Task<IEnumerable<MonthlyDurationsRecord>> GetMonthlyDurationsAsync(string name)
         {
             var entities = await _context.MonthlyDurations
+                            .Where(d=>d.DisplayName == name)
                             .ToListAsync();
             return Map(entities);
         }
@@ -110,9 +112,10 @@ namespace Nether.Data.Sql.Analytics
             return Map(entities);
         }
 
-        public async Task<IEnumerable<YearlyDurationsRecord>> GetYearlyDurationsAsync()
+        public async Task<IEnumerable<YearlyDurationsRecord>> GetYearlyDurationsAsync(string name)
         {
             var entities = await _context.YearlyDurations
+                            .Where(d=>d.DisplayName == name)
                             .ToListAsync();
             return Map(entities);
         }

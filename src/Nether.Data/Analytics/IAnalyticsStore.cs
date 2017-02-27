@@ -19,9 +19,9 @@ namespace Nether.Data.Analytics
         Task<IEnumerable<MonthlyActiveUsersRecord>> GetMonthlyActiveUsersAsync();
         Task<IEnumerable<YearlyActiveUsersRecord>> GetYearlyActiveUsersAsync();
 
-        Task<IEnumerable<DailyDurationsRecord>> GetDailyDurationsAsync();
-        Task<IEnumerable<MonthlyDurationsRecord>> GetMonthlyDurationsAsync();
-        Task<IEnumerable<YearlyDurationsRecord>> GetYearlyDurationsAsync();
+        Task<IEnumerable<DailyDurationsRecord>> GetDailyDurationsAsync(string name);
+        Task<IEnumerable<MonthlyDurationsRecord>> GetMonthlyDurationsAsync(string name);
+        Task<IEnumerable<YearlyDurationsRecord>> GetYearlyDurationsAsync(string name);
 
         Task<IEnumerable<DailyGameDurationsRecord>> GetDailyGameDurationsAsync();
         Task<IEnumerable<MonthlyGameDurationsRecord>> GetMonthlyGameDurationsAsync();
