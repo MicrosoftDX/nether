@@ -24,7 +24,7 @@ function CheckDependencies() {
         $missing += "bower is not installed: run 'npm install -g bower'"
     }
     if((Get-Command "gulp" -ErrorAction SilentlyContinue) -eq $null) {
-        $missing += "gulp is not installed: run 'npm install -g bower'"
+        $missing += "gulp is not installed: run 'npm install -g gulp'"
     }
 
     if($missing.Length -gt 0) {
