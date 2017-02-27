@@ -6,6 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Microsoft.Extensions.Logging;
 using Nether.Web.Features.Analytics.Models.Endpoint;
+using Microsoft.AspNetCore.Builder;
+using Nether.Data.Sql.Analytics;
+using Microsoft.EntityFrameworkCore;
+using Nether.Common.DependencyInjection;
+using Nether.Data.Analytics;
 
 namespace Nether.Web.Features.Analytics
 {
@@ -17,11 +22,12 @@ namespace Nether.Web.Features.Analytics
             ILogger logger)
         {
             services.AddEndpointInfo(configuration, logger, "Analytics:EventHub");
+            ConfigureAnalyticsStore(services, configuration, logger);
 
             return services;
         }
 
-        public static IServiceCollection AddEndpointInfo(
+        private static IServiceCollection AddEndpointInfo(
             this IServiceCollection services,
             IConfiguration configuration,
             ILogger logger,
@@ -43,6 +49,56 @@ namespace Nether.Web.Features.Analytics
                 Resource = configuration["Resource"],
                 Ttl = TimeSpan.Parse(configuration["Ttl"])
             };
+        }
+
+
+        
+        private static void ConfigureAnalyticsStore(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        {
+            if (configuration.Exists("Analytics:Store:wellKnown"))
+            {
+                // register using well-known type
+                var wellKnownType = configuration["Analytics:Store:wellknown"];
+                var scopedConfiguration = configuration.GetSection("Analytics:Store:properties");
+                switch (wellKnownType)
+                {
+                    case "in-memory":
+                        logger.LogInformation("Analytics:Store: using 'in-memory' store");
+                        services.AddTransient<IAnalyticsStore, EntityFrameworkAnalyticsStore>();
+                        services.AddTransient<AnalyticsContextBase, InMemoryAnalyticsContext>();
+                        break;
+                    case "sql":
+                        logger.LogInformation("Analytics:Store: using 'Sql' store");
+                        string connectionString = scopedConfiguration["ConnectionString"];
+                        services.AddTransient<IAnalyticsStore, EntityFrameworkAnalyticsStore>();
+                        // Add AnalyticsContextOptions to configure for SQL Server
+                        services.AddSingleton(new SqlAnalyticsContextOptions { ConnectionString = connectionString });
+                        services.AddTransient<AnalyticsContextBase, SqlAnalyticsContext>();
+                        break;
+                    default:
+                        throw new Exception($"Unhandled 'wellKnown' type for Analytics:Store: '{wellKnownType}'");
+                }
+            }
+            else
+            {
+                // fall back to generic "factory"/"implementation" configuration
+                services.AddServiceFromConfiguration<IAnalyticsStore>(configuration, logger, "Analytics:Store");
+            }
+        }
+
+        // TODO - look at abstracting this behind a "UseIdentity" method or similar
+        public static void InitializeAnalyticsStore(this IApplicationBuilder app, IConfiguration configuration, ILogger logger)
+        {
+            var wellKnownType = configuration["Analytics:Store:wellknown"];
+            if (wellKnownType == "sql")
+            {
+                logger.LogInformation("Run Migrations for SqlAnalyticsContext");
+                using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+                {
+                    var context = (SqlAnalyticsContext)serviceScope.ServiceProvider.GetRequiredService<AnalyticsContextBase>();
+                    context.Database.Migrate();
+                }
+            }
         }
     }
 }
