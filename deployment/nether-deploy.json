@@ -48,6 +48,7 @@
         },
         "webZipUri": {
             "type": "string",
+            "defaultValue": "https://netherartifacts.blob.core.windows.net/deployment-artifacts/master/Nether.Web.Zip",
             "metadata": {
                 "description": "(Optional) Absolute URI containing the Nether API's deployment package (ZIP). If not included, you'll need to deploy the package seperately."
             }
