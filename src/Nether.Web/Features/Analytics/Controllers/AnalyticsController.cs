@@ -38,5 +38,43 @@ namespace Nether.Web.Features.Analytics
             return base.Ok(response);
         }
 
+        [HttpGet("/active-sessions/monthly")]
+        [ProducesResponseType((int) HttpStatusCode.OK, Type = typeof(ActiveSessionsResponseModel))]
+        public async Task<IActionResult> MonthlyActiveSessionsAsync()
+        {
+            var sessions = await _store.GetMonthlyActiveSessionsAsync();
+            var response = new ActiveSessionsResponseModel
+            {
+                ActiveSessions = sessions
+                                    .Select(s => new ActiveSessionResponseModel
+                                    {
+                                        Year = s.EventDate.Year,
+                                        Month = s.EventDate.Month,
+                                        ActiveSessions = s.ActiveSessions
+                                    })
+                                    .ToList()
+            };
+            return base.Ok(response);
+        }
+
+
+        [HttpGet("/active-sessions/yearly")]
+        [ProducesResponseType((int) HttpStatusCode.OK, Type = typeof(ActiveSessionsResponseModel))]
+        public async Task<IActionResult> YearlyActiveSessionsAsync()
+        {
+            var sessions = await _store.GetYearlyActiveSessionsAsync();
+            var response = new ActiveSessionsResponseModel
+            {
+                ActiveSessions = sessions
+                                    .Select(s => new ActiveSessionResponseModel
+                                    {
+                                        Year = s.Year,
+                                        ActiveSessions = s.ActiveSessions
+                                    })
+                                    .ToList()
+            };
+            return base.Ok(response);
+        }
+
     }
 }
