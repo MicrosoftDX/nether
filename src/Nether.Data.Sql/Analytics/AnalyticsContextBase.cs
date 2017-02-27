@@ -50,6 +50,7 @@ namespace Nether.Data.Sql.Analytics
             builder.Entity<YearlyActiveSessionsEntity>(o =>
             {
                 o.HasKey(r => r.Year);
+                o.Property(r=>r.Year).ValueGeneratedNever();
                 o.Property(r => r.ActiveSessions).IsRequired();
             });
 
@@ -67,25 +68,27 @@ namespace Nether.Data.Sql.Analytics
             builder.Entity<YearlyActiveUsersEntity>(o =>
             {
                 o.HasKey(r => r.Year);
+                o.Property(r=>r.Year).ValueGeneratedNever();
                 o.Property(r => r.ActiveUsers).IsRequired();
             });
 
 
             builder.Entity<DailyDurationsEntity>(o =>
             {
-                o.HasKey(r => r.EventDate);
+                o.HasKey(r => new { r.AverageGenericDuration, r.EventDate });
                 o.Property(r => r.DisplayName).IsRequired();
                 o.Property(r => r.AverageGenericDuration).IsRequired();
             });
             builder.Entity<MonthlyDurationsEntity>(o =>
             {
-                o.HasKey(r => r.EventDate);
+                o.HasKey(r => new { r.AverageGenericDuration, r.EventDate });
                 o.Property(r => r.DisplayName).IsRequired();
                 o.Property(r => r.AverageGenericDuration).IsRequired();
             });
             builder.Entity<YearlyDurationsEntity>(o =>
             {
-                o.HasKey(r => r.Year);
+                o.HasKey(r => new { r.AverageGenericDuration, r.Year });
+                o.Property(r=>r.Year).ValueGeneratedNever();
                 o.Property(r => r.DisplayName).IsRequired();
                 o.Property(r => r.AverageGenericDuration).IsRequired();
             });
@@ -104,6 +107,7 @@ namespace Nether.Data.Sql.Analytics
             builder.Entity<YearlyGameDurationsEntity>(o =>
             {
                 o.HasKey(r => r.Year);
+                o.Property(r=>r.Year).ValueGeneratedNever();
                 o.Property(r => r.AverageGameDuration).IsRequired();
             });
 
@@ -123,6 +127,7 @@ namespace Nether.Data.Sql.Analytics
             builder.Entity<YearlyLevelDropOffEntity>(o =>
             {
                 o.HasKey(r => r.Year);
+                o.Property(r=>r.Year).ValueGeneratedNever();
                 o.Property(r => r.ReachedLevel).IsRequired();
                 o.Property(r => r.TotalCount).IsRequired();
             });
