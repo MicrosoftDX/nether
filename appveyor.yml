@@ -9,7 +9,19 @@ build_script:
 - ps: ./RunCodeFormatter.ps1
 - ps: ./build.ps1
 - ps: ./appveyor-packageweb.ps1
+- git rev-parse HEAD > commit.txt
 after_build:
 - ps:  Push-AppveyorArtifact src/Nether.Web/bin/Release/netcoreapp1.1/Nether.Web.zip -FileName Nether.Web.Zip -Type WebDeployPackage
+- ps:  Push-AppveyorArtifact commit.txt -FileName commit.txt -Type Auto
 test_script:
 - ps: ./run-unit-tests.ps1
+deploy:
+- provider: AzureBlob
+  storage_account_name: netherartifacts
+  storage_access_key:
+    secure: /KfEywXdV6Ys21sIob+Sjo3c3D+XPfQ/mftzcEeJs1Mom8HJmFSCu5919qqa/FzS++agyWJPwjBl0P7y8uc8m1CyszF5q/OUvWmgM0dIgGCWdR3FM2crLAGBipPqUF8G
+  container: deployment-artifacts
+  folder: master
+  artifact: Nether.Web.Zip,commit.txt
+  on:
+    branch: master
