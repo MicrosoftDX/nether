@@ -161,6 +161,7 @@ namespace Nether.Web
             app.InitializeIdentityStore(Configuration, logger);
             app.InitializePlayerManagementStore(Configuration, logger);
             app.InitializeLeaderboardStore(Configuration, logger);
+            app.InitializeAnalyticsStore(Configuration, logger);
 
 
             // Set up separate web pipelines for identity, MVC UI, and API
