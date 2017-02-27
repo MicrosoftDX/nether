@@ -24,10 +24,10 @@ namespace Nether.Analytics.EventProcessor
     public static class GameEventReceiver
     {
         private static readonly GameEventRouter s_router;
-        private static CloudBlobContainer _tmpContainer;
-        private static CloudBlobContainer _outputContainer;
+        private static CloudBlobContainer s_tmpContainer;
+        private static CloudBlobContainer s_outputContainer;
         private const string FullMessagesQueueName = "fullmessages";
-        private static BlobOutputManager _blobOutputManager;
+        private static BlobOutputManager s_blobOutputManager;
 
         static GameEventReceiver()
         {
@@ -76,7 +76,7 @@ namespace Nether.Analytics.EventProcessor
             Console.WriteLine();
 
             // Configure Blob Output
-            _blobOutputManager = new BlobOutputManager(
+            s_blobOutputManager = new BlobOutputManager(
                 storageAccountConnectionString,
                 webJobDashboardAndStorageConnectionString,
                 tmpContainer,
@@ -93,7 +93,7 @@ namespace Nether.Analytics.EventProcessor
                 lookupProvider = new BingLocationLookupProvider(bingMapsKey);
 
             // Setup Handler to use above configured output managers
-            var handler = new GameEventHandler(_blobOutputManager, eventHubOutputManager, lookupProvider);
+            var handler = new GameEventHandler(s_blobOutputManager, eventHubOutputManager, lookupProvider);
 
             // Configure Router to switch handeling to correct method depending on game event type
             s_router = new GameEventRouter(GameEventHandler.ResolveEventType,
@@ -117,14 +117,14 @@ namespace Nether.Analytics.EventProcessor
             var cloudStorageAccount = CloudStorageAccount.Parse(storageAccountConnectionString);
             var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
 
-            _tmpContainer = cloudBlobClient.GetContainerReference(tmpContainer);
-            _outputContainer = cloudBlobClient.GetContainerReference(outputContainer);
+            s_tmpContainer = cloudBlobClient.GetContainerReference(tmpContainer);
+            s_outputContainer = cloudBlobClient.GetContainerReference(outputContainer);
 
-            var createTmpContainer = _tmpContainer.CreateIfNotExistsAsync();
-            var createOutputContainer = _outputContainer.CreateIfNotExistsAsync();
+            var createTmpContainer = s_tmpContainer.CreateIfNotExistsAsync();
+            var createOutputContainer = s_outputContainer.CreateIfNotExistsAsync();
 
             Task.WaitAll(createTmpContainer, createOutputContainer);
-        }       
+        }
 
         public static void HandleBatch([EventHubTrigger("%NETHER_INGEST_EVENTHUB_NAME%")] EventData[] events)
         {
@@ -140,7 +140,7 @@ namespace Nether.Analytics.EventProcessor
             }
 
             s_router.Flush();
-        }        
+        }
 
         /// <summary>
         /// Time triggered function - goes over all the blobs in the tmp container ones marked as copied
@@ -148,8 +148,7 @@ namespace Nether.Analytics.EventProcessor
         public static async Task TimerJob([TimerTrigger("00:00:30")] TimerInfo timer)
         {
             Console.WriteLine("TimerJob triggered");
-            await _blobOutputManager.AppendBlobCleanup();
+            await s_blobOutputManager.AppendBlobCleanup();
         }
-        
     }
 }

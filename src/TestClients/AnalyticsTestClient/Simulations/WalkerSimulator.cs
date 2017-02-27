@@ -9,12 +9,12 @@ namespace AnalyticsTestClient
 {
     public class WalkerSimulator
     {
-        DateTime _startTime;
-        DateTime _endTime;
-        TimeSpan _tickInterval;
+        private DateTime _startTime;
+        private DateTime _endTime;
+        private TimeSpan _tickInterval;
 
-        Walker[] _walkers;
-        string _outputFileName;
+        private Walker[] _walkers;
+        private string _outputFileName;
 
         public WalkerSimulator(DateTime startTime, DateTime endTime, TimeSpan tickInterval, string outputFileName, params Walker[] walkers)
         {
@@ -23,7 +23,6 @@ namespace AnalyticsTestClient
             _tickInterval = tickInterval;
             _walkers = walkers;
             _outputFileName = outputFileName;
-
         }
 
         public void RunSimulation()
@@ -31,7 +30,7 @@ namespace AnalyticsTestClient
             Console.WriteLine("Starting Walking Simulation");
             Console.WriteLine();
 
-            
+
             var time = TimeSpan.FromSeconds(0);
             var tick = 0;
 

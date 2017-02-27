@@ -127,10 +127,10 @@ namespace Nether.Analytics.EventProcessor
 
             // Output CSV to BLOB Storage and JSON to StreamAnalytics (via EventHub)
             _blobOutputManager.QueueAppendToBlob(data, csvObject);
-            _eventHubOutputManager.SendToEventHub(data, jsonObject); 
+            _eventHubOutputManager.SendToEventHub(data, jsonObject);
         }
 
-        
+
 
         public void HandleScoreEvent(GameEventData data)
         {
@@ -215,5 +215,4 @@ namespace Nether.Analytics.EventProcessor
             return $"{gameEventType}/v{version}";
         }
     }
-
 }

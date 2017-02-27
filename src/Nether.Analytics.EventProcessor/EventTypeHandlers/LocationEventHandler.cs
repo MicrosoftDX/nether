@@ -1,4 +1,7 @@
-﻿using NGeoHash.Portable;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using NGeoHash.Portable;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,9 +12,9 @@ namespace Nether.Analytics.EventProcessor.EventTypeHandlers
 {
     public class LocationEventHandler
     {
-        private static ConcurrentDictionary<long, LocationLookupInfo> _cache = new ConcurrentDictionary<long, LocationLookupInfo>();
+        private static ConcurrentDictionary<long, LocationLookupInfo> s_cache = new ConcurrentDictionary<long, LocationLookupInfo>();
 
-        ILocationLookupProvider _locationLookupProvider;
+        private ILocationLookupProvider _locationLookupProvider;
 
         public LocationEventHandler(ILocationLookupProvider locationLookupProvider)
         {
@@ -20,7 +23,7 @@ namespace Nether.Analytics.EventProcessor.EventTypeHandlers
 
         public LocationLookupInfo LookupGeoHash(long geoHash, int precision)
         {
-            if (_cache.TryGetValue(geoHash, out LocationLookupInfo info))
+            if (s_cache.TryGetValue(geoHash, out LocationLookupInfo info))
             {
                 Console.WriteLine($"Cached geohash {geoHash}:{precision} is in {info.City}, {info.District}, {info.Country}");
                 return info;
@@ -32,12 +35,9 @@ namespace Nether.Analytics.EventProcessor.EventTypeHandlers
             l.Wait();
             var location = l.Result;
             Console.WriteLine($"Geohash {geoHash}:{precision} is in {location.City}, {location.District}, {location.Country} according to {_locationLookupProvider.GetType()}");
-            _cache.TryAdd(geoHash, location);
+            s_cache.TryAdd(geoHash, location);
 
             return location;
         }
-
     }
-
-
 }

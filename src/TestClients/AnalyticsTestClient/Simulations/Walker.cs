@@ -10,11 +10,11 @@ namespace AnalyticsTestClient.Simulations
 {
     public class Walker
     {
-        string _gameSessionId;
-        Random _random;
-        double _activeness;
+        private string _gameSessionId;
+        private Random _random;
+        private double _activeness;
 
-        GeoCheckpoint[] _checkpoints;
+        private GeoCheckpoint[] _checkpoints;
 
         public Walker(string gameSessionId, int randomSeed, double activeness, params GeoCheckpoint[] checkpoints)
         {

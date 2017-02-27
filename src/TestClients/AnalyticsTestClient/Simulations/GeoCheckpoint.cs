@@ -7,8 +7,8 @@ namespace AnalyticsTestClient.Simulations
 {
     public class GeoCheckpoint
     {
-        GeoPosition _position;
-        TimeSpan _atTime;
+        private GeoPosition _position;
+        private TimeSpan _atTime;
 
         public GeoCheckpoint(GeoPosition position, TimeSpan atTime)
         {
@@ -34,5 +34,4 @@ namespace AnalyticsTestClient.Simulations
         public GeoPosition Position => _position;
         public TimeSpan AtTime => _atTime;
     }
-    
 }

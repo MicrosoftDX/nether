@@ -6,12 +6,12 @@ namespace AnalyticsTestClient.Simulations
 {
     public class GeoPosition
     {
-        double _lat;
-        double _lon;
-        long _geoHash;
-        int _precision;
+        private double _lat;
+        private double _lon;
+        private long _geoHash;
+        private int _precision;
 
-        public GeoPosition(double  lat, double lon)
+        public GeoPosition(double lat, double lon)
         {
             _lat = lat;
             _lon = lon;
@@ -26,5 +26,4 @@ namespace AnalyticsTestClient.Simulations
         public long GeoHash => _geoHash;
         public int Precision => _precision;
     }
-    
 }

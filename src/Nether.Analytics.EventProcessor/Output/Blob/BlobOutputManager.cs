@@ -28,7 +28,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
         private readonly string _storageAccountConnectionString;
         private readonly string _webJobDashboardAndStorageConnectionString;
         private CloudBlobContainer _tmpContainer;
-        private CloudBlobContainer _outputContainer;                     
+        private CloudBlobContainer _outputContainer;
 
         public BlobOutputManager(string storageAccountConnectionString, string webJobDashboardAndStorageConnectionString, string tmpContainerName, string outputContainerName, long maxBlobBlobSize)
         {
@@ -142,9 +142,9 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
         }
 
         private async Task HandleFullBlob(CloudAppendBlob fullBlob)
-        {            
+        {
             // update blob metadata
-            await FlagsAsFull(fullBlob);      
+            await FlagsAsFull(fullBlob);
         }
 
         private async Task FlagsAsFull(CloudAppendBlob fullBlob)
@@ -152,7 +152,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             fullBlob.FetchAttributes();
             fullBlob.Metadata["full"] = DateTime.Now.ToString();
             await fullBlob.SetMetadataAsync();
-        }        
+        }
 
         private bool AppendToBlob(CloudAppendBlob blob, MemoryStream stream)
         {
@@ -176,7 +176,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             }
 
             return true;
-        }        
+        }
 
         private CloudAppendBlob GetTmpAppendBlob(string folderName)
         {
