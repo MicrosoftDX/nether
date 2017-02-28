@@ -10,7 +10,7 @@
         "ServiceBusNamespace": {
             "type": "string",
             "minLength": 3,
-            "maxLength": 15,
+            "maxLength": 30,
             "metadata": {
                 "description": "The unique storage account for use by Nether. only allows alpha characters and '-'. Cannot start or end with '-'."
             }

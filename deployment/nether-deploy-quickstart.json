@@ -31,7 +31,7 @@
         "netherTemplateURI": "[uri(parameters('templateBaseURL'), 'nether-deploy.json')]",
         "NetherWebDomainPrefix" : "[concat('netherweb', variables('suffix'))]",
         "sqlServerName" : "[concat('nethersql', variables('suffix'))]",
-        "sqlAdministratorLogin" : "nether",
+        "sqlAdministratorLogin" : "nethersqladmin",
         "sqlAdministratorPassword" : "[parameters('initialNetherAdministratorPassword')]",
         "analyticsEventHubNamespace": "[concat('nether', variables('suffix'))]",
         "analyticsStorageAccountName": "[concat('nether', variables('suffix'))]"
@@ -79,15 +79,15 @@
     "outputs": {
         "WebSiteFQDN": {
             "type": "string",
-            "value": "[reference('WebTemplate').Outputs.webSiteFQDN.value]"
+            "value": "[reference('NetherDeployment').Outputs.WebSiteFQDN.value]"
         },
         "DatabaseServerFQDN": {
             "type": "string",
-            "value": "[reference('SQLDatabaseTemplate').Outputs.databaseServerFQDN.value]"
+            "value": "[reference('NetherDeployment').Outputs.DatabaseServerFQDN.value]"
         },
         "DatabaseName": {
             "type": "string",
-            "value": "[reference('SQLDatabaseTemplate').Outputs.databaseName.value]"
+            "value": "[reference('NetherDeployment').Outputs.DatabaseName.value]"
         }
     }
 }

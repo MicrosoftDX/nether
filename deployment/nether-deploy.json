@@ -14,7 +14,7 @@
         "NetherWebDomainPrefix": {
             "type": "string",
             "minLength": 6,
-            "maxLength": 12,
+            "maxLength": 22,
             "metadata": {
                 "description": "The begining portion of the Nether web deployment URL (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'." 
             }
@@ -103,7 +103,7 @@
         "analyticsEventHubNamespace": {
             "type": "string",
             "minLength": 3,
-            "maxLength": 15,
+            "maxLength": 30,
             "metadata": {
                 "description": "The unique storage account for use by Nether. only allows alpha characters and '-'. Cannot start or end with '-'."
             }
@@ -166,7 +166,7 @@
         "analyticsStorageAccountName": {
             "type": "string",
             "minLength": 3,
-            "maxLength": 15,
+            "maxLength": 24,
             "metadata": {
                 "description": "The unique storage account for use by Nether. only allows alpha characters and '-'. Cannot start or end with '-'."
             }

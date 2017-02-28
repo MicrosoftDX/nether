@@ -10,7 +10,7 @@
         "NetherWebDomainPrefix": {
             "type": "string",
             "minLength": 6,
-            "maxLength": 12,
+            "maxLength": 22,
             "metadata": {
                 "description": "The begining portion of the Nether web deployment URL (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'."
             }
