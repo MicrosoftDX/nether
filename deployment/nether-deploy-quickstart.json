@@ -27,7 +27,7 @@
     },
     "variables": {
         "deploymentAPI": "2015-01-01",
-        "suffix": "[uniqueString(subscription(), resourceGroup())]",
+        "suffix": "[uniqueString(subscription().subscriptionId, resourceGroup().id)]",
         "netherTemplateURI": "[uri(parameters('templateBaseURL'), 'nether-deploy.json')]",
         "NetherWebDomainPrefix" : "[concat('netherweb', variables('suffix'))]",
         "sqlServerName" : "[concat('nethersql', variables('suffix'))]",
