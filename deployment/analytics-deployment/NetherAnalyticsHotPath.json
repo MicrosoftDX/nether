@@ -1,84 +1,84 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {        
-        "Query": { 
-            "type": "string", 
-            "metadata": { 
-                "description": ""
-            } 
-        },
-         "serviceBusNamespace" : {
-        "type" : "string"        
-     },
-        "eventHubName" : {
-            "type": "string"          
-        },
-        "sharedAccessPolicyName":  {
-            "type": "string"
-        },
-        "sharedAccessPolicyKey" :  {
-            "type": "string"           
-        },
-        "consumerGroupName" :  {
-            "type": "string"            
-        }           
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "Query": {
+      "type": "string",
+      "metadata": {
+        "description": ""
+      }
     },
-    "variables": {
-        "ehApiVersion": "2015-08-01",
-        "asaApiVersion": "2015-09-01",              
-        "streamJobName": "[concat('nether', uniquestring(resourceGroup().id))]",
-        "SKU": "Standard",          
-        "streamingUnits": 1
+    "serviceBusNamespace": {
+      "type": "string"
     },
-    "resources": [               
-        {
-            "type": "Microsoft.StreamAnalytics/StreamingJobs",
-            "name": "[variables('streamJobName')]",
-            "apiVersion": "[variables('asaApiVersion')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "sku": {
-                    "name": "[variables('SKU')]"  
-                },
-                "outputStartMode": "LastOutputEventTime",
-                "inputs": [
-                    {
-                        "name": "Input",
-                        "properties": {
-                            "type": "stream",
-                            "serialization": {
-                                "type": "JSON",
-                                "properties": {
-                                    "encoding": "UTF8"
-                                }
-                            },
-                            "datasource": {
-                                "type": "Microsoft.ServiceBus/EventHub",
-                                "properties": {
-                                    "eventHubName": "[parameters('eventHubName')]",
-                                    "serviceBusNamespace": "[parameters('serviceBusNamespace')]",
-                                    "sharedAccessPolicyName": "[parameters('sharedAccessPolicyName')]",
-                                    "sharedAccessPolicyKey": "[parameters('sharedAccessPolicyKey')]",
-                                    "consumerGroupName": "[parameters('consumerGroupName')]"
-                                }                               
-                            }
-                        }
-                    }
-                    
-                ],
-                "transformation": {
-                    "name": "[variables('streamJobName')]",
-                    "properties": {
-                        "streamingUnits": "[variables('streamingUnits')]",
-                        "query": "[parameters('Query')]"
-                    }
-                },
-                "outputs": [                   
-                ]
-            }
-        }
-    ],  
-    "outputs": {
+    "eventHubName": {
+      "type": "string"
+    },
+    "sharedAccessPolicyName": {
+      "type": "string"
+    },
+    "sharedAccessPolicyKey": {
+      "type": "string"
+    },
+    "consumerGroupName": {
+      "type": "string"
     }
+  },
+  "variables": {
+    "ehApiVersion": "2015-08-01",
+    "asaApiVersion": "2015-09-01",
+    "streamJobName": "[concat('nether', uniquestring(resourceGroup().id))]",
+    "SKU": "Standard",
+    "streamingUnits": 1
+  },
+  "resources": [
+    {
+      "type": "Microsoft.StreamAnalytics/StreamingJobs",
+      "name": "[variables('streamJobName')]",
+      "apiVersion": "[variables('asaApiVersion')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "sku": {
+          "name": "[variables('SKU')]"
+        },
+        "outputStartMode": "LastOutputEventTime",
+        "inputs": [
+          {
+            "name": "Input",
+            "properties": {
+              "type": "stream",
+              "serialization": {
+                "type": "JSON",
+                "properties": {
+                  "encoding": "UTF8"
+                }
+              },
+              "datasource": {
+                "type": "Microsoft.ServiceBus/EventHub",
+                "properties": {
+                  "eventHubName": "[parameters('eventHubName')]",
+                  "serviceBusNamespace": "[parameters('serviceBusNamespace')]",
+                  "sharedAccessPolicyName": "[parameters('sharedAccessPolicyName')]",
+                  "sharedAccessPolicyKey": "[parameters('sharedAccessPolicyKey')]",
+                  "consumerGroupName": "[parameters('consumerGroupName')]"
+                }
+              }
+            }
+          }
+
+        ],
+        "transformation": {
+          "name": "[variables('streamJobName')]",
+          "properties": {
+            "streamingUnits": "[variables('streamingUnits')]",
+            "query": "[parameters('Query')]"
+          }
+        },
+        "outputs": [
+        ]
+      }
+    }
+  ],
+  "outputs": {
+  }
 }

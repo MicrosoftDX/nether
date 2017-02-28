@@ -11,11 +11,11 @@ param
 
     [Parameter(Mandatory=$true)]
     [string]
-    $StorageAccountName,
+    $StorageAccountName,  
     
     [Parameter(Mandatory=$true)]
     [string]
-    $NetherWebDomainPrefix  
+    $SteamAnalyticsQuery       
 )
 $ErrorActionPreference = "Stop";
 
@@ -37,7 +37,7 @@ If(!(test-path $path))
 }
 
 # copy webjob build output to the new folde
-Copy-Item ../..//src/Nether.Analytics.EventProcessor/bin/$build/* ../../src/Nether.Analytics.EventProcessor/bin/Job/App_Data/jobs/continuous/EventProcessor -Force
+Copy-Item ../..//src/Nether.Analytics.EventProcessor/bin/$build/* ../../src/Nether.Analytics.EventProcessor/bin/Job/App_Data/jobs/continuous/EventProcessor -Recurse -Force
 
 $source = "$currentPath/../../src/Nether.Analytics.EventProcessor/bin/Job"
 $destination = "$currentPath/../../src/Nether.Analytics.EventProcessor/EventProcessorJob.zip"
@@ -48,6 +48,7 @@ If(Test-path $destination) {Remove-item $destination}
 [System.IO.Compression.ZipFile]::CreateFromDirectory($Source, $destination, "Fastest", $false)
 
 Write-Host "Checking for resource group $ResourceGroupName..."
+
 $resourceGroup = Get-AzureRmResourceGroup -name $ResourceGroupName -ErrorAction SilentlyContinue
 if ($resourceGroup -eq $null){
     Write-Host "creating new resource group $ResourceGroupName ... in $Location"
@@ -92,15 +93,25 @@ $jobZipblob = Set-AzureStorageBlobContent `
         -Blob "EventProcessorJob.zip" `
         -Force
 
+Write-Host
+Write-Host "Uploading Deployment scripts to storage..."
+Get-ChildItem -File $currentPath/* | Set-AzureStorageBlobContent `
+        -Context $storageAccount.Context `
+        -Container $containerName `
+        -Force
+
+
+
 $deploymentName = "Nether-Analytics-Deployment-{0:yyyy-MM-dd-HH-mm-ss}" -f (Get-Date)
 
-$templateParameters = @{
-    NetherWebDomainPrefix = $NetherWebDomainPrefix       
-    DeployPackageURI = $jobZipblob.ICloudBlob.Uri.AbsoluteUri    
+$templateParameters = @{      
+    DeployPackageURI = $jobZipblob.ICloudBlob.Uri.AbsoluteUri
+    TemplateBaseURL = $container.CloudBlobContainer.StorageUri.PrimaryUri.AbsoluteUri + "/" 
+    Query = $SteamAnalyticsQuery   
 }
 
 New-AzureRmResourceGroupDeployment `
             -ResourceGroupName $ResourceGroupName `
             -Name $deploymentName `
-            -TemplateFile "./NetherAnalyticsIngest.json" `
+            -TemplateFile "./NetherAnalytics.json" `
             -TemplateParameterObject $templateParameters
