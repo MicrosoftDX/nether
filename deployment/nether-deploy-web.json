@@ -1,6 +1,6 @@
 /*
 * This template will create an Azure Web App web site and hosting plan for use by Nether.
-* 
+*
 * For more information, please refer to the Nether repository at: https://github.com/MicrosoftDX/nether/tree/master/deployment
 */
 {
@@ -12,29 +12,29 @@
             "minLength": 6,
             "maxLength": 12,
             "metadata": {
-                "description": "The begining portion of the Nether web deployment URL (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'." 
+                "description": "The begining portion of the Nether web deployment URL (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'."
             }
         },
-        "WebHostingPlan": { 
-            "type": "string", 
-            "defaultValue": "Free (no 'always on')", 
-            "allowedValues": [ 
-                "Free (no 'always on')", 
-                "Shared", 
-                "Basic B1", 
-                "Basic B2", 
-                "Basic B3", 
-                "Standard S1", 
-                "Standard S2", 
-                "Standard S3", 
-                "Premium P1", 
-                "Premium P2", 
+        "WebHostingPlan": {
+            "type": "string",
+            "defaultValue": "Free (no 'always on')",
+            "allowedValues": [
+                "Free (no 'always on')",
+                "Shared",
+                "Basic B1",
+                "Basic B2",
+                "Basic B3",
+                "Standard S1",
+                "Standard S2",
+                "Standard S3",
+                "Premium P1",
+                "Premium P2",
                 "Premium P3"
-            ], 
-            "metadata": { 
-                "description": "Specifies the database pricing/performance." 
-            } 
-        }, 
+            ],
+            "metadata": {
+                "description": "Specifies the database pricing/performance."
+            }
+        },
         "InstanceCount": {
             "type": "int",
             "defaultValue": 1,
@@ -144,7 +144,7 @@
         "sqlConnString": "[concat('Data Source=tcp:',parameters('DatabaseServerFQDN'),',1433;Initial Catalog=',parameters('sqlServerDatabaseName'),';User Id=',parameters('sqlAdministratorLogin'),'@',parameters('DatabaseServerFQDN'),';Password=',parameters('sqlAdministratorPassword'),';')]"
     },
     "resources": [
-        /* 
+        /*
         * The web hosting plan for the Nether web site.
         * The hosting plan determines the performance and capacity of the web site.
         */
@@ -166,7 +166,7 @@
                 "name": "[variables('hostingPlanName')]"
             }
         },
-        /* 
+        /*
         * Creates and configures the Nether Web Site host
         * The site will be set up to allow MSDeploy (web deploy) and given configuration settings
         * for use by the Nether application
@@ -212,90 +212,92 @@
                         "[variables('webSiteName')]",
                         "MSDeploy"
                     ],
-                    "properties": {
-                        /* TODO: Add explanation of section */
-                        "alwaysOn": "[variables('HostingSKUs')[parameters('WebHostingPlan')].enableAlwaysOn]",
-                        "WEB_HOST_URL": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
-                        "ASPNETCORE_ENVIRONMENT": "Development",
-                        "Common:Cors:AllowedOrigins": "",
+                  "properties": {
+                    /* TODO: Add explanation of section */
+                    "alwaysOn": "[variables('HostingSKUs')[parameters('WebHostingPlan')].enableAlwaysOn]",
+                    "WEB_HOST_URL": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
+                    "ASPNETCORE_ENVIRONMENT": "Development",
+                    "Common:Cors:AllowedOrigins": "",
 
-                        /* TODO: Add explanation of section */
-                        "Leaderboard:Store:wellknown": "sql",
-                        "Leaderboard:Store:properties:ConnectionString": "[variables('sqlConnString')]",
-                        "Leaderboard:AnalyticsIntegrationClient:wellknown" : "default",
-                        "Leaderboard:AnalyticsIntegrationClient:properties:AnalyticsBaseUrl" : "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/')]",
+                    /* TODO: Add explanation of section */
+                    "Leaderboard:Store:wellknown": "sql",
+                    "Leaderboard:Store:properties:ConnectionString": "[variables('sqlConnString')]",
+                    "Leaderboard:AnalyticsIntegrationClient:wellknown": "default",
+                    "Leaderboard:AnalyticsIntegrationClient:properties:AnalyticsBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/')]",
 
-                        /* TODO: Add explanation of section */
-                        "AdminWebUi:AuthServerUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/identity/')]",
-                        "AdminWebUi:ApiBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/')]",
-                        "AdminWebUi:RedirectUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/admin/')]",
+                    /* TODO: Add explanation of section */
+                    "AdminWebUi:AuthServerUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/identity/')]",
+                    "AdminWebUi:ApiBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/')]",
+                    "AdminWebUi:RedirectUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/admin/')]",
 
-                        /* TODO: Add explanation of section */
-                        "PlayerManagement:Store:wellknown": "sql",
-                        "PlayerManagement:Store:properties:ConnectionString": "[variables('sqlConnString')]",
+                    /* TODO: Add explanation of section */
+                    "PlayerManagement:Store:wellknown": "sql",
+                    "PlayerManagement:Store:properties:ConnectionString": "[variables('sqlConnString')]",
 
-                        /* TODO: Add explanation of section */
-                        "Analytics:EventHub:Ttl" : "24:00:00", 
-                        "Analytics:EventHub:Resource": "[parameters('eventhubSendPolicy').uri]",
-                        "Analytics:EventHub:KeyName": "[parameters('eventhubSendPolicy').policyName]",
-                        "Analytics:EventHub:AccessKey": "[parameters('eventhubSendPolicy').policyKey]",
+                    /* TODO: Add explanation of section */
+                    "Analytics:EventHub:Ttl": "24:00:00",
+                    "Analytics:EventHub:Resource": "[parameters('eventhubSendPolicy').uri]",
+                    "Analytics:EventHub:KeyName": "[parameters('eventhubSendPolicy').policyName]",
+                    "Analytics:EventHub:AccessKey": "[parameters('eventhubSendPolicy').policyKey]",
+                    "Analytics:Store:wellknown": "sql",
+                    "Analytics:Store:properties:ConnectionString": "[variables('sqlConnString')]",
 
-                        /* TODO: Add explanation of section */
-                        "Identity:Store:wellknown": "sql",
-                        "Identity:Store:properties:ConnectionString": "[variables('sqlConnString')]",
+                    /* TODO: Add explanation of section */
+                    "Identity:Store:wellknown": "sql",
+                    "Identity:Store:properties:ConnectionString": "[variables('sqlConnString')]",
 
-                        /* TODO: Add explanation of section */
-                        "Identity:Clients:clientcredstest:Name": "Test Client for client credentials flow",
-                        "Identity:Clients:clientcredstest:AllowedGrantTypes": "client_credentials",
-                        "Identity:Clients:clientcredstest:ClientSecrets": "devsecret",
-                        "Identity:Clients:clientcredstest:AllowedScopes": "openid, profile, nether-all",
+                    /* TODO: Add explanation of section */
+                    "Identity:Clients:clientcredstest:Name": "Test Client for client credentials flow",
+                    "Identity:Clients:clientcredstest:AllowedGrantTypes": "client_credentials",
+                    "Identity:Clients:clientcredstest:ClientSecrets": "devsecret",
+                    "Identity:Clients:clientcredstest:AllowedScopes": "openid, profile, nether-all",
 
-                        /* TODO: Add explanation of section */
-                        "Identity:Clients:resourceownertest:AllowedGrantTypes": "password",
-                        "Identity:Clients:resourceownertest:ClientSecrets": "devsecret",
-                        "Identity:Clients:resourceownertest:AllowedScopes": "nether-all",
+                    /* TODO: Add explanation of section */
+                    "Identity:Clients:resourceownertest:AllowedGrantTypes": "password",
+                    "Identity:Clients:resourceownertest:ClientSecrets": "devsecret",
+                    "Identity:Clients:resourceownertest:AllowedScopes": "nether-all",
 
-                        /* TODO: Add explanation of section */
-                        "Identity:Clients:customgranttest:AllowedGrantTypes": "fb-usertoken",
-                        "Identity:Clients:customgranttest:ClientSecrets": "devsecret",
-                        "Identity:Clients:customgranttest:AllowedScopes": "nether-all",
+                    /* TODO: Add explanation of section */
+                    "Identity:Clients:customgranttest:AllowedGrantTypes": "fb-usertoken",
+                    "Identity:Clients:customgranttest:ClientSecrets": "devsecret",
+                    "Identity:Clients:customgranttest:AllowedScopes": "nether-all",
 
-                        /* TODO: Add explanation of section */
-                        "Identity:PlayerManagementClient:wellknown": "default",
-                        "Identity:PlayerManagementClient:properties:IdentityBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/identity')]",
-                        "Identity:PlayerManagementClient:properties:ApiBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api')]",
+                    /* TODO: Add explanation of section */
+                    "Identity:PlayerManagementClient:wellknown": "default",
+                    "Identity:PlayerManagementClient:properties:IdentityBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/identity')]",
+                    "Identity:PlayerManagementClient:properties:ApiBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api')]",
 
-                        /* TODO: Add explanation of section */
-                        "Identity:IdentityServer:RequireHttps": "true",
-                        "Identity:IdentityServer:Authority": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/identity')]",
-                        "Identity:IdentityServer:UiBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui')]",
+                    /* TODO: Add explanation of section */
+                    "Identity:IdentityServer:RequireHttps": "true",
+                    "Identity:IdentityServer:Authority": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/identity')]",
+                    "Identity:IdentityServer:UiBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui')]",
 
-                        /* TODO: Add explanation of section */
-                        "Identity:Clients:swaggerui:RedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/swagger/ui/o2c.html')]",
-                        "Identity:Clients:swaggerui:AllowedRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/swagger/ui/o2c.html')]",
+                    /* TODO: Add explanation of section */
+                    "Identity:Clients:swaggerui:RedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/swagger/ui/o2c.html')]",
+                    "Identity:Clients:swaggerui:AllowedRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/swagger/ui/o2c.html')]",
 
-                        /* TODO: Add explanation of section */
-                        "Identity:Clients:devclient:RedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/signin-oidc')]",
-                        "Identity:Clients:devclient:AllowedRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/signin-oidc')]",
-                        "Identity:Clients:devclient:PostLogoutRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
+                    /* TODO: Add explanation of section */
+                    "Identity:Clients:devclient:RedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/signin-oidc')]",
+                    "Identity:Clients:devclient:AllowedRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/signin-oidc')]",
+                    "Identity:Clients:devclient:PostLogoutRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
 
-                        /* TODO: Add explanation of section */
-                        "Identity:Clients:angular2client:RedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
-                        "Identity:Clients:angular2client:AllowedRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
-                        "Identity:Clients:angular2client:PostLogoutRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/login')]",
-                        "Identity:Clients:angular2client:AllowedCorsOrigins": "[concat('http://', reference(variables('webSiteName')).hostNames[0],',https://', reference(variables('webSiteName')).hostNames[0])]",
+                    /* TODO: Add explanation of section */
+                    "Identity:Clients:angular2client:RedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
+                    "Identity:Clients:angular2client:AllowedRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
+                    "Identity:Clients:angular2client:PostLogoutRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/login')]",
+                    "Identity:Clients:angular2client:AllowedCorsOrigins": "[concat('http://', reference(variables('webSiteName')).hostNames[0],',https://', reference(variables('webSiteName')).hostNames[0])]",
 
-                        /* TODO: Add explanation of section */
-                        "Identity:Clients:jstest:RedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/features/identity-test/callback.html')]",
-                        "Identity:Clients:jstest:AllowedRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/features/identity-test/callback.html')]",
-                        "Identity:Clients:jstest:PostLogoutRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/features/identity-test/index.html')]",
-                        "Identity:Clients:jstest:AllowedCorsOrigins": "[concat('http://', reference(variables('webSiteName')).hostNames[0],',https://', reference(variables('webSiteName')).hostNames[0])]"
-                    }
+                    /* TODO: Add explanation of section */
+                    "Identity:Clients:jstest:RedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/features/identity-test/callback.html')]",
+                    "Identity:Clients:jstest:AllowedRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/features/identity-test/callback.html')]",
+                    "Identity:Clients:jstest:PostLogoutRedirectUris": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/features/identity-test/index.html')]",
+                    "Identity:Clients:jstest:AllowedCorsOrigins": "[concat('http://', reference(variables('webSiteName')).hostNames[0],',https://', reference(variables('webSiteName')).hostNames[0])]"
+                  }
                 }
             ]
         }
     ],
-    /* outputs: 
+    /* outputs:
     *   webSiteFQDN: the host name (URI) for the web site
     */
     "outputs": {

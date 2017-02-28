@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Nether.Web.Utilities;
 using Microsoft.Extensions.Configuration;
 using System.Net;
+using Nether.Web.Features.Analytics.Models.Endpoint;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
