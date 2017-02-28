@@ -36,7 +36,7 @@
                 "Premium P3"
             ], 
             "metadata": { 
-                "description": "Specifies the database pricing/performance." 
+                "description": "Specifies the App Service pricing/performance." 
             } 
         }, 
         "InstanceCount": {
