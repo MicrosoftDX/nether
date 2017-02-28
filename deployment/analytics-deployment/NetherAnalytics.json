@@ -42,7 +42,14 @@
             "metadata": {
                 "description": "The base location for all linked templates."
             }   
-        } 
+        },
+		"DeployPackageURI": {
+            "minLength": 1,
+            "type": "String",
+            "metadata": {
+                "description": "WebDeploy package location."
+            }
+        }		
     },
     "variables": {        
         "deploymentAPI" : "2015-01-01",
@@ -66,7 +73,10 @@
                     },
                     "WebHostingPlan": {
                         "value": "[parameters('WebHostingPlan')]"
-                    }
+                    },
+					"DeployPackageURI" : {
+						"value" : "[parameters('DeployPackageURI')]"
+					}					
                 }
             }
         },

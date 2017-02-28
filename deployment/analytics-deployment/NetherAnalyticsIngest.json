@@ -29,7 +29,14 @@
             "metadata": { 
                 "description": "Specifies the database pricing/performance." 
             } 
-        }        
+        },
+		"DeployPackageURI": {
+            "minLength": 1,
+            "type": "String",
+            "metadata": {
+                "description": "WebDeploy package location."
+            }
+        }	        
   },
   "variables": {  
       "InstanceCount" : 1,
@@ -206,49 +213,72 @@
             "properties":{
                 "name": "[variables('webSiteName')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
-            }
+            },
+			"resources": [                
+                {
+                    "type": "extensions",
+                    "name": "MSDeploy",
+                    "apiVersion": "2015-08-01",
+                    "location": "[resourceGroup().location]",
+                    "tags": {
+                        "displayName": "WebAppMSDeploy"
+                    },
+                    "properties": {
+                        "packageUri": "[parameters('DeployPackageURI')]"
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', variables('webSiteName'))]"
+                    ]
+                },
+				{
+                    "type": "config",
+                    "name": "appsettings",
+                    "apiVersion": "2015-08-01",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', variables('webSiteName'))]",
+						"[concat('Microsoft.Web/sites/', variables('webSiteName'), '/extensions/MSDeploy')]"
+                    ],
+                    "properties": {
+						"NETHER_WEBJOB_DASHBOARD_AND_STORAGE_CONNECTIONSTRING" : "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('analyticsStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('analyticsStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+						
+						"NETHER_INGEST_EVENTHUB_CONNECTIONSTRING": "[listkeys(variables('authRuleResourceId'), variables('ehApiVersion')).primaryConnectionString]",
+						
+						"NETHER_INGEST_EVENTHUB_NAME": "[variables('ingestEventHub')]",
+						
+						"NETHER_ANALYTICS_STORAGE_CONNECTIONSTRING": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('analyticsStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('analyticsStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+						
+						"NETHER_ANALYTICS_STORAGE_CONTAINER": "analytics",
+						
+						"NETHER_ANALYTICS_STORAGE_TMP_CONTAINER": "tmp",
+						
+						"NETHER_INTERMEDIATE_EVENTHUB_CONNECTIONSTRING": "[listkeys(variables('authRuleResourceId'), variables('ehApiVersion')).primaryConnectionString]",
+						
+						"NETHER_INTERMEDIATE_EVENTHUB_NAME": "[variables('intermidiateEventHub')]"
+					}
+				}
+            ]
         } 
   ],
-  "outputs": {
-      "webJobStorageAccountConnectionString": {
-          "type": "string",
-          "value": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('analyticsStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('analyticsStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"         
-      },
-      "analyticsStorageAccountConnectionString": {
-          "type": "string",
-          "value": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('analyticsStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('analyticsStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
-      },
-      "eventHubConnectionString" : {
-          "type": "string",
-          "value" : "[listkeys(variables('authRuleResourceId'), variables('ehApiVersion')).primaryConnectionString]"
-      },
-      "ingestEventHubName" : {
-          "type" : "string",
-          "value" : "[variables('ingestEventHub')]"
-      },
-      "intermidiateEventHubName" : {
-          "type" : "string",
-          "value" : "[variables('intermidiateEventHub')]"
-      },      
+  "outputs": {      
      "serviceBusNamespace" : {
         "type" : "string",
         "value": "[variables('namespaceName')]"
      },
-        "eventHubName" : {
-            "type": "string",
-            "value" : "[variables('ingestEventHub')]"
-        },
-        "sharedAccessPolicyName":  {
-            "type": "string",
-            "value" :"[variables('ManagePolicyName')]"
-        },
-        "sharedAccessPolicyKey" :  {
-            "type": "string",
-            "value" :"[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),variables('namespaceName'),variables('ingestEventHub'),variables('ManagePolicyName')),variables('ehApiVersion')).primaryKey]"
-        },
-        "consumerGroupName" :  {
-            "type": "string",
-            "value" :"[variables('consumerGroupName')]"
-        }                  
+	"eventHubName" : {
+		"type": "string",
+		"value" : "[variables('ingestEventHub')]"
+	},
+	"sharedAccessPolicyName":  {
+		"type": "string",
+		"value" :"[variables('ManagePolicyName')]"
+	},
+	"sharedAccessPolicyKey" :  {
+		"type": "string",
+		"value" :"[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),variables('namespaceName'),variables('ingestEventHub'),variables('ManagePolicyName')),variables('ehApiVersion')).primaryKey]"
+	},
+	"consumerGroupName" :  {
+		"type": "string",
+		"value" :"[variables('consumerGroupName')]"
+	}                  
   }
 }
