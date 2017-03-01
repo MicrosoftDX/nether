@@ -270,7 +270,10 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                 continuationToken = listResult.ContinuationToken;
             } while (continuationToken != null);
 
-            return latestPath;
+            if (latestPath == "")
+                return ""; // No blob found
+
+            return Path.GetFileNameWithoutExtension(latestPath);
         }
 
         private string GetNextBlobName(string name)
