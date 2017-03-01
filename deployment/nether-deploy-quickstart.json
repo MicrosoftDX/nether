@@ -1,0 +1,93 @@
+{
+    /*
+    * This is the "master" template used to provision the Azure resources for Nether.
+    *
+    * This leverages linked templates which requires that the templates it links to are available via a URL. By default, these 
+    * will be pulled from the same location as this template. But this can be overridden by specifying a location via the pull 
+    * them from by specifying the templateBaseURL parameter.
+    * 
+    * For more information, please refer to the Nether repository at: https://github.com/MicrosoftDX/nether/tree/master/deployment
+    */
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "initialNetherAdministratorPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The initial password for the netheradmin user, sql server user, ..."
+            }
+        },
+        "templateBaseURL": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/MicrosoftDX/nether/master/deployment/",
+            "metadata": {
+                "description": "The base location for all linked templates"
+            }
+        }
+    },
+    "variables": {
+        "deploymentAPI": "2015-01-01",
+        "suffix": "[uniqueString(subscription().subscriptionId, resourceGroup().id)]",
+        "netherTemplateURI": "[uri(parameters('templateBaseURL'), 'nether-deploy.json')]",
+        "NetherWebDomainPrefix" : "[concat('netherweb', variables('suffix'))]",
+        "sqlServerName" : "[concat('nethersql', variables('suffix'))]",
+        "sqlAdministratorLogin" : "nethersqladmin",
+        "sqlAdministratorPassword" : "[parameters('initialNetherAdministratorPassword')]",
+        "analyticsEventHubNamespace": "[concat('nether', variables('suffix'))]",
+        "analyticsStorageAccountName": "[concat('nether', variables('suffix'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "NetherDeployment",
+            "apiVersion": "[variables('deploymentAPI')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('netherTemplateURI')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "NetherWebDomainPrefix": {
+                        "value": "[variables('NetherWebDomainPrefix')]"
+                    },
+                    "initialNetherAdministratorPassword": {
+                        "value": "[parameters('initialNetherAdministratorPassword')]"
+                    },
+                    "sqlServerName": {
+                        "value": "[variables('sqlServerName')]"
+                    },
+                    "sqlAdministratorLogin": {
+                        "value": "[variables('sqlAdministratorLogin')]"
+                    },
+                    "sqlAdministratorPassword": {
+                        "value": "[variables('sqlAdministratorPassword')]"
+                    },
+                    "analyticsEventHubNamespace": {
+                        "value": "[variables('analyticsEventHubNamespace')]"
+                    },
+                    "analyticsStorageAccountName": {
+                        "value": "[variables('analyticsStorageAccountName')]"
+                    },
+                    "templateBaseURL": {
+                        "value": "[parameters('templateBaseURL')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "WebSiteFQDN": {
+            "type": "string",
+            "value": "[reference('NetherDeployment').Outputs.WebSiteFQDN.value]"
+        },
+        "DatabaseServerFQDN": {
+            "type": "string",
+            "value": "[reference('NetherDeployment').Outputs.DatabaseServerFQDN.value]"
+        },
+        "DatabaseName": {
+            "type": "string",
+            "value": "[reference('NetherDeployment').Outputs.DatabaseName.value]"
+        }
+    }
+}

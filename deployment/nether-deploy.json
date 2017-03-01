@@ -1,20 +1,20 @@
-/*
-* This is the "master" template used to provision the Azure resources for Nether.
-*
-* This leverages linked templates which requires that the templates it links to are available via a URL. By default, these 
-* will be pulled from the same location as this template. But this can be overridden by specifying a location via the pull 
-* them from by specifying the templateBaseURL parameter.
-* 
-* For more information, please refer to the Nether repository at: https://github.com/MicrosoftDX/nether/tree/master/deployment
-*/
 {
+    /*
+    * This is the "master" template used to provision the Azure resources for Nether.
+    *
+    * This leverages linked templates which requires that the templates it links to are available via a URL. By default, these 
+    * will be pulled from the same location as this template. But this can be overridden by specifying a location via the pull 
+    * them from by specifying the templateBaseURL parameter.
+    * 
+    * For more information, please refer to the Nether repository at: https://github.com/MicrosoftDX/nether/tree/master/deployment
+    */
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": { 
         "NetherWebDomainPrefix": {
             "type": "string",
             "minLength": 6,
-            "maxLength": 12,
+            "maxLength": 22,
             "metadata": {
                 "description": "The begining portion of the Nether web deployment URL (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'." 
             }
@@ -36,7 +36,7 @@
                 "Premium P3"
             ], 
             "metadata": { 
-                "description": "Specifies the database pricing/performance." 
+                "description": "Specifies the App Service pricing/performance." 
             } 
         }, 
         "InstanceCount": {
@@ -48,8 +48,15 @@
         },
         "webZipUri": {
             "type": "string",
+            "defaultValue": "https://netherartifacts.blob.core.windows.net/deployment-artifacts/master/Nether.Web.Zip",
             "metadata": {
                 "description": "(Optional) Absolute URI containing the Nether API's deployment package (ZIP). If not included, you'll need to deploy the package seperately."
+            }
+        },
+        "initialNetherAdministratorPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The initial password for the netheradmin user"
             }
         },
         "sqlServerName": {
@@ -96,7 +103,7 @@
         "analyticsEventHubNamespace": {
             "type": "string",
             "minLength": 3,
-            "maxLength": 15,
+            "maxLength": 30,
             "metadata": {
                 "description": "The unique storage account for use by Nether. only allows alpha characters and '-'. Cannot start or end with '-'."
             }
@@ -159,7 +166,7 @@
         "analyticsStorageAccountName": {
             "type": "string",
             "minLength": 3,
-            "maxLength": 15,
+            "maxLength": 24,
             "metadata": {
                 "description": "The unique storage account for use by Nether. only allows alpha characters and '-'. Cannot start or end with '-'."
             }
@@ -180,7 +187,7 @@
         },
         "templateBaseURL": {
             "type": "string",
-            "defaultValue": "[deployment().properties.templateLink.uri]",
+            "defaultValue": "https://raw.githubusercontent.com/MicrosoftDX/nether/master/deployment/",
             "metadata": {
                 "description": "The base location for all linked templates."
             }   
@@ -264,7 +271,8 @@
                     "sqlAdministratorLogin": { "value": "[parameters('sqlAdministratorLogin')]" },
                     "sqlAdministratorPassword": { "value": "[parameters('sqlAdministratorPassword')]" },
                     "eventhubSendPolicy": { "value": "[reference('EventHubTemplate').outputs.sendPolicy.value]" },
-                    "webZipUri": { "value": "[parameters('webZipUri')]" }
+                    "webZipUri": { "value": "[parameters('webZipUri')]" },
+                    "initialNetherAdministratorPassword": { "value": "[parameters('initialNetherAdministratorPassword')]"}
                 } 
             } 
         },

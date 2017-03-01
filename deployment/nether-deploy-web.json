@@ -10,7 +10,7 @@
         "NetherWebDomainPrefix": {
             "type": "string",
             "minLength": 6,
-            "maxLength": 12,
+            "maxLength": 22,
             "metadata": {
                 "description": "The begining portion of the Nether web deployment URL (must be globally unique). only allows alpha characters and '-'. Cannot start or end with '-'."
             }
@@ -66,6 +66,12 @@
                 "description": "The password of the admin user of the SQL Server"
             }
         },
+        "initialNetherAdministratorPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The initial password for the netheradmin user"
+            }
+        },
         "eventhubSendPolicy": {
             "type": "object",
             "metadata": {
@@ -82,7 +88,7 @@
     "variables": {
         "WebResourceAPI": "2015-08-01",
         "hostingPlanName": "[toLower(concat(parameters('NetherWebDomainPrefix'), '-hostingplan'))]",
-        "webSiteName": "[toLower(concat(parameters('NetherWebDomainPrefix'), '-website'))]",
+        "webSiteName": "[toLower(concat(parameters('NetherWebDomainPrefix')))]",
         /* The webHostingPlan specified in the input parameter is translated into the app host plan settings via this array */
         "HostingSKUs" : {
             "Free (no 'always on')" : {
@@ -241,6 +247,9 @@
                     "Analytics:EventHub:AccessKey": "[parameters('eventhubSendPolicy').policyKey]",
                     "Analytics:Store:wellknown": "sql",
                     "Analytics:Store:properties:ConnectionString": "[variables('sqlConnString')]",
+
+                    /* TODO: Add explanation of section */
+                    "Identity:InitialSetup:AdminPassword": "[parameters('initialNetherAdministratorPassword')]",
 
                     /* TODO: Add explanation of section */
                     "Identity:Store:wellknown": "sql",
