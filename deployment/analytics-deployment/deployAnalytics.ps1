@@ -7,17 +7,16 @@ param
     # user Get-AzureRmLocation to get the list of valid location values
     [Parameter(Mandatory=$true)]
     [string]
-    $Location,
-
-    [Parameter(Mandatory=$true)]
-    [string]
-    $StorageAccountName,  
+    $Location,  
     
     [Parameter(Mandatory=$true)]
     [string]
     $SteamAnalyticsQuery       
 )
 $ErrorActionPreference = "Stop";
+
+$random = Get-Random
+$ScriptsStorageAccountName = "assetstore" + $random
 
 $currentPath = Convert-Path .
 
@@ -57,14 +56,15 @@ if ($resourceGroup -eq $null){
 
 $storageAccount = Get-AzureRmStorageAccount `
                     -ResourceGroupName $ResourceGroupName `
-                    -Name $storageAccountName `
+                    -Name $ScriptsStorageAccountName `
                     -ErrorAction SilentlyContinue
 if ($storageAccount -eq $null){
     Write-Host
-    Write-Host "Creating storage account $StorageAccountName..."
+    Write-Host "Creating storage account $ScriptsStorageAccountName..."
+
     $storageAccount = New-AzureRmStorageAccount `
         -ResourceGroupName $ResourceGroupName `
-        -Name $StorageAccountName `
+        -Name $ScriptsStorageAccountName `
         -Location $Location `
         -SkuName Standard_LRS
 }
@@ -101,6 +101,7 @@ Get-ChildItem -File $currentPath/* | Set-AzureStorageBlobContent `
         -Force
 
 
+Write-Host "Deploying ingest and hot path flow"
 
 $deploymentName = "Nether-Analytics-Deployment-{0:yyyy-MM-dd-HH-mm-ss}" -f (Get-Date)
 

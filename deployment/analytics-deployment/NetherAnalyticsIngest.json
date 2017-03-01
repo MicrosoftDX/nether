@@ -11,7 +11,7 @@
         "Basic B1",
         "Basic B2",
         "Basic B3",
-        "Standard S1",
+        "Standard S1", 
         "Standard S2",
         "Standard S3",
         "Premium P1",
@@ -258,7 +258,7 @@
 
             "NETHER_ANALYTICS_STORAGE_CONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('analyticsStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('analyticsStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
 
-            "NETHER_ANALYTICS_STORAGE_CONTAINER": "analytics",
+            "NETHER_ANALYTICS_STORAGE_CONTAINER": "gameevents",
 
             "NETHER_ANALYTICS_STORAGE_TMP_CONTAINER": "tmp",
 
@@ -290,6 +290,10 @@
     "consumerGroupName": {
       "type": "string",
       "value": "[variables('consumerGroupName')]"
-    }
+    },
+	"analyticsStorageName": {
+		"type":"string",
+		"value": "[variables('analyticsStorageAccountName')]"
+	}
   }
 }
