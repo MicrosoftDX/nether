@@ -29,6 +29,8 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
         private readonly string _webJobDashboardAndStorageConnectionString;
         private CloudBlobContainer _tmpContainer;
         private CloudBlobContainer _outputContainer;
+        private readonly string _outputContainerName;
+        private readonly string _tmpContainerName;
 
         public BlobOutputManager(string storageAccountConnectionString, string webJobDashboardAndStorageConnectionString, string tmpContainerName, string outputContainerName, long maxBlobBlobSize)
         {
@@ -36,24 +38,25 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             _webJobDashboardAndStorageConnectionString = webJobDashboardAndStorageConnectionString;
             _maxBlobSize = maxBlobBlobSize;
 
-            Setup(tmpContainerName, outputContainerName);
+            _tmpContainerName = tmpContainerName;
+            _outputContainerName = outputContainerName;
         }
 
-        private void Setup(string tmpContainerName, string outputContainerName)
+        public async Task SetupAsync()
         {
             var cloudStorageAccount = CloudStorageAccount.Parse(_storageAccountConnectionString);
             var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
 
-            _tmpContainer = cloudBlobClient.GetContainerReference(tmpContainerName);
-            _outputContainer = cloudBlobClient.GetContainerReference(outputContainerName);
+            _tmpContainer = cloudBlobClient.GetContainerReference(_tmpContainerName);
+            _outputContainer = cloudBlobClient.GetContainerReference(_outputContainerName);
 
-            var createTmpContainer = _tmpContainer.CreateIfNotExistsAsync();
-            var createOutputContainer = _outputContainer.CreateIfNotExistsAsync();
+            var createTmpContainerTask = _tmpContainer.CreateIfNotExistsAsync();
+            var createOutputContainerTask = _outputContainer.CreateIfNotExistsAsync();
 
-            Task.WaitAll(createTmpContainer, createOutputContainer);
-
-            if (createTmpContainer.Result) Console.WriteLine($"Container {_tmpContainer.Name} created");
-            if (createOutputContainer.Result) Console.WriteLine($"Container {_outputContainer.Name} created");
+            if (await createTmpContainerTask)
+                Console.WriteLine($"Container {_tmpContainer.Name} created");
+            if (await createOutputContainerTask)
+                Console.WriteLine($"Container {_outputContainer.Name} created");
         }
 
         public void QueueAppendToBlob(GameEventData data, string line)
@@ -80,7 +83,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             return $"{versionedType}/{enqueueTime.Year:D4}/{enqueueTime.Month:D2}/{enqueueTime.Day:D2}/";
         }
 
-        public void FlushWriteQueues()
+        public async Task FlushWriteQueuesAsync()
         {
             ConcurrentDictionary<string, ConcurrentQueue<string>> writeQueuesToFlush;
 
@@ -93,27 +96,34 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                 _writeQueues = new ConcurrentDictionary<string, ConcurrentQueue<string>>();
             }
 
-            Parallel.ForEach(writeQueuesToFlush, q =>
+            var tasks = writeQueuesToFlush.Select(async q =>
             {
                 var folder = q.Key;
                 var queue = q.Value;
 
-                var lines = new List<string>();
-
-                while (queue.TryDequeue(out string line))
-                {
-                    lines.Add(line);
-                }
-
-                // Only flush queues that had messages
-                if (lines.Count > 0)
-                {
-                    AppendToFolder(folder, lines.ToArray());
-                }
+                await FlushQueueAsync(folder, queue);
             });
+
+            await Task.WhenAll(tasks);
         }
 
-        private async void AppendToFolder(string folder, params string[] lines)
+        private async Task FlushQueueAsync(string folder, ConcurrentQueue<string> queue)
+        {
+            var lines = new List<string>();
+
+            while (queue.TryDequeue(out string line))
+            {
+                lines.Add(line);
+            }
+
+            // Only flush queues that had messages
+            if (lines.Count > 0)
+            {
+                await AppendToFolderAsync(folder, lines.ToArray());
+            }
+        }
+
+        private async Task AppendToFolderAsync(string folder, params string[] lines)
         {
             Console.WriteLine(folder);
             foreach (var line in lines)
@@ -134,20 +144,20 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
                 // Blob reached max size
                 Console.WriteLine($"Blob {blob.Name} has reached max size of {_maxBlobSize}B");
-                await HandleFullBlob(blob);
+                await HandleFullBlobAsync(blob);
 
                 blob = GetNewTmpAppendBlob(folder);
                 Console.WriteLine($"Rolling over to new blob {blob.Name}");
             }
         }
 
-        private async Task HandleFullBlob(CloudAppendBlob fullBlob)
+        private async Task HandleFullBlobAsync(CloudAppendBlob fullBlob)
         {
             // update blob metadata
-            await FlagsAsFull(fullBlob);
+            await FlagsAsFullAsync(fullBlob);
         }
 
-        private async Task FlagsAsFull(CloudAppendBlob fullBlob)
+        private async Task FlagsAsFullAsync(CloudAppendBlob fullBlob)
         {
             fullBlob.FetchAttributes();
             fullBlob.Metadata["full"] = DateTime.Now.ToString();
@@ -276,7 +286,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             return $"{xxxxxx}_{GetNextBlobName(yyyyyy)}";
         }
 
-        public async Task AppendBlobCleanup()
+        public async Task AppendBlobCleanupAsync()
         {
             foreach (IListBlobItem b in _tmpContainer.ListBlobs(null, true))
             {

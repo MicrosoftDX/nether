@@ -33,9 +33,9 @@ namespace Nether.Analytics.EventProcessor
             _locationLookupProvider = locationLookupProvider;
         }
 
-        public void Flush()
+        public async System.Threading.Tasks.Task FlushAsync()
         {
-            _blobOutputManager.FlushWriteQueues();
+            await _blobOutputManager.FlushWriteQueuesAsync();
         }
 
         //TODO: Fix Game Event Handlers to use reflection over properties if possible

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Azure.WebJobs.Host.Bindings;
+using System.Threading.Tasks;
 
 namespace Nether.Analytics.EventProcessor
 {
@@ -18,17 +19,17 @@ namespace Nether.Analytics.EventProcessor
         private readonly Dictionary<string, Action<GameEventData>> _gameEventTypeActions;
         private Action<GameEventData> _unknownGameEventTypeAction;
         private Action<GameEventData> _unknownGameEventFormatAction;
-        private Action _flushWriteQueuesAction;
+        private Func<Task> _flushWriteQueuesActionAsync;
 
         public GameEventRouter(Action<GameEventData> resolveGameEventTypeAction,
             Action<GameEventData> unknownGameEventFormatAction = null,
             Action<GameEventData> unknownGameEventTypeAction = null,
-            Action flushWriteQueuesAction = null)
+            Func<Task> flushWriteQueuesActionAsync = null)
         {
             _resolveGameEventTypeAction = resolveGameEventTypeAction;
             _unknownGameEventFormatAction = unknownGameEventFormatAction;
             _unknownGameEventTypeAction = unknownGameEventTypeAction;
-            _flushWriteQueuesAction = flushWriteQueuesAction;
+            _flushWriteQueuesActionAsync = flushWriteQueuesActionAsync;
 
             _gameEventTypeActions = new Dictionary<string, Action<GameEventData>>();
         }
@@ -84,9 +85,9 @@ namespace Nether.Analytics.EventProcessor
             handler(gameEventData);
         }
 
-        public void Flush()
+        public async Task FlushAsync()
         {
-            _flushWriteQueuesAction();
+            await _flushWriteQueuesActionAsync();
         }
     }
 }
