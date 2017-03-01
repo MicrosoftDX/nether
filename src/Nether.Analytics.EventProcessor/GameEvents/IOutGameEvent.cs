@@ -10,8 +10,8 @@ namespace Nether.Analytics.EventProcessor.GameEvents
     {
         string Type { get; }
         string Version { get; }
-        DateTime EnqueTime { get; set; }
-        DateTime DequeTime { get; set; }
+        DateTime EnqueueTime { get; set; }
+        DateTime DequeueTime { get; set; }
         DateTime ClientUtcTime { get; set; }
         Dictionary<string, string> Properties { get; }
     }

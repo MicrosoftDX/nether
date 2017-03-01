@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using NGeoHash.Portable;
 using Nether.Analytics.EventProcessor.GameEvents;
 using Nether.Analytics.EventProcessor.EventTypeHandlers;
+using System.Threading.Tasks;
 
 namespace Nether.Analytics.EventProcessor
 {
@@ -33,7 +34,7 @@ namespace Nether.Analytics.EventProcessor
             _locationLookupProvider = locationLookupProvider;
         }
 
-        public async System.Threading.Tasks.Task FlushAsync()
+        public async Task FlushAsync()
         {
             await _blobOutputManager.FlushWriteQueuesAsync();
         }
@@ -96,8 +97,8 @@ namespace Nether.Analytics.EventProcessor
 
             var outEvent = new OutgoingLocationEvent
             {
-                EnqueTime = data.EnqueuedTime,
-                DequeTime = data.DequeuedTime,
+                EnqueueTime = data.EnqueuedTime,
+                DequeueTime = data.DequeuedTime,
                 ClientUtcTime = inEvent.ClientUtcTime,
                 GameSessionId = inEvent.GameSessionId,
                 Lat = inEvent.Lat,

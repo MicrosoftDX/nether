@@ -10,8 +10,8 @@ namespace Nether.Analytics.EventProcessor.GameEvents
     {
         public string Type => "location";
         public string Version => "1.0.0";
-        public DateTime EnqueTime { get; set; }
-        public DateTime DequeTime { get; set; }
+        public DateTime EnqueueTime { get; set; }
+        public DateTime DequeueTime { get; set; }
         public DateTime ClientUtcTime { get; set; }
         public string GameSessionId { get; set; }
         public double Lat { get; set; }
