@@ -125,17 +125,17 @@ namespace Nether.Analytics.EventProcessor
                     GameEventHandler.UnknownGameEventTypeHandler,
                     handler.FlushAsync);
 
-                s_router.RegisterKnownGameEventTypeHandler("count/v1.0.0", handler.HandleCountEvent);
-                s_router.RegisterKnownGameEventTypeHandler("game-heartbeat/v1.0.0", handler.HandleGameHeartbeat);
-                s_router.RegisterKnownGameEventTypeHandler("game-start/v1.0.0", handler.HandleGameStartEvent);
-                s_router.RegisterKnownGameEventTypeHandler("game-stop/v1.0.0", handler.HandleGameStopEvent);
-                s_router.RegisterKnownGameEventTypeHandler("location/v1.0.0", handler.HandleLocationEvent);
-                s_router.RegisterKnownGameEventTypeHandler("score/v1.0.0", handler.HandleScoreEvent);
-                s_router.RegisterKnownGameEventTypeHandler("start/v1.0.0", handler.HandleStartEvent);
-                s_router.RegisterKnownGameEventTypeHandler("stop/v1.0.0", handler.HandleStopEvent);
-                s_router.RegisterKnownGameEventTypeHandler("generic/v1.0.0", handler.HandleGenericEvent);
-                s_router.RegisterKnownGameEventTypeHandler("level-completed/v1.0.0", handler.HandleLevelCompletedEvent);
-                s_router.RegisterKnownGameEventTypeHandler("level-start/v1.0.0", handler.HandleLevelStartEvent);
+                s_router.RegisterKnownGameEventTypeHandler("count/v1.0.0", handler.HandleCountEventAsync);
+                s_router.RegisterKnownGameEventTypeHandler("game-heartbeat/v1.0.0", handler.HandleGameHeartbeatAsync);
+                s_router.RegisterKnownGameEventTypeHandler("game-start/v1.0.0", handler.HandleGameStartEventAsync);
+                s_router.RegisterKnownGameEventTypeHandler("game-stop/v1.0.0", handler.HandleGameStopEventAsync);
+                s_router.RegisterKnownGameEventTypeHandler("location/v1.0.0", handler.HandleLocationEventAsync);
+                s_router.RegisterKnownGameEventTypeHandler("score/v1.0.0", handler.HandleScoreEventAsync);
+                s_router.RegisterKnownGameEventTypeHandler("start/v1.0.0", handler.HandleStartEventAsync);
+                s_router.RegisterKnownGameEventTypeHandler("stop/v1.0.0", handler.HandleStopEventAsync);
+                s_router.RegisterKnownGameEventTypeHandler("generic/v1.0.0", handler.HandleGenericEventAsync);
+                s_router.RegisterKnownGameEventTypeHandler("level-completed/v1.0.0", handler.HandleLevelCompletedEventAsync);
+                s_router.RegisterKnownGameEventTypeHandler("level-start/v1.0.0", handler.HandleLevelStartEventAsync);
             }
         }
 
@@ -150,7 +150,7 @@ namespace Nether.Analytics.EventProcessor
             foreach (var ev in events)
             {
                 var gameEventData = new GameEventData(ev, dequeueTime);
-                s_router.HandleGameEvent(gameEventData);
+                await s_router.HandleGameEventAsync(gameEventData);
             }
 
             await s_router.FlushAsync();

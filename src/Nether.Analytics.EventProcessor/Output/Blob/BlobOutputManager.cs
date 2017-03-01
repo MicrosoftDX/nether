@@ -59,10 +59,11 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                 Console.WriteLine($"Container {_outputContainer.Name} created");
         }
 
-        public void QueueAppendToBlob(GameEventData data, string line)
+        public Task QueueAppendToBlobAsync(GameEventData data, string line)
         {
             var queue = GetQueueForGameEvent(data);
             queue.Enqueue(line);
+            return Task.CompletedTask;
         }
 
         private ConcurrentQueue<string> GetQueueForGameEvent(GameEventData data)

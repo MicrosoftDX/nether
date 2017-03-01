@@ -41,47 +41,47 @@ namespace Nether.Analytics.EventProcessor
 
         //TODO: Fix Game Event Handlers to use reflection over properties if possible
         //TODO: Enrich events with knows facts, such as location on heartbeats, etc.
-        public void HandleCountEvent(GameEventData data)
+        public async Task HandleCountEventAsync(GameEventData data)
         {
             var serializedGameEvent = data.ToCsv("displayName", "value", "gameSessionId");
 
-            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
-            _eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
+            await _blobOutputManager.QueueAppendToBlobAsync(data, serializedGameEvent);
+            await _eventHubOutputManager.SendToEventHubAsync(data, serializedGameEvent);
         }
 
-        public void HandleGameHeartbeat(GameEventData data)
+        public async Task HandleGameHeartbeatAsync(GameEventData data)
         {
             var serializedGameEvent = data.ToCsv("gameSessionId");
 
-            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
-            _eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
+            await _blobOutputManager.QueueAppendToBlobAsync(data, serializedGameEvent);
+            await _eventHubOutputManager.SendToEventHubAsync(data, serializedGameEvent);
         }
 
-        public void HandleGameStartEvent(GameEventData data)
+        public async Task HandleGameStartEventAsync(GameEventData data)
         {
             var serializedGameEvent = data.ToCsv("gameSessionId", "gamerTag");
 
-            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            await _blobOutputManager.QueueAppendToBlobAsync(data, serializedGameEvent);
             //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleGameStopEvent(GameEventData data)
+        public async Task HandleGameStopEventAsync(GameEventData data)
         {
             var serializedGameEvent = data.ToCsv("gameSessionId");
 
-            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            await _blobOutputManager.QueueAppendToBlobAsync(data, serializedGameEvent);
             //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleGenericEvent(GameEventData data)
+        public async Task HandleGenericEventAsync(GameEventData data)
         {
             var serializedGameEvent = data.ToCsv();
 
-            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            await _blobOutputManager.QueueAppendToBlobAsync(data, serializedGameEvent);
             //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleLocationEvent(GameEventData data)
+        public async Task HandleLocationEventAsync(GameEventData data)
         {
             const int GeoHashBitPrecision = 32; //bits
             const int LocationLookupGeoHashBitPrecistion = 30; //bits
@@ -127,48 +127,48 @@ namespace Nether.Analytics.EventProcessor
                 "geoHashCenterLat", "geoHashCenterLon", "country", "district", "city");
 
             // Output CSV to BLOB Storage and JSON to StreamAnalytics (via EventHub)
-            _blobOutputManager.QueueAppendToBlob(data, csvObject);
-            _eventHubOutputManager.SendToEventHub(data, jsonObject);
+            await _blobOutputManager.QueueAppendToBlobAsync(data, csvObject);
+            await _eventHubOutputManager.SendToEventHubAsync(data, jsonObject);
         }
 
 
 
-        public void HandleScoreEvent(GameEventData data)
+        public async Task HandleScoreEventAsync(GameEventData data)
         {
             var serializedGameEvent = data.ToCsv("gameSessionId", "score");
 
-            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            await _blobOutputManager.QueueAppendToBlobAsync(data, serializedGameEvent);
             //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleStartEvent(GameEventData data)
+        public async Task HandleStartEventAsync(GameEventData data)
         {
             var serializedGameEvent = data.ToCsv("eventCorrelationId", "displayName", "gameSessionId");
 
-            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            await _blobOutputManager.QueueAppendToBlobAsync(data, serializedGameEvent);
             //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleStopEvent(GameEventData data)
+        public async Task HandleStopEventAsync(GameEventData data)
         {
             var serializedGameEvent = data.ToCsv("eventCorrelationId");
 
-            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            await _blobOutputManager.QueueAppendToBlobAsync(data, serializedGameEvent);
             //_eventHubOutputManager.SendToEventHub(data, serializedGameEvent);
         }
 
-        public void HandleLevelCompletedEvent(GameEventData data)
+        public async Task HandleLevelCompletedEventAsync(GameEventData data)
         {
             var serializedGameEvent = data.ToCsv("gameSessionId", "level");
 
-            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            await _blobOutputManager.QueueAppendToBlobAsync(data, serializedGameEvent);
         }
 
-        public void HandleLevelStartEvent(GameEventData data)
+        public async Task HandleLevelStartEventAsync(GameEventData data)
         {
             var serializedGameEvent = data.ToCsv("gameSessionId", "level");
 
-            _blobOutputManager.QueueAppendToBlob(data, serializedGameEvent);
+            await _blobOutputManager.QueueAppendToBlobAsync(data, serializedGameEvent);
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace Nether.Analytics.EventProcessor
     public class GameEventRouter
     {
         private readonly Action<GameEventData> _resolveGameEventTypeAction;
-        private readonly Dictionary<string, Action<GameEventData>> _gameEventTypeActions;
+        private readonly Dictionary<string, Func<GameEventData, Task>> _gameEventTypeActions;
         private Action<GameEventData> _unknownGameEventTypeAction;
         private Action<GameEventData> _unknownGameEventFormatAction;
         private Func<Task> _flushWriteQueuesActionAsync;
@@ -31,17 +31,17 @@ namespace Nether.Analytics.EventProcessor
             _unknownGameEventTypeAction = unknownGameEventTypeAction;
             _flushWriteQueuesActionAsync = flushWriteQueuesActionAsync;
 
-            _gameEventTypeActions = new Dictionary<string, Action<GameEventData>>();
+            _gameEventTypeActions = new Dictionary<string, Func<GameEventData, Task>>();
         }
 
         /// <summary>
         /// Registeres Game Event Types and what action to take if received
         /// </summary>
         /// <param name="gameEventType">Game Event Type</param>
-        /// <param name="action">Action(gameEventType, data) to be called when Game Event is received</param>
-        public void RegisterKnownGameEventTypeHandler(string gameEventType, Action<GameEventData> action)
+        /// <param name="actionAsync">Action(gameEventType, data) to be called when Game Event is received</param>
+        public void RegisterKnownGameEventTypeHandler(string gameEventType, Func<GameEventData, Task> actionAsync)
         {
-            _gameEventTypeActions.Add(gameEventType, action);
+            _gameEventTypeActions.Add(gameEventType, actionAsync);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Nether.Analytics.EventProcessor
         /// correct registered action.
         /// </summary>
         /// <param name="data">Game Event Data</param>
-        public void HandleGameEvent(GameEventData gameEventData)
+        public async Task HandleGameEventAsync(GameEventData gameEventData)
         {
             try
             {
@@ -80,9 +80,9 @@ namespace Nether.Analytics.EventProcessor
             }
 
             // Get correct game event handler from dictionary of registered handlers
-            var handler = _gameEventTypeActions[gameEventData.VersionedType];
+            var handlerAsync = _gameEventTypeActions[gameEventData.VersionedType];
             // Pass game event data to correct action
-            handler(gameEventData);
+            await handlerAsync(gameEventData);
         }
 
         public async Task FlushAsync()
