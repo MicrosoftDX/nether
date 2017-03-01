@@ -1,0 +1,123 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {    
+  },
+  "variables": {
+    "webJobStorageAccountName": "[concat('webjobstore', uniquestring(resourceGroup().id))]",
+    "analyticsStorageAccountName": "[concat('analytics', uniquestring(resourceGroup().id))]",
+    "namespaceName": "[concat('nether', uniquestring(resourceGroup().id))]",
+    "ingestEventHub": "[concat('ingest', uniquestring(resourceGroup().id))]",
+    "intermediateEventHub": "[concat('intermediate', uniquestring(resourceGroup().id))]",
+    "defaultSASKeyName":"RootManageSharedAccessKey",
+    "authRuleResourceId":"[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('namespaceName'), variables('defaultSASKeyName'))]",
+    "ehApiVersion": "2015-08-01",
+	"streamAnalyticsJobName" : "[concat('sa', uniquestring(resourceGroup().id))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('webJobStorageAccountName')]",
+      "apiVersion": "2016-01-01",
+      "location": "[resourceGroup().location]",
+      "sku": {
+          "name": "Standard_LRS"
+      },
+      "kind": "Storage", 
+      "properties": {
+      }
+    },
+     {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('analyticsStorageAccountName')]",
+      "apiVersion": "2016-01-01",
+      "location": "[resourceGroup().location]",
+      "sku": {
+          "name": "Standard_LRS"
+      },
+      "kind": "Storage", 
+      "properties": {
+      }
+    },
+    {  
+         "apiVersion":"2015-08-01",
+         "name":"[variables('namespaceName')]",
+         "type":"Microsoft.EventHub/Namespaces",
+         "location": "[resourceGroup().location]",
+         "sku":{  
+            "name":"Standard",
+            "tier":"Standard"
+         },
+         "resources":[  
+            {  
+               "apiVersion":"2015-08-01",
+               "name":"[variables('ingestEventHub')]",
+               "type":"EventHubs",
+               "dependsOn":[  
+                  "[concat('Microsoft.EventHub/namespaces/', variables('namespaceName'))]"
+               ],
+               "properties":{  
+                  "path":"[variables('ingestEventHub')]"
+               }               
+            },
+            {  
+               "apiVersion":"2015-08-01",
+               "name":"[variables('intermediateEventHub')]",
+               "type":"EventHubs",
+               "dependsOn":[  
+                  "[concat('Microsoft.EventHub/namespaces/', variables('namespaceName'))]"
+               ],
+               "properties":{  
+                  "path":"[variables('intermediateEventHub')]"
+               }               
+            }
+         ]
+      },
+	  {
+      "type": "Microsoft.StreamAnalytics/StreamingJobs",
+      "apiVersion": "2016-03-01",
+      "name": "[variables('streamAnalyticsJobName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "sku": {
+          "name": "standard"
+        },
+        "outputErrorPolicy": "stop",
+        "eventsOutOfOrderPolicy": "adjust",
+        "eventsOutOfOrderMaxDelayInSeconds": 0,
+        "eventsLateArrivalMaxDelayInSeconds": 5,
+        "dataLocale": "en-US",
+        "inputs": [],
+        "transformation": {
+          "name": "Transformation",
+          "properties": {
+            "streamingUnits": 1,
+            "query": "SELECT\r\n    *\r\nINTO\r\n    [YourOutputAlias]\r\nFROM\r\n    [YourInputAlias]"
+          }
+        }
+      }
+	  }
+  ],
+  "outputs": {
+      "webJobStorageAccountConnectionString": {
+          "type": "string",
+          "value": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('webJobStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('webJobStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"          
+      },
+      "analyticsStorageAccountConnectionString": {
+          "type": "string",
+          "value": "[Concat('DefaultEndpointsProtocol=https;AccountName=',variables('analyticsStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('analyticsStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
+      },
+      "eventHubConnectionString" : {
+          "type": "string",
+          "value" : "[listkeys(variables('authRuleResourceId'), variables('ehApiVersion')).primaryConnectionString]"
+      },
+      "ingestEventHubName" : {
+          "type" : "string",
+          "value" : "[variables('ingestEventHub')]"
+      },
+      "intermediateEventHubName" : {
+          "type" : "string",
+          "value" : "[variables('intermediateEventHub')]"
+      }
+  }
+}

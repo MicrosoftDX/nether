@@ -16,6 +16,7 @@ namespace AnalyticsTestClient
             MenuItems.Add('2', new ConsoleMenuItem("Send Typed Game Events ...", () => { new SendTypedGameEventMenu().Show(); }));
             MenuItems.Add('3', new ConsoleMenuItem("Send Custom Game Event", SendCustomGameEvent));
             MenuItems.Add('4', new ConsoleMenuItem("Re-send Last Sent Message", ResendLastSentMessage));
+            MenuItems.Add('5', new ConsoleMenuItem("Simulate moving game client...", () => { new SimulateMovementMenu().Show(); }));
         }
 
         private void SendCustomGameEvent()

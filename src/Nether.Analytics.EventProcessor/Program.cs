@@ -15,6 +15,7 @@ namespace Nether.Analytics.EventProcessor
         private static string s_webJobDashboardAndStorageConnectionString;
         private static string s_ingestEventHubConnectionString;
         private static string s_ingestEventHubName;
+        private static string s_analyticsStorageConnecitonString;
 
         // Please set the following connection strings in app.config for this WebJob to run:
         // AzureWebJobsDashboard and AzureWebJobsStorage
@@ -60,17 +61,21 @@ namespace Nether.Analytics.EventProcessor
             Console.WriteLine($"ingestEventHubName:");
             Console.WriteLine($"  {s_ingestEventHubName}");
 
+            s_analyticsStorageConnecitonString = ConfigResolver.Resolve("NETHER_ANALYTICS_STORAGE_CONNECTIONSTRING");
+
             Console.WriteLine();
 
             // Setup Web Job Config
             var jobHostConfig = new JobHostConfiguration(s_webJobDashboardAndStorageConnectionString)
             {
-                NameResolver = new NameResolver()
+                NameResolver = new NameResolver(),
+                StorageConnectionString = s_webJobDashboardAndStorageConnectionString
             };
             var eventHubConfig = new EventHubConfiguration();
             eventHubConfig.AddReceiver(s_ingestEventHubName, s_ingestEventHubConnectionString);
 
             jobHostConfig.UseEventHub(eventHubConfig);
+            jobHostConfig.UseTimers();
 
             if (jobHostConfig.IsDevelopment)
             {

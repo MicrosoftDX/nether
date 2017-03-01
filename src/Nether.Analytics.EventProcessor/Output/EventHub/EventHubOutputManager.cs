@@ -4,21 +4,20 @@
 using System.Text;
 using Microsoft.ServiceBus.Messaging;
 using System;
+using System.Threading.Tasks;
 
 namespace Nether.Analytics.EventProcessor.Output.EventHub
 {
     public class EventHubOutputManager
     {
-        private readonly string _eventHubConnectionString;
-        private readonly string _eventHubName;
+        private readonly EventHubClient _eventHubClient;
 
         public EventHubOutputManager(string eventHubConnectionString, string eventHubName)
         {
-            _eventHubConnectionString = eventHubConnectionString;
-            _eventHubName = eventHubName;
+            _eventHubClient = EventHubClient.CreateFromConnectionString(eventHubConnectionString, eventHubName);
         }
 
-        public void SendToEventHub(GameEventData data, string line)
+        public async Task SendToEventHubAsync(GameEventData data, string line)
         {
             var now = DateTime.UtcNow;
             var delay = now - data.EnqueuedTime;
@@ -31,10 +30,12 @@ namespace Nether.Analytics.EventProcessor.Output.EventHub
             if (delay.TotalSeconds > 90)
                 return;
 
-            var client = EventHubClient.CreateFromConnectionString(_eventHubConnectionString, _eventHubName);
+
+            Console.WriteLine($"Sending to EventHub:");
+            Console.WriteLine(line);
 
             //TODO: Implement Async Sending and caching of connection
-            client.Send(new EventData(Encoding.UTF8.GetBytes(line)));
+            await _eventHubClient.SendAsync(new EventData(Encoding.UTF8.GetBytes(line)));
         }
     }
 }

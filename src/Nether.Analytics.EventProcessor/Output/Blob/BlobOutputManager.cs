@@ -26,38 +26,44 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
         private readonly Dictionary<string, string> _currentFolders = new Dictionary<string, string>();
         private readonly long _maxBlobSize;
         private readonly string _storageAccountConnectionString;
+        private readonly string _webJobDashboardAndStorageConnectionString;
         private CloudBlobContainer _tmpContainer;
         private CloudBlobContainer _outputContainer;
+        private readonly string _outputContainerName;
+        private readonly string _tmpContainerName;
 
-        public BlobOutputManager(string storageAccountConnectionString, string tmpContainerName, string outputContainerName, long maxBlobBlobSize)
+        public BlobOutputManager(string storageAccountConnectionString, string webJobDashboardAndStorageConnectionString, string tmpContainerName, string outputContainerName, long maxBlobBlobSize)
         {
             _storageAccountConnectionString = storageAccountConnectionString;
+            _webJobDashboardAndStorageConnectionString = webJobDashboardAndStorageConnectionString;
             _maxBlobSize = maxBlobBlobSize;
 
-            Setup(tmpContainerName, outputContainerName);
+            _tmpContainerName = tmpContainerName;
+            _outputContainerName = outputContainerName;
         }
 
-        private void Setup(string tmpContainerName, string outputContainerName)
+        public async Task SetupAsync()
         {
             var cloudStorageAccount = CloudStorageAccount.Parse(_storageAccountConnectionString);
             var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
 
-            _tmpContainer = cloudBlobClient.GetContainerReference(tmpContainerName);
-            _outputContainer = cloudBlobClient.GetContainerReference(outputContainerName);
+            _tmpContainer = cloudBlobClient.GetContainerReference(_tmpContainerName);
+            _outputContainer = cloudBlobClient.GetContainerReference(_outputContainerName);
 
-            var createTmpContainer = _tmpContainer.CreateIfNotExistsAsync();
-            var createOutputContainer = _outputContainer.CreateIfNotExistsAsync();
+            var createTmpContainerTask = _tmpContainer.CreateIfNotExistsAsync();
+            var createOutputContainerTask = _outputContainer.CreateIfNotExistsAsync();
 
-            Task.WaitAll(createTmpContainer, createOutputContainer);
-
-            if (createTmpContainer.Result) Console.WriteLine($"Container {_tmpContainer.Name} created");
-            if (createOutputContainer.Result) Console.WriteLine($"Container {_outputContainer.Name} created");
+            if (await createTmpContainerTask)
+                Console.WriteLine($"Container {_tmpContainer.Name} created");
+            if (await createOutputContainerTask)
+                Console.WriteLine($"Container {_outputContainer.Name} created");
         }
 
-        public void QueueAppendToBlob(GameEventData data, string line)
+        public Task QueueAppendToBlobAsync(GameEventData data, string line)
         {
             var queue = GetQueueForGameEvent(data);
             queue.Enqueue(line);
+            return Task.CompletedTask;
         }
 
         private ConcurrentQueue<string> GetQueueForGameEvent(GameEventData data)
@@ -78,7 +84,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             return $"{versionedType}/{enqueueTime.Year:D4}/{enqueueTime.Month:D2}/{enqueueTime.Day:D2}/";
         }
 
-        public void FlushWriteQueues()
+        public async Task FlushWriteQueuesAsync()
         {
             ConcurrentDictionary<string, ConcurrentQueue<string>> writeQueuesToFlush;
 
@@ -91,27 +97,34 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                 _writeQueues = new ConcurrentDictionary<string, ConcurrentQueue<string>>();
             }
 
-            Parallel.ForEach(writeQueuesToFlush, q =>
+            var tasks = writeQueuesToFlush.Select(async q =>
             {
                 var folder = q.Key;
                 var queue = q.Value;
 
-                var lines = new List<string>();
-
-                while (queue.TryDequeue(out string line))
-                {
-                    lines.Add(line);
-                }
-
-                // Only flush queues that had messages
-                if (lines.Count > 0)
-                {
-                    AppendToFolder(folder, lines.ToArray());
-                }
+                await FlushQueueAsync(folder, queue);
             });
+
+            await Task.WhenAll(tasks);
         }
 
-        private void AppendToFolder(string folder, params string[] lines)
+        private async Task FlushQueueAsync(string folder, ConcurrentQueue<string> queue)
+        {
+            var lines = new List<string>();
+
+            while (queue.TryDequeue(out string line))
+            {
+                lines.Add(line);
+            }
+
+            // Only flush queues that had messages
+            if (lines.Count > 0)
+            {
+                await AppendToFolderAsync(folder, lines.ToArray());
+            }
+        }
+
+        private async Task AppendToFolderAsync(string folder, params string[] lines)
         {
             Console.WriteLine(folder);
             foreach (var line in lines)
@@ -119,7 +132,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                 Console.WriteLine($"  {line}");
             }
 
-            var blob = GetTmpAppendBlob(folder);
+            var blob = await GetTempAppendBlobAsync(folder);
 
             var data = string.Join("\n", lines) + "\n";
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
@@ -131,47 +144,33 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                     break;
 
                 // Blob reached max size
-                Console.WriteLine($"Blob {blob.Name} har reached max size of {_maxBlobSize}B");
-                HandleFullBlob(blob);
+                Console.WriteLine($"Blob {blob.Name} has reached max size of {_maxBlobSize}B");
+                await HandleFullBlobAsync(blob);
 
-                blob = GetNewTmpAppendBlob(folder);
+                blob = await GetNewTempAppendBlobAsync(folder);
                 Console.WriteLine($"Rolling over to new blob {blob.Name}");
             }
         }
 
-        private void HandleFullBlob(CloudAppendBlob fullBlob)
+        private async Task HandleFullBlobAsync(CloudAppendBlob fullBlob)
         {
-            FlagsAsFull(fullBlob);
-
-            var targetBlob = GetTargetBlockBlob(fullBlob);
-
-            CopyBlob(fullBlob, targetBlob).Wait();
+            // update blob metadata
+            await FlagsAsFullAsync(fullBlob);
         }
 
-        private void FlagsAsFull(CloudAppendBlob fullBlob)
+        private async Task FlagsAsFullAsync(CloudAppendBlob fullBlob)
         {
             fullBlob.FetchAttributes();
-            fullBlob.Metadata["full"] = "true";
-            fullBlob.SetMetadata();
-        }
-
-        private static async Task CopyBlob(CloudAppendBlob source, CloudBlockBlob target)
-        {
-            Console.WriteLine($"Copying {source.Container.Name}/{source.Name} to {target.Container.Name}/{target.Name}");
-            var sw = new Stopwatch();
-            sw.Start();
-            using (var sourceStream = await source.OpenReadAsync())
-            {
-                await target.UploadFromStreamAsync(sourceStream);
-            }
-            sw.Stop();
-            Console.WriteLine($"Copy operation finished in {sw.Elapsed.TotalSeconds} second(s)");
+            fullBlob.Metadata["full"] = DateTime.Now.ToString();
+            await fullBlob.SetMetadataAsync();
         }
 
         private bool AppendToBlob(CloudAppendBlob blob, MemoryStream stream)
         {
             try
             {
+                if (!blob.Exists()) return false;
+
                 blob.AppendBlock(stream,
                     accessCondition: AccessCondition.GenerateIfMaxSizeLessThanOrEqualCondition(_maxBlobSize));
             }
@@ -190,21 +189,14 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             return true;
         }
 
-        private CloudBlockBlob GetTargetBlockBlob(CloudAppendBlob source)
-        {
-            var name = source.Name;
-            var target = _outputContainer.GetBlockBlobReference(name);
-            return target;
-        }
-
-        private CloudAppendBlob GetTmpAppendBlob(string folderName)
+        private async Task<CloudAppendBlob> GetTempAppendBlobAsync(string folderName)
         {
             // Look for cached blob names
             if (_tmpBlobNameCache.TryGetValue(folderName, out string cachedBlobName))
                 return _tmpContainer.GetAppendBlobReference(cachedBlobName);
 
             // No cached name was found, look for last blobname in folder
-            var lastBlobNameInFolder = GetLastBlobNameInFolder(_tmpContainer, folderName);
+            var lastBlobNameInFolder = await GetLastBlobNameInFolderAsync(_tmpContainer, folderName);
             if (!string.IsNullOrEmpty(lastBlobNameInFolder))
             {
                 // Use the cached blob name to create a reference and return
@@ -220,53 +212,68 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
             // Create blob and return the reference
             var blob = _tmpContainer.GetAppendBlobReference(newFullBlobName);
-            CreateBlob(blob);
+            await EnsureBlobExistsAsync(blob);
             return blob;
         }
 
-        private CloudAppendBlob GetNewTmpAppendBlob(string folderName)
+        private async Task<CloudAppendBlob> GetNewTempAppendBlobAsync(string folderName)
         {
-            var lastBlobNameInFolder = GetLastBlobNameInFolder(_tmpContainer, folderName);
+            var lastBlobNameInFolder = await GetLastBlobNameInFolderAsync(_tmpContainer, folderName);
             var newBlobName = GetNextBlobName(lastBlobNameInFolder);
             var fullBlobName = $"{folderName}{newBlobName}.csv";
             _tmpBlobNameCache[folderName] = fullBlobName;
 
             var newBlob = _tmpContainer.GetAppendBlobReference(fullBlobName);
-            CreateBlob(newBlob);
+            await EnsureBlobExistsAsync(newBlob);
             return newBlob;
         }
 
-        private void CreateBlob(CloudAppendBlob blob)
+        private async Task EnsureBlobExistsAsync(CloudAppendBlob blob)
         {
             Console.WriteLine($"Creating new blob: {blob.Name}");
             try
             {
-                blob.CreateOrReplace(AccessCondition.GenerateIfNotExistsCondition());
+                await blob.CreateOrReplaceAsync(
+                    accessCondition: AccessCondition.GenerateIfNotExistsCondition(),
+                    options: null,
+                    operationContext: null);
             }
-            catch (StorageException)
+            catch (StorageException se)
+                when (se.RequestInformation.HttpStatusCode == (int)HttpStatusCode.PreconditionFailed)
             {
+                // swallow PreconditionFailed as it indicates that the AccessCondition above failed
+                // i.e. the blob exists which is our goal :-)
             }
         }
 
-        private string GetLastBlobNameInFolder(CloudBlobContainer container, string folderName)
+        private async Task<string> GetLastBlobNameInFolderAsync(CloudBlobContainer container, string folderName)
         {
-            var blobs = ListBlobs(container, folderName);
+            string latestPath = "";
+            BlobContinuationToken continuationToken = null;
 
-            var lastBlobPath = (from b in blobs
-                                orderby b.Uri.AbsolutePath descending
-                                select b.Uri.AbsolutePath).FirstOrDefault();
+            var directoryReference = container.GetDirectoryReference(folderName);
 
-            if (lastBlobPath == "")
+            // work through the Blob Segments tracking the latestPath as we go...
+            // (NOTE: there's currently no ListBlobsAsync method ;-) )
+
+            do
+            {
+                var listResult = await directoryReference.ListBlobsSegmentedAsync(continuationToken);
+                string latestPathInSegment = listResult.Results
+                                                    .OrderBy(b => b.Uri.AbsolutePath)
+                                                    .FirstOrDefault()
+                                                    ?.Uri.AbsolutePath;
+
+                bool isNewStringLater = Comparer<string>.Default.Compare(latestPathInSegment, latestPath) > 0;
+
+                latestPath = isNewStringLater ? latestPathInSegment : latestPath;
+                continuationToken = listResult.ContinuationToken;
+            } while (continuationToken != null);
+
+            if (latestPath == "")
                 return ""; // No blob found
 
-            return Path.GetFileNameWithoutExtension(lastBlobPath);
-        }
-
-        private IEnumerable<IListBlobItem> ListBlobs(CloudBlobContainer container, string folderName)
-        {
-            var dir = container.GetDirectoryReference(folderName);
-            var blobs = dir.ListBlobs();
-            return blobs;
+            return Path.GetFileNameWithoutExtension(latestPath);
         }
 
         private string GetNextBlobName(string name)
@@ -293,6 +300,112 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
             // recursive call to self
             return $"{xxxxxx}_{GetNextBlobName(yyyyyy)}";
+        }
+
+        public async Task AppendBlobCleanupAsync()
+        {
+            BlobContinuationToken continuationToken = null;
+            // work through the Blob Segments cleaning up as we go...
+            // (NOTE: there's currently no ListBlobsAsync method ;-) )
+            do
+            {
+                var listResult = await _tmpContainer.ListBlobsSegmentedAsync(
+                    prefix: null,
+                    useFlatBlobListing: true,
+                    blobListingDetails: BlobListingDetails.None,
+                    maxResults: null,
+                    currentToken: continuationToken,
+                    options: null,
+                    operationContext: null);
+
+                foreach (IListBlobItem b in listResult.Results)
+                {
+                    // list all blob in temp container, filter the ones that have "copied" metadata
+                    if (b.GetType() == typeof(CloudAppendBlob))
+                    {
+                        CloudAppendBlob item = (CloudAppendBlob)b;
+                        item.FetchAttributes();
+                        if (item.Metadata.Keys.Contains("copied"))
+                        {
+                            Console.WriteLine($"Delete blob {item.Uri.ToString()}");
+                            await item.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots,
+                                accessCondition: null,
+                                options: null,
+                                operationContext: null);
+                        }
+                        else
+                        {
+                            if (item.Metadata.Keys.Contains("full"))
+                            {
+                                var targetBlob = await GetTargetBlockBlobAsync(item);
+                                await CopyBlobAsync(item, targetBlob);
+                                await FlagAsCopiedAysnc(item);
+                            }
+                        }
+                    }
+                }
+
+                continuationToken = listResult.ContinuationToken;
+            } while (continuationToken != null);
+
+
+            foreach (IListBlobItem b in _tmpContainer.ListBlobs(null, true))
+            {
+                // list all blob in temp container, filter the ones that have "copied" metadata
+                if (b.GetType() == typeof(CloudAppendBlob))
+                {
+                    CloudAppendBlob item = (CloudAppendBlob)b;
+                    item.FetchAttributes();
+                    if (item.Metadata.Keys.Contains("copied"))
+                    {
+                        Console.WriteLine($"Delete blob {item.Uri.ToString()}");
+                        await item.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots,
+                            accessCondition: null,
+                            options: null,
+                            operationContext: null);
+                    }
+                    else
+                    {
+                        if (item.Metadata.Keys.Contains("full"))
+                        {
+                            var targetBlob = await GetTargetBlockBlobAsync(item);
+                            await CopyBlobAsync(item, targetBlob);
+                            await FlagAsCopiedAysnc(item);
+                        }
+                    }
+                }
+            }
+        }
+        private async Task FlagAsCopiedAysnc(CloudAppendBlob blob)
+        {
+            blob.FetchAttributes();
+            blob.Metadata["copied"] = DateTime.Now.ToString();
+            await blob.SetMetadataAsync();
+        }
+
+        private async Task<CloudBlockBlob> GetTargetBlockBlobAsync(CloudAppendBlob source)
+        {
+            var name = source.Name;
+            var target = _outputContainer.GetBlockBlobReference(name);
+            if (await target.ExistsAsync()) // if the file already exists
+            {
+                target = _outputContainer.GetBlockBlobReference(name + "v2");
+            }
+            return target;
+        }
+
+        private async Task CopyBlobAsync(CloudAppendBlob source, CloudBlockBlob target)
+        {
+            Console.WriteLine($"Copying {source.Container.Name}/{source.Name} to {target.Container.Name}/{target.Name}");
+            var sw = new Stopwatch();
+            sw.Start();
+            using (var sourceStream = await source.OpenReadAsync())
+            {
+                await target.UploadFromStreamAsync(sourceStream);
+            }
+
+            sw.Stop();
+            Console.WriteLine($"Copy operation finished in {sw.Elapsed.TotalSeconds} second(s)");
         }
     }
 }
