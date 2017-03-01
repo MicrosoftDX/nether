@@ -35,14 +35,14 @@ namespace Nether.Analytics.EventProcessor
         /// Safe to call multiple times.
         /// </summary>
         /// <returns></returns>
-        static Task InitializeGameEventReceiverAsync()
+        private static Task InitializeGameEventReceiverAsync()
         {
             /// double-check lock for perf
             if (s_initializationTask != null)
             {
                 return s_initializationTask;
             }
-            lock(s_initializationLock)
+            lock (s_initializationLock)
             {
                 if (s_initializationTask == null)
                 {

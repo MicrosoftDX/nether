@@ -70,7 +70,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
         {
             var writeToFolderName = GetTmpFolderForGameEvent(data.VersionedType, data.EnqueuedTime);
 
-            if (_writeQueues.TryGetValue(writeToFolderName, out ConcurrentQueue<string> queue))
+            if (_writeQueues.TryGetValue(writeToFolderName, out ConcurrentQueue < string > queue))
                 return queue;
 
             queue = new ConcurrentQueue<string>();

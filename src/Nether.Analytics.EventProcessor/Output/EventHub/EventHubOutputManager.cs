@@ -15,7 +15,6 @@ namespace Nether.Analytics.EventProcessor.Output.EventHub
         public EventHubOutputManager(string eventHubConnectionString, string eventHubName)
         {
             _eventHubClient = EventHubClient.CreateFromConnectionString(eventHubConnectionString, eventHubName);
-
         }
 
         public async Task SendToEventHubAsync(GameEventData data, string line)
