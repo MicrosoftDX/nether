@@ -8,7 +8,7 @@
     "analyticsStorageAccountName": "[concat('analytics', uniquestring(resourceGroup().id))]",
     "namespaceName": "[concat('nether', uniquestring(resourceGroup().id))]",
     "ingestEventHub": "[concat('ingest', uniquestring(resourceGroup().id))]",
-    "intermidiateEventHub": "[concat('intermidiate', uniquestring(resourceGroup().id))]",
+    "intermediateEventHub": "[concat('intermediate', uniquestring(resourceGroup().id))]",
     "defaultSASKeyName":"RootManageSharedAccessKey",
     "authRuleResourceId":"[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('namespaceName'), variables('defaultSASKeyName'))]",
     "ehApiVersion": "2015-08-01",
@@ -62,13 +62,13 @@
             },
             {  
                "apiVersion":"2015-08-01",
-               "name":"[variables('intermidiateEventHub')]",
+               "name":"[variables('intermediateEventHub')]",
                "type":"EventHubs",
                "dependsOn":[  
                   "[concat('Microsoft.EventHub/namespaces/', variables('namespaceName'))]"
                ],
                "properties":{  
-                  "path":"[variables('intermidiateEventHub')]"
+                  "path":"[variables('intermediateEventHub')]"
                }               
             }
          ]
@@ -115,9 +115,9 @@
           "type" : "string",
           "value" : "[variables('ingestEventHub')]"
       },
-      "intermidiateEventHubName" : {
+      "intermediateEventHubName" : {
           "type" : "string",
-          "value" : "[variables('intermidiateEventHub')]"
+          "value" : "[variables('intermediateEventHub')]"
       }
   }
 }
