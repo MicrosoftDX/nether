@@ -24,8 +24,6 @@ namespace Nether.Analytics.EventProcessor
     public static class GameEventReceiver
     {
         private static GameEventRouter s_router;
-        private static CloudBlobContainer s_tmpContainer;
-        private static CloudBlobContainer s_outputContainer;
         private const string FullMessagesQueueName = "fullmessages";
         private static BlobOutputManager s_blobOutputManager;
 
@@ -119,7 +117,7 @@ namespace Nether.Analytics.EventProcessor
                 // Setup Handler to use above configured output managers
                 var handler = new GameEventHandler(s_blobOutputManager, eventHubOutputManager, lookupProvider);
 
-                // Configure Router to switch handeling to correct method depending on game event type
+                // Configure Router to switch handling to correct method depending on game event type
                 s_router = new GameEventRouter(GameEventHandler.ResolveEventType,
                     GameEventHandler.UnknownGameEventFormatHandler,
                     GameEventHandler.UnknownGameEventTypeHandler,
