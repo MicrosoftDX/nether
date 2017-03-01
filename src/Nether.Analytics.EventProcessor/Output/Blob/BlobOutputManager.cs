@@ -70,7 +70,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
         {
             var writeToFolderName = GetTmpFolderForGameEvent(data.VersionedType, data.EnqueuedTime);
 
-            if (_writeQueues.TryGetValue(writeToFolderName, out ConcurrentQueue < string > queue))
+            if (_writeQueues.TryGetValue(writeToFolderName, out ConcurrentQueue<string> queue))
                 return queue;
 
             queue = new ConcurrentQueue<string>();
@@ -132,7 +132,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                 Console.WriteLine($"  {line}");
             }
 
-            var blob = GetTmpAppendBlob(folder);
+            var blob = await GetTempAppendBlobAsync(folder);
 
             var data = string.Join("\n", lines) + "\n";
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
@@ -147,7 +147,7 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                 Console.WriteLine($"Blob {blob.Name} has reached max size of {_maxBlobSize}B");
                 await HandleFullBlobAsync(blob);
 
-                blob = GetNewTmpAppendBlob(folder);
+                blob = await GetNewTempAppendBlobAsync(folder);
                 Console.WriteLine($"Rolling over to new blob {blob.Name}");
             }
         }
@@ -189,14 +189,14 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             return true;
         }
 
-        private CloudAppendBlob GetTmpAppendBlob(string folderName)
+        private async Task<CloudAppendBlob> GetTempAppendBlobAsync(string folderName)
         {
             // Look for cached blob names
             if (_tmpBlobNameCache.TryGetValue(folderName, out string cachedBlobName))
                 return _tmpContainer.GetAppendBlobReference(cachedBlobName);
 
             // No cached name was found, look for last blobname in folder
-            var lastBlobNameInFolder = GetLastBlobNameInFolder(_tmpContainer, folderName);
+            var lastBlobNameInFolder = await GetLastBlobNameInFolderAsync(_tmpContainer, folderName);
             if (!string.IsNullOrEmpty(lastBlobNameInFolder))
             {
                 // Use the cached blob name to create a reference and return
@@ -212,53 +212,65 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
             // Create blob and return the reference
             var blob = _tmpContainer.GetAppendBlobReference(newFullBlobName);
-            CreateBlob(blob);
+            await EnsureBlobExistsAsync(blob);
             return blob;
         }
 
-        private CloudAppendBlob GetNewTmpAppendBlob(string folderName)
+        private async Task<CloudAppendBlob> GetNewTempAppendBlobAsync(string folderName)
         {
-            var lastBlobNameInFolder = GetLastBlobNameInFolder(_tmpContainer, folderName);
+            var lastBlobNameInFolder = await GetLastBlobNameInFolderAsync(_tmpContainer, folderName);
             var newBlobName = GetNextBlobName(lastBlobNameInFolder);
             var fullBlobName = $"{folderName}{newBlobName}.csv";
             _tmpBlobNameCache[folderName] = fullBlobName;
 
             var newBlob = _tmpContainer.GetAppendBlobReference(fullBlobName);
-            CreateBlob(newBlob);
+            await EnsureBlobExistsAsync(newBlob);
             return newBlob;
         }
 
-        private void CreateBlob(CloudAppendBlob blob)
+        private async Task EnsureBlobExistsAsync(CloudAppendBlob blob)
         {
             Console.WriteLine($"Creating new blob: {blob.Name}");
             try
             {
-                blob.CreateOrReplace(AccessCondition.GenerateIfNotExistsCondition());
+                await blob.CreateOrReplaceAsync(
+                    accessCondition: AccessCondition.GenerateIfNotExistsCondition(),
+                    options: null,
+                    operationContext: null);
             }
-            catch (StorageException)
+            catch (StorageException se)
+                when (se.RequestInformation.HttpStatusCode == (int)HttpStatusCode.PreconditionFailed)
             {
+                // swallow PreconditionFailed as it indicates that the AccessCondition above failed
+                // i.e. the blob exists which is our goal :-)
             }
         }
 
-        private string GetLastBlobNameInFolder(CloudBlobContainer container, string folderName)
+        private async Task<string> GetLastBlobNameInFolderAsync(CloudBlobContainer container, string folderName)
         {
-            var blobs = ListBlobs(container, folderName);
+            string latestPath = "";
+            BlobContinuationToken continuationToken = null;
 
-            var lastBlobPath = (from b in blobs
-                                orderby b.Uri.AbsolutePath descending
-                                select b.Uri.AbsolutePath).FirstOrDefault();
+            var directoryReference = container.GetDirectoryReference(folderName);
 
-            if (lastBlobPath == "")
-                return ""; // No blob found
+            // work through the Blob Segments tracking the latestPath as we go...
+            // (NOTE: there's currently no ListBlobsAsync method ;-) )
 
-            return Path.GetFileNameWithoutExtension(lastBlobPath);
-        }
+            do
+            {
+                var listResult = await directoryReference.ListBlobsSegmentedAsync(continuationToken);
+                string latestPathInSegment = listResult.Results
+                                                    .OrderBy(b => b.Uri.AbsolutePath)
+                                                    .FirstOrDefault()
+                                                    ?.Uri.AbsolutePath;
 
-        private IEnumerable<IListBlobItem> ListBlobs(CloudBlobContainer container, string folderName)
-        {
-            var dir = container.GetDirectoryReference(folderName);
-            var blobs = dir.ListBlobs();
-            return blobs;
+                bool isNewStringLater = Comparer<string>.Default.Compare(latestPathInSegment, latestPath) > 0;
+
+                latestPath = isNewStringLater ? latestPathInSegment : latestPath;
+                continuationToken = listResult.ContinuationToken;
+            } while (continuationToken != null);
+
+            return latestPath;
         }
 
         private string GetNextBlobName(string name)
@@ -289,6 +301,51 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
 
         public async Task AppendBlobCleanupAsync()
         {
+            BlobContinuationToken continuationToken = null;
+            // work through the Blob Segments cleaning up as we go...
+            // (NOTE: there's currently no ListBlobsAsync method ;-) )
+            do
+            {
+                var listResult = await _tmpContainer.ListBlobsSegmentedAsync(
+                    prefix: null,
+                    useFlatBlobListing: true,
+                    blobListingDetails: BlobListingDetails.None,
+                    maxResults: null,
+                    currentToken: continuationToken,
+                    options: null,
+                    operationContext: null);
+
+                foreach (IListBlobItem b in listResult.Results)
+                {
+                    // list all blob in temp container, filter the ones that have "copied" metadata
+                    if (b.GetType() == typeof(CloudAppendBlob))
+                    {
+                        CloudAppendBlob item = (CloudAppendBlob)b;
+                        item.FetchAttributes();
+                        if (item.Metadata.Keys.Contains("copied"))
+                        {
+                            Console.WriteLine($"Delete blob {item.Uri.ToString()}");
+                            await item.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots,
+                                accessCondition: null,
+                                options: null,
+                                operationContext: null);
+                        }
+                        else
+                        {
+                            if (item.Metadata.Keys.Contains("full"))
+                            {
+                                var targetBlob = await GetTargetBlockBlobAsync(item);
+                                await CopyBlobAsync(item, targetBlob);
+                                await FlagAsCopiedAysnc(item);
+                            }
+                        }
+                    }
+                }
+
+                continuationToken = listResult.ContinuationToken;
+            } while (continuationToken != null);
+
+
             foreach (IListBlobItem b in _tmpContainer.ListBlobs(null, true))
             {
                 // list all blob in temp container, filter the ones that have "copied" metadata
@@ -299,13 +356,16 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
                     if (item.Metadata.Keys.Contains("copied"))
                     {
                         Console.WriteLine($"Delete blob {item.Uri.ToString()}");
-                        item.Delete(DeleteSnapshotsOption.IncludeSnapshots);
+                        await item.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots,
+                            accessCondition: null,
+                            options: null,
+                            operationContext: null);
                     }
                     else
                     {
                         if (item.Metadata.Keys.Contains("full"))
                         {
-                            var targetBlob = GetTargetBlockBlob(item);
+                            var targetBlob = await GetTargetBlockBlobAsync(item);
                             await CopyBlobAsync(item, targetBlob);
                             await FlagAsCopiedAysnc(item);
                         }
@@ -320,11 +380,11 @@ namespace Nether.Analytics.EventProcessor.Output.Blob
             await blob.SetMetadataAsync();
         }
 
-        private CloudBlockBlob GetTargetBlockBlob(CloudAppendBlob source)
+        private async Task<CloudBlockBlob> GetTargetBlockBlobAsync(CloudAppendBlob source)
         {
             var name = source.Name;
             var target = _outputContainer.GetBlockBlobReference(name);
-            if (target.Exists()) // if the file already exists
+            if (await target.ExistsAsync()) // if the file already exists
             {
                 target = _outputContainer.GetBlockBlobReference(name + "v2");
             }
