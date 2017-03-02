@@ -11,69 +11,49 @@ Simple leaderboard functionality, implementing Nether [leaderboard APIs](api/lea
 
 ## Setup
 
-1. Create the Leaderboard schema:      
+1. Update the Leaderboard Store configuration
+
+   Either updates the appsettings.json, or specify via environment variables. See the [configuration](configuration.md) section in this repo for more details.
    
-   **SQL Query:**
-   
-   ```sql
-	CREATE TABLE [dbo].[Scores]
-	(
-	[Id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(), 
-    [Score] INT NOT NULL, 
-    [GamerTag] NVARCHAR(50) NOT NULL, 
-    [CustomTag] NVARCHAR(50) NULL, 
-    [DateAchieved] DATETIME NOT NULL DEFAULT GETUTCDATE() 
-	)
-
-	GO
-
-	CREATE INDEX [IX_Scores_1] ON [dbo].[Scores] ([DateAchieved], [GamerTag], [Score] DESC)
-   ```
-   **Deploy from Visual Studio**
-   
-    - Open Nether solution in Visual Studio
-	- Right click on project Nether.Data.Sql.Schema	and select **Publish** to the SQL Database
-
-2. Get connection string from Azure portal:
-   [How to get sql database connection string?](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-develop-dotnet-simple)
-
-3. Update connection string in appsetting.json file:
    ```json
-    "LeaderboardStore": {
+    "Leaderboard" : {
+      "Store": {
         "wellknown": "sql",
         "properties": {
             "ConnectionString": "<enter SQL Database connection string>"
         }
+      }
     }
    ```     
-   Follow the [configuration](configuration.md) section in this repo for more details.
+   
 
 ## Leaderboards Configuration
 The leaderboard _GET_ API will return various leaderboards, based on pre-defined configurations - top 10 ranks, all ranks, ranks around me and more.
 The different types of leaderboards are defined in the appsetting.json file under the **Leaderboards** section, and can be extended by simply adding an entry for a new leaderboard.
 In this configuration sample, we have 4 types of leaderboards:
+
 ```json
-"Leaderboards": [
-      {
-        "Name": "Default",
-        "Type": "All"        
-      },
-      {
-        "Name": "5_AroundMe",
-        "Type": "AroundMe",
-        "Radius": 5
-      },
-      {
-        "Name": "Top_5",
-        "Type": "Top",
-        "Top" :  5
-      }
-      {
-        "Name": "Top_10",
-        "Type": "Top",
-        "Top" :  10
-      }
-    ]
+"Leaderboards": {
+            "Default": {
+                "Type": "All",
+                "IncludeCurrentPlayer": true
+            },
+            "5_AroundMe": {
+                "Type": "AroundMe",
+                "Radius": 5,
+                "IncludeCurrentPlayer": true
+            },
+            "Top_5": {
+                "Type": "Top",
+                "Top": 5,
+                "IncludeCurrentPlayer": true
+            },
+            "Top_10": {
+                "Type": "Top",
+                "Top": 10,
+                "IncludeCurrentPlayer": true
+            }
+        }
 ```
 
 **Usage:**
