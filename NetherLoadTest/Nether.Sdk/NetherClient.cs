@@ -96,18 +96,14 @@ namespace Nether.Sdk
 
         public async Task<OperationResult> PostScoreAsync(int score)
         {
-            var json = JsonConvert.SerializeObject(new
-            {
-                country = "missing",
-                customTag = "testclient",
-                score = score
-            });
-
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PostAsync(
+            var response = await _httpClient.PostAsJsonAsync(
                 "/api/scores",
-                content
+                new
+                {
+                    country = "missing",
+                    customTag = "testclient",
+                    score = score
+                }
             );
 
             if (response.IsSuccessStatusCode)

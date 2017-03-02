@@ -13,6 +13,7 @@ using System.Security.Authentication;
 using Microsoft.VisualStudio.TestTools.LoadTesting;
 using NetherLoadTest.Helpers;
 using System.Configuration;
+using Nether.Sdk;
 
 namespace NetherLoadTest
 {
