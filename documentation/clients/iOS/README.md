@@ -80,7 +80,7 @@ nether.Connect()
 (Describe why, when and how)
 
 ```
-nether.AutheticateWithFacebook(...)
+nether.AuthenticateWithFacebook(...)
 ```
 
 ## Sending Game Events for Analytic Evaluation
