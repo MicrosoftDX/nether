@@ -45,6 +45,15 @@ namespace Nether.Web
 
             loggerFactory.AddTrace(LogLevel.Information);
             loggerFactory.AddAzureWebAppDiagnostics(); // docs: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging#appservice
+
+            _logger.LogInformation(@"
+ _   _      _   _
+| \ | | ___| |_| |__   ___ _ __
+|  \| |/ _ \ __| '_ \ / _ \ '__|
+| |\  |  __/ |_| | | |  __/ |
+|_| \_|\___|\__|_| |_|\___|_|
+ -        Nether.Web        -
+");
         }
 
         public IConfigurationRoot Configuration { get; }
