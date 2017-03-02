@@ -20,7 +20,7 @@ namespace NetherLoadTest
     public class NetherUnitTest
     {
         private NetherClient _client;
-        private static Random _random = new Random();
+        private static Random s_random = new Random();
 
         public TestContext TestContext { get; set; }
 
@@ -35,11 +35,11 @@ namespace NetherLoadTest
         }
         public string ClientId
         {
-            get { return ConfigurationManager.AppSettings["ClientId"].ToString(); }            
+            get { return ConfigurationManager.AppSettings["ClientId"].ToString(); }
         }
         public string ClientSecret
         {
-            get { return ConfigurationManager.AppSettings["ClientSecret"].ToString(); }            
+            get { return ConfigurationManager.AppSettings["ClientSecret"].ToString(); }
         }
         public string AdminUserName
         {
@@ -89,7 +89,7 @@ namespace NetherLoadTest
         {
             if (UserName == null)
             {
-                UserName = "loadUser" + _random.Next(10000); // hard coded user names created for the load test in the memory store
+                UserName = "loadUser" + s_random.Next(10000); // hard coded user names created for the load test in the memory store
                 Password = "password";
             }
             var baseUrl = BaseUrl ?? "http://localhost:5000";
@@ -107,7 +107,7 @@ namespace NetherLoadTest
             await EnsureLoggedInAsync();
 
             TestContext.BeginTimer("PostScore");
-            await _client.PostScoreAsync(_random.Next(100, 1000));
+            await _client.PostScoreAsync(s_random.Next(100, 1000));
             TestContext.EndTimer("PostScore");
         }
 
