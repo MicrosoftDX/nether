@@ -15,6 +15,7 @@ after_build:
 - ps:  Push-AppveyorArtifact commit.txt -FileName commit.txt -Type Auto
 test_script:
 - ps: ./run-unit-tests.ps1
+- ps: ./appveyor-run-with-integration-tests.ps1
 deploy:
 - provider: AzureBlob
   storage_account_name: netherartifacts
