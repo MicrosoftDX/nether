@@ -12,6 +12,7 @@ using IdentityModel.Client;
 using System.Security.Authentication;
 using Microsoft.VisualStudio.TestTools.LoadTesting;
 using NetherLoadTest.Helpers;
+using System.Configuration;
 
 namespace NetherLoadTest
 {
@@ -19,7 +20,7 @@ namespace NetherLoadTest
     public class NetherUnitTest
     {
         private NetherClient _client;
-        private Random _random = new Random();
+        private static Random _random = new Random();
 
         public TestContext TestContext { get; set; }
 
@@ -30,23 +31,23 @@ namespace NetherLoadTest
 
         public string BaseUrl
         {
-            get { return (string)TestContext.Properties["BaseUrl"]; }
+            get { return ConfigurationManager.AppSettings["BaseUrl"].ToString(); }
         }
         public string ClientId
         {
-            get { return (string)TestContext.Properties["ClientId"]; }
+            get { return ConfigurationManager.AppSettings["ClientId"].ToString(); }            
         }
         public string ClientSecret
         {
-            get { return (string)TestContext.Properties["ClientSecret"]; }
+            get { return ConfigurationManager.AppSettings["ClientSecret"].ToString(); }            
         }
         public string AdminUserName
         {
-            get { return (string)TestContext.Properties["AdminUserName"]; }
+            get { return ConfigurationManager.AppSettings["AdminUserName"].ToString(); }
         }
         public string AdminPassword
         {
-            get { return (string)TestContext.Properties["AdminPassword"]; }
+            get { return ConfigurationManager.AppSettings["AdminPassword"].ToString(); }
         }
 
 
