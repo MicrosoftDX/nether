@@ -47,15 +47,29 @@ namespace Nether.Web.Features.Leaderboard
                         logger.LogInformation("Leaderboard:AnalyticsIntegrationClient: using 'null' client");
                         services.AddSingleton<IAnalyticsIntegrationClient, AnalyticsIntegrationNullClient>();
                         break;
-                    case "default":
-                        logger.LogInformation("Leaderboard:AnalyticsIntegrationClient: using 'default' client");
-                        var scopedConfiguration = configuration.GetSection("Leaderboard:AnalyticsIntegrationClient:properties");
-                        string baseUrl = scopedConfiguration["AnalyticsBaseUrl"];
-
-                        services.AddTransient<IAnalyticsIntegrationClient>(serviceProvider =>
+                    case "http":
                         {
-                            return new AnalyticsIntegrationClient(baseUrl);
-                        });
+                            logger.LogInformation("Leaderboard:AnalyticsIntegrationClient: using 'http' client");
+                            var scopedConfiguration = configuration.GetSection("Leaderboard:AnalyticsIntegrationClient:properties");
+                            string baseUrl = scopedConfiguration["AnalyticsBaseUrl"];
+
+                            services.AddTransient<IAnalyticsIntegrationClient>(serviceProvider =>
+                            {
+                                return new AnalyticsIntegrationHttpClient(baseUrl);
+                            });
+                        }
+                        break;
+                    case "eventhub":
+                        {
+                            logger.LogInformation("Leaderboard:AnalyticsIntegrationClient: using 'eventhub' client");
+                            var scopedConfiguration = configuration.GetSection("Leaderboard:AnalyticsIntegrationClient:properties");
+                            string eventHubConnectionString = scopedConfiguration["EventHubConnectionString"];
+
+                            services.AddTransient<IAnalyticsIntegrationClient>(serviceProvider =>
+                            {
+                                return new AnalyticsIntegrationEventHubClient(eventHubConnectionString);
+                            });
+                        }
                         break;
                     default:
                         throw new Exception($"Unhandled 'wellKnown' type for AnalyticsIntegrationClient: '{wellKnownType}'");
