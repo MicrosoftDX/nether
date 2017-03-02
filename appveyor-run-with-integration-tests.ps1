@@ -25,3 +25,8 @@ if (-not $loaded){
 }
 
 &"$netherRoot\run-integration-tests.ps1"
+if ($LASTEXITCODE -ne 0){
+    $testExitCode = $LASTEXITCODE
+    Write-Host "Integration tests failed: $testExitCode"
+    exit $testExitCode
+}
