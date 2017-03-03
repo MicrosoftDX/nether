@@ -11,10 +11,10 @@ The rough architecture is shown below. For more detail on the analytics pipeline
                          |        |                                          |               |
 +----------+             |        |        +---------------------+           |               |
 |          |             |        |        |                     |           |               |
-|  Client  +-------------+        +--------+  Player Management  +-----------+               |
-|  SDKs    |             |        |        |                     |           |    Database   |
-|          |             |  REST  |        +---------------------+           |               |
-+----+-----+             |  API   |                                          |               |
+|  Client  +-------------+  REST  +--------+  Player Management  +-----------+   Database    |
+|  SDKs    |             |  API   |        |                     |           |               |
+|          |             |        |        +---------------------+           |               |
++----+-----+             |        |                                          |               |
      |                   |        |        +---------------------+           |               |
      |                   |        |        |                     |           |               |
      |                   |        +--------+  Analytics          +-----------+               |
