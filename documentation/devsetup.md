@@ -54,7 +54,7 @@ For more details on configuring the identity system see the [Nether identity con
 
 Assuming you have installed the Prerequisites above, follow the steps to build and run Nether in your chosen environment below.
 
-If you want to configure nether to use a different connection string or data store then see the [Configuration](documentation/configuration.md) section.
+If you want to configure nether to use a different connection string or data store then see the [Configuration](configuration.md) section.
 
 **Visual Studio**
 
