@@ -1,6 +1,78 @@
 # Analytics
 
-The analytics building block of Nether builds an architecture specified in [here](analytics-architecture.txt).
+The analytics building block of Nether builds an architecture as shown below:
+
+```
+                       +------------------+
+                       |  Client          |
+                       |  Event Generator |
+                       |                  |
+                       +--------+---------+
+                                |
+                                |
+                       +--------v---------+
+                       |    Event Hub     |
+                       |    Ingest        |
+                       +--------+---------+
+                                |
+                                |
++------------------------+      |     +-----------------------+
+|                        |      |     |                       |
+|  Stream Analytics Job  <------+----->  Stream Analytics Job |
+|  Concurrent Users      |            |  Raw event data       |
+|                        |            |                       |
++----------+-------------+            +-----------+-----------+
+           |                                      |
+           |                                      |
+           |                          +-----------v-----------+
+           |                          |  Blob Storage         |
+           |                          |  Raw Events           |
+           |                          |                       |
+           |                          +-----------+-----------+
+           |                                      |
+           |                                      |
+           |                          +-----------v---------------+
+           |                          |  Blob Storage             |
+           |                          |  Partitioned Hive tables  |
+           |                          |  on raw event data        |
+           |                          |                           |
+           |                          +--------------+------------+
+           |                                         |
+           |                          +--------------v----------------+
+           |                          |  Blob storage                 |
+           |                          |  Hive Tables:                 |
+           |                          |  - DAU (daily active users)   |
+           |                          |  - MAU (monthly active users) |
+           |                          |                               |
+           |                          +--------------+----------------+
+           |                                         |
+           |                                         |
+           |                          +--------------v----------------------+
+           |                          |  SQL DB                             |
+           |                          |  - DAU Table (daily active users)   |
+           |                          |  - MAU Table (monthly active users) |
+           |                          |                                     |
+           |                          +--------------+----------------------+
+           |                                         |
+           |                                         |
++----------v-----------+              +--------------v-----------+
+| Power BI Web         |              |  Power BI Desktop File   |
+| Streaming dataset:   |              |  Dashboards: DAU, MAU    |
+| concurrent users     |              |                          |
+|                      |              +-----+--------------------+
++--------------------+-+                    |
+                     |                      |
+                     |                      |
+                   +-v----------------------v------+
+                   |  Power BI Web                 |
+                   |  - Batch layer:               |
+                   |    Upload PBI Desktop file    |
+                   |  - Real time layer:           |
+                   |    Concurrent users (set up   |
+                   |    manually)                  |
+                   +-------------------------------+
+
+```
 
 ## Prerequisites
 
