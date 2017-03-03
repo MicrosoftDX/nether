@@ -9,7 +9,7 @@ Simple leaderboard functionality, implementing Nether [leaderboard APIs](api/lea
 
 ## Leaderboard Store Configuration
 
-By default appsettings.json configures an in-memory store for leaderboard. To configure for SQL Server, either update the appsettings.json as shown below, or specify the equivalent via environment variables. See the [configuration](configuration.md) section in this repo for more details.
+Update connection string in appsetting.json file, or via environment variables as described in the [configuration docs](configuration-dependency-injection.md#overriding-the-dependency-injection-with-environment-variables).
 
 ```json
 "Leaderboard" : {
