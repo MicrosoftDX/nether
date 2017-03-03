@@ -73,7 +73,6 @@ To build Nether from PowerShell, ensure you have installed the dependencies from
 ```powershell
     # PowerShell (from the folder that contains the cloned repository)
     ./build.ps1
-    ${env:ASPNETCORE_ENVIRONMENT} = "Development"
     ./rundev.ps1
 ```
 
@@ -86,7 +85,6 @@ To run, set the `ASPNETCORE_ENVIRONMENT` environment variable to `Development` a
 ```bash
     # bash (from the folder that contains the cloned repository)
     ./build.sh
-    export ASPNETCORE_ENVIRONMENT="Development"
     ./rundev.sh
 ```
 
