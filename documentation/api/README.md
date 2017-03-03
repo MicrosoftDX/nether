@@ -3,4 +3,6 @@
 The Nether API is broken down by feature:
 
 * [Analytics](analytics/README.md)
-* Player
+* [Identity](identity/README.md)
+* [Leaderboard](leaderboard/README.md)
+* [Player Management](player-management/README.md)
