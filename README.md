@@ -24,7 +24,6 @@ Nether is a project composed of reusable set of building blocks, projects, servi
 1. Getting Started
  * [Set up the development environment](documentation/devsetup.md)
  * [Configuration](documentation/configuration.md)
- * [Test](documentation/test.md)
 1. [Deploying Nether](documentation/deployment.md)
 1. [Nether API](documentation/api/README.md)
 
