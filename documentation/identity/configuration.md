@@ -2,12 +2,12 @@
 
 The Identity configuration is all under the `Identity` section of `appsettings.json`, and is broken down into the following sections
 
- * [Initial Setup](#Initial-setup)
- * [PlayerManagementClient](#PlayerManagementClient)
- * [Store](#Store)
- * [Identity Server](#Identity-Server)
- * [SignIn Methods](#SignIng-Methods)
- * [Clients](#Clients)
+ * [Initial Setup](#initial-setup)
+ * [PlayerManagementClient](#playermanagementclient)
+ * [Store](#store)
+ * [Identity Server](#identity-server)
+ * [SignIn Methods](#signin-methods)
+ * [Clients](#clients)
 
 ## Initial setup
 This section holds information that is used when the Identity services initially startup.
@@ -78,8 +78,8 @@ RequireHttps | bool | True to require HTTPS, False to allow insecure connections
 To configure the sign-in methods that can be used, modify the `SignInMethods` as shown below.
 
 Currently supported methods:
-* [Facebook](#Facebook) - in-browser, interactive Facebook login
-* [FacebookUserAccessToken](#FacebookUserAccessToken) - supports token translation from a Facebook user access token to a Nether token
+* [Facebook](#facebook) - in-browser, interactive Facebook login
+* [FacebookUserAccessToken](#facebookuseraccesstoken) - supports token translation from a Facebook user access token to a Nether token
 
 
 ```json

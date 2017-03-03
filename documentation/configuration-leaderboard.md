@@ -1,8 +1,6 @@
-# Leaderboards
+# Leaderboard Configuration
 
 Simple leaderboard functionality, implementing Nether [leaderboard APIs](api/leaderboard), using SQL Database as a data store.
-
-> WARNING: The leaderboard implementation in still under development
 
 ## Prerequisites
 * SQL Database - [learn how to create a SQL Database](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-get-started)
@@ -11,7 +9,7 @@ Simple leaderboard functionality, implementing Nether [leaderboard APIs](api/lea
 
 ## Leaderboard Store Configuration
 
-By default appsettings.json configures an in-memory store for leaderboard. To configure for SQL Server, either update the appsettings.json as shown below, or specify the equivalent via environment variables. See the [configuration](configuration.md) section in this repo for more details.
+Update connection string in appsetting.json file, or via environment variables as described in the [configuration docs](configuration-dependency-injection.md#overriding-the-dependency-injection-with-environment-variables).
 
 ```json
 "Leaderboard" : {
@@ -23,11 +21,13 @@ By default appsettings.json configures an in-memory store for leaderboard. To co
   }
 }
 ```     
+   For help on getting the connection string for Azure SQL Database, see [How to get sql database connection string for Azure SQL Database?](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-develop-dotnet-simple)
+
    
 
 ## Leaderboards Configuration
 The leaderboard _GET_ API will return various leaderboards, based on pre-defined configurations - top 10 ranks, all ranks, ranks around me and more.
-The different types of leaderboards are defined in the appsetting.json file under the **Leaderboards** section, and can be extended by simply adding an entry for a new leaderboard.
+The different types of leaderboards are defined in the appsetting.json file under the `Leaderboards` section, and can be extended by simply adding an entry for a new leaderboard.
 In this configuration sample, we have 4 types of leaderboards:
 
 ```json

@@ -18,8 +18,19 @@ Example script usage:
 
     # The SqlAdministratorPassword parameter is a SecureString... convert the password here
     $sqlPassword = ConvertTo-SecureString -String "PutAStrongPasswordHere;-)" -AsPlainText -Force
+    $initialNetherAdminPassword = ConvertTo-SecureString -String "PutAnotherStrongPasswordHere;-)" -AsPlainText -Force
 
-    .\deploy.ps1 -ResourceGroupName "nether" -Location "northeurope" -StorageAccountName "netherstorage" -SqlAdministratorPassword $sqlPassword
+    .\deploy.ps1 `
+        -ResourceGroupName "nether" `
+        -Location "northeurope" `
+        -StorageAccountName "yourstorage" `
+        -NetherWebDomainPrefix "yourweb" `
+        -initialNetherAdminPassword $initialNetherAdminPassword `
+        -sqlServerName "yourserver" `
+        -sqlAdministratorLogin "youradminname" `
+        -SqlAdministratorPassword $sqlPassword `
+        -AnalyticsEventHubNamespace "yourhub" `
+        -AnalyticsStorageAccountName "yourstorage2" 
 
 ```
 
@@ -27,18 +38,17 @@ Example script usage:
 
 Parameter name | Description
 ---------------|------------
-ResourceGroupName | **Required.** The name of the resource group to deploy into
-Location | **Required.** The Azure location to create the resource group in if it doesn't already exist. You can list the available locations with the `Get-AzureRmLocation` cmdlet
-StorageAccountName | **Required.** The name of the storage account to create/use to upload the web application binaries to for deployment
-SqlAdministratorPassword | **Required.** The password to use for the adminstrator account for the SQL Database
-AnalyticsEventHubNamespace |  **Required.** The Event Hub name for the analytics ingestion
-AnalyticsStorageAccountName |  **Required.** The name of the storage account used to store the analytics events
+ResourceGroupName | **Required.** The name of the resource group to deploy into.
+Location | **Required.** The Azure location to create the resource group in if it doesn't already exist. You can list the available locations with the `Get-AzureRmLocation` cmdlet.
+StorageAccountName | **Required.** The name of the storage account to create/use to upload the web application binaries to for deployment.
+initialNetherAdminPassword | **Required.** When the web site starts it checks whether there are any administrator users. If not then it creates an initial `netheradmin` user with the password specified here.
+sqlServerName | **Required.** The name of the Azure SQL Server to create/use
+SqlAdministratorLogin | **Required.** The username to use for the adminstrator account for the SQL Database.
+SqlAdministratorPassword | **Required.** The password to use for the adminstrator account for the SQL Database.
+AnalyticsEventHubNamespace |  **Required.** The Event Hub name for the analytics ingestion.
+AnalyticsStorageAccountName |  **Required.** The name of the storage account used to store the analytics events.
 
 
 ## Deploying Database Schema
 
-The deployment script currently creates an empty database but doesn't yet deploy the schema.
-
-Visual Studio solution contains a project called `Nether.Data.Sql.Schema` which produces a `.dacpac` file to deploy the schema on top of the created database. You can use a variety of tools like `Visual Studio 2015`, `SQL Server Management Studio` or [command-line](https://msdn.microsoft.com/en-us/library/hh550080(v=vs.103).aspx) to deploy it. Note that by default SQL Server firewall doesn't allow incoming connection from non-Azure services, therefore you may want to temporarily open a firewall port for it. Another option is to use Visual Studio Team Services dacpac deployment task which does it for you.
-
-Once database schema is deployed Nether deployment is complete.
+When the web server starts up it checks whether there are any schema changes required and applies them. In the case of an empty database it creates the schema from scratch.

@@ -1,36 +1,70 @@
 # Architecture
 
+The rough architecture is shown below. For more detail on the analytics pipeline, see the [analytics docs](analytics.md)
 
-![Architecture](images/solution_architecture.gif?raw=true)
+```
+                         +--------+        +---------------------+           +---------------+
+                         |        |        |                     |           |               |
+                         |        +--------+  Identity           +-----------+               |
+                         |        |        |                     |           |               |
+                         |        |        +---------------------+           |               |
+                         |        |                                          |               |
++----------+             |        |        +---------------------+           |               |
+|          |             |        |        |                     |           |               |
+|  Client  +-------------+  REST  +--------+  Player Management  +-----------+   Database    |
+|  SDKs    |             |  API   |        |                     |           |               |
+|          |             |        |        +---------------------+           |               |
++----+-----+             |        |                                          |               |
+     |                   |        |        +---------------------+           |               |
+     |                   |        |        |                     |           |               |
+     |                   |        +--------+  Analytics          +-----------+               |
+     |                   |        |        |                     |           |               |
+     |                   |        |        +---------------------+           |               |
+     |                   |        |                                          |               |
+     |                   |        |        +---------------------+           |               |
+     |                   |        |        |                     |           |               |
+     |                   |        +--------+  Leaderboard        +-----------+               |
+     |                   |        |        |                     |           |               |
+     |                   +--------+        +---------------------+           +-------+-------+
+     |                                                                               |
+     |                                                                               |
+     |                                                                               |
+     |                                                                               |
+     |                   +--------+        +---------------------+                   |     +------------+
+     |                   |        |        |                     |                   |     |            |
+     +-------------------+  Event +--------+  Analytics          +-------------------+-----+  Blob      |
+                         |  Hub   |        |  Pipeline           |                         |  Storage   |
+                         |        |        |                     |                         |            |
+                         +--------+        +---------------------+                         +------------+
+
+```
 
 
 ## Main Components
 
 The Nether building blocks are comprised from the following components:
 
-1. **Player Management**
+### Player Management
 
   [TO DO] 
 
-2. **Leader Boards**
+### Leaderboards
+
+  [TO DO]
+
+### Identity
+
+  [TO DO]
+
+  
+### Analytics
 
   [TO DO]
   
-3. **Analytics**
-
-  [TO DO]
-  
-4. **Client SDK**
+### Client SDKs
 
   [TO DO]
 
-## REST API
-
-[TO DO]
-
-## Microsoft Azure
-
-[TO DO]
 
 
 

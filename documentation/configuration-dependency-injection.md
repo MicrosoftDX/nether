@@ -1,4 +1,4 @@
-# Configuring Dependency injection
+# Dependency injection Configuration
 There is some configuration that controls dependency injection. It is a work in progress, so if it isn't working for a scenario then start an issue to discuss :-)
 
 ## How it works
