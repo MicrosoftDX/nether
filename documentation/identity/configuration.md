@@ -78,8 +78,8 @@ RequireHttps | bool | True to require HTTPS, False to allow insecure connections
 To configure the sign-in methods that can be used, modify the `SignInMethods` as shown below.
 
 Currently supported methods:
-* [Facebook](#Facebook) - in-browser, interactive Facebook login
-* [FacebookUserAccessToken](#FacebookUserAccessToken) - supports token translation from a Facebook user access token to a Nether token
+* [Facebook](#facebook) - in-browser, interactive Facebook login
+* [FacebookUserAccessToken](#facebookuseraccesstoken) - supports token translation from a Facebook user access token to a Nether token
 
 
 ```json
