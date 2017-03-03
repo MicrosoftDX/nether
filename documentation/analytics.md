@@ -113,7 +113,7 @@ The analytics part of Nether deploys an architecture using an ARM template and c
 
 ### 1. Event Ingest
 
-Game events are being sent from the client to a then deployed event hub. For information on what the structure of a game event is, refer to the [event APIs of analytics](api/analytics/ReadMe.md).
+Game events are being sent from the client to a then deployed event hub. For information on what the structure of a game event is, refer to the [event APIs of analytics](api/analytics/README.md).
 There is a simulator game event generator that sends such specified game events which can be found [here](https://github.com/MicrosoftDX/nether-playground/tree/master/GameEventsGenerator).
 The event hub has the following consumer groups:
 * asaRaw: For stream analytics job on raw data.
@@ -121,7 +121,7 @@ The event hub has the following consumer groups:
 
 ### 2. Real-time Layer / Hot Path
 
-As seen in the [architecture diagram](analytics-architecture.txt), there are two Azure stream analytics (ASA) jobs that run queries on the event ingest:
+As seen in the architecture diagram above, there are two Azure stream analytics (ASA) jobs that run queries on the event ingest:
 Concurrent Users: This ASA job runs a query to calculate the number of concurrent users in specified time window. 
 
 #### Concurrent Users
@@ -155,7 +155,7 @@ Start the stream analytics job from the Azure portal. Cannot be triggered from w
 
 ### 3. Batch Layer / Cold Path
 
-The cold path is shown on the right hand side of the [architecture diagram](analytics-architecture.txt) and consists of the following components:
+The cold path is shown on the right hand side of the architecture diagram above and consists of the following components:
 * Blob storage
 * HDInsight cluster on demand
 * Azure SQL database
