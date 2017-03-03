@@ -2,12 +2,12 @@
 
 The Identity configuration is all under the `Identity` section of `appsettings.json`, and is broken down into the following sections
 
- * [Initial Setup](#Initial-setup)
- * [PlayerManagementClient](#PlayerManagementClient)
- * [Store](#Store)
- * [Identity Server](#Identity-Server)
- * [SignIn Methods](#SignIng-Methods)
- * [Clients](#Clients)
+ * [Initial Setup](#initial-setup)
+ * [PlayerManagementClient](#playermanagementclient)
+ * [Store](#store)
+ * [Identity Server](#identity-server)
+ * [SignIn Methods](#signin-methods)
+ * [Clients](#clients)
 
 ## Initial setup
 This section holds information that is used when the Identity services initially startup.
