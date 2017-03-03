@@ -23,11 +23,13 @@ By default appsettings.json configures an in-memory store for leaderboard. To co
   }
 }
 ```     
+   For help on getting the connection string for Azure SQL Database, see [How to get sql database connection string for Azure SQL Database?](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-develop-dotnet-simple)
+
    
 
 ## Leaderboards Configuration
 The leaderboard _GET_ API will return various leaderboards, based on pre-defined configurations - top 10 ranks, all ranks, ranks around me and more.
-The different types of leaderboards are defined in the appsetting.json file under the **Leaderboards** section, and can be extended by simply adding an entry for a new leaderboard.
+The different types of leaderboards are defined in the appsetting.json file under the `Leaderboards` section, and can be extended by simply adding an entry for a new leaderboard.
 In this configuration sample, we have 4 types of leaderboards:
 
 ```json
