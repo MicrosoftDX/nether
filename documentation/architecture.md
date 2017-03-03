@@ -8,29 +8,27 @@
 
 The Nether building blocks are comprised from the following components:
 
-1. **Player Management**
+### Player Management
 
   [TO DO] 
 
-2. **Leader Boards**
+### Leaderboards
+
+  [TO DO]
+
+### Identity
+
+  [TO DO]
+
+  
+### Analytics
 
   [TO DO]
   
-3. **Analytics**
-
-  [TO DO]
-  
-4. **Client SDK**
+### Client SDKs
 
   [TO DO]
 
-## REST API
-
-[TO DO]
-
-## Microsoft Azure
-
-[TO DO]
 
 
 

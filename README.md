@@ -19,26 +19,14 @@ Nether is a project composed of reusable set of building blocks, projects, servi
 
 ## Documentation Index
 
-2.	[Overview](documentation/overview.md)
- * [Introduction - What is Nether?] (documentation/overview.md#introduction---what-is-nether)
- * [Features](documentation/overview.md#features)
- * [Benefits](documentation/overview.md#benefits)
- * [Scenarios](documentation/overview.md#scenarios)
-3.	[How it works?](documentation/howitworks.md)
- * [REST API](documentation/api/README.md)
-   * [Leaderboard](documentation/api/leaderboard/README.md)
-   * [Player Management](documentation/api/players/README.md)
- * Example scenarios: [Shooter Game](documentation/shooter.md)
-4.	[Architecture](documentation/architecture.md)
- * [Main components](documentation/architecture.md#main-components)
-5.	Getting Started
+1. [Overview](documentation/overview.md)
+1. [Architecture](documentation/architecture.md)
+1. Getting Started
  * [Set up the development environment](documentation/devsetup.md)
  * [Configuration](documentation/configuration.md)
  * [Test](documentation/test.md)
-6.	[Deploy to production](documentation/deployment.md)
-7. [Player Management](documentation/playermanagement.md)
-8. [Leader Boards](documentation/leaderboards.md)
-9. [Analytics](documentation/analytics.md)
+1. [Deploying Nether](documentation/deployment.md)
+1. [Nether API](documentation/api/README.md)
 
 ## Reporting issues and feedback
 
