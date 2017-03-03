@@ -4,3 +4,4 @@ src/TestClients/FacebookUserTokenClient
 src/TestClients/IdentityServerTestClient
 src/PerformanceTests/LeaderboardLoadTest
 tests/Nether.Web.UnitTests
+tests/Nether.Web.IntegrationTests
