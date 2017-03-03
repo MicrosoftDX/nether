@@ -74,16 +74,28 @@ namespace Nether.Web.Features.Leaderboard
                     CustomTag = request.CustomTag,
                     Score = request.Score
                 }),
-                _analyticsIntegrationClient.SendGameEventAsync(new ScoreEvent()
+                SendScoreEventAndLogErrors(request));
+
+            // Return result
+            return Ok();
+        }
+
+        private async Task SendScoreEventAndLogErrors(ScorePostRequestModel request)
+        {
+            try
+            {
+                await _analyticsIntegrationClient.SendGameEventAsync(new ScoreEvent()
                 {
                     //GamerTag = gamertag,
                     ClientUtcTime = DateTime.UtcNow,
                     GameSessionId = "unknowngamesession",
                     Score = request.Score
-                }));
-
-            // Return result
-            return Ok();
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error sending analytics ScoreEvent: {0}", ex);
+            }
         }
 
         /// <summary>

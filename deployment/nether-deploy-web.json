@@ -225,22 +225,22 @@
                     "ASPNETCORE_ENVIRONMENT": "Development",
                     "Common:Cors:AllowedOrigins": "",
 
-                    /* TODO: Add explanation of section */
+                    /* Leaderboard feature config overrides */
                     "Leaderboard:Store:wellknown": "sql",
                     "Leaderboard:Store:properties:ConnectionString": "[variables('sqlConnString')]",
-                    "Leaderboard:AnalyticsIntegrationClient:wellknown": "default",
-                    "Leaderboard:AnalyticsIntegrationClient:properties:AnalyticsBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/')]",
+                    "Leaderboard:AnalyticsIntegrationClient:wellknown": "eventhub",
+                    "Leaderboard:AnalyticsIntegrationClient:properties:EventHubConnectionString": "[parameters('eventhubSendPolicy').connectionString]",
 
-                    /* TODO: Add explanation of section */
+                    /* AdminWebUi feature config overrides */
                     "AdminWebUi:AuthServerUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/identity/')]",
                     "AdminWebUi:ApiBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/')]",
                     "AdminWebUi:RedirectUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/admin/')]",
 
-                    /* TODO: Add explanation of section */
+                    /* PlayerManagement feature config overrides */
                     "PlayerManagement:Store:wellknown": "sql",
                     "PlayerManagement:Store:properties:ConnectionString": "[variables('sqlConnString')]",
 
-                    /* TODO: Add explanation of section */
+                    /* Analytics feature config overrides */
                     "Analytics:EventHub:Ttl": "24:00:00",
                     "Analytics:EventHub:Resource": "[parameters('eventhubSendPolicy').uri]",
                     "Analytics:EventHub:KeyName": "[parameters('eventhubSendPolicy').policyName]",

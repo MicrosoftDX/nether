@@ -9,71 +9,49 @@ Simple leaderboard functionality, implementing Nether [leaderboard APIs](api/lea
   > To test locally, you may use an on prem installation of SQL Server database
 * Microsoft SQL Server Management Studio or Visual Studio - to query against the SQL tables
 
-## Setup
+## Leaderboard Store Configuration
 
-1. Create the Leaderboard schema:      
-   
-   **SQL Query:**
-   
-   ```sql
-	CREATE TABLE [dbo].[Scores]
-	(
-	[Id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(), 
-    [Score] INT NOT NULL, 
-    [GamerTag] NVARCHAR(50) NOT NULL, 
-    [CustomTag] NVARCHAR(50) NULL, 
-    [DateAchieved] DATETIME NOT NULL DEFAULT GETUTCDATE() 
-	)
+By default appsettings.json configures an in-memory store for leaderboard. To configure for SQL Server, either update the appsettings.json as shown below, or specify the equivalent via environment variables. See the [configuration](configuration.md) section in this repo for more details.
 
-	GO
-
-	CREATE INDEX [IX_Scores_1] ON [dbo].[Scores] ([DateAchieved], [GamerTag], [Score] DESC)
-   ```
-   **Deploy from Visual Studio**
-   
-    - Open Nether solution in Visual Studio
-	- Right click on project Nether.Data.Sql.Schema	and select **Publish** to the SQL Database
-
-2. Get connection string from Azure portal:
-   [How to get sql database connection string?](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-develop-dotnet-simple)
-
-3. Update connection string in appsetting.json file:
-   ```json
-    "LeaderboardStore": {
-        "wellknown": "sql",
-        "properties": {
-            "ConnectionString": "<enter SQL Database connection string>"
-        }
+```json
+"Leaderboard" : {
+  "Store": {
+    "wellknown": "sql",
+    "properties": {
+        "ConnectionString": "<enter SQL Database connection string>"
     }
-   ```     
-   Follow the [configuration](configuration.md) section in this repo for more details.
+  }
+}
+```     
+   
 
 ## Leaderboards Configuration
 The leaderboard _GET_ API will return various leaderboards, based on pre-defined configurations - top 10 ranks, all ranks, ranks around me and more.
 The different types of leaderboards are defined in the appsetting.json file under the **Leaderboards** section, and can be extended by simply adding an entry for a new leaderboard.
 In this configuration sample, we have 4 types of leaderboards:
+
 ```json
-"Leaderboards": [
-      {
-        "Name": "Default",
-        "Type": "All"        
-      },
-      {
-        "Name": "5_AroundMe",
-        "Type": "AroundMe",
-        "Radius": 5
-      },
-      {
-        "Name": "Top_5",
-        "Type": "Top",
-        "Top" :  5
-      }
-      {
-        "Name": "Top_10",
-        "Type": "Top",
-        "Top" :  10
-      }
-    ]
+"Leaderboards": {
+            "Default": {
+                "Type": "All",
+                "IncludeCurrentPlayer": true
+            },
+            "5_AroundMe": {
+                "Type": "AroundMe",
+                "Radius": 5,
+                "IncludeCurrentPlayer": true
+            },
+            "Top_5": {
+                "Type": "Top",
+                "Top": 5,
+                "IncludeCurrentPlayer": true
+            },
+            "Top_10": {
+                "Type": "Top",
+                "Top": 10,
+                "IncludeCurrentPlayer": true
+            }
+        }
 ```
 
 **Usage:**
@@ -83,5 +61,37 @@ In this configuration sample, we have 4 types of leaderboards:
 3. Top 5 ranking players: /api/Leaderboard/Top_5
 4. Players around me (5 below and 5 above the logged in player ranking): /api/leaderboard/5_AroundMe   
 
+## Leaderboard Analytics Integration Configuration
 
+The leaderboard can fire analytics events automatically when new scores are posted. By default this is disabled but you can configure this 
+
+### Event hubs
+
+This implementation of the 
+
+```json
+    "Leaderboard": {
+        "AnalyticsIntegrationClient": {
+            "wellknown": "http",
+              "properties": {
+              "AnalyticsBaseUrl": "http://localhost:5000/api/" /* URL to the base of the API where the /endpoint API exists */
+             }
+        }
+    }
+```
+
+
+### HTTP
+For a more generic implementation that pulls the connection information from the `/api/endpoint` API, you can configure the HTTP integration client:
+
+```json
+    "Leaderboard": {
+        "AnalyticsIntegrationClient": {
+            "wellknown": "http",
+              "properties": {
+              "AnalyticsBaseUrl": "http://localhost:5000/api/" /* URL to the base of the API where the /endpoint API exists */
+             }
+        }
+    }
+```
 
