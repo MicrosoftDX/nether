@@ -1,6 +1,6 @@
 # Leaderboard Configuration
 
-Simple leaderboard functionality, implementing Nether [leaderboard APIs](api/leaderboard), using SQL Database as a data store.
+Simple leaderboard functionality, implementing Nether [leaderboard APIs](../api/leaderboard/README.md), using SQL Database as a data store.
 
 ## Prerequisites
 * SQL Database - [learn how to create a SQL Database](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-get-started).
