@@ -1,6 +1,6 @@
 # Configuration
 
-Currently the configuration for Nether.Web is handled by `appSettings.json` and environment variables.
+The configuration for Nether.Web is handled by `appsettings.json` and environment variables.
 
 See the following articles for information on configuring different services in Nether
 
@@ -10,4 +10,4 @@ See the following articles for information on configuring different services in 
 * TODO Analytics
 
 
- [Dependency Injection](dependency-injection.md)
+There is also documentation on how to [override configuration settings using environment variables](appsettings-vs-env-vars.md) rather than by modifying `appsettings.json`.
