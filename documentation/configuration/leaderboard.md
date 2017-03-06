@@ -26,7 +26,7 @@ To configure the in-memory store, use the configuration below:
 To configure the SQL Server store, use the configuration below setting the `ConnectionString` property to the connection string to your database:
 
 ```json
-  "Identity" : {
+  "Leaderboard" : {
         "Store": {
             "wellknown": "sql",
             "properties": {
