@@ -23,6 +23,7 @@ using IdentityServer4;
 using System.Linq;
 using IdentityServer4.Models;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace Nether.Web
 {
@@ -63,12 +64,27 @@ namespace Nether.Web
         {
             services.AddSingleton<IConfiguration>(Configuration);
 
+            // Initialize switches for nether services
+            var serviceSwitches = new NetherServiceSwitchSettings();
+            services.AddSingleton(serviceSwitches);
+
+
             // Add framework services.
             services
                 .AddMvc(options =>
                 {
                     options.Conventions.Add(new FeatureConvention());
                     options.Filters.AddService(typeof(ExceptionLoggingFilterAttribute));
+                })
+                .ConfigureApplicationPartManager(partManager =>
+                {
+                    // swap out the default ControllerFeatureProvider for ours which filters based on the nether service switches
+                    var defaultProvider = partManager.FeatureProviders.FirstOrDefault(p => p is ControllerFeatureProvider);
+                    if (defaultProvider != null)
+                    {
+                        partManager.FeatureProviders.Remove(defaultProvider);
+                    }
+                    partManager.FeatureProviders.Add(new NetherServiceControllerFeatureProvider(serviceSwitches));
                 })
                 .AddRazorOptions(options =>
                 {
@@ -122,7 +138,6 @@ namespace Nether.Web
                         Url = "https://github.com/MicrosoftDX/nether/blob/master/LICENSE"
                     }
                 });
-                //options.OperationFilter<ApiPrefixFilter>();
                 options.CustomSchemaIds(type => type.FullName);
                 options.AddSecurityDefinition("oauth2", new OAuth2Scheme
                 {
@@ -140,11 +155,11 @@ namespace Nether.Web
 
             services.AddSingleton<ExceptionLoggingFilterAttribute>();
 
-            // TODO make this conditional with feature switches
-            services.AddIdentityServices(Configuration, _logger, _hostingEnvironment);
-            services.AddLeaderboardServices(Configuration, _logger);
-            services.AddPlayerManagementServices(Configuration, _logger);
-            services.AddAnalyticsServices(Configuration, _logger);
+
+            services.AddIdentityServices(Configuration, _logger, serviceSwitches, _hostingEnvironment);
+            services.AddLeaderboardServices(Configuration, _logger, serviceSwitches);
+            services.AddPlayerManagementServices(Configuration, _logger, serviceSwitches);
+            services.AddAnalyticsServices(Configuration, _logger, serviceSwitches);
 
 
             services.AddAuthorization(options =>
@@ -166,6 +181,7 @@ namespace Nether.Web
         {
             var logger = loggerFactory.CreateLogger<Startup>();
 
+            var serviceSwitchSettings = app.ApplicationServices.GetRequiredService<NetherServiceSwitchSettings>();
 
             app.InitializeIdentityStore(Configuration, logger);
             app.InitializePlayerManagementStore(Configuration, logger);
@@ -175,48 +191,49 @@ namespace Nether.Web
 
             // Set up separate web pipelines for identity, MVC UI, and API
             // as they each have different auth requirements!
-
-            app.Map("/identity", idapp =>
+            if (serviceSwitchSettings.IsServiceEnabled("Identity"))
             {
-                JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-                idapp.UseIdentityServer();
-
-                idapp.UseCookieAuthentication(new CookieAuthenticationOptions
+                app.Map("/identity", idapp =>
                 {
-                    AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+                    JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+                    idapp.UseIdentityServer();
 
-                    AutomaticAuthenticate = false,
-                    AutomaticChallenge = false
-                });
-
-                var facebookEnabled = bool.Parse(Configuration["Identity:SignInMethods:Facebook:Enabled"] ?? "false");
-                if (facebookEnabled)
-                {
-                    var appId = Configuration["Identity:SignInMethods:Facebook:AppId"];
-                    var appSecret = Configuration["Identity:SignInMethods:Facebook:AppSecret"];
-
-                    idapp.UseFacebookAuthentication(new FacebookOptions()
+                    idapp.UseCookieAuthentication(new CookieAuthenticationOptions
                     {
-                        DisplayName = "Facebook",
-                        SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+                        AuthenticationScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
 
-                        CallbackPath = "/signin-facebook",
-
-                        AppId = appId,
-                        AppSecret = appSecret
+                        AutomaticAuthenticate = false,
+                        AutomaticChallenge = false
                     });
-                }
 
-                idapp.UseStaticFiles();
-                idapp.UseMvc(routes =>
-                {
-                    routes.MapRoute(
-                        name: "account",
-                        template: "account/{action}",
-                        defaults: new { controller = "Account" });
+                    var facebookEnabled = bool.Parse(Configuration["Identity:SignInMethods:Facebook:Enabled"] ?? "false");
+                    if (facebookEnabled)
+                    {
+                        var appId = Configuration["Identity:SignInMethods:Facebook:AppId"];
+                        var appSecret = Configuration["Identity:SignInMethods:Facebook:AppSecret"];
+
+                        idapp.UseFacebookAuthentication(new FacebookOptions()
+                        {
+                            DisplayName = "Facebook",
+                            SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+
+                            CallbackPath = "/signin-facebook",
+
+                            AppId = appId,
+                            AppSecret = appSecret
+                        });
+                    }
+
+                    idapp.UseStaticFiles();
+                    idapp.UseMvc(routes =>
+                    {
+                        routes.MapRoute(
+                            name: "account",
+                            template: "account/{action}",
+                            defaults: new { controller = "Account" });
+                    });
                 });
-            });
-
+            }
 
             app.Map("/api", apiapp =>
             {

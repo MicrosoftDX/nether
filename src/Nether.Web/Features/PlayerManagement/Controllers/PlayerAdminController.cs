@@ -23,6 +23,7 @@ namespace Nether.Web.Features.PlayerManagement
     /// </summary>
     [Authorize(Roles = RoleNames.Admin)]
     [Route("admin/players")]
+    [NetherService("PlayerManagement")]
     public class PlayerAdminController : Controller
     {
         private readonly IPlayerManagementStore _store;

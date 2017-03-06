@@ -3,12 +3,14 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Nether.Web.Utilities;
 using System.Linq;
 
 namespace Nether.Web.Features.Identity
 {
     [Route("identity-test")]
     [Authorize]
+    [NetherService("Identity")]
     public class IdentityTestController : ControllerBase
     {
         [HttpGet]

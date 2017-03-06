@@ -13,6 +13,7 @@ using Nether.Web.Features.Analytics.Models.Endpoint;
 namespace Nether.Web.Features.Analytics
 {
     [Route("endpoint")]
+    [NetherService("Analytics")]
     public class EndpointController : Controller
     {
         private readonly EndpointInfo _endpointInfo;

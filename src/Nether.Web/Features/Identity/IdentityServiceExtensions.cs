@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using Nether.Integration.Identity;
 using Microsoft.AspNetCore.Builder;
 using System.IdentityModel.Tokens.Jwt;
+using Nether.Web.Utilities;
 
 namespace Nether.Web.Features.Identity
 {
@@ -76,8 +77,19 @@ namespace Nether.Web.Features.Identity
             this IServiceCollection services,
             IConfiguration configuration,
             ILogger logger,
+            NetherServiceSwitchSettings serviceSwitches,
             IHostingEnvironment hostingEnvironment)
         {
+            bool enabled = configuration.GetValue<bool>("Identity:Enabled");
+            if (!enabled)
+            {
+                logger.LogInformation("Identity service not enabled");
+                return services;
+            }
+            logger.LogInformation("Configuring Identity service");
+            serviceSwitches.AddServiceSwitch("Identity", true);
+            serviceSwitches.AddServiceSwitch("IdentityUi", true);
+
             ConfigureIdentityPlayerMangementClient(services, configuration, logger);
             ConfigureIdentityServer(services, configuration, logger, hostingEnvironment);
             ConfigureIdentityStore(services, configuration, logger);
@@ -214,6 +226,11 @@ namespace Nether.Web.Features.Identity
         // TODO - look at abstracting this behind a "UseIdentity" method or similar
         public static void InitializeIdentityStore(this IApplicationBuilder app, IConfiguration configuration, ILogger logger)
         {
+            var serviceSwitchSettings = app.ApplicationServices.GetRequiredService<NetherServiceSwitchSettings>();
+            if (!serviceSwitchSettings.IsServiceEnabled("Identity"))
+            {
+                return;
+            }
             var wellKnownType = configuration["Identity:Store:wellknown"];
             if (wellKnownType == "sql")
             {

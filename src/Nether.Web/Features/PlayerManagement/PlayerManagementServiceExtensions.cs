@@ -12,6 +12,7 @@ using Nether.Data.MongoDB.PlayerManagement;
 using Nether.Data.Sql.PlayerManagement;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Nether.Web.Utilities;
 
 namespace Nether.Web.Features.PlayerManagement
 {
@@ -20,8 +21,19 @@ namespace Nether.Web.Features.PlayerManagement
         public static IServiceCollection AddPlayerManagementServices(
             this IServiceCollection services,
             IConfiguration configuration,
-            ILogger logger)
+            ILogger logger,
+            NetherServiceSwitchSettings serviceSwitches
+            )
         {
+            bool enabled = configuration.GetValue<bool>("PlayerManagement:Enabled");
+            if (!enabled)
+            {
+                logger.LogInformation("PlayerManagement service not enabled");
+                return services;
+            }
+            logger.LogInformation("Configuring PlayerManagement service");
+            serviceSwitches.AddServiceSwitch("PlayerManagement", true);
+
             // TODO - look at what can be extracted to generalise this
             if (configuration.Exists("PlayerManagement:Store:wellKnown"))
             {
@@ -67,6 +79,12 @@ namespace Nether.Web.Features.PlayerManagement
         // TODO - look at abstracting this behind a "UsePlayerManagement" method or similar
         public static void InitializePlayerManagementStore(this IApplicationBuilder app, IConfiguration configuration, ILogger logger)
         {
+            var serviceSwitchSettings = app.ApplicationServices.GetRequiredService<NetherServiceSwitchSettings>();
+            if (!serviceSwitchSettings.IsServiceEnabled("PlayerManagement"))
+            {
+                return;
+            }
+
             var wellKnownType = configuration["PlayerManagement:Store:wellknown"];
             if (wellKnownType == "sql")
             {

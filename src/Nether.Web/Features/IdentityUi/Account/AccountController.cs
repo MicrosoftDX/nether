@@ -18,6 +18,7 @@ using IdentityModel;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Nether.Integration.Identity;
+using Nether.Web.Utilities;
 
 namespace Nether.Web.Features.IdentityUi
 {
@@ -27,6 +28,7 @@ namespace Nether.Web.Features.IdentityUi
     /// The interaction service provides a way for the UI to communicate with identityserver for validation and context retrieval
     /// </summary>
     [SecurityHeaders]
+    [NetherService("IdentityUi")]
     public class AccountController : Controller
     {
         private readonly IUserStore _userStore;

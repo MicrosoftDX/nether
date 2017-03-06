@@ -14,6 +14,7 @@ using Nether.Web.Features.Leaderboard.Configuration;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Nether.Web.Utilities;
 
 namespace Nether.Web.Features.Leaderboard
 {
@@ -22,8 +23,19 @@ namespace Nether.Web.Features.Leaderboard
         public static IServiceCollection AddLeaderboardServices(
             this IServiceCollection services,
             IConfiguration configuration,
-            ILogger logger)
+            ILogger logger,
+            NetherServiceSwitchSettings serviceSwitches
+            )
         {
+            bool enabled = configuration.GetValue<bool>("Leaderboard:Enabled");
+            if (!enabled)
+            {
+                logger.LogInformation("Leaderboard service not enabled");
+                return services;
+            }
+            logger.LogInformation("Configuring Leaderboard service");
+            serviceSwitches.AddServiceSwitch("Leaderboard", true);
+
             AddLeaderboardStore(services, configuration, logger);
 
             AddAnalyticsIntegrationClient(services, configuration, logger);
@@ -177,6 +189,12 @@ namespace Nether.Web.Features.Leaderboard
         // TODO - look at abstracting this behind a "UseLeaderboard" method or similar
         public static void InitializeLeaderboardStore(this IApplicationBuilder app, IConfiguration configuration, ILogger logger)
         {
+            var serviceSwitchSettings = app.ApplicationServices.GetRequiredService<NetherServiceSwitchSettings>();
+            if (!serviceSwitchSettings.IsServiceEnabled("Leaderboard"))
+            {
+                return;
+            }
+
             var wellKnownType = configuration["Leaderboard:Store:wellknown"];
             if (wellKnownType == "sql")
             {
