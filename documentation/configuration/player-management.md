@@ -9,7 +9,7 @@ Player Management functionality, implementing Nether [Player Management APIs](ap
 
 ## Data store configuration
 
-Update connection string in appsetting.json file, or via environment variables as described in the [configuration docs](configuration-dependency-injection.md#overriding-the-dependency-injection-with-environment-variables).
+Update connection string in appsetting.json file, or via environment variables as described in the [configuration docs](dependency-injection.md#overriding-the-dependency-injection-with-environment-variables).
 
    ```json
     "PlayerManagement" : {
