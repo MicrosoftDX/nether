@@ -16,6 +16,7 @@ This JSON file contains a top-level property for each nether service (e.g. `lead
         }
     },
     "Leaderboard": {
+        "Enabled": true,
         "Store": {
             "wellknown": "in-memory"
         },
@@ -27,6 +28,7 @@ This JSON file contains a top-level property for each nether service (e.g. `lead
         }
     },
     "Identity": {
+        "Enabled": true,
         "InitialSetup": {
             "AdminPassword": "N3therAdm1n" 
         },
