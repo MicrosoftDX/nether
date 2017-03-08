@@ -41,6 +41,7 @@ namespace Nether.Web
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile($"config/appsettings.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
 

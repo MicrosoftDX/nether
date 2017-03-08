@@ -1,16 +1,17 @@
 # Configuration
 
-The configuration for Nether.Web is handled by `appsettings.json` and environment variables.
+To understand how you can specify configuration settings, see [overriding settings](overriding-settings.md).
 
-See the following articles for information on configuring different services in Nether
+
+To find out what settings you can specify see the following sections:
 
 * [Identity services](identity.md)
 * [Leaderboard](leaderboard.md)
 * [Player Management](player-management.md)
 * TODO Analytics
+* TODO Common
 
 
-There is also documentation on how to [override configuration settings using environment variables](appsettings-vs-env-vars.md) rather than by modifying `appsettings.json`.
 
 ## Disabling nether services
 

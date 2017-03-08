@@ -1,7 +1,10 @@
-# Configuration in appsettings.json and environment variables
+# Overriding settings
 
+* [Overview of appsettings.json](overview-of-appsettings-json)
+* [Overriding configuration with config/appsettings.json](overriding-configuration-with-config-appsettings-json)
+* [Overriding configuration with environment variables](overriding-configuration-with-environment-variables)
 
-## AppSettings.json
+## Overview of appsettings.json
 
 The default configuration is specified in the appsettings.json under `src/Nether.Web`.
 
@@ -52,9 +55,17 @@ This JSON file contains a top-level property for each nether service (e.g. `lead
 Some aspects of the configuration relate to settings for the services, e.g. the `Identity:InitialSetup:AdminPassword`. Others are used to specify which dependencies should be wired up, e.g. `Leaderboard:Store`.
 In the case of dependencies, there is a common pattern that is followed that is discussed further in the [dependency injection docs](dependency-injection.md).
 
+## Overriding configuration with config/appsettings.json
+
+A quick way to modify your settings locally is to specify the values you want to override in the `appsettings.json` file in the `Nether.Web/config` folder. Any values specified in this file will override the defaults in `Nether.Web/appsettings.json`. Additionally, there is a `.gitignore` entry that prevents this file being committed to source control to help avoid accidentally adding secrets to source control when developing Nether.
+
+The config folder also has some sample configuration files, e.g. [appsettings-sql.sample.json](../../src/Nether.Web/config/appsettings-sql.sample.json)
 
 
 ## Overriding configuration with environment variables
+
+An alternative way to override settings is using environment variables.
+
 
 In the example above for the leaderboard store, the `in-memory` provider was specified using the `wellknown` property:
 

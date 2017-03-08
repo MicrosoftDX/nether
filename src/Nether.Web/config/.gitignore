@@ -1,0 +1,3 @@
+# ignore appsettings.json in this folder
+# as it is an environment-specific override
+appsettings.json
