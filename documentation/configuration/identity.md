@@ -25,7 +25,7 @@ IdentityBaseUrl | string | The base URL for the identity service. This defaults 
 ApiBaseUrl | string | The base URL for the Player Management API. This defaults to http://localhost:5000/api, but needs to be updated for deployment
 
 
-If you are not using the Nether Player Management services then you can create a client to integrate with your own Player Management services by implementing [IIdentityPlayerManagementClient](https://github.com/MicrosoftDX/nether/blob/master/src/Nether.Integration/Identity/IIdentityPlayerManagementClient.cs) and configure [dependency injection](../configuration-dependency-injection.md) to wire it up.
+If you are not using the Nether Player Management services then you can create a client to integrate with your own Player Management services by implementing [IIdentityPlayerManagementClient](https://github.com/MicrosoftDX/nether/blob/master/src/Nether.Integration/Identity/IIdentityPlayerManagementClient.cs) and configure [dependency injection](dependency-injection.md) to wire it up.
 
 ## Store
 The identity store defaults to an in-memory data store for ease of local configuration.
