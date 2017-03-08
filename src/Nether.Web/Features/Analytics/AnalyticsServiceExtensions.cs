@@ -11,6 +11,7 @@ using Nether.Data.Sql.Analytics;
 using Microsoft.EntityFrameworkCore;
 using Nether.Common.DependencyInjection;
 using Nether.Data.Analytics;
+using Nether.Web.Utilities;
 
 namespace Nether.Web.Features.Analytics
 {
@@ -19,8 +20,20 @@ namespace Nether.Web.Features.Analytics
         public static IServiceCollection AddAnalyticsServices(
             this IServiceCollection services,
             IConfiguration configuration,
-            ILogger logger)
+            ILogger logger,
+            NetherServiceSwitchSettings serviceSwitches
+            )
         {
+            bool enabled = configuration.GetValue<bool>("Analytics:Enabled");
+            if (!enabled)
+            {
+                logger.LogInformation("Analytics service not enabled");
+                return services;
+            }
+            logger.LogInformation("Configuring Analytics service");
+            serviceSwitches.AddServiceSwitch("Analytics", true);
+
+
             services.AddEndpointInfo(configuration, logger, "Analytics:EventHub");
             ConfigureAnalyticsStore(services, configuration, logger);
 
@@ -89,6 +102,12 @@ namespace Nether.Web.Features.Analytics
         // TODO - look at abstracting this behind a "UseIdentity" method or similar
         public static void InitializeAnalyticsStore(this IApplicationBuilder app, IConfiguration configuration, ILogger logger)
         {
+            var serviceSwitchSettings = app.ApplicationServices.GetRequiredService<NetherServiceSwitchSettings>();
+            if (!serviceSwitchSettings.IsServiceEnabled("Analytics"))
+            {
+                return;
+            }
+
             var wellKnownType = configuration["Analytics:Store:wellknown"];
             if (wellKnownType == "sql")
             {

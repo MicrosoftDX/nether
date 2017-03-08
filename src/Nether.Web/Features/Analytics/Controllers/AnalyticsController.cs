@@ -8,10 +8,12 @@ using Nether.Data.Analytics;
 using Nether.Web.Features.Analytics.Models.Analytics;
 using System.Linq;
 using System.Net;
+using Nether.Web.Utilities;
 
 namespace Nether.Web.Features.Analytics
 {
     [Route("analytics")]
+    [NetherService("Analytics")]
     [Authorize(Roles = RoleNames.Admin)]
     public class AnalyticsController : Controller
     {

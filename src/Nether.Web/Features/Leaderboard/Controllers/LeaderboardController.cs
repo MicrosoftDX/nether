@@ -25,6 +25,7 @@ namespace Nether.Web.Features.Leaderboard
     /// Leaderboard management
     /// </summary>
     [Route("leaderboards")]
+    [NetherService("Leaderboard")]
     public class LeaderboardController : Controller
     {
         private readonly ILeaderboardStore _store;

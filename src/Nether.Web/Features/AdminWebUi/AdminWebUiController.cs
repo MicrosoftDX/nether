@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Nether.Web.Features.AdminWebUi
 {
     [Route("admin")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class AdminWebUiController : Controller
     {
         [HttpGet]

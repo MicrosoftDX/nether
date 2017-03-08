@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Nether.Data.Identity;
 using Nether.Web.Features.Identity.Models;
 using Nether.Web.Features.Identity.Models.User;
+using Nether.Web.Utilities;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 namespace Nether.Web.Features.Identity
 {
     [Route("identity/users")]
+    [NetherService("Identity")]
     [Authorize(Roles = RoleNames.Admin)]
     public class UserController : ControllerBase
     {

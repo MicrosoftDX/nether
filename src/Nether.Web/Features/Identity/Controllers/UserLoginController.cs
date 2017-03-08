@@ -16,6 +16,7 @@ namespace Nether.Web.Features.Identity
 {
     [Route("identity/users/{userId}/logins")]
     [Authorize(Roles = RoleNames.Admin)]
+    [NetherService("Identity")]
     public class UserLoginController : ControllerBase
     {
         private readonly IUserStore _userStore;
