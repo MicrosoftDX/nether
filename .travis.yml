@@ -3,7 +3,7 @@ solution: Nether.sln
 dist: trusty
 sudo: required
 mono: none
-dotnet: 1.0.0-rc4-1-004771
+dotnet: 1.0.1
 script: 
 #   - ./RunCodeFormatter.sh
   - ./build.sh
