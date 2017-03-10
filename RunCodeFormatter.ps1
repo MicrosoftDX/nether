@@ -23,7 +23,12 @@ if (-not (Test-Path "$codeFormatterExtractLocation\CodeFormatter\CodeFormatter.e
 # Run CodeFormatter
 Write-Host "Running CodeFormatter..."
 &"$codeFormatterExtractLocation\CodeFormatter\CodeFormatter.exe" code-formatter.csproj /copyright:code-formatter.license.txt
-
+if ($LASTEXITCODE -ne 0){
+    $exitCode = $LASTEXITCODE
+    Write-Error "CodeFormatter failed - exiting"
+    exit $exitCode
+}
+    
 # Check for changes, i.e. did CodeFormatter make changes?
 Write-Host "Checking for changes..."
 git add -A | out-null # add all files as this avoids changes due to CRLF/LF issues (providing we're set up to normalize to LF)
