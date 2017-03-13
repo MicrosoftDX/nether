@@ -64,6 +64,7 @@ namespace Nether.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IConfiguration>(Configuration);
+            services.AddApplicationPerformanceMonitoring(Configuration, _logger, _hostingEnvironment);
 
             // Initialize switches for nether services
             var serviceSwitches = new NetherServiceSwitchSettings();

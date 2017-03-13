@@ -13,6 +13,8 @@ using System.Net;
 using Microsoft.Extensions.Logging;
 using Nether.Analytics.GameEvents;
 using Nether.Web.Features.Leaderboard.Models.Score;
+using Nether.Common.ApplicationPerformanceMonitoring;
+using System.Collections.Generic;
 
 namespace Nether.Web.Features.Leaderboard
 {
@@ -25,16 +27,19 @@ namespace Nether.Web.Features.Leaderboard
     {
         private readonly ILeaderboardStore _store;
         private readonly IAnalyticsIntegrationClient _analyticsIntegrationClient;
+        private readonly IApplicationPerformanceMonitor _appMonitor;
         private readonly ILogger<ScoreController> _logger;
 
         public ScoreController(
             ILeaderboardStore store,
             IAnalyticsIntegrationClient analyticsIntegrationClient,
+            IApplicationPerformanceMonitor appMonitor,
             ILogger<ScoreController> logger
             )
         {
             _store = store;
             _analyticsIntegrationClient = analyticsIntegrationClient;
+            _appMonitor = appMonitor;
             _logger = logger;
         }
 
@@ -55,6 +60,9 @@ namespace Nether.Web.Features.Leaderboard
             if (request.Score < 0)
             {
                 _logger.LogError("score is negative ({0})", request.Score);
+                _appMonitor.LogEvent("InvalidScore", properties: new Dictionary<string, string> {
+                        { "Score", request.Score.ToString() }
+                    });
                 return this.ValidationFailed(new ErrorDetail("score", "Score cannot be negative"));
             }
 
@@ -77,6 +85,10 @@ namespace Nether.Web.Features.Leaderboard
                 }),
                 SendScoreEventAndLogErrors(request));
 
+            _appMonitor.LogEvent("Score", properties: new Dictionary<string, string>{
+                {"Score", request.Score.ToString()}
+            });
+
             // Return result
             return Ok();
         }
@@ -96,6 +108,9 @@ namespace Nether.Web.Features.Leaderboard
             catch (Exception ex)
             {
                 _logger.LogError("Error sending analytics ScoreEvent: {0}", ex);
+                _appMonitor.LogError(ex, properties: new Dictionary<string, string> {
+                    { "Score", request.Score.ToString() }
+                });
             }
         }
 

@@ -22,6 +22,7 @@ using Nether.Integration.Identity;
 using Microsoft.AspNetCore.Builder;
 using System.IdentityModel.Tokens.Jwt;
 using Nether.Web.Utilities;
+using Nether.Common.ApplicationPerformanceMonitoring;
 
 namespace Nether.Web.Features.Identity
 {
@@ -29,9 +30,11 @@ namespace Nether.Web.Features.Identity
     {
         public static void EnsureInitialAdminUser(this IApplicationBuilder app, IConfiguration configuration, ILogger logger)
         {
+            IApplicationPerformanceMonitor appMonitor = null;
             try
             {
                 var serviceProvider = app.ApplicationServices;
+                appMonitor = serviceProvider.GetService<IApplicationPerformanceMonitor>();
 
                 logger.LogInformation("Identity:Store: Checking user store...");
 
@@ -70,6 +73,7 @@ namespace Nether.Web.Features.Identity
             catch (Exception ex)
             {
                 logger.LogCritical("Identity:Store: Adding initial admin user, exception: {0}", ex);
+                appMonitor.LogError(ex, "Error adding initial admin user");
             }
         }
 
