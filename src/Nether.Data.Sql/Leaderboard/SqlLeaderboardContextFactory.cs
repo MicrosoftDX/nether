@@ -2,12 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Nether.Data.Sql.Common;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Nether.Data.EntityFramework.Common;
 
 namespace Nether.Data.Sql.Leaderboard
 {

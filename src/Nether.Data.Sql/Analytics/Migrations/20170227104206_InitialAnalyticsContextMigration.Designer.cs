@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Nether.Data.Sql.Analytics;
+using Nether.Data.EntityFramework.Analytics;
 
 namespace Nether.Data.Sql.Analytics.Migrations
 {
@@ -17,7 +17,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.DailyActiveSessionsEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.DailyActiveSessionsEntity", b =>
                 {
                     b.Property<DateTime>("EventDate");
 
@@ -30,7 +30,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "DailyActiveSessions");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.DailyActiveUsersEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.DailyActiveUsersEntity", b =>
                 {
                     b.Property<DateTime>("EventDate");
 
@@ -43,7 +43,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "DailyActiveUsers");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.DailyDurationsEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.DailyDurationsEntity", b =>
                 {
                     b.Property<long>("AverageGenericDuration");
 
@@ -59,7 +59,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "DailyDurations");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.DailyGameDurationsEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.DailyGameDurationsEntity", b =>
                 {
                     b.Property<DateTime>("EventDate");
 
@@ -72,7 +72,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "DailyGameDurations");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.DailyLevelDropOffEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.DailyLevelDropOffEntity", b =>
                 {
                     b.Property<DateTime>("EventDate");
 
@@ -87,7 +87,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "DailyLevelDropoff");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.MonthlyActiveSessionsEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.MonthlyActiveSessionsEntity", b =>
                 {
                     b.Property<DateTime>("EventDate");
 
@@ -100,7 +100,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "MonthlyActiveSessions");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.MonthlyActiveUsersEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.MonthlyActiveUsersEntity", b =>
                 {
                     b.Property<DateTime>("EventDate");
 
@@ -113,7 +113,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "MonthlyActiveUsers");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.MonthlyDurationsEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.MonthlyDurationsEntity", b =>
                 {
                     b.Property<long>("AverageGenericDuration");
 
@@ -129,7 +129,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "MonthlyDurations");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.MonthlyGameDurationsEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.MonthlyGameDurationsEntity", b =>
                 {
                     b.Property<DateTime>("EventDate");
 
@@ -142,7 +142,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "MonthlyGameDurations");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.MonthlyLevelDropOffEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.MonthlyLevelDropOffEntity", b =>
                 {
                     b.Property<DateTime>("EventDate");
 
@@ -157,7 +157,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "MonthlyLevelDropoff");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.YearlyActiveSessionsEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.YearlyActiveSessionsEntity", b =>
                 {
                     b.Property<int>("Year");
 
@@ -170,7 +170,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "YearlyActiveSessions");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.YearlyActiveUsersEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.YearlyActiveUsersEntity", b =>
                 {
                     b.Property<int>("Year");
 
@@ -183,7 +183,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "YearlyActiveUsers");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.YearlyDurationsEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.YearlyDurationsEntity", b =>
                 {
                     b.Property<long>("AverageGenericDuration");
 
@@ -199,7 +199,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "YearlyDurations");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.YearlyGameDurationsEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.YearlyGameDurationsEntity", b =>
                 {
                     b.Property<int>("Year");
 
@@ -212,7 +212,7 @@ namespace Nether.Data.Sql.Analytics.Migrations
                     b.HasAnnotation("SqlServer:TableName", "YearlyGameDurations");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Analytics.YearlyLevelDropOffEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Analytics.YearlyLevelDropOffEntity", b =>
                 {
                     b.Property<int>("Year");
 

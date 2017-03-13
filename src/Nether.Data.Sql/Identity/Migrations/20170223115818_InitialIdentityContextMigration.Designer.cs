@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Nether.Data.Sql.Identity;
+using Nether.Data.EntityFramework.Identity;
 
 namespace Nether.Data.Sql.Identity.Migrations
 {
@@ -17,7 +17,7 @@ namespace Nether.Data.Sql.Identity.Migrations
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Nether.Data.Sql.Identity.LoginEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Identity.LoginEntity", b =>
                 {
                     b.Property<string>("UserId")
                         .HasMaxLength(50);
@@ -37,7 +37,7 @@ namespace Nether.Data.Sql.Identity.Migrations
                     b.HasAnnotation("SqlServer:TableName", "UserLogins");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Identity.UserEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Identity.UserEntity", b =>
                 {
                     b.Property<string>("UserId")
                         .ValueGeneratedOnAdd()
@@ -56,7 +56,7 @@ namespace Nether.Data.Sql.Identity.Migrations
                     b.HasAnnotation("SqlServer:TableName", "Users");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Identity.LoginEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Identity.LoginEntity", b =>
                 {
                     b.HasOne("Nether.Data.Sql.Identity.UserEntity", "User")
                         .WithMany("Logins")

@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Nether.Common\Nether.Common.csproj" />
+    <ProjectReference Include="..\Nether.Data.InMemory\Nether.Data.InMemory.csproj" />
     <ProjectReference Include="..\Nether.Data.MongoDB\Nether.Data.MongoDB.csproj" />
     <ProjectReference Include="..\Nether.Data\Nether.Data.csproj" />
     <ProjectReference Include="..\Nether.Integration\Nether.Integration.csproj" />

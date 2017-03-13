@@ -3,6 +3,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nether.Data.EntityFramework.PlayerManagement;
 
 namespace Nether.Data.Sql.PlayerManagement
 {

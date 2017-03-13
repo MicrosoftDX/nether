@@ -3,6 +3,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nether.Data.EntityFramework.Analytics;
 using System.Reflection;
 
 namespace Nether.Data.Sql.Analytics
