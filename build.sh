@@ -74,10 +74,9 @@ then
 else
   echo "*** Installing npm/bower packages..."
 
-  # check node.js and NPM are installed
-  command -v nodejs >/dev/null 2>&1 || { echo >&2 "Node.js is not installed. Aborting."; exit 1;}
+  # check NPM, bower and gulp are installed
   command -v npm >/dev/null 2>&1 || { echo >&2 "NPM is not installed. Aborting."; exit 1;}
-  command -v npm >/dev/null 2>&1 || { echo >&2 "bower is not installed (run npm install -g bower). Aborting."; exit 1;}
+  command -v bower >/dev/null 2>&1 || { echo >&2 "bower is not installed (run npm install -g bower). Aborting."; exit 1;}
   command -v gulp >/dev/null 2>&1 || { echo >&2 "gulp is not installed (run npm install -g gulp). Aborting."; exit 1;}
 
   buildExitCode=0

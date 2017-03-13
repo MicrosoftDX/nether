@@ -3,8 +3,12 @@ solution: Nether.sln
 dist: trusty
 sudo: required
 mono: none
-dotnet: 1.0.0-rc4-1-004771
+dotnet: 1.0.1
+before_install:
+- sudo apt-get install nodejs
+- sudo npm install -g gulp bower
 script: 
 #   - ./RunCodeFormatter.sh
+  - npm install -g gulp bower
   - ./build.sh
   - ./run-unit-tests.sh
