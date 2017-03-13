@@ -19,6 +19,7 @@ using Xunit;
 using IdentityModel;
 using Microsoft.Extensions.Logging;
 using Nether.Web.Features.Leaderboard.Models.Score;
+using Nether.Common.ApplicationPerformanceMonitoring;
 
 namespace Nether.Web.UnitTests.Features.Leaderboard
 {
@@ -35,6 +36,7 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
                     services.Setup(s => s.GetService(typeof(ILeaderboardStore))).Returns(leaderboardStore.Object);
                     services.Setup(s => s.GetService(typeof(IAnalyticsIntegrationClient))).Returns(Mock.Of<IAnalyticsIntegrationClient>());
                     services.Setup(s => s.GetService(typeof(ILogger<ScoreController>))).Returns(Mock.Of<ILogger<ScoreController>>());
+                    services.Setup(s => s.GetService(typeof(IApplicationPerformanceMonitor))).Returns(new NullMonitor());
                 });
 
             // Act
@@ -58,6 +60,7 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
                     services.Setup(s => s.GetService(typeof(ILeaderboardStore))).Returns(leaderboardStore.Object);
                     services.Setup(s => s.GetService(typeof(IAnalyticsIntegrationClient))).Returns(Mock.Of<IAnalyticsIntegrationClient>());
                     services.Setup(s => s.GetService(typeof(ILogger<ScoreController>))).Returns(Mock.Of<ILogger<ScoreController>>());
+                    services.Setup(s => s.GetService(typeof(IApplicationPerformanceMonitor))).Returns(new NullMonitor());
                 }
             );
 
@@ -85,6 +88,7 @@ namespace Nether.Web.UnitTests.Features.Leaderboard
                     services.Setup(s => s.GetService(typeof(ILeaderboardStore))).Returns(leaderboardStore.Object);
                     services.Setup(s => s.GetService(typeof(IAnalyticsIntegrationClient))).Returns(Mock.Of<IAnalyticsIntegrationClient>());
                     services.Setup(s => s.GetService(typeof(ILogger<ScoreController>))).Returns(Mock.Of<ILogger<ScoreController>>());
+                    services.Setup(s => s.GetService(typeof(IApplicationPerformanceMonitor))).Returns(new NullMonitor());
                 },
                 user: new ClaimsPrincipal(
                         new ClaimsIdentity(new[]
