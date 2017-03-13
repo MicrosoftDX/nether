@@ -77,7 +77,7 @@ namespace Nether.Web.Features.Leaderboard
                             var scopedConfiguration = configuration.GetSection("Leaderboard:AnalyticsIntegrationClient:properties");
                             string eventHubConnectionString = scopedConfiguration["EventHubConnectionString"];
 
-                            services.AddTransient<IAnalyticsIntegrationClient>(serviceProvider =>
+                            services.AddSingleton<IAnalyticsIntegrationClient>(serviceProvider =>
                             {
                                 return new AnalyticsIntegrationEventHubClient(eventHubConnectionString);
                             });
