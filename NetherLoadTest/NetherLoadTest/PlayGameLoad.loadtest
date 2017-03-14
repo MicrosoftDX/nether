@@ -1,12 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LoadTest Name="100UsersLoad" Description="" Owner="" storage="c:\projects\nether\netherloadtest\netherloadtest\100usersload.loadtest" Priority="2147483647" Enabled="true" CssProjectStructure="" CssIteration="" DeploymentItemsEditable="" WorkItemIds="" TraceLevel="None" CurrentRunConfig="Run Settings1" Id="d8f74d16-edc1-4a8e-a433-a25531d886c7" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+<LoadTest Name="PlayGameLoad" Description="" Owner="" storage="c:\projects\nether\netherloadtest\netherloadtest\playgameload.loadtest" Priority="2147483647" Enabled="true" CssProjectStructure="" CssIteration="" DeploymentItemsEditable="" WorkItemIds="" TraceLevel="None" CurrentRunConfig="Run Settings1" Id="559b31c9-5284-4ab6-b454-5ec600aac5cf" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
   <Scenarios>
-    <Scenario Name="100-Users" DelayBetweenIterations="1" PercentNewUsers="0" IPSwitching="false" TestMixType="PercentageOfTestsStarted" ApplyDistributionToPacingDelay="true" MaxTestIterations="0" DisableDuringWarmup="false" DelayStartTime="0" AllowedAgents="">
+    <Scenario Name="Scenario1" DelayBetweenIterations="0" PercentNewUsers="0" IPSwitching="false" TestMixType="PercentageOfTestsStarted" ApplyDistributionToPacingDelay="true" MaxTestIterations="0" DisableDuringWarmup="false" DelayStartTime="0" AllowedAgents="">
       <ThinkProfile Value="0.2" Pattern="NormalDistribution" />
       <LoadProfile Pattern="Constant" InitialUsers="100" />
       <TestMix>
-        <TestProfile Name="PostScore" Path="bin\debug\netherloadtest.dll" Id="cf507c80-eb7f-eb7f-57dc-751e2c830610" Percentage="90" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-        <TestProfile Name="GetScore" Path="bin\debug\netherloadtest.dll" Id="5fd8c5aa-75b8-7e7e-15b3-a937a44c8b39" Percentage="10" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="playGame" Path="bin\debug\netherloadtest.dll" Id="dc826cc3-2c53-bb4d-fc3d-1e5d1dcbb589" Percentage="100" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
       </TestMix>
       <NetworkMix>
         <NetworkProfile Percentage="100">
@@ -410,7 +409,7 @@
     </CounterSet>
   </CounterSets>
   <RunConfigurations>
-    <RunConfiguration Name="Run Settings1" Description="" ResultsStoreType="Database" TimingDetailsStorage="AllIndividualDetails" SaveTestLogsOnError="true" SaveTestLogsFrequency="1" MaxErrorDetails="200" MaxErrorsPerType="1000" MaxThresholdViolations="1000" MaxRequestUrlsReported="1000" UseTestIterations="false" RunDuration="1800" WarmupTime="10" CoolDownTime="0" TestIterations="100" WebTestConnectionModel="ConnectionPerUser" WebTestConnectionPoolSize="50" SampleRate="15" ValidationLevel="High" SqlTracingConnectString="" SqlTracingConnectStringDisplayValue="" SqlTracingDirectory="" SqlTracingEnabled="false" SqlTracingFileCount="2" SqlTracingRolloverEnabled="true" SqlTracingMinimumDuration="500" RunUnitTestsInAppDomain="true" CoreCount="0" ResourcesRetentionTimeInMinutes="0" UseMultipleIPs="false" TestAgentConfiguration="Default" AgentDiagnosticsLevel="Warning">
+    <RunConfiguration Name="Run Settings1" Description="" ResultsStoreType="Database" TimingDetailsStorage="AllIndividualDetails" SaveTestLogsOnError="true" SaveTestLogsFrequency="0" MaxErrorDetails="200" MaxErrorsPerType="1000" MaxThresholdViolations="1000" MaxRequestUrlsReported="1000" UseTestIterations="false" RunDuration="300" WarmupTime="0" CoolDownTime="0" TestIterations="100" WebTestConnectionModel="ConnectionPerUser" WebTestConnectionPoolSize="50" SampleRate="15" ValidationLevel="High" SqlTracingConnectString="" SqlTracingConnectStringDisplayValue="" SqlTracingDirectory="" SqlTracingEnabled="false" SqlTracingFileCount="2" SqlTracingRolloverEnabled="true" SqlTracingMinimumDuration="500" RunUnitTestsInAppDomain="true" CoreCount="0" ResourcesRetentionTimeInMinutes="0" UseMultipleIPs="false" TestAgentConfiguration="Default" AgentDiagnosticsLevel="Warning">
       <CounterSetMappings>
         <CounterSetMapping ComputerName="[CONTROLLER MACHINE]">
           <CounterSetReferences>
@@ -424,25 +423,6 @@
           </CounterSetReferences>
         </CounterSetMapping>
       </CounterSetMappings>
-      <Applications>
-        <AutComponent Description="" Id="ApplicationInsights~/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301" Name="nether20170301" Type="ApplicationInsights" Separator="\" Version="3.0">
-          <AutCounters>
-            <AutCounter Description="ASP.NET request execution time" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301~performanceCounters/requestExecutionTime~avg" Name="ASP.NET request execution time" Path="\nether20170301\ASP.NET request execution time\performanceCounters/requestExecutionTime\avg" />
-            <AutCounter Description="ASP.NET request execution time" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301~performanceCounters/requestExecutionTime~count" Name="ASP.NET request execution time" Path="\nether20170301\ASP.NET request execution time\performanceCounters/requestExecutionTime\count" />
-            <AutCounter Description="ASP.NET request execution time" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301~performanceCounters/requestExecutionTime~max" Name="ASP.NET request execution time" Path="\nether20170301\ASP.NET request execution time\performanceCounters/requestExecutionTime\max" />
-            <AutCounter Description="ASP.NET request execution time" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301~performanceCounters/requestExecutionTime~min" Name="ASP.NET request execution time" Path="\nether20170301\ASP.NET request execution time\performanceCounters/requestExecutionTime\min" />
-            <AutCounter Description="ASP.NET request execution time" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301~performanceCounters/requestExecutionTime~sum" Name="ASP.NET request execution time" Path="\nether20170301\ASP.NET request execution time\performanceCounters/requestExecutionTime\sum" />
-            <AutCounter Description="Server requests" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301~requests/count~sum" Name="Server requests" Path="\nether20170301\Server requests\requests/count\sum" />
-            <AutCounter Description="Server response time" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301~requests/duration~avg" Name="Server response time" Path="\nether20170301\Server response time\requests/duration\avg" />
-            <AutCounter Description="Server response time" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301~requests/duration~count" Name="Server response time" Path="\nether20170301\Server response time\requests/duration\count" />
-            <AutCounter Description="Server response time" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301~requests/duration~max" Name="Server response time" Path="\nether20170301\Server response time\requests/duration\max" />
-            <AutCounter Description="Server response time" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301~requests/duration~min" Name="Server response time" Path="\nether20170301\Server response time\requests/duration\min" />
-            <AutCounter Description="Server response time" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301~requests/duration~sum" Name="Server response time" Path="\nether20170301\Server response time\requests/duration\sum" />
-            <AutCounter Description="Sessions" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301~sessions/count~unique" Name="Sessions" Path="\nether20170301\Sessions\sessions/count\unique" />
-            <AutCounter Description="Users" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load-01/providers/microsoft.insights/components/nether20170301~users/count~unique" Name="Users" Path="\nether20170301\Users\users/count\unique" />
-          </AutCounters>
-        </AutComponent>
-      </Applications>
       <LoadGeneratorLocations>
         <GeoLocation Location="North Europe" Percentage="100" />
       </LoadGeneratorLocations>
