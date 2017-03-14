@@ -123,7 +123,7 @@ namespace NetherLoadTest
         }
 
         [TestMethod]
-        public async Task playGame()
+        public async Task PlayGame()
         {
             // simuate game - users logs in, get the scores from the leaderbaord 
             // after a random wait time the user will post the new score and get the leaderboard again. 
@@ -135,10 +135,12 @@ namespace NetherLoadTest
             // sleep between 30 seconds to 5 minutes
             Thread.Sleep(s_random.Next(30, 300) * 1000);
 
-            TestContext.BeginTimer("PlayLevel");
+            TestContext.BeginTimer("PlayLevelPostScore");
             await _client.PostScoreAsync(s_random.Next(100, 1000));
+            TestContext.EndTimer("PlayLevelPostScore");
+            TestContext.BeginTimer("PlayLevelGetScore");
             await _client.GetScoresAsync();
-            TestContext.EndTimer("PlayLevel");
+            TestContext.EndTimer("PlayLevelGetScore");
         }
 
         private async Task EnsureLoggedInAsync()
