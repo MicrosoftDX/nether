@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System;
 using Nether.Web.Features.PlayerManagement.Models.PlayerManagementIdentity;
+using Nether.Common.ApplicationPerformanceMonitoring;
 
 //TODO: Add versioning support
 
@@ -26,10 +27,15 @@ namespace Nether.Web.Features.PlayerManagement
     public class PlayerManagementIdentityController : Controller
     {
         private readonly IPlayerManagementStore _store;
+        private readonly IApplicationPerformanceMonitor _appMonitor;
         private readonly ILogger _logger;
 
-        public PlayerManagementIdentityController(IPlayerManagementStore store, ILogger<PlayerManagementIdentityController> logger)
+        public PlayerManagementIdentityController(
+            IPlayerManagementStore store,
+            IApplicationPerformanceMonitor appMonitor,
+            ILogger<PlayerManagementIdentityController> logger)
         {
+            _appMonitor = appMonitor;
             _store = store;
             _logger = logger;
         }
@@ -58,11 +64,21 @@ namespace Nether.Web.Features.PlayerManagement
             if (!string.IsNullOrEmpty(player.Gamertag))
             {
                 _logger.LogInformation("Player already has gamertag (cannot update) in SetGamertagForPlayerId");
+                _appMonitor.LogEvent("RegisterFailed", properties: new Dictionary<string, string> {
+                    { "Reason", "UserAlreadyHasGamertag" },
+                    { "Source", "Interactive"}
+                });
                 return this.ValidationFailed(new ErrorDetail("gamertag", "Cannot update gamertag"));
             }
 
             player.Gamertag = model.Gamertag;
             await _store.SavePlayerAsync(player);
+
+            _appMonitor.LogEvent("RegisterSucceeded", properties: new Dictionary<string, string> {
+                { "Reason", "UserAlreadyHasGamertag" },
+                { "Source", "Interactive"}
+            });
+
             return Ok();
         }
 

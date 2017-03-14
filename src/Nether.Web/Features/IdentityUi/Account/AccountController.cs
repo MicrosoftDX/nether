@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Nether.Integration.Identity;
 using Nether.Web.Utilities;
+using Nether.Common.ApplicationPerformanceMonitoring;
 
 namespace Nether.Web.Features.IdentityUi
 {
@@ -36,6 +37,7 @@ namespace Nether.Web.Features.IdentityUi
         private readonly AccountService _account;
         private readonly IResourceOwnerPasswordValidator _passwordValidator;
         private readonly IIdentityPlayerManagementClient _playerManagementClient;
+        private readonly IApplicationPerformanceMonitor _appMonitor;
         private readonly ILogger _logger;
 
         public AccountController(
@@ -45,6 +47,7 @@ namespace Nether.Web.Features.IdentityUi
             IUserStore userStore,
             IResourceOwnerPasswordValidator passwordValidator,
             IIdentityPlayerManagementClient playerManagementClient,
+            IApplicationPerformanceMonitor appMonitor,
             ILogger<AccountController> logger)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
@@ -53,6 +56,7 @@ namespace Nether.Web.Features.IdentityUi
             _interaction = interaction;
             _account = new AccountService(interaction, httpContextAccessor, clientStore);
             _playerManagementClient = playerManagementClient;
+            _appMonitor = appMonitor;
             _logger = logger;
         }
 
@@ -124,6 +128,10 @@ namespace Nether.Web.Features.IdentityUi
                     var user = await _userStore.GetUserByLoginAsync(LoginProvider.UserNamePassword, model.Username);
                     var userId = user.UserId;
                     await HttpContext.Authentication.SignInAsync(userId, model.Username, props);
+                    _appMonitor.LogEvent("LoginSucceeded", properties: new Dictionary<string, string> {
+                        { "LoginType", "interactive" },
+                        { "LoginSubType", "local" }
+                    });
 
                     // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
                     if (_interaction.IsValidReturnUrl(model.ReturnUrl))
@@ -257,11 +265,22 @@ namespace Nether.Web.Features.IdentityUi
             var gamertag = await _playerManagementClient.GetGamertagForUserIdAsync(user.UserId);
             if (string.IsNullOrEmpty(gamertag))
             {
+                _appMonitor.LogEvent("LoginSucceeded", properties: new Dictionary<string, string> {
+                        { "LoginType", "interactive" },
+                        { "LoginSubType", providerType },
+                        {"Registered", "false" }
+                    });
                 return View("Register", new RegisterViewModel
                 {
                     ReturnUrl = returnUrl
                 });
             }
+
+            _appMonitor.LogEvent("LoginSucceeded", properties: new Dictionary<string, string> {
+                        { "LoginType", "interactive" },
+                        { "LoginSubType", providerType },
+                        {"Registered", "true" }
+                    });
 
             return await SwitchToNetherAuthAndRedirectAsync(returnUrl, info, claims, providerType, user, gamertag);
         }

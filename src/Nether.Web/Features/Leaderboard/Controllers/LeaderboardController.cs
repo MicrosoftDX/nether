@@ -16,6 +16,7 @@ using System.Net;
 using Microsoft.Extensions.Logging;
 using Nether.Analytics.GameEvents;
 using Nether.Web.Features.Leaderboard.Models.Leaderboard;
+using Nether.Common.ApplicationPerformanceMonitoring;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -30,16 +31,20 @@ namespace Nether.Web.Features.Leaderboard
     {
         private readonly ILeaderboardStore _store;
         private readonly ILogger<LeaderboardController> _logger;
+        private readonly IApplicationPerformanceMonitor _appMonitor;
+
         private readonly ILeaderboardConfiguration _leaderboardConfiguration;
 
         public LeaderboardController(
             ILeaderboardStore store,
             ILogger<LeaderboardController> logger,
+            IApplicationPerformanceMonitor appMonitor,
             ILeaderboardConfiguration leaderboardConfiguration
             )
         {
             _store = store;
             _logger = logger;
+            _appMonitor = appMonitor;
             _leaderboardConfiguration = leaderboardConfiguration;
         }
 
@@ -53,8 +58,6 @@ namespace Nether.Web.Features.Leaderboard
         [HttpGet("")]
         public IActionResult GetAll()
         {
-            var gamerTag = User.GetGamerTag();
-
             var leaderboards = _leaderboardConfiguration.GetAll();
 
             return Ok(new LeaderboardListResponseModel
@@ -82,6 +85,10 @@ namespace Nether.Web.Features.Leaderboard
         public async Task<IActionResult> Get(string name)
         {
             var gamertag = User.GetGamerTag();
+
+            _appMonitor.LogEvent("Leaderboard", properties: new Dictionary<string, string> {
+                { "Name", name }
+            });
 
             LeaderboardConfig config = _leaderboardConfiguration.GetByName(name);
             if (config == null)

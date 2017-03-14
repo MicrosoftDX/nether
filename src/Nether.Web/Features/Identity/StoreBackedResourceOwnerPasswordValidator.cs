@@ -9,6 +9,8 @@ using Nether.Data.Identity;
 using IdentityServer4.Models;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Nether.Common.ApplicationPerformanceMonitoring;
+using System.Collections.Generic;
 
 namespace Nether.Web.Features.Identity
 {
@@ -17,17 +19,20 @@ namespace Nether.Web.Features.Identity
         private readonly IUserStore _userStore;
         private readonly UserClaimsProvider _userClaimsProvider;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IApplicationPerformanceMonitor _appMonitor;
         private readonly ILogger<StoreBackedResourceOwnerPasswordValidator> _logger;
 
         public StoreBackedResourceOwnerPasswordValidator(
             IUserStore userStore,
             UserClaimsProvider userClaimsProvider,
             IPasswordHasher passwordHasher,
+            IApplicationPerformanceMonitor appMonitor,
             ILogger<StoreBackedResourceOwnerPasswordValidator> logger)
         {
             _userStore = userStore;
             _userClaimsProvider = userClaimsProvider;
             _passwordHasher = passwordHasher;
+            _appMonitor = appMonitor;
             _logger = logger;
         }
         public async Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
@@ -37,12 +42,20 @@ namespace Nether.Web.Features.Identity
             if (user == null)
             {
                 _logger.LogTrace("User not found: '{0}'", userName);
+                _appMonitor.LogEvent("LoginFailed", "ResourceOwner: user not found", new Dictionary<string, string> {
+                        { "EventSubType", "UserNotFound" },
+                        { "LoginType", "password" }
+                    });
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
                 return;
             }
             if (!user.IsActive)
             {
                 _logger.LogTrace("User inactive: '{0}'", userName);
+                _appMonitor.LogEvent("LoginFailed", "ResourceOwner: user inactive", new Dictionary<string, string> {
+                        { "EventSubType", "UserInactive" },
+                        { "LoginType", "password" }
+                    });
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
                 return;
             }
@@ -53,6 +66,10 @@ namespace Nether.Web.Features.Identity
             {
                 // shouldn't get here!
                 _logger.LogError("User does not have a username password login entry: '{0}'", userName);
+                _appMonitor.LogEvent("LoginFailed", "ResourceOwner: user has no password login entry", new Dictionary<string, string> {
+                        { "EventSubType", "UserHasNoPassword" },
+                        { "LoginType", "password" }
+                    });
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
             }
 
@@ -69,6 +86,9 @@ namespace Nether.Web.Features.Identity
 
             var claims = await _userClaimsProvider.GetUserClaimsAsync(user);
             context.Result = new GrantValidationResult(user.UserId, "password", claims);
+            _appMonitor.LogEvent("LoginSucceeded", properties: new Dictionary<string, string> {
+                        { "LoginType", "password" }
+                    });
         }
     }
 }

@@ -6,6 +6,7 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Nether.Common.ApplicationPerformanceMonitoring;
 using Nether.Data.Identity;
 using Newtonsoft.Json.Linq;
 using System;
@@ -26,16 +27,19 @@ namespace Nether.Web.Features.Identity
         private readonly UserClaimsProvider _userClaimsProvider;
         private readonly IUserStore _userStore;
         private readonly ILogger _logger;
+        private readonly IApplicationPerformanceMonitor _appMonitor;
 
         public FacebookUserAccessTokenExtensionGrantValidator(
             IConfiguration configuration,
             IUserStore userStore,
             UserClaimsProvider userClaimsProvider,
+            IApplicationPerformanceMonitor appMonitor,
             ILogger<FacebookUserAccessTokenExtensionGrantValidator> logger)
         {
             _configuration = configuration;
             _userClaimsProvider = userClaimsProvider;
             _userStore = userStore;
+            _appMonitor = appMonitor;
             _logger = logger;
         }
 
@@ -76,6 +80,10 @@ namespace Nether.Web.Features.Identity
                     // Get here if (for example) the token is for a different application
                     var message = (string)body.error.message;
                     _logger.LogError("FacebookSignIn: error validating token: {0}", message);
+                    _appMonitor.LogEvent("LoginFailed", $"FacebookSignIn: error validating token: {message}", new Dictionary<string, string> {
+                        { "EventSubType", "TokenValidationFailed" },
+                        { "LoginType", "fb-usertoken" }
+                    });
                     context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
                     return;
                 }
@@ -86,6 +94,10 @@ namespace Nether.Web.Features.Identity
                 {
                     var message = (string)body.data.error.message;
                     _logger.LogError("FacebookSignIn: invalid token: {0}", message);
+                    _appMonitor.LogEvent("LoginFailed", $"FacebookSignIn: invalid token: {message}", new Dictionary<string, string> {
+                        { "EventSubType", "InvalidToken" },
+                        { "LoginType", "fb-usertoken" }
+                    });
                     context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
                     return;
                 }
@@ -112,10 +124,18 @@ namespace Nether.Web.Features.Identity
 
                 var claims = await _userClaimsProvider.GetUserClaimsAsync(user);
                 context.Result = new GrantValidationResult(user.UserId, "nether-facebook", claims);
+                _appMonitor.LogEvent("LoginSucceeded", properties: new Dictionary<string, string> {
+                        { "LoginType", "fb-usertoken" }
+                    });
             }
             catch (Exception ex)
             {
                 _logger.LogError("Error in ValidateAsync: {0}", ex);
+                _appMonitor.LogError(ex, "Error in ValidateAsync", new Dictionary<string, string> {
+                        { "EventType", "LoginFailed" },
+                        { "EventSubType", "UnhandledException" },
+                        { "LoginType", "fb-usertoken" }
+                    });
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest, ex.Message);
             }
         }

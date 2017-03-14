@@ -16,6 +16,7 @@ using Nether.Data.Identity;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Nether.Integration.Identity;
+using Nether.Common.ApplicationPerformanceMonitoring;
 
 namespace Nether.Web.Features.Identity
 {
@@ -24,14 +25,17 @@ namespace Nether.Web.Features.Identity
         private readonly IUserStore _userStore;
         private readonly UserClaimsProvider _userClaimsProvider;
         private readonly ILogger _logger;
+        private readonly IApplicationPerformanceMonitor _appMonitor;
 
         public StoreBackedProfileService(
             IUserStore userStore,
             UserClaimsProvider userClaimsProvider,
+            IApplicationPerformanceMonitor appMonitor,
             ILogger<StoreBackedProfileService> logger)
         {
             _userStore = userStore;
             _userClaimsProvider = userClaimsProvider;
+            _appMonitor = appMonitor;
             _logger = logger;
         }
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)

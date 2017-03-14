@@ -12,6 +12,7 @@ using Nether.Web.Features.PlayerManagement.Models.Player;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Nether.Common.ApplicationPerformanceMonitoring;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -28,9 +29,14 @@ namespace Nether.Web.Features.PlayerManagement
     {
         private readonly IPlayerManagementStore _store;
         private readonly ILogger _logger;
+        private readonly IApplicationPerformanceMonitor _appMonitor;
 
-        public PlayerController(IPlayerManagementStore store, ILogger<PlayerController> logger)
+        public PlayerController(
+            IPlayerManagementStore store,
+            IApplicationPerformanceMonitor appMonitor,
+            ILogger<PlayerController> logger)
         {
+            _appMonitor = appMonitor;
             _store = store;
             _logger = logger;
         }
@@ -74,10 +80,11 @@ namespace Nether.Web.Features.PlayerManagement
                 // Can't use a gamertag from another user
                 return this.ValidationFailed(new ErrorDetail("gamertag", "Gamertag already in use"));
             }
-
+            bool newPlayer = false;
             var playerEntity = await _store.GetPlayerDetailsByUserIdAsync(userId);
             if (playerEntity == null)
             {
+                newPlayer = true;
                 playerEntity = new Player
                 {
                     UserId = userId,
@@ -96,9 +103,14 @@ namespace Nether.Web.Features.PlayerManagement
                 playerEntity.Country = player.Country;
                 playerEntity.CustomTag = player.CustomTag;
             }
-
             // Update player
             await _store.SavePlayerAsync(playerEntity);
+
+            // is this a new player registration?
+            if (newPlayer)
+            {
+                _appMonitor.LogEvent("Register");
+            }
 
             // Return result
             return NoContent();
