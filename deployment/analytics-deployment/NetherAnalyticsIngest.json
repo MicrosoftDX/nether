@@ -1,0 +1,299 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "WebHostingPlan": {
+      "type": "string",
+      "defaultValue": "Free (no 'always on')",
+      "allowedValues": [
+        "Free (no 'always on')",
+        "Shared",
+        "Basic B1",
+        "Basic B2",
+        "Basic B3",
+        "Standard S1", 
+        "Standard S2",
+        "Standard S3",
+        "Premium P1",
+        "Premium P2",
+        "Premium P3"
+      ],
+      "metadata": {
+        "description": "Specifies the database pricing/performance."
+      }
+    },
+    "DeployPackageURI": {
+      "minLength": 1,
+      "type": "String",
+      "metadata": {
+        "description": "WebDeploy package location."
+      }
+    }
+  },
+  "variables": {
+    "InstanceCount": 1,
+    "ManagePolicyName": "managePolicy",
+    "analyticsStorageAccountName": "[concat('analytics', uniquestring(resourceGroup().id))]",
+    "namespaceName": "[concat('nether', uniquestring(resourceGroup().id))]",
+    "ingestEventHub": "[concat('ingest', uniquestring(resourceGroup().id))]",
+    "intermidiateEventHub": "[concat('intermidiate', uniquestring(resourceGroup().id))]",
+    "defaultSASKeyName": "RootManageSharedAccessKey",
+    "authRuleResourceId": "[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('namespaceName'), variables('defaultSASKeyName'))]",
+    "ehApiVersion": "2015-08-01",
+    "WebResourceAPI": "2015-08-01",
+    "hostingPlanName": "[concat('hostingPlan', uniquestring(resourceGroup().id))]",
+    "webSiteName": "[concat('site', uniquestring(resourceGroup().id))]",
+    "HostingSKUs": {
+      "Free (no 'always on')": {
+        "tier": "Free",
+        "size": "F1",
+        "enableAlwaysOn": false
+      },
+      "Shared": {
+        "tier": "Shared",
+        "size": "D1",
+        "enableAlwaysOn": true
+      },
+      "Basic B1": {
+        "tier": "Basic",
+        "size": "B1",
+        "enableAlwaysOn": true
+      },
+      "Basic B2": {
+        "tier": "Basic",
+        "size": "B2",
+        "enableAlwaysOn": true
+      },
+      "Basic B3": {
+        "tier": "Basic",
+        "size": "B3",
+        "enableAlwaysOn": true
+      },
+      "Standard S1": {
+        "tier": "Standard",
+        "size": "S1",
+        "enableAlwaysOn": true
+      },
+      "Standard S2": {
+        "tier": "Standard",
+        "size": "S2",
+        "enableAlwaysOn": true
+      },
+      "Standard S3": {
+        "tier": "Standard",
+        "size": "S3",
+        "enableAlwaysOn": true
+      },
+      "Premium P1": {
+        "tier": "Premium",
+        "size": "P1",
+        "enableAlwaysOn": true
+      },
+      "Premium P2": {
+        "tier": "Premium",
+        "size": "P2",
+        "enableAlwaysOn": true
+      },
+      "Premium S3": {
+        "tier": "Premium",
+        "size": "P3",
+        "enableAlwaysOn": true
+      }
+    },
+    "eventHubRef": "[concat('Microsoft.EventHub/namespaces/', variables('namespaceName'),'/eventhubs/',variables('intermidiateEventHub'))]",
+    "consumerGroupName": "analytics"	
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('analyticsStorageAccountName')]",
+      "apiVersion": "2016-01-01",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "Storage",
+      "properties": {
+      }
+    },
+    {
+      "apiVersion": "2015-08-01",
+      "name": "[variables('namespaceName')]",
+      "type": "Microsoft.EventHub/Namespaces",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Standard",
+        "tier": "Standard"
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "name": "[variables('ingestEventHub')]",
+          "type": "EventHubs",
+          "dependsOn": [
+            "[concat('Microsoft.EventHub/namespaces/', variables('namespaceName'))]"
+          ],
+          "properties": {
+            "path": "[variables('ingestEventHub')]"
+          }
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "name": "[variables('intermidiateEventHub')]",
+          "type": "EventHubs",
+          "dependsOn": [
+            "[concat('Microsoft.EventHub/namespaces/', variables('namespaceName'))]"
+          ],
+          "properties": {
+            "path": "[variables('intermidiateEventHub')]"
+          },
+          "resources": [
+            {
+              "type": "authorizationRules",
+              "name": "[variables('ManagePolicyName')]",
+              "apiVersion": "[variables('ehApiVersion')]",
+              "dependsOn": [
+                "[variables('eventHubRef')]"
+              ],
+              "properties": {
+                "rights": [ "Send", "Listen", "Manage" ]
+              }
+            },
+            {
+              "type": "ConsumerGroups",
+              "name": "[variables('consumerGroupName')]",
+              "apiVersion": "[variables('ehApiVersion')]",
+              "dependsOn": [
+                "[variables('eventHubRef')]"
+              ],
+              "properties": {
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "name": "[variables('hostingPlanName')]",
+      "apiVersion": "[variables('WebResourceAPI')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "HostingPlan"
+      },
+      "sku": {
+        "name": "[variables('HostingSKUs')[parameters('WebHostingPlan')].size]",
+        "tier": "[variables('HostingSKUs')[parameters('WebHostingPlan')].tier]",
+        "size": "[variables('HostingSKUs')[parameters('WebHostingPlan')].size]",
+        "capacity": "[variables('InstanceCount')]"
+      },
+      "properties": {
+        "name": "[variables('hostingPlanName')]"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('webSiteName')]",
+      "apiVersion": "[variables('WebResourceAPI')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[variables('hostingPlanName')]"
+      ],
+      "tags": {
+        "displayName": "WebSite"
+      },
+      "properties": {
+        "name": "[variables('webSiteName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+      },
+      "resources": [
+        {
+          "type": "extensions",
+          "name": "MSDeploy",
+          "apiVersion": "2015-08-01",
+          "location": "[resourceGroup().location]",
+          "tags": {
+            "displayName": "WebAppMSDeploy"
+          },
+          "properties": {
+            "packageUri": "[parameters('DeployPackageURI')]"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Web/sites/', variables('webSiteName'))]"
+          ]
+        },
+		{
+            "name": "connectionstrings",
+            "type": "config",
+            "apiVersion": "2015-08-01",
+            "dependsOn": [
+				"[concat('Microsoft.Web/sites/', variables('webSiteName'))]",
+				"[concat('Microsoft.Web/sites/', variables('webSiteName'), '/extensions/MSDeploy')]"
+            ],           
+            "properties": {
+              "AzureWebJobsDashboard": {
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('analyticsStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('analyticsStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+                "type": "Custom"
+              },
+			  "AzureWebJobsStorage" : {
+				"value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('analyticsStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('analyticsStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+                "type": "Custom"
+			  }
+             }
+          },
+        {
+          "type": "config",
+          "name": "appsettings",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[concat('Microsoft.Web/sites/', variables('webSiteName'))]",
+            "[concat('Microsoft.Web/sites/', variables('webSiteName'), '/extensions/MSDeploy')]"
+          ],
+          "properties": {
+            "NETHER_WEBJOB_DASHBOARD_AND_STORAGE_CONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('analyticsStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('analyticsStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+
+            "NETHER_INGEST_EVENTHUB_CONNECTIONSTRING": "[listkeys(variables('authRuleResourceId'), variables('ehApiVersion')).primaryConnectionString]",
+
+            "NETHER_INGEST_EVENTHUB_NAME": "[variables('ingestEventHub')]",
+
+            "NETHER_ANALYTICS_STORAGE_CONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('analyticsStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('analyticsStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+
+            "NETHER_ANALYTICS_STORAGE_CONTAINER": "gameevents",
+
+            "NETHER_ANALYTICS_STORAGE_TMP_CONTAINER": "tmp",
+
+            "NETHER_INTERMEDIATE_EVENTHUB_CONNECTIONSTRING": "[listkeys(variables('authRuleResourceId'), variables('ehApiVersion')).primaryConnectionString]",
+
+            "NETHER_INTERMEDIATE_EVENTHUB_NAME": "[variables('intermidiateEventHub')]"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": {
+    "serviceBusNamespace": {
+      "type": "string",
+      "value": "[variables('namespaceName')]"
+    },
+    "eventHubName": {
+      "type": "string",
+      "value": "[variables('intermidiateEventHub')]"
+    },
+    "sharedAccessPolicyName": {
+      "type": "string",
+      "value": "[variables('ManagePolicyName')]"
+    },
+    "sharedAccessPolicyKey": {
+      "type": "string",
+      "value": "[listKeys(resourceId(concat('Microsoft.EventHub/namespaces/EventHubs/AuthorizationRules'),variables('namespaceName'),variables('intermidiateEventHub'),variables('ManagePolicyName')),variables('ehApiVersion')).primaryKey]"
+    },
+    "consumerGroupName": {
+      "type": "string",
+      "value": "[variables('consumerGroupName')]"
+    },
+	"analyticsStorageName": {
+		"type":"string",
+		"value": "[variables('analyticsStorageAccountName')]"
+	}
+  }
+}
