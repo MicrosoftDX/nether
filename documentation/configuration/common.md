@@ -37,9 +37,25 @@ If you want to be able to access the Nether APIs from a web application hosted f
 }
 ```
 
+## HTTPS Redirection
+
+When running for production purposes, HTTPS should be used as per the [OAuth 2.0 spec](https://tools.ietf.org/html/rfc6749).
+
+To simplify working with Nether, you can configure it to issue HTTP redirects for any plain HTTP requests to HTTPS. This is configured through the setting shown below:
+
+```json
+{
+    "Common": {
+        "RedirectToHttps" : true
+    }
+}
+```
+
+
 ## Application Performance Monitor
 
 Nether has the ability to send telemetry to Application Performance Monitoring solutions. Out of the box we have support for [Application Insights](https://docs.microsoft.com/azure/application-insights/) but there is an abstraction to allow other providers to be [plugged in](dependency-injection.md).
+
 
 ### Configuring Application Insights
 
