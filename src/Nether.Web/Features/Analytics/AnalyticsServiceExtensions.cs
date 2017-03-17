@@ -1,16 +1,19 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using Microsoft.Extensions.Logging;
-using Nether.Web.Features.Analytics.Models.Endpoint;
 using Microsoft.AspNetCore.Builder;
-using Nether.Data.Sql.Analytics;
+using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+
 using Nether.Common.DependencyInjection;
 using Nether.Data.Analytics;
+using Nether.Data.EntityFramework.Analytics;
+using Nether.Data.InMemory.Analytics;
+using Nether.Data.Sql.Analytics;
+using Nether.Web.Features.Analytics.Models.Endpoint;
 using Nether.Web.Utilities;
 
 namespace Nether.Web.Features.Analytics

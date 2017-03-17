@@ -1,28 +1,27 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
-
+using System.Linq;
+using System.Collections.Generic;
 using IdentityServer4.Services;
 using IdentityServer4.Validation;
 
-using Nether.Data.Identity;
-using Nether.Web.Features.Identity.Configuration;
-using Nether.Common.DependencyInjection;
-using Nether.Data.Sql.Identity;
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using IdentityServer4.Models;
-using System.Collections.Generic;
-using Nether.Integration.Identity;
-using Microsoft.AspNetCore.Builder;
-using System.IdentityModel.Tokens.Jwt;
-using Nether.Web.Utilities;
 using Nether.Common.ApplicationPerformanceMonitoring;
+using Nether.Common.DependencyInjection;
+using Nether.Data.Identity;
+using Nether.Data.EntityFramework.Identity;
+using Nether.Data.InMemory.Identity;
+using Nether.Data.Sql.Identity;
+using Nether.Integration.Identity;
+using Nether.Web.Features.Identity.Configuration;
+using Nether.Web.Utilities;
 
 namespace Nether.Web.Features.Identity
 {
@@ -201,13 +200,15 @@ namespace Nether.Web.Features.Identity
                         services.AddTransient<IdentityContextBase, InMemoryIdentityContext>();
                         break;
                     case "sql":
-                        logger.LogInformation("Identity:Store: using 'Sql' store");
-                        string connectionString = scopedConfiguration["ConnectionString"];
-                        services.AddTransient<IUserStore, EntityFrameworkUserStore>();
-                        // Add IdentityContextOptions to configure for SQL Server
-                        services.AddSingleton(new SqlIdentityContextOptions { ConnectionString = connectionString });
-                        services.AddTransient<IdentityContextBase, SqlIdentityContext>();
-                        break;
+                        {
+                            logger.LogInformation("Identity:Store: using 'Sql' store");
+                            string connectionString = scopedConfiguration["ConnectionString"];
+                            services.AddTransient<IUserStore, EntityFrameworkUserStore>();
+                            // Add IdentityContextOptions to configure for SQL Server
+                            services.AddSingleton(new SqlIdentityContextOptions { ConnectionString = connectionString });
+                            services.AddTransient<IdentityContextBase, SqlIdentityContext>();
+                            break;
+                        }
                     default:
                         throw new Exception($"Unhandled 'wellKnown' type for Identity:Store: '{wellKnownType}'");
                 }
@@ -236,14 +237,18 @@ namespace Nether.Web.Features.Identity
                 return;
             }
             var wellKnownType = configuration["Identity:Store:wellknown"];
-            if (wellKnownType == "sql")
+            switch (wellKnownType)
             {
-                logger.LogInformation("Run Migrations for SqlIdentityContext");
-                using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-                {
-                    var context = (SqlIdentityContext)serviceScope.ServiceProvider.GetRequiredService<IdentityContextBase>();
-                    context.Database.Migrate();
-                }
+                case "sql":
+                    {
+                        logger.LogInformation("Run Migrations for SqlIdentityContext");
+                        using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+                        {
+                            var context = (SqlIdentityContext)serviceScope.ServiceProvider.GetRequiredService<IdentityContextBase>();
+                            context.Database.Migrate();
+                        }
+                        break;
+                    }
             }
 
             app.EnsureInitialAdminUser(configuration, logger);

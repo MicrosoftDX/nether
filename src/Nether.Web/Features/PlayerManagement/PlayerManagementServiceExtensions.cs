@@ -2,16 +2,19 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+
 using Nether.Common.DependencyInjection;
 using Nether.Data.PlayerManagement;
+using Nether.Data.EntityFramework.PlayerManagement;
+using Nether.Data.InMemory.PlayerManagement;
 using Nether.Data.MongoDB.PlayerManagement;
 using Nether.Data.Sql.PlayerManagement;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
 using Nether.Web.Utilities;
 
 namespace Nether.Web.Features.PlayerManagement

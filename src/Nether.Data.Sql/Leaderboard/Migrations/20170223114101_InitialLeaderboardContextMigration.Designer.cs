@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Nether.Data.Sql.Leaderboard;
+using Nether.Data.EntityFramework.Leaderboard;
 
 namespace Nether.Data.Sql.Leaderboard.Migrations
 {
@@ -17,7 +17,7 @@ namespace Nether.Data.Sql.Leaderboard.Migrations
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Nether.Data.Sql.Leaderboard.QueriedGamerScore", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Leaderboard.QueriedGamerScore", b =>
                 {
                     b.Property<string>("Gamertag")
                         .ValueGeneratedOnAdd();
@@ -33,7 +33,7 @@ namespace Nether.Data.Sql.Leaderboard.Migrations
                     b.ToTable("Ranks");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.Leaderboard.SavedGamerScore", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.Leaderboard.SavedGamerScore", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();

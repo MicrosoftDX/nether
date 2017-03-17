@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Nether.Data.Sql.PlayerManagement;
+using Nether.Data.EntityFramework.PlayerManagement;
 
 namespace Nether.Data.Sql.PlayerManagement.Migrations
 {
@@ -17,7 +17,7 @@ namespace Nether.Data.Sql.PlayerManagement.Migrations
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Nether.Data.Sql.PlayerManagement.GroupEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.PlayerManagement.GroupEntity", b =>
                 {
                     b.Property<string>("Name")
                         .ValueGeneratedOnAdd();
@@ -35,7 +35,7 @@ namespace Nether.Data.Sql.PlayerManagement.Migrations
                     b.HasAnnotation("SqlServer:TableName", "Groups");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.PlayerManagement.PlayerEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.PlayerManagement.PlayerEntity", b =>
                 {
                     b.Property<string>("Gamertag")
                         .ValueGeneratedOnAdd()
@@ -58,7 +58,7 @@ namespace Nether.Data.Sql.PlayerManagement.Migrations
                     b.HasAnnotation("SqlServer:TableName", "Players");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.PlayerManagement.PlayerExtendedEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.PlayerManagement.PlayerExtendedEntity", b =>
                 {
                     b.Property<string>("Gamertag")
                         .ValueGeneratedOnAdd()
@@ -73,7 +73,7 @@ namespace Nether.Data.Sql.PlayerManagement.Migrations
                     b.HasAnnotation("SqlServer:TableName", "PlayersExtended");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.PlayerManagement.PlayerGroupEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.PlayerManagement.PlayerGroupEntity", b =>
                 {
                     b.Property<string>("GroupName");
 
@@ -89,7 +89,7 @@ namespace Nether.Data.Sql.PlayerManagement.Migrations
                     b.HasAnnotation("SqlServer:TableName", "PlayerGroups");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.PlayerManagement.PlayerGroupEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.PlayerManagement.PlayerGroupEntity", b =>
                 {
                     b.HasOne("Nether.Data.Sql.PlayerManagement.PlayerEntity", "Player")
                         .WithMany("PlayerGroups")

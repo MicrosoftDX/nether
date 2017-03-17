@@ -4,7 +4,7 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Nether.Data.Sql.Common;
+using Nether.Data.EntityFramework.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;

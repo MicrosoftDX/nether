@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nether.Data\Nether.Data.csproj" />
+    <ProjectReference Include="..\Nether.Data.EntityFramework\Nether.Data.EntityFramework.csproj" />
   </ItemGroup>
 
   <ItemGroup>

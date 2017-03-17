@@ -3,6 +3,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nether.Data.EntityFramework.Identity;
 using System.Reflection;
 
 namespace Nether.Data.Sql.Identity
