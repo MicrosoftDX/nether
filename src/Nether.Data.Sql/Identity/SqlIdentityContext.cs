@@ -32,7 +32,8 @@ namespace Nether.Data.Sql.Identity
 
             builder.UseSqlServer(_options.ConnectionString, options =>
             {
-                options.MigrationsAssembly(typeof(SqlIdentityContext).GetTypeInfo().Assembly.GetName().Name);
+                options.MigrationsAssembly(this.GetType().GetTypeInfo().Assembly.GetName().Name);
+                options.EnableRetryOnFailure();
             });
         }
     }

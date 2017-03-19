@@ -49,7 +49,8 @@ namespace Nether.Data.Sql.Analytics
 
             builder.UseSqlServer(_options.ConnectionString, options =>
             {
-                options.MigrationsAssembly(typeof(SqlAnalyticsContext).GetTypeInfo().Assembly.GetName().Name);
+                options.MigrationsAssembly(this.GetType().GetTypeInfo().Assembly.GetName().Name);
+                options.EnableRetryOnFailure();
             });
         }
     }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nether.Data.EntityFramework.PlayerManagement;
@@ -31,7 +32,11 @@ namespace Nether.Data.Sql.PlayerManagement
         {
             base.OnConfiguring(builder);
 
-            builder.UseSqlServer(_options.ConnectionString);
+            builder.UseSqlServer(_options.ConnectionString, options =>
+            {
+                options.MigrationsAssembly(this.GetType().GetTypeInfo().Assembly.GetName().Name);
+                options.EnableRetryOnFailure();
+            });
         }
     }
 
