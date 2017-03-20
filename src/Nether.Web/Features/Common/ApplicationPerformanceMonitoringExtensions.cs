@@ -23,7 +23,7 @@ using Microsoft.AspNetCore.Builder;
 using System.IdentityModel.Tokens.Jwt;
 using Nether.Common.ApplicationPerformanceMonitoring;
 
-namespace Nether.Web.Features.Identity
+namespace Nether.Web.Features.Common
 {
     public static class ApplicationPerformanceMonitoringExtensions
     {

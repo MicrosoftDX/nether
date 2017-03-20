@@ -15,12 +15,21 @@ using Nether.Data.EntityFramework.PlayerManagement;
 using Nether.Data.InMemory.PlayerManagement;
 using Nether.Data.MongoDB.PlayerManagement;
 using Nether.Data.Sql.PlayerManagement;
+using Nether.Web.Features.PlayerManagement.Configuration
 using Nether.Web.Utilities;
+using System.Collections.Generic;
 
 namespace Nether.Web.Features.PlayerManagement
 {
     public static class PlayerManagementServiceExtensions
     {
+        private static Dictionary<string, Type> _wellKnownStoreTypes = new Dictionary<string, Type>
+            {
+                {"in-memory", typeof(InMemoryPlayerManagementStoreDependencyConfiguration) },
+                {"sql", typeof(SqlPlayerManagementStoreDependencyConfiguration) },
+                {"mongo", typeof(SqlPlayerManagementStoreDependencyConfiguration) },
+            };
+
         public static IServiceCollection AddPlayerManagementServices(
             this IServiceCollection services,
             IConfiguration configuration,
@@ -37,46 +46,8 @@ namespace Nether.Web.Features.PlayerManagement
             logger.LogInformation("Configuring PlayerManagement service");
             serviceSwitches.AddServiceSwitch("PlayerManagement", true);
 
-            // TODO - look at what can be extracted to generalise this
-            if (configuration.Exists("PlayerManagement:Store:wellKnown"))
-            {
-                // register using well-known type
-                var wellKnownType = configuration["PlayerManagement:Store:wellknown"];
-                var scopedConfiguration = configuration.GetSection("PlayerManagement:Store:properties");
-                string connectionString = scopedConfiguration["ConnectionString"];
-                switch (wellKnownType)
-                {
-                    case "mongo":
-                        logger.LogInformation("PlayerManagement:Store: using 'mongo' store");
-                        string databaseName = scopedConfiguration["DatabaseName"];
+            services.AddServiceFromConfiguration("PlayerManagement:Store", _wellKnownStoreTypes, configuration, logger);
 
-                        services.AddTransient<IPlayerManagementStore>(serviceProvider =>
-                        {
-                            var storeLogger = serviceProvider.GetRequiredService<ILogger<MongoDBPlayerManagementStore>>();
-                            // TODO - look at encapsulating the connection info and registering that so that we can just register the type without the factory
-                            return new MongoDBPlayerManagementStore(connectionString, databaseName, storeLogger);
-                        });
-                        break;
-                    case "in-memory":
-                        logger.LogInformation("PlayerManagement:Store: using 'in-memory' store");
-                        services.AddTransient<PlayerManagementContextBase, InMemoryPlayerManagementContext>();
-                        services.AddTransient<IPlayerManagementStore, EntityFrameworkPlayerManagementStore>();
-                        break;
-                    case "sql":
-                        logger.LogInformation("PlayerManagement:Store: using 'sql' store");
-                        services.AddSingleton(new SqlPlayerManagementContextOptions { ConnectionString = connectionString });
-                        services.AddTransient<PlayerManagementContextBase, SqlPlayerManagementContext>();
-                        services.AddTransient<IPlayerManagementStore, EntityFrameworkPlayerManagementStore>();
-                        break;
-                    default:
-                        throw new Exception($"Unhandled 'wellKnown' type for PlayerManagement:Store: '{wellKnownType}'");
-                }
-            }
-            else
-            {
-                // fall back to generic "factory"/"implementation" configuration
-                services.AddServiceFromConfiguration<IPlayerManagementStore>(configuration, logger, "PlayerManagement:Store");
-            }
             return services;
         }
         // TODO - look at abstracting this behind a "UsePlayerManagement" method or similar

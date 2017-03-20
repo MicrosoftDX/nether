@@ -4,27 +4,37 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.PlatformAbstractions;
+
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.IO;
+using System.Linq;
+
+using IdentityServer4;
+using IdentityServer4.Models;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+using Swashbuckle.AspNetCore.Swagger;
+
+using Nether.Common.DependencyInjection;
+using Nether.Data.Leaderboard;
+using Nether.Data.PlayerManagement;
+using Nether.Data.Identity;
+using Nether.Data.Analytics;
 using Nether.Web.Features.Analytics;
 using Nether.Web.Features.Identity;
 using Nether.Web.Features.Leaderboard;
 using Nether.Web.Features.PlayerManagement;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.IO;
-using Microsoft.Extensions.PlatformAbstractions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Nether.Web.Utilities;
-using Swashbuckle.AspNetCore.Swagger;
-using IdentityServer4;
-using System.Linq;
-using IdentityServer4.Models;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Rewrite;
 
 namespace Nether.Web
 {
@@ -195,10 +205,10 @@ namespace Nether.Web
 
             var serviceSwitchSettings = app.ApplicationServices.GetRequiredService<NetherServiceSwitchSettings>();
 
-            app.InitializeIdentityStore(Configuration, logger);
-            app.InitializePlayerManagementStore(Configuration, logger);
-            app.InitializeLeaderboardStore(Configuration, logger);
-            app.InitializeAnalyticsStore(Configuration, logger);
+            app.Initialize<IUserStore>();
+            app.Initialize<IPlayerManagementStore>();
+            app.Initialize<ILeaderboardStore>();
+            app.Initialize<IAnalyticsStore>();
 
 
             // Set up separate web pipelines for identity, MVC UI, and API
