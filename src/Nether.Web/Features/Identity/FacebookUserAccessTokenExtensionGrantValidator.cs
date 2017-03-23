@@ -45,85 +45,22 @@ namespace Nether.Web.Features.Identity
 
         public async Task ValidateAsync(ExtensionGrantValidationContext context)
         {
-            // TODO - add error handling/logging
-
-            // TODO - refactor this code as there's a lot going on here!
-
             try
             {
-                var appToken = _configuration["Identity:SignInMethods:FacebookUserAccessToken:AppToken"];
-
                 var token = context.Request.Raw["token"];
 
-                // Call facebook graph api to validate the token
-
-                // TODO - reuse HttpClient
-                var client = new HttpClient()
+                var userId = await GetFacebookUserIdFromTokenAsync(context, token);
+                if (userId == null)
                 {
-                    BaseAddress = new Uri("https://graph.facebook.com/"),
-                    DefaultRequestHeaders =
-                {
-                    Accept =
-                    {
-                        new MediaTypeWithQualityHeaderValue("application/json")
-                    }
-                }
-                };
-
-                var response = await client.GetAsync($"/debug_token?input_token={token}&access_token={appToken}");
-
-                dynamic body = await response.Content.ReadAsAsync<dynamic>();
-
-
-                if (body.data == null)
-                {
-                    // Get here if (for example) the token is for a different application
-                    var message = (string)body.error.message;
-                    _logger.LogError("FacebookSignIn: error validating token: {0}", message);
-                    _appMonitor.LogEvent("LoginFailed", $"FacebookSignIn: error validating token: {message}", new Dictionary<string, string> {
-                        { "EventSubType", "TokenValidationFailed" },
-                        { "LoginType", "fb-usertoken" }
-                    });
-                    context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
-                    return;
-                }
-
-                bool isValid = (bool)body.data.is_valid;
-                var userId = (string)body.data.user_id;
-                if (!isValid)
-                {
-                    var message = (string)body.data.error.message;
-                    _logger.LogError("FacebookSignIn: invalid token: {0}", message);
-                    _appMonitor.LogEvent("LoginFailed", $"FacebookSignIn: invalid token: {message}", new Dictionary<string, string> {
-                        { "EventSubType", "InvalidToken" },
-                        { "LoginType", "fb-usertoken" }
-                    });
-                    context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
                     return;
                 }
                 _logger.LogDebug("FacebookSignIn: Signing in: {0}", userId);
 
-                var user = await _userStore.GetUserByLoginAsync(LoginProvider.FacebookUserAccessToken, userId);
-                if (user == null)
-                {
-                    user = new User
-                    {
-                        Role = RoleNames.Player,
-                        IsActive = true,
-                        Logins = new List<Login>
-                        {
-                            new Login
-                            {
-                                ProviderType = LoginProvider.FacebookUserAccessToken,
-                                ProviderId = userId
-                            }
-                        }
-                    };
-                    await _userStore.SaveUserAsync(user);
-                }
+                User user = await GetOrCreateUserAsync(userId);
 
                 var claims = await _userClaimsProvider.GetUserClaimsAsync(user);
                 context.Result = new GrantValidationResult(user.UserId, "nether-facebook", claims);
+
                 _appMonitor.LogEvent("LoginSucceeded", properties: new Dictionary<string, string> {
                         { "LoginType", "fb-usertoken" }
                     });
@@ -138,6 +75,92 @@ namespace Nether.Web.Features.Identity
                     });
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest, ex.Message);
             }
+        }
+
+        private static Lazy<HttpClient> s_httpClientLazy = new Lazy<HttpClient>(CreateHttpClient);
+
+        private async Task<string> GetFacebookUserIdFromTokenAsync(ExtensionGrantValidationContext context, string token)
+        {
+            // Call facebook graph api to validate the token
+
+            // As per https://developers.facebook.com/docs/facebook-login/access-tokens/#apptokens, we're using "appid|appsecret" for the app token
+            var appId = _configuration["Identity:SignInMethods:Facebook:AppId"];
+            var appSecret = _configuration["Identity:SignInMethods:Facebook:AppSecret"];
+            var appToken = appId + "|" + appSecret;
+
+
+            var client = s_httpClientLazy.Value;
+            var response = await client.GetAsync($"/debug_token?input_token={token}&access_token={appToken}");
+
+            dynamic body = await response.Content.ReadAsAsync<dynamic>();
+
+            if (body.data == null)
+            {
+                // Get here if (for example) the token is for a different application
+                var message = (string)body.error.message;
+                _logger.LogError("FacebookSignIn: error validating token: {0}", message);
+                _appMonitor.LogEvent("LoginFailed", $"FacebookSignIn: error validating token: {message}", new Dictionary<string, string> {
+                        { "EventSubType", "TokenValidationFailed" },
+                        { "LoginType", "fb-usertoken" }
+                    });
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
+                return null;
+            }
+
+            bool isValid = (bool)body.data.is_valid;
+            var userId = (string)body.data.user_id;
+            if (!isValid)
+            {
+                var message = (string)body.data.error.message;
+                _logger.LogError("FacebookSignIn: invalid token: {0}", message);
+                _appMonitor.LogEvent("LoginFailed", $"FacebookSignIn: invalid token: {message}", new Dictionary<string, string> {
+                        { "EventSubType", "InvalidToken" },
+                        { "LoginType", "fb-usertoken" }
+                    });
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
+                return null;
+            }
+
+            return userId;
+        }
+
+        private static HttpClient CreateHttpClient()
+        {
+            return new HttpClient()
+            {
+                BaseAddress = new Uri("https://graph.facebook.com/"),
+                DefaultRequestHeaders =
+                {
+                    Accept =
+                    {
+                        new MediaTypeWithQualityHeaderValue("application/json")
+                    }
+                }
+            };
+        }
+
+        private async Task<User> GetOrCreateUserAsync(string userId)
+        {
+            var user = await _userStore.GetUserByLoginAsync(LoginProvider.FacebookUserAccessToken, userId);
+            if (user == null)
+            {
+                user = new User
+                {
+                    Role = RoleNames.Player,
+                    IsActive = true,
+                    Logins = new List<Login>
+                        {
+                            new Login
+                            {
+                                ProviderType = LoginProvider.FacebookUserAccessToken,
+                                ProviderId = userId
+                            }
+                        }
+                };
+                await _userStore.SaveUserAsync(user);
+            }
+
+            return user;
         }
     }
 }

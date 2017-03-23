@@ -6,30 +6,8 @@ Any game developer should be able to add Identity support easily into their game
 WARNING: The identity implementation in still under development, so expect these details to change :-)
 
 ### Configuring facebook authentication
-To configure the project to use facebook authentication you need to set up an application in facebook. The ASP.NET Core documentation [walks through this process](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/facebook-logins#creating-the-app-in-facebook). Follow the "Creating the app in facebook" section of that documentation, and then save the `App Token` from [Access Token Tool](https://developers.facebook.com/tools/accesstoken) in configuration.
 
-appsettings.json
-
-```json
- "Identity" : {
-    "Facebook": {
-      "AppToken": "<your token>"
-    }
- }
-```
-
-Or set environment variables:
-
-```powershell
- # powershell
- ${env:Identity:Facebook:AppToken} = "<your token>"
-```
-
-
-```bash
- # bash
-export Identity__Facebook__AppToken="<your token>"
-```
+Information on configuring facebook sign in is in the [configuration docs](../configuration/identity.md)
 
 ### Configuring users
 The Users and Logins APIs allow you to programmatically add users. Additionally, the facebook custom flow creates users in the player role based on a facebook user acces token.

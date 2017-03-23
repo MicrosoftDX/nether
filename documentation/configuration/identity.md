@@ -80,44 +80,33 @@ RequireHttps | bool | True to require HTTPS, False to allow insecure connections
 To configure the sign-in methods that can be used, modify the `SignInMethods` as shown below.
 
 Currently supported methods:
-* [Facebook](#facebook) - in-browser, interactive Facebook login
-* [FacebookUserAccessToken](#facebookuseraccesstoken) - supports token translation from a Facebook user access token to a Nether token
+* [Facebook](#facebook)
+
+
+### Facebook
+
+To use this sign-in method you need to create a Facebook App at https://developers.facebook.com/apps/. There is a walkthrough of [creating a Facebook application](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/facebook-logins). When setting the `Valid OAuth Redirect URIs` set this to `http://localhost:5000/identity/signin-facebook` (or the URL for your published site)
 
 
 ```json
   "Identity" : {
       "SignInMethods": {
-            // Facebook in-browser, interactive flow
             "Facebook": {
-                "Enabled": false,
+                "EnableImplicit": true, // Facebook in-browser, interactive flow
+                "EnableAccessToken": true, // the custom facebook token flow (e.g. from Unity)
                 "AppId": "",
                 "AppSecret": ""
-            },
-            // the custom facebook token flow (e.g. from Unity)
-            "FacebookUserAccessToken": {
-                "Enabled": false,
-                "AppToken": ""
             }
       }
   }
 ```
 
-### Facebook
-To use this sign-in method you need to create a Facebook App at https://developers.facebook.com/apps/. There is a walkthrough of [creating a Facebook application](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/facebook-logins). When setting the `Valid OAuth Redirect URIs` set this to `http://localhost:5000/identity/signin-facebook` (or the URL for your published site)
-
 Property name | Type | Description
 --------------|------|------------
-Enabled | bool | True to enable this login method|
+EnableImplicit | bool | True to enable the implicit (in-browser) login flow|
+EnableAccessToken | bool | True to enable the custom token grant flow (e.g. for use from Unity)
 AppId | string | The AppId for your Facebook app from https://developers.facebook.com/apps
 AppSecret | string | The AppSecret for your Facebook app from https://developers.facebook.com/apps
-
-### FacebookUserAccessToken
-To use this sign-in method you need to create a Facebook App at https://developers.facebook.com/apps/. There is a walkthrough of [creating a Facebook application](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/facebook-logins). 
-
-Property name | Type | Description
---------------|------|------------
-Enabled | bool | True to enable this login method|
-AppToken | string | The AppToken for your Facebook app from https://developers.facebook.com/tools/accesstoken
 
 
 ## Clients

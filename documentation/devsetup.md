@@ -32,23 +32,7 @@ We support and plan to build SDKs for [Unity](http://unity3d.com). However, sinc
 
 Nether has been built using ASP.NET Core with a pluggable identity system. Currently, there is support for Facebook authentication (more to follow). To get set up with Facebook authentication you need to register an application with Facebook then configure it for use by your instance of Nether.
 
-Setting up your Facebook application has been documented in the [Microsoft documentation](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/facebook-logins). Complete that process to obtain your Facebook Application Token (AppToken).
-
-Once you've recieved your token, you have two options for making it available to your Nether application. The simple way is to add the value in the `appsettings.json`. However, this approach runs the risk of accidently committing your AppToken secret to a (possibly public) repository.
-
-Alternatively, you can set the `Facebook:AppToken` or `Facebook__AppToken` environment variable:
-
-```powershell
-    # PowerShell
-    ${env:Facebook:AppToken} = "<your token here>"
-```
-
-```bash
-    # bash
-    export Facebook__AppToken=<your token here>
-```
-
-For more details on configuring the identity system see the [Nether identity configuration docs](identity/configuration.md).
+For more details on configuring the identity system see the [Nether identity configuration docs](configuration/identity.md).
 
 ## Building and running Nether
 
