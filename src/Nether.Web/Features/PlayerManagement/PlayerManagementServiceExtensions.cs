@@ -24,7 +24,7 @@ namespace Nether.Web.Features.PlayerManagement
 {
     public static class PlayerManagementServiceExtensions
     {
-        private static Dictionary<string, Type> _wellKnownStoreTypes = new Dictionary<string, Type>
+        private static Dictionary<string, Type> s_wellKnownStoreTypes = new Dictionary<string, Type>
             {
                 {"in-memory", typeof(InMemoryPlayerManagementStoreDependencyConfiguration) },
                 {"sql", typeof(SqlPlayerManagementStoreDependencyConfiguration) },
@@ -48,7 +48,7 @@ namespace Nether.Web.Features.PlayerManagement
             logger.LogInformation("Configuring PlayerManagement service");
             serviceSwitches.AddServiceSwitch("PlayerManagement", true);
 
-            services.AddServiceFromConfiguration("PlayerManagement:Store", _wellKnownStoreTypes, configuration, logger, hostingEnvironment);
+            services.AddServiceFromConfiguration("PlayerManagement:Store", s_wellKnownStoreTypes, configuration, logger, hostingEnvironment);
 
             return services;
         }

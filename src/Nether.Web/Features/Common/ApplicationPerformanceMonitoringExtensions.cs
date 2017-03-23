@@ -28,7 +28,7 @@ namespace Nether.Web.Features.Common
 {
     public static class ApplicationPerformanceMonitoringExtensions
     {
-        private static Dictionary<string, Type> _wellKnownMonitorTypes = new Dictionary<string, Type>
+        private static Dictionary<string, Type> s_wellKnownMonitorTypes = new Dictionary<string, Type>
             {
                 {"null", typeof(NullMonitorDependencyConfiguration) },
                 {"appinsights", typeof(AppInsightsMonitorDependencyConfiguration) },
@@ -40,7 +40,7 @@ namespace Nether.Web.Features.Common
             ILogger logger,
             IHostingEnvironment hostingEnvironment)
         {
-            services.AddServiceFromConfiguration("Common:ApplicationPerformanceMonitor", _wellKnownMonitorTypes, configuration, logger, hostingEnvironment);
+            services.AddServiceFromConfiguration("Common:ApplicationPerformanceMonitor", s_wellKnownMonitorTypes, configuration, logger, hostingEnvironment);
 
             return services;
         }

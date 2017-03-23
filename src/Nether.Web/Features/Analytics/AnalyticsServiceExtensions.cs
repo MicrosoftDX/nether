@@ -23,8 +23,7 @@ namespace Nether.Web.Features.Analytics
 {
     public static class AnalyticsServiceExtensions
     {
-
-        private static Dictionary<string, Type> _wellKnownStoreTypes = new Dictionary<string, Type>
+        private static Dictionary<string, Type> s_wellKnownStoreTypes = new Dictionary<string, Type>
             {
                 {"in-memory", typeof(InMemoryAnalyticsStoreDependencyConfiguration) },
                 {"sql", typeof(SqlAnalyticsStoreDependencyConfiguration) },
@@ -50,7 +49,7 @@ namespace Nether.Web.Features.Analytics
 
 
             services.AddEndpointInfo(configuration, logger, "Analytics:EventHub");
-            services.AddServiceFromConfiguration("Analytics:Store", _wellKnownStoreTypes, configuration, logger, hostingEnvironment);
+            services.AddServiceFromConfiguration("Analytics:Store", s_wellKnownStoreTypes, configuration, logger, hostingEnvironment);
 
 
             return services;

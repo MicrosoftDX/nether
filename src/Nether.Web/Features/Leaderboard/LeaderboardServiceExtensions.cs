@@ -24,14 +24,13 @@ namespace Nether.Web.Features.Leaderboard
 {
     public static class LeaderboardServiceExtensions
     {
-
-        private static Dictionary<string, Type> _wellKnownStoreTypes = new Dictionary<string, Type>
+        private static Dictionary<string, Type> s_wellKnownStoreTypes = new Dictionary<string, Type>
             {
                 {"in-memory", typeof(InMemoryLeaderboardStoreDependencyConfiguration) },
                 {"sql", typeof(SqlLeaderboardStoreDependencyConfiguration) },
             };
 
-        private static Dictionary<string, Type> _wellKnownAnalyticsIntegrationTypes = new Dictionary<string, Type>
+        private static Dictionary<string, Type> s_wellKnownAnalyticsIntegrationTypes = new Dictionary<string, Type>
             {
                 {"null", typeof(NullAnalyticsIntegrationClientDependencyConfiguration) },
                 {"http", typeof(HttpAnalyticsIntegrationClientDependencyConfiguration) },
@@ -55,11 +54,11 @@ namespace Nether.Web.Features.Leaderboard
             logger.LogInformation("Configuring Leaderboard service");
             serviceSwitches.AddServiceSwitch("Leaderboard", true);
 
-            services.AddServiceFromConfiguration("Leaderboard:Store", _wellKnownStoreTypes, configuration, logger, hostingEnvironment);
+            services.AddServiceFromConfiguration("Leaderboard:Store", s_wellKnownStoreTypes, configuration, logger, hostingEnvironment);
 
             AddLeaderboardProvider(services, configuration);
 
-            services.AddServiceFromConfiguration("Leaderboard:AnalyticsIntegrationClient", _wellKnownAnalyticsIntegrationTypes, configuration, logger, hostingEnvironment);
+            services.AddServiceFromConfiguration("Leaderboard:AnalyticsIntegrationClient", s_wellKnownAnalyticsIntegrationTypes, configuration, logger, hostingEnvironment);
 
             return services;
         }

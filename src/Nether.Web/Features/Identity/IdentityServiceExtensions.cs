@@ -20,12 +20,12 @@ namespace Nether.Web.Features.Identity
 {
     public static class IdentityServiceExtensions
     {
-        private static Dictionary<string, Type> _wellKnownStoreTypes = new Dictionary<string, Type>
+        private static Dictionary<string, Type> s_wellKnownStoreTypes = new Dictionary<string, Type>
             {
                 {"in-memory", typeof(InMemoryIdentityStoreDependencyConfiguration) },
                 {"sql", typeof(SqlIdentityStoreDependencyConfiguration) },
             };
-        private static Dictionary<string, Type> _wellKnownPlayerManagementClientTypes = new Dictionary<string, Type>
+        private static Dictionary<string, Type> s_wellKnownPlayerManagementClientTypes = new Dictionary<string, Type>
             {
                 {"default", typeof(DefaultIdentityPlayerManagementClientDependencyConfiguration) },
             };
@@ -47,9 +47,9 @@ namespace Nether.Web.Features.Identity
             serviceSwitches.AddServiceSwitch("Identity", true);
             serviceSwitches.AddServiceSwitch("IdentityUi", true);
 
-            services.AddServiceFromConfiguration("Identity:PlayerManagementClient", _wellKnownPlayerManagementClientTypes, configuration, logger, hostingEnvironment);
+            services.AddServiceFromConfiguration("Identity:PlayerManagementClient", s_wellKnownPlayerManagementClientTypes, configuration, logger, hostingEnvironment);
             ConfigureIdentityServer(services, configuration, logger, hostingEnvironment);
-            services.AddServiceFromConfiguration("Identity:Store", _wellKnownStoreTypes, configuration, logger, hostingEnvironment);
+            services.AddServiceFromConfiguration("Identity:Store", s_wellKnownStoreTypes, configuration, logger, hostingEnvironment);
 
             return services;
         }
