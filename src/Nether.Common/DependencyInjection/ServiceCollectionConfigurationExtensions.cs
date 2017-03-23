@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,45 +12,13 @@ namespace Nether.Common.DependencyInjection
 {
     public static class ServiceCollectionConfigurationExtensions
     {
-        public static void AddServiceFromConfiguration<TService>(
-            this IServiceCollection services,
-            IConfiguration configuration,
-            ILogger logger,
-            string serviceName)
-        where TService : class
-        {
-            // TODO - error handling
-
-            if (configuration.Exists($"{serviceName}:implementation:type"))
-            {
-                logger.LogInformation("{0} - using implementation option...", serviceName);
-                string baseConfigKey = $"{serviceName}:implementation";
-                var implementationType = LoadTypeFromConfiguration(configuration, baseConfigKey, logger);
-
-                services.AddTransient(typeof(TService), implementationType);
-            }
-            else if (configuration.Exists($"{serviceName}:factory:type"))
-            {
-                logger.LogInformation("{0} - using factory option...", serviceName);
-                string baseConfigKey = $"{serviceName}:factory";
-                var type = LoadTypeFromConfiguration(configuration, baseConfigKey, logger);
-
-                var factory = (IDependencyFactory<TService>)Activator.CreateInstance(type);
-                Func<IServiceProvider, TService> func = serviceProvider => factory.CreateInstance(serviceProvider);
-                services.AddTransient(func);
-            }
-            else
-            {
-                throw new ArgumentException($"No valid configuration found for '{serviceName}'");
-            }
-        }
-
         public static void AddServiceFromConfiguration(
           this IServiceCollection services,
           string serviceName,
           IDictionary<string, Type> wellKnownTypes,
           IConfiguration configuration,
-          ILogger logger)
+          ILogger logger,
+          IHostingEnvironment hostingEnvironment)
         {
             Type configurationType;
             // TODO - look at what can be extracted to generalise this
@@ -74,17 +43,17 @@ namespace Nether.Common.DependencyInjection
                 throw new Exception($"No configuration specified for {serviceName}");
             }
 
-            IDependencyConfiguration dependencyConfiguration;
+            DependencyConfiguration dependencyConfiguration;
             try
             {
-                dependencyConfiguration = (IDependencyConfiguration)Activator.CreateInstance(configurationType);
+                dependencyConfiguration = (DependencyConfiguration)Activator.CreateInstance(configurationType);
             }
             catch (Exception ex)
             {
                 throw new Exception($"Unhandled exception loading configuration type for {serviceName}", ex);
             }
 
-            dependencyConfiguration.ConfigureServices(services, configuration, logger);
+            dependencyConfiguration.ConfigureServices(serviceName, services, configuration, logger, hostingEnvironment);
         }
 
 

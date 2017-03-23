@@ -13,24 +13,23 @@ using System;
 
 namespace Nether.Web.Features.Identity.Configuration
 {
-    public class DefaultIdentityPlayerManagementClientDependencyConfiguration : IDependencyConfiguration
+    public class DefaultIdentityPlayerManagementClientDependencyConfiguration : DependencyConfiguration
     {
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
         {
-            var scopedConfiguration = configuration.GetSection("Identity:PlayerManagementClient:properties");
-            var identityBaseUri = scopedConfiguration["IdentityBaseUrl"];
-            var apiBaseUri = scopedConfiguration["ApiBaseUrl"];
-            logger.LogInformation("Identity:PlayerManagementClient: using 'default' client with IdentityBaseUrl '{0}', ApiBaseUrl '{1}'", identityBaseUri, apiBaseUri);
+            var identityBaseUri = context.ScopedConfiguration["IdentityBaseUrl"];
+            var apiBaseUri = context.ScopedConfiguration["ApiBaseUrl"];
+            context.Logger.LogInformation("Identity:PlayerManagementClient: using 'default' client with IdentityBaseUrl '{0}', ApiBaseUrl '{1}'", identityBaseUri, apiBaseUri);
 
             // could simplify this by requiring the client secret in the properties for PlayerManagementClient, but that duplicates config
-            var clientSource = new ConfigurationBasedClientSource(logger);
-            var clientSecret = clientSource.GetClientSecret(configuration.GetSection("Identity:Clients"), "nether_identity");
+            var clientSource = new ConfigurationBasedClientSource(context.Logger);
+            var clientSecret = clientSource.GetClientSecret(context.Configuration.GetSection("Identity:Clients"), "nether_identity");
             if (string.IsNullOrEmpty(clientSecret))
             {
                 throw new Exception("Unable to determine the client secret for nether_identity");
             }
 
-            services.AddSingleton<IIdentityPlayerManagementClient, DefaultIdentityPlayerManagementClient>(serviceProvider =>
+            context.Services.AddSingleton<IIdentityPlayerManagementClient, DefaultIdentityPlayerManagementClient>(serviceProvider =>
             {
                 return new DefaultIdentityPlayerManagementClient(
                     identityBaseUri,

@@ -9,13 +9,13 @@ using Nether.Data.InMemory.PlayerManagement;
 
 namespace Nether.Web.Features.PlayerManagement.Configuration
 {
-    public class InMemoryPlayerManagementStoreDependencyConfiguration : IDependencyConfiguration
+    public class InMemoryPlayerManagementStoreDependencyConfiguration : DependencyConfiguration
     {
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
         {
             // configure store and dependencies
-            services.AddTransient<PlayerManagementContextBase, InMemoryPlayerManagementContext>();
-            services.AddTransient<IPlayerManagementStore, EntityFrameworkPlayerManagementStore>();
+            context.Services.AddTransient<PlayerManagementContextBase, InMemoryPlayerManagementContext>();
+            context.Services.AddTransient<IPlayerManagementStore, EntityFrameworkPlayerManagementStore>();
         }
     }
 }

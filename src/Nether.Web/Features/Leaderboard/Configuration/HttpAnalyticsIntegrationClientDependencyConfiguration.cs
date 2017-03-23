@@ -7,14 +7,13 @@ using Nether.Integration.Default.Analytics;
 
 namespace Nether.Web.Features.Leaderboard.Configuration
 {
-    public class HttpAnalyticsIntegrationClientDependencyConfiguration : IDependencyConfiguration
+    public class HttpAnalyticsIntegrationClientDependencyConfiguration : DependencyConfiguration
     {
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
         {
-            var scopedConfiguration = configuration.GetSection("Leaderboard:AnalyticsIntegrationClient:properties");
-            string baseUrl = scopedConfiguration["AnalyticsBaseUrl"];
+            string baseUrl = context.ScopedConfiguration["AnalyticsBaseUrl"];
 
-            services.AddTransient<IAnalyticsIntegrationClient>(serviceProvider =>
+            context.Services.AddTransient<IAnalyticsIntegrationClient>(serviceProvider =>
             {
                 return new AnalyticsIntegrationHttpClient(baseUrl);
             });

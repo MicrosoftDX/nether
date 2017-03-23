@@ -47,9 +47,9 @@ namespace Nether.Web.Features.Identity
             serviceSwitches.AddServiceSwitch("Identity", true);
             serviceSwitches.AddServiceSwitch("IdentityUi", true);
 
-            services.AddServiceFromConfiguration("Identity:PlayerManagementClient", _wellKnownPlayerManagementClientTypes, configuration, logger);
+            services.AddServiceFromConfiguration("Identity:PlayerManagementClient", _wellKnownPlayerManagementClientTypes, configuration, logger, hostingEnvironment);
             ConfigureIdentityServer(services, configuration, logger, hostingEnvironment);
-            services.AddServiceFromConfiguration("Identity:Store", _wellKnownStoreTypes, configuration, logger);
+            services.AddServiceFromConfiguration("Identity:Store", _wellKnownStoreTypes, configuration, logger, hostingEnvironment);
 
             return services;
         }

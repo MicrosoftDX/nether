@@ -17,6 +17,7 @@ using Nether.Data.Sql.Analytics;
 using Nether.Web.Features.Analytics.Configuration;
 using Nether.Web.Features.Analytics.Models.Endpoint;
 using Nether.Web.Utilities;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Nether.Web.Features.Analytics
 {
@@ -34,7 +35,8 @@ namespace Nether.Web.Features.Analytics
             this IServiceCollection services,
             IConfiguration configuration,
             ILogger logger,
-            NetherServiceSwitchSettings serviceSwitches
+            NetherServiceSwitchSettings serviceSwitches,
+            IHostingEnvironment hostingEnvironment
             )
         {
             bool enabled = configuration.GetValue<bool>("Analytics:Enabled");
@@ -48,7 +50,7 @@ namespace Nether.Web.Features.Analytics
 
 
             services.AddEndpointInfo(configuration, logger, "Analytics:EventHub");
-            services.AddServiceFromConfiguration("Analytics:Store", _wellKnownStoreTypes, configuration, logger);
+            services.AddServiceFromConfiguration("Analytics:Store", _wellKnownStoreTypes, configuration, logger, hostingEnvironment);
 
 
             return services;

@@ -10,12 +10,12 @@ using Nether.Data.Identity;
 using Nether.Data.Sql.Identity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Nether.Web.Features.Identity.Configuration
 {
-    public abstract class IdentityStoreDependencyConfigurationBase : IDependencyConfiguration, IDependencyInitializer<IUserStore>
+    public abstract class IdentityStoreDependencyConfigurationBase : DependencyConfiguration, IDependencyInitializer<IUserStore>
     {
-        public abstract void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger);
         public virtual IApplicationBuilder Use(IApplicationBuilder app)
         {
             var configuration = app.ApplicationServices.GetRequiredService<IConfiguration>();
@@ -24,7 +24,7 @@ namespace Nether.Web.Features.Identity.Configuration
             return app;
         }
 
-        private void EnsureInitialAdminUser( IApplicationBuilder app, IConfiguration configuration, ILogger logger)
+        private void EnsureInitialAdminUser(IApplicationBuilder app, IConfiguration configuration, ILogger logger)
         {
             IApplicationPerformanceMonitor appMonitor = null;
             try

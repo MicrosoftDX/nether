@@ -9,13 +9,13 @@ using Nether.Data.InMemory.Analytics;
 
 namespace Nether.Web.Features.Analytics.Configuration
 {
-    public class InMemoryAnalyticsStoreDependencyConfiguration : IDependencyConfiguration
+    public class InMemoryAnalyticsStoreDependencyConfiguration : DependencyConfiguration
     {
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
         {
             // configure store and dependencies
-            services.AddTransient<AnalyticsContextBase, InMemoryAnalyticsContext>();
-            services.AddTransient<IAnalyticsStore, EntityFrameworkAnalyticsStore>();
+            context.Services.AddTransient<AnalyticsContextBase, InMemoryAnalyticsContext>();
+            context.Services.AddTransient<IAnalyticsStore, EntityFrameworkAnalyticsStore>();
         }
     }
 }

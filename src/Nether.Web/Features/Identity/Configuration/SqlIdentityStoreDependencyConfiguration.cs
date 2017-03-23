@@ -13,17 +13,16 @@ namespace Nether.Web.Features.Identity.Configuration
 {
     public class SqlIdentityStoreDependencyConfiguration : IdentityStoreDependencyConfigurationBase
     {
-        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
         {
             // configure store and dependencies
-            var scopedConfiguration = configuration.GetSection("Identity:Store:properties");
-            services.AddSingleton(scopedConfiguration.Get<SqlIdentityContextOptions>());
+            context.Services.AddSingleton(context.ScopedConfiguration.Get<SqlIdentityContextOptions>());
 
-            services.AddTransient<IdentityContextBase, SqlIdentityContext>();
-            services.AddTransient<IUserStore, EntityFrameworkUserStore>();
+            context.Services.AddTransient<IdentityContextBase, SqlIdentityContext>();
+            context.Services.AddTransient<IUserStore, EntityFrameworkUserStore>();
 
             // configure type to perform migrations
-            services.AddTransient<IDependencyInitializer<IUserStore>, SqlIdentityStoreDependencyConfiguration>();
+            context.Services.AddTransient<IDependencyInitializer<IUserStore>, SqlIdentityStoreDependencyConfiguration>();
         }
 
         public override IApplicationBuilder Use(IApplicationBuilder app)

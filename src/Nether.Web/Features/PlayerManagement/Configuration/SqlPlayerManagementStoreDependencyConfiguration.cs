@@ -11,19 +11,18 @@ using Nether.Data.PlayerManagement;
 
 namespace Nether.Web.Features.PlayerManagement.Configuration
 {
-    public class SqlPlayerManagementStoreDependencyConfiguration : IDependencyConfiguration, IDependencyInitializer<IPlayerManagementStore>
+    public class SqlPlayerManagementStoreDependencyConfiguration : DependencyConfiguration, IDependencyInitializer<IPlayerManagementStore>
     {
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
         {
             // configure store and dependencies
-            var scopedConfiguration = configuration.GetSection("PlayerManagement:Store:properties");
-            services.AddSingleton(scopedConfiguration.Get<SqlPlayerManagementContextOptions>());
+            context.Services.AddSingleton(context.ScopedConfiguration.Get<SqlPlayerManagementContextOptions>());
 
-            services.AddTransient<PlayerManagementContextBase, SqlPlayerManagementContext>();
-            services.AddTransient<IPlayerManagementStore, EntityFrameworkPlayerManagementStore>();
+            context.Services.AddTransient<PlayerManagementContextBase, SqlPlayerManagementContext>();
+            context.Services.AddTransient<IPlayerManagementStore, EntityFrameworkPlayerManagementStore>();
 
             // configure type to perform migrations
-            services.AddTransient<IDependencyInitializer<IPlayerManagementStore>, SqlPlayerManagementStoreDependencyConfiguration>();
+            context.Services.AddTransient<IDependencyInitializer<IPlayerManagementStore>, SqlPlayerManagementStoreDependencyConfiguration>();
         }
 
         public IApplicationBuilder Use(IApplicationBuilder app)

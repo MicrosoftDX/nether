@@ -22,62 +22,27 @@ using Nether.Integration.Identity;
 using Microsoft.AspNetCore.Builder;
 using System.IdentityModel.Tokens.Jwt;
 using Nether.Common.ApplicationPerformanceMonitoring;
+using Nether.Web.Features.Leaderboard.Configuration;
 
 namespace Nether.Web.Features.Common
 {
     public static class ApplicationPerformanceMonitoringExtensions
     {
+        private static Dictionary<string, Type> _wellKnownMonitorTypes = new Dictionary<string, Type>
+            {
+                {"null", typeof(NullMonitorDependencyConfiguration) },
+                {"appinsights", typeof(AppInsightsMonitorDependencyConfiguration) },
+            };
+
         public static IServiceCollection AddApplicationPerformanceMonitoring(
             this IServiceCollection services,
             IConfiguration configuration,
             ILogger logger,
             IHostingEnvironment hostingEnvironment)
         {
-            ConfigureApplicationPerformanceMonitor(services, configuration, logger, hostingEnvironment);
+            services.AddServiceFromConfiguration("Common:ApplicationPerformanceMonitor", _wellKnownMonitorTypes, configuration, logger, hostingEnvironment);
 
             return services;
-        }
-
-        private static void ConfigureApplicationPerformanceMonitor(
-            IServiceCollection services,
-            IConfiguration configuration,
-            ILogger logger,
-            IHostingEnvironment hostingEnvironment)
-        {
-            if (configuration.Exists("Common:ApplicationPerformanceMonitor:wellKnown"))
-            {
-                // register using well-known type
-                var wellKnownType = configuration["Common:ApplicationPerformanceMonitor:wellknown"];
-                var scopedConfiguration = configuration.GetSection("Common:ApplicationPerformanceMonitor:properties");
-                switch (wellKnownType)
-                {
-                    case "null":
-                        logger.LogInformation("Common:ApplicationPerformanceMonitor: using 'null' client");
-                        services.AddSingleton<IApplicationPerformanceMonitor, NullMonitor>();
-                        break;
-
-                    case "appinsights":
-                        var instrumentationKey = scopedConfiguration["InstrumentationKey"];
-                        logger.LogInformation("Common:ApplicationPerformanceMonitor: using 'appinsights' client with InstrumentationKey '{0}'", instrumentationKey);
-
-                        services.AddApplicationInsightsTelemetry(options =>
-                        {
-                            options.DeveloperMode = hostingEnvironment.IsDevelopment();
-                            options.InstrumentationKey = instrumentationKey;
-                        });
-
-                        services.AddTransient<IApplicationPerformanceMonitor, ApplicationInsightsMonitor>();
-                        break;
-
-                    default:
-                        throw new Exception($"Unhandled 'wellKnown' type for Common:ApplicationPerformanceMonitor: '{wellKnownType}'");
-                }
-            }
-            else
-            {
-                // fall back to generic "factory"/"implementation" configuration
-                services.AddServiceFromConfiguration<IUserStore>(configuration, logger, "Common:ApplicationPerformanceMonitor");
-            }
         }
     }
 }

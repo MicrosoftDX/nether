@@ -15,9 +15,10 @@ using Nether.Data.EntityFramework.PlayerManagement;
 using Nether.Data.InMemory.PlayerManagement;
 using Nether.Data.MongoDB.PlayerManagement;
 using Nether.Data.Sql.PlayerManagement;
-using Nether.Web.Features.PlayerManagement.Configuration
+using Nether.Web.Features.PlayerManagement.Configuration;
 using Nether.Web.Utilities;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Nether.Web.Features.PlayerManagement
 {
@@ -34,7 +35,8 @@ namespace Nether.Web.Features.PlayerManagement
             this IServiceCollection services,
             IConfiguration configuration,
             ILogger logger,
-            NetherServiceSwitchSettings serviceSwitches
+            NetherServiceSwitchSettings serviceSwitches,
+            IHostingEnvironment hostingEnvironment
             )
         {
             bool enabled = configuration.GetValue<bool>("PlayerManagement:Enabled");
@@ -46,7 +48,7 @@ namespace Nether.Web.Features.PlayerManagement
             logger.LogInformation("Configuring PlayerManagement service");
             serviceSwitches.AddServiceSwitch("PlayerManagement", true);
 
-            services.AddServiceFromConfiguration("PlayerManagement:Store", _wellKnownStoreTypes, configuration, logger);
+            services.AddServiceFromConfiguration("PlayerManagement:Store", _wellKnownStoreTypes, configuration, logger, hostingEnvironment);
 
             return services;
         }

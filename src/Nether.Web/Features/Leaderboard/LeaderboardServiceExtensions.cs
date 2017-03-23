@@ -18,6 +18,7 @@ using Nether.Integration.Analytics;
 using Nether.Integration.Default.Analytics;
 using Nether.Web.Features.Leaderboard.Configuration;
 using Nether.Web.Utilities;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Nether.Web.Features.Leaderboard
 {
@@ -41,7 +42,8 @@ namespace Nether.Web.Features.Leaderboard
             this IServiceCollection services,
             IConfiguration configuration,
             ILogger logger,
-            NetherServiceSwitchSettings serviceSwitches
+            NetherServiceSwitchSettings serviceSwitches,
+            IHostingEnvironment hostingEnvironment
             )
         {
             bool enabled = configuration.GetValue<bool>("Leaderboard:Enabled");
@@ -53,11 +55,11 @@ namespace Nether.Web.Features.Leaderboard
             logger.LogInformation("Configuring Leaderboard service");
             serviceSwitches.AddServiceSwitch("Leaderboard", true);
 
-            services.AddServiceFromConfiguration("Leaderboard:Store", _wellKnownStoreTypes, configuration, logger);
+            services.AddServiceFromConfiguration("Leaderboard:Store", _wellKnownStoreTypes, configuration, logger, hostingEnvironment);
 
             AddLeaderboardProvider(services, configuration);
 
-            services.AddServiceFromConfiguration("Leaderboard:AnalyticsIntegrationClient", _wellKnownAnalyticsIntegrationTypes, configuration, logger);
+            services.AddServiceFromConfiguration("Leaderboard:AnalyticsIntegrationClient", _wellKnownAnalyticsIntegrationTypes, configuration, logger, hostingEnvironment);
 
             return services;
         }

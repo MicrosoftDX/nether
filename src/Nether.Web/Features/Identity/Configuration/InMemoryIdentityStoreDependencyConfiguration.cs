@@ -11,11 +11,11 @@ namespace Nether.Web.Features.Identity.Configuration
 {
     public class InMemoryIdentityStoreDependencyConfiguration : IdentityStoreDependencyConfigurationBase
     {
-        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
         {
             // configure store and dependencies
-            services.AddTransient<IdentityContextBase, InMemoryIdentityContext>();
-            services.AddTransient<IUserStore, EntityFrameworkUserStore>();
+            context.Services.AddTransient<IdentityContextBase, InMemoryIdentityContext>();
+            context.Services.AddTransient<IUserStore, EntityFrameworkUserStore>();
         }
     }
 }

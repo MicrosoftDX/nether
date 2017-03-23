@@ -11,14 +11,13 @@ using Nether.Integration.Default.Analytics;
 
 namespace Nether.Web.Features.Leaderboard.Configuration
 {
-    public class EventHubAnalyticsIntegrationClientDependencyConfiguration : IDependencyConfiguration
+    public class EventHubAnalyticsIntegrationClientDependencyConfiguration : DependencyConfiguration
     {
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
         {
-            var scopedConfiguration = configuration.GetSection("Leaderboard:AnalyticsIntegrationClient:properties");
-            string eventHubConnectionString = scopedConfiguration["EventHubConnectionString"];
+            string eventHubConnectionString = context.ScopedConfiguration["EventHubConnectionString"];
 
-            services.AddSingleton<IAnalyticsIntegrationClient>(serviceProvider =>
+            context.Services.AddSingleton<IAnalyticsIntegrationClient>(serviceProvider =>
             {
                 return new AnalyticsIntegrationEventHubClient(eventHubConnectionString);
             });

@@ -7,11 +7,11 @@ using Nether.Integration.Default.Analytics;
 
 namespace Nether.Web.Features.Leaderboard.Configuration
 {
-    public class NullAnalyticsIntegrationClientDependencyConfiguration : IDependencyConfiguration
+    public class NullAnalyticsIntegrationClientDependencyConfiguration : DependencyConfiguration
     {
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
         {
-            services.AddSingleton<IAnalyticsIntegrationClient, AnalyticsIntegrationNullClient>();
+            context.Services.AddSingleton<IAnalyticsIntegrationClient, AnalyticsIntegrationNullClient>();
         }
     }
 }

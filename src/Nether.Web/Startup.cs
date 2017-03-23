@@ -26,11 +26,13 @@ using Newtonsoft.Json.Converters;
 using Swashbuckle.AspNetCore.Swagger;
 
 using Nether.Common.DependencyInjection;
+using Nether.Common.ApplicationPerformanceMonitoring;
 using Nether.Data.Leaderboard;
 using Nether.Data.PlayerManagement;
 using Nether.Data.Identity;
 using Nether.Data.Analytics;
 using Nether.Web.Features.Analytics;
+using Nether.Web.Features.Common;
 using Nether.Web.Features.Identity;
 using Nether.Web.Features.Leaderboard;
 using Nether.Web.Features.PlayerManagement;
@@ -170,9 +172,9 @@ namespace Nether.Web
 
 
             services.AddIdentityServices(Configuration, _logger, serviceSwitches, _hostingEnvironment);
-            services.AddLeaderboardServices(Configuration, _logger, serviceSwitches);
-            services.AddPlayerManagementServices(Configuration, _logger, serviceSwitches);
-            services.AddAnalyticsServices(Configuration, _logger, serviceSwitches);
+            services.AddLeaderboardServices(Configuration, _logger, serviceSwitches, _hostingEnvironment);
+            services.AddPlayerManagementServices(Configuration, _logger, serviceSwitches, _hostingEnvironment);
+            services.AddAnalyticsServices(Configuration, _logger, serviceSwitches, _hostingEnvironment);
 
 
             services.AddAuthorization(options =>
@@ -209,6 +211,8 @@ namespace Nether.Web
             app.Initialize<IPlayerManagementStore>();
             app.Initialize<ILeaderboardStore>();
             app.Initialize<IAnalyticsStore>();
+
+            app.Initialize<IApplicationPerformanceMonitor>();
 
 
             // Set up separate web pipelines for identity, MVC UI, and API

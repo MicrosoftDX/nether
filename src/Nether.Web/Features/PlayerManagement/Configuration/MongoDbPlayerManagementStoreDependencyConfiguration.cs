@@ -10,15 +10,14 @@ using Nether.Data.MongoDB.PlayerManagement;
 
 namespace Nether.Web.Features.PlayerManagement.Configuration
 {
-    public class MongoDBPlayerManagementStoreDependencyConfiguration : IDependencyConfiguration
+    public class MongoDBPlayerManagementStoreDependencyConfiguration : DependencyConfiguration
     {
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
         {
-            var scopedConfiguration = configuration.GetSection("PlayerManagement:Store:properties");
-            string databaseName = scopedConfiguration["DatabaseName"];
-            string connectionString = scopedConfiguration["ConnectionString"];
+            string databaseName = context.ScopedConfiguration["DatabaseName"];
+            string connectionString = context.ScopedConfiguration["ConnectionString"];
 
-            services.AddTransient<IPlayerManagementStore>(serviceProvider =>
+            context.Services.AddTransient<IPlayerManagementStore>(serviceProvider =>
             {
                 var storeLogger = serviceProvider.GetRequiredService<ILogger<MongoDBPlayerManagementStore>>();
                 // TODO - look at encapsulating the connection info and registering that so that we can just register the type without the factory

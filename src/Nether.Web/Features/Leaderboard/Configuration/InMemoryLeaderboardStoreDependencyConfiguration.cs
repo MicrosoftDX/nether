@@ -9,13 +9,13 @@ using Nether.Data.InMemory.Leaderboard;
 
 namespace Nether.Web.Features.Leaderboard.Configuration
 {
-    public class InMemoryLeaderboardStoreDependencyConfiguration : IDependencyConfiguration
+    public class InMemoryLeaderboardStoreDependencyConfiguration : DependencyConfiguration
     {
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
         {
             // configure store and dependencies
-            services.AddTransient<LeaderboardContextBase, InMemoryLeaderboardContext>();
-            services.AddTransient<ILeaderboardStore, EntityFrameworkLeaderboardStore>();
+            context.Services.AddTransient<LeaderboardContextBase, InMemoryLeaderboardContext>();
+            context.Services.AddTransient<ILeaderboardStore, EntityFrameworkLeaderboardStore>();
         }
     }
 }

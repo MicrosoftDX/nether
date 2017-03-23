@@ -11,19 +11,18 @@ using Nether.Data.Analytics;
 
 namespace Nether.Web.Features.Analytics.Configuration
 {
-    public class SqlAnalyticsStoreDependencyConfiguration : IDependencyConfiguration, IDependencyInitializer<IAnalyticsStore>
+    public class SqlAnalyticsStoreDependencyConfiguration : DependencyConfiguration, IDependencyInitializer<IAnalyticsStore>
     {
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
         {
             // configure store and dependencies
-            var scopedConfiguration = configuration.GetSection("PlayerManagement:Store:properties");
-            services.AddSingleton(scopedConfiguration.Get<SqlAnalyticsContextOptions>());
+            context.Services.AddSingleton(context.ScopedConfiguration.Get<SqlAnalyticsContextOptions>());
 
-            services.AddTransient<AnalyticsContextBase, SqlAnalyticsContext>();
-            services.AddTransient<IAnalyticsStore, EntityFrameworkAnalyticsStore>();
+            context.Services.AddTransient<AnalyticsContextBase, SqlAnalyticsContext>();
+            context.Services.AddTransient<IAnalyticsStore, EntityFrameworkAnalyticsStore>();
 
             // configure type to perform migrations
-            services.AddTransient<IDependencyInitializer<IAnalyticsStore>, SqlAnalyticsStoreDependencyConfiguration>();
+            context.Services.AddTransient<IDependencyInitializer<IAnalyticsStore>, SqlAnalyticsStoreDependencyConfiguration>();
         }
 
         public IApplicationBuilder Use(IApplicationBuilder app)

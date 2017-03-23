@@ -11,19 +11,18 @@ using Nether.Data.Sql.Leaderboard;
 
 namespace Nether.Web.Features.Leaderboard.Configuration
 {
-    public class SqlLeaderboardStoreDependencyConfiguration : IDependencyConfiguration, IDependencyInitializer<ILeaderboardStore>
+    public class SqlLeaderboardStoreDependencyConfiguration : DependencyConfiguration, IDependencyInitializer<ILeaderboardStore>
     {
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
         {
             // configure store and dependencies
-            var scopedConfiguration = configuration.GetSection("Leaderboard:Store:properties");
-            services.AddSingleton(scopedConfiguration.Get<SqlLeaderboardContextOptions>());
+            context.Services.AddSingleton(context.ScopedConfiguration.Get<SqlLeaderboardContextOptions>());
 
-            services.AddTransient<LeaderboardContextBase, SqlLeaderboardContext>();
-            services.AddTransient<ILeaderboardStore, EntityFrameworkLeaderboardStore>();
+            context.Services.AddTransient<LeaderboardContextBase, SqlLeaderboardContext>();
+            context.Services.AddTransient<ILeaderboardStore, EntityFrameworkLeaderboardStore>();
 
             // configure type to perform migrations
-            services.AddTransient<IDependencyInitializer<ILeaderboardStore>, SqlLeaderboardStoreDependencyConfiguration>();
+            context.Services.AddTransient<IDependencyInitializer<ILeaderboardStore>, SqlLeaderboardStoreDependencyConfiguration>();
         }
 
         public IApplicationBuilder Use(IApplicationBuilder app)
