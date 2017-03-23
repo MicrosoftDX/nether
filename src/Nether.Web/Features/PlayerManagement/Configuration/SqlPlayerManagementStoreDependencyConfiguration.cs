@@ -22,7 +22,7 @@ namespace Nether.Web.Features.PlayerManagement.Configuration
             context.Services.AddTransient<IPlayerManagementStore, EntityFrameworkPlayerManagementStore>();
 
             // configure type to perform migrations
-            context.Services.AddTransient<IDependencyInitializer<IPlayerManagementStore>, SqlPlayerManagementStoreDependencyConfiguration>();
+            context.Services.AddSingleton<IDependencyInitializer<IPlayerManagementStore>>(this);
         }
 
         public IApplicationBuilder Use(IApplicationBuilder app)

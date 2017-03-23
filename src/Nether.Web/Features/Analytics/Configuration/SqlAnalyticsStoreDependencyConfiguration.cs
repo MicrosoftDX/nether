@@ -22,7 +22,7 @@ namespace Nether.Web.Features.Analytics.Configuration
             context.Services.AddTransient<IAnalyticsStore, EntityFrameworkAnalyticsStore>();
 
             // configure type to perform migrations
-            context.Services.AddTransient<IDependencyInitializer<IAnalyticsStore>, SqlAnalyticsStoreDependencyConfiguration>();
+            context.Services.AddSingleton<IDependencyInitializer<IAnalyticsStore>>(this);
         }
 
         public IApplicationBuilder Use(IApplicationBuilder app)

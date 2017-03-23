@@ -22,7 +22,7 @@ namespace Nether.Web.Features.Leaderboard.Configuration
             context.Services.AddTransient<ILeaderboardStore, EntityFrameworkLeaderboardStore>();
 
             // configure type to perform migrations
-            context.Services.AddTransient<IDependencyInitializer<ILeaderboardStore>, SqlLeaderboardStoreDependencyConfiguration>();
+            context.Services.AddSingleton<IDependencyInitializer<ILeaderboardStore>>(this);
         }
 
         public IApplicationBuilder Use(IApplicationBuilder app)
