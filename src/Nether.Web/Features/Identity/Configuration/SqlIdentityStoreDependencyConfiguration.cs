@@ -21,8 +21,7 @@ namespace Nether.Web.Features.Identity.Configuration
             context.Services.AddTransient<IdentityContextBase, SqlIdentityContext>();
             context.Services.AddTransient<IUserStore, EntityFrameworkUserStore>();
 
-            // configure type to perform migrations
-            context.Services.AddTransient<IDependencyInitializer<IUserStore>, SqlIdentityStoreDependencyConfiguration>();
+            base.OnConfigureServices(context);
         }
 
         public override IApplicationBuilder Use(IApplicationBuilder app)

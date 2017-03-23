@@ -16,6 +16,11 @@ namespace Nether.Web.Features.Identity.Configuration
 {
     public abstract class IdentityStoreDependencyConfigurationBase : DependencyConfiguration, IDependencyInitializer<IUserStore>
     {
+        protected override void OnConfigureServices(DependencyConfigurationContext context)
+        {
+            // configure type to perform migrations
+            context.Services.AddSingleton<IDependencyInitializer<IUserStore>>(this);
+        }
         public virtual IApplicationBuilder Use(IApplicationBuilder app)
         {
             var configuration = app.ApplicationServices.GetRequiredService<IConfiguration>();

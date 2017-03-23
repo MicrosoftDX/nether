@@ -16,6 +16,8 @@ namespace Nether.Web.Features.Identity.Configuration
             // configure store and dependencies
             context.Services.AddTransient<IdentityContextBase, InMemoryIdentityContext>();
             context.Services.AddTransient<IUserStore, EntityFrameworkUserStore>();
+
+            base.OnConfigureServices(context);
         }
     }
 }
