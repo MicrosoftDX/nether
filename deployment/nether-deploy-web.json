@@ -224,6 +224,7 @@
                     "WEB_HOST_URL": "[concat('https://', reference(variables('webSiteName')).hostNames[0])]",
                     "ASPNETCORE_ENVIRONMENT": "Development",
                     "Common:Cors:AllowedOrigins": "",
+                    "Common:RedirectToHttps": "true",
 
                     /* Leaderboard feature config overrides */
                     "Leaderboard:Store:wellknown": "sql",

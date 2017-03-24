@@ -30,7 +30,7 @@ namespace Nether.Web.Utilities
         public override void OnException(ExceptionContext context)
         {
             string message;
-            if (_hostingEnvironment.EnvironmentName == "Development")
+            if (_hostingEnvironment.IsDevelopment())
             {
                 // For development, write full exception message to client
                 _logger.LogError("Unhandled exception: {0}", context.Exception);

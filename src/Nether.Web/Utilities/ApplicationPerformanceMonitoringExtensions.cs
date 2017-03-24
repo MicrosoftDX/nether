@@ -62,7 +62,7 @@ namespace Nether.Web.Features.Identity
 
                         services.AddApplicationInsightsTelemetry(options =>
                         {
-                            options.DeveloperMode = hostingEnvironment.EnvironmentName == "Development";
+                            options.DeveloperMode = hostingEnvironment.IsDevelopment();
                             options.InstrumentationKey = instrumentationKey;
                         });
 

@@ -24,6 +24,7 @@ using System.Linq;
 using IdentityServer4.Models;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace Nether.Web
 {
@@ -182,6 +183,15 @@ namespace Nether.Web
             ILoggerFactory loggerFactory)
         {
             var logger = loggerFactory.CreateLogger<Startup>();
+
+            bool redirectToHttps = bool.Parse(Configuration["Common:RedirectToHttps"] ?? "false");
+            if (redirectToHttps)
+            {
+                _logger.LogInformation("Enabling RedirectToHttps");
+                var rewriteOptions = new RewriteOptions()
+                                            .AddRedirectToHttps();
+                app.UseRewriter(rewriteOptions);
+            }
 
             var serviceSwitchSettings = app.ApplicationServices.GetRequiredService<NetherServiceSwitchSettings>();
 
