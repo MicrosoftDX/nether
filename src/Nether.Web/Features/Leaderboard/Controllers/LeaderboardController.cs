@@ -33,19 +33,19 @@ namespace Nether.Web.Features.Leaderboard
         private readonly ILogger<LeaderboardController> _logger;
         private readonly IApplicationPerformanceMonitor _appMonitor;
 
-        private readonly ILeaderboardConfiguration _leaderboardConfiguration;
+        private readonly ILeaderboardProvider _leaderboardProvider;
 
         public LeaderboardController(
             ILeaderboardStore store,
             ILogger<LeaderboardController> logger,
             IApplicationPerformanceMonitor appMonitor,
-            ILeaderboardConfiguration leaderboardConfiguration
+            ILeaderboardProvider leaderboardProvider
             )
         {
             _store = store;
             _logger = logger;
             _appMonitor = appMonitor;
-            _leaderboardConfiguration = leaderboardConfiguration;
+            _leaderboardProvider = leaderboardProvider;
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Nether.Web.Features.Leaderboard
         [HttpGet("")]
         public IActionResult GetAll()
         {
-            var leaderboards = _leaderboardConfiguration.GetAll();
+            var leaderboards = _leaderboardProvider.GetAll();
 
             return Ok(new LeaderboardListResponseModel
             {
@@ -90,7 +90,7 @@ namespace Nether.Web.Features.Leaderboard
                 { "Name", name }
             });
 
-            LeaderboardConfig config = _leaderboardConfiguration.GetByName(name);
+            LeaderboardConfig config = _leaderboardProvider.GetByName(name);
             if (config == null)
             {
                 return NotFound();

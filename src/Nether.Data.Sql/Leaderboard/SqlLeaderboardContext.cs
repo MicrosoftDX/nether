@@ -3,6 +3,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Nether.Data.EntityFramework.Leaderboard;
 using Nether.Data.Leaderboard;
 using System.Collections.Generic;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Nether.Data.Leaderboard
 {
-    public interface ILeaderboardConfiguration
+    public interface ILeaderboardProvider
     {
         LeaderboardConfig GetByName(string name);
         IEnumerable<LeaderboardConfig> GetAll();

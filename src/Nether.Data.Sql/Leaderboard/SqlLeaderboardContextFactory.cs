@@ -3,6 +3,7 @@
 
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Nether.Data.EntityFramework.Common;
 
 namespace Nether.Data.Sql.Leaderboard

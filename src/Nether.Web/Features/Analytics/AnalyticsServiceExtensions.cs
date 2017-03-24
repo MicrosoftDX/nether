@@ -7,24 +7,35 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 
 using Nether.Common.DependencyInjection;
 using Nether.Data.Analytics;
 using Nether.Data.EntityFramework.Analytics;
 using Nether.Data.InMemory.Analytics;
 using Nether.Data.Sql.Analytics;
+using Nether.Web.Features.Analytics.Configuration;
 using Nether.Web.Features.Analytics.Models.Endpoint;
 using Nether.Web.Utilities;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Nether.Web.Features.Analytics
 {
     public static class AnalyticsServiceExtensions
     {
+        private static Dictionary<string, Type> s_wellKnownStoreTypes = new Dictionary<string, Type>
+            {
+                {"in-memory", typeof(InMemoryAnalyticsStoreDependencyConfiguration) },
+                {"sql", typeof(SqlAnalyticsStoreDependencyConfiguration) },
+            };
+
+
         public static IServiceCollection AddAnalyticsServices(
             this IServiceCollection services,
             IConfiguration configuration,
             ILogger logger,
-            NetherServiceSwitchSettings serviceSwitches
+            NetherServiceSwitchSettings serviceSwitches,
+            IHostingEnvironment hostingEnvironment
             )
         {
             bool enabled = configuration.GetValue<bool>("Analytics:Enabled");
@@ -38,7 +49,8 @@ namespace Nether.Web.Features.Analytics
 
 
             services.AddEndpointInfo(configuration, logger, "Analytics:EventHub");
-            ConfigureAnalyticsStore(services, configuration, logger);
+            services.AddServiceFromConfiguration("Analytics:Store", s_wellKnownStoreTypes, configuration, logger, hostingEnvironment);
+
 
             return services;
         }
@@ -65,62 +77,6 @@ namespace Nether.Web.Features.Analytics
                 Resource = configuration["Resource"],
                 Ttl = TimeSpan.Parse(configuration["Ttl"])
             };
-        }
-
-
-
-        private static void ConfigureAnalyticsStore(IServiceCollection services, IConfiguration configuration, ILogger logger)
-        {
-            if (configuration.Exists("Analytics:Store:wellKnown"))
-            {
-                // register using well-known type
-                var wellKnownType = configuration["Analytics:Store:wellknown"];
-                var scopedConfiguration = configuration.GetSection("Analytics:Store:properties");
-                switch (wellKnownType)
-                {
-                    case "in-memory":
-                        logger.LogInformation("Analytics:Store: using 'in-memory' store");
-                        services.AddTransient<IAnalyticsStore, EntityFrameworkAnalyticsStore>();
-                        services.AddTransient<AnalyticsContextBase, InMemoryAnalyticsContext>();
-                        break;
-                    case "sql":
-                        logger.LogInformation("Analytics:Store: using 'Sql' store");
-                        string connectionString = scopedConfiguration["ConnectionString"];
-                        services.AddTransient<IAnalyticsStore, EntityFrameworkAnalyticsStore>();
-                        // Add AnalyticsContextOptions to configure for SQL Server
-                        services.AddSingleton(new SqlAnalyticsContextOptions { ConnectionString = connectionString });
-                        services.AddTransient<AnalyticsContextBase, SqlAnalyticsContext>();
-                        break;
-                    default:
-                        throw new Exception($"Unhandled 'wellKnown' type for Analytics:Store: '{wellKnownType}'");
-                }
-            }
-            else
-            {
-                // fall back to generic "factory"/"implementation" configuration
-                services.AddServiceFromConfiguration<IAnalyticsStore>(configuration, logger, "Analytics:Store");
-            }
-        }
-
-        // TODO - look at abstracting this behind a "UseIdentity" method or similar
-        public static void InitializeAnalyticsStore(this IApplicationBuilder app, IConfiguration configuration, ILogger logger)
-        {
-            var serviceSwitchSettings = app.ApplicationServices.GetRequiredService<NetherServiceSwitchSettings>();
-            if (!serviceSwitchSettings.IsServiceEnabled("Analytics"))
-            {
-                return;
-            }
-
-            var wellKnownType = configuration["Analytics:Store:wellknown"];
-            if (wellKnownType == "sql")
-            {
-                logger.LogInformation("Run Migrations for SqlAnalyticsContext");
-                using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-                {
-                    var context = (SqlAnalyticsContext)serviceScope.ServiceProvider.GetRequiredService<AnalyticsContextBase>();
-                    context.Database.Migrate();
-                }
-            }
         }
     }
 }
