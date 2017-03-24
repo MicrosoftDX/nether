@@ -8,6 +8,7 @@ using Nether.Data.Leaderboard;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Nether.Data.Sql.Leaderboard
 {
@@ -39,7 +40,11 @@ namespace Nether.Data.Sql.Leaderboard
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            builder.UseSqlServer(_options.ConnectionString);
+            builder.UseSqlServer(_options.ConnectionString, options =>
+            {
+                options.MigrationsAssembly(this.GetType().GetTypeInfo().Assembly.GetName().Name);
+                options.EnableRetryOnFailure();
+            });
         }
 
         public override async Task<List<GameScore>> GetHighScoresAsync(int n)
