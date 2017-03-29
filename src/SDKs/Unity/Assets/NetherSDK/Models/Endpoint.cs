@@ -9,16 +9,12 @@ using System.Text;
 namespace NetherSDK.Models
 {
     [Serializable]
-    public class Player
+    public class Endpoint
     {
-        public string gamertag;
-        public string country;
-        public string customTag;
-    }
-
-    [Serializable]
-    public class PlayerResult
-    {
-        public Player player;
+        public string httpVerb;
+        public string url;
+        public string contentType;
+        public string authorization;
+        public string validUntilUtc;
     }
 }

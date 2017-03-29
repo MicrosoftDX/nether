@@ -1,4 +1,7 @@
-﻿using NetherSDK.Models;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using NetherSDK.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +23,20 @@ namespace NetherSDK
                     throw new Exception("Argument null");
                 }
             }
-
         }
+
+        public static void ValidateForNullOrEmpty(params string[] strings)
+        {
+            foreach (string str in strings)
+            {
+                if (string.IsNullOrEmpty(str))
+                {
+                    throw new Exception("String null or empty");
+                }
+            }
+        }
+
+
 
         /// <summary>
         /// Builds and returns a UnityWebRequest object
@@ -90,8 +105,6 @@ namespace NetherSDK
             response.Status = CallBackResult.LocalException;
             response.Exception = ex;
         }
-
-
     }
 
     //http://forum.unity3d.com/threads/how-to-load-an-array-with-jsonutility.375735/#post-2585129
