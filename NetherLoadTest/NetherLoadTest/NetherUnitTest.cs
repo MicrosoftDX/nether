@@ -130,7 +130,7 @@ namespace NetherLoadTest
             await EnsureLoggedInAsync();
 
             TestContext.BeginTimer("GetScore");
-            await _client.GetScoresAsync();
+            await _client.GetScoresAsync("Top_10");
             TestContext.EndTimer("GetScore");
             // sleep between 30 seconds to 5 minutes
             Thread.Sleep(s_random.Next(30, 300) * 1000);
@@ -139,7 +139,7 @@ namespace NetherLoadTest
             await _client.PostScoreAsync(s_random.Next(100, 1000));
             TestContext.EndTimer("PlayLevelPostScore");
             TestContext.BeginTimer("PlayLevelGetScore");
-            await _client.GetScoresAsync();
+            await _client.GetScoresAsync("Top_10");
             TestContext.EndTimer("PlayLevelGetScore");
         }
 
