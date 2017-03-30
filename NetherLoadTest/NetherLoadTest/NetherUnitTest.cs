@@ -163,34 +163,41 @@ namespace NetherLoadTest
             // Log in as admin
             var adminClient = await GetClientAsync(AdminUserName, AdminPassword);
 
-            // Create the user
-            var response = await adminClient.PutAsJsonAsync(
-                $"/api/identity/users/{UserName}",
-                new
-                {
-                    role = "Player",
-                    active = true
-                });
-            response.EnsureSuccessStatusCode();
+            // check if the user already exist            
+            var response = await adminClient.GetAsync($"/api/identity/users/{UserName}");  
+            // 404 - user not found - create the user         
+            if (response.StatusCode.Equals(HttpStatusCode.NotFound)) 
+            {                
+                // Create the user
+                response = await adminClient.PutAsJsonAsync(
+                    $"/api/identity/users/{UserName}",
+                    new
+                    {
+                        role = "Player",
+                        active = true
+                    });
+                response.EnsureSuccessStatusCode();
 
-            // create login
-            response = await adminClient.PutAsJsonAsync(
-                $"/api/identity/users/{UserName}/logins/password/{UserName}", // reuse username as gamertag
-                new
+                // create login
+                response = await adminClient.PutAsJsonAsync(
+                    $"/api/identity/users/{UserName}/logins/password/{UserName}", // reuse username as gamertag
+                    new
+                    {
+                        Password
+                    });
+                
+                // sign in as player and create gamertag - assuming the password did not change
+                var playerClient = await GetClientAsync(UserName, Password);
+                var player = new
                 {
-                    Password
-                });
+                    gamertag = UserName,
+                    country = "UK",
+                    customTag = "LoadTestUser"
+                };
 
-            // sign in as player and create gamertag
-            var playerClient = await GetClientAsync(UserName, Password);
-            var player = new
-            {
-                gamertag = UserName,
-                country = "UK",
-                customTag = "LoadTestUser"
-            };
-            response = await playerClient.PutAsJsonAsync("api/player", player);
-            response.EnsureSuccessStatusCode();
+                response = await playerClient.PutAsJsonAsync("api/player", player);                
+                response.EnsureSuccessStatusCode();
+            }                                                                     
         }
 
         private async Task<HttpClient> GetClientAsync(string username, string password)
