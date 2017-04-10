@@ -344,15 +344,6 @@ namespace Nether.Web
                     SaveTokens = true
                 });
 
-
-                // serve admin ui static files under /ui/admin
-                uiapp.UseStaticFiles(new StaticFileOptions
-                {
-                    RequestPath = "/admin",
-                    FileProvider = new PhysicalFileProvider(Path.Combine(_hostingEnvironment.WebRootPath, "Features", "AdminWebUi"))
-                });
-
-
                 uiapp.UseMvc(); // TODO filter which routes this matches (i.e. only non-API routes)
             });
 

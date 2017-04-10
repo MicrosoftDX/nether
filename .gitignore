@@ -264,10 +264,5 @@ paket-files/
 # OS X
 .DS_Store
 
-# Web UI
-**/wwwroot/Features/AdminWebUi/lib/**/*
-**/wwwroot/**/app/**/*.js
-**/wwwroot/**/app/**/*.js.map
-
 # Azure Resource Manager
 *.privateparams.json

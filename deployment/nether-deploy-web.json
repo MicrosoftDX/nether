@@ -232,11 +232,6 @@
                     "Leaderboard:AnalyticsIntegrationClient:wellknown": "eventhub",
                     "Leaderboard:AnalyticsIntegrationClient:properties:EventHubConnectionString": "[parameters('eventhubSendPolicy').connectionString]",
 
-                    /* AdminWebUi feature config overrides */
-                    "AdminWebUi:AuthServerUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/identity/')]",
-                    "AdminWebUi:ApiBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api/')]",
-                    "AdminWebUi:RedirectUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/ui/admin/')]",
-
                     /* PlayerManagement feature config overrides */
                     "PlayerManagement:Store:wellknown": "sql",
                     "PlayerManagement:Store:properties:ConnectionString": "[variables('sqlConnString')]",
