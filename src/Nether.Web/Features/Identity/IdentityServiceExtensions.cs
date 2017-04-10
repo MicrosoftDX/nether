@@ -80,7 +80,7 @@ namespace Nether.Web.Features.Identity
                 .AddInMemoryApiResources(Scopes.GetApiResources())
             ;
 
-            var facebookUserAccessTokenEnabled = bool.Parse(configuration["Identity:SignInMethods:FacebookUserAccessToken:Enabled"] ?? "false");
+            var facebookUserAccessTokenEnabled = bool.Parse(configuration["Identity:SignInMethods:Facebook:EnableAccessToken"] ?? "false");
             if (facebookUserAccessTokenEnabled)
             {
                 identityServerBuilder.AddExtensionGrantValidator<FacebookUserAccessTokenExtensionGrantValidator>();

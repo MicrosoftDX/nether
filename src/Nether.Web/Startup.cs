@@ -232,7 +232,7 @@ namespace Nether.Web
                         AutomaticChallenge = false
                     });
 
-                    var facebookEnabled = bool.Parse(Configuration["Identity:SignInMethods:Facebook:Enabled"] ?? "false");
+                    var facebookEnabled = bool.Parse(Configuration["Identity:SignInMethods:Facebook:EnableImplicit"] ?? "false");
                     if (facebookEnabled)
                     {
                         var appId = Configuration["Identity:SignInMethods:Facebook:AppId"];
