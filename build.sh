@@ -9,7 +9,6 @@
 ##
 
 noDotNetRestore=0
-noWebClientRestore=0
 while [[ $# -gt 0 ]]
 do
 key="$1"
@@ -17,13 +16,6 @@ case $key in
     --no-dot-net-restore)
     noDotNetRestore=1
     shift # past argument
-    ;;
-    --no-web-client-restore)
-    noWebClientRestore=1
-    shift # past argument
-    ;;
-    *)
-            # unknown option
     ;;
 esac
 shift # past argument or value
@@ -63,78 +55,6 @@ else
     exit $buildExitCode
   fi
 fi
-
-##
-## Web client install
-##
-
-if [ $noWebClientRestore != 0 ] 
-then
-  echo "*** Skipping npm/bower install"
-else
-  echo "*** Installing npm/bower packages..."
-
-  # check NPM, bower and gulp are installed
-  command -v npm >/dev/null 2>&1 || { echo >&2 "NPM is not installed. Aborting."; exit 1;}
-  command -v bower >/dev/null 2>&1 || { echo >&2 "bower is not installed (run npm install -g bower). Aborting."; exit 1;}
-  command -v gulp >/dev/null 2>&1 || { echo >&2 "gulp is not installed (run npm install -g gulp). Aborting."; exit 1;}
-
-  buildExitCode=0
-
-  pushd .
-  cd src/Nether.Web
-  echo "*** npm install ..."
-  npm install
-  lastexit=$?
-  if [ $lastexit -ne 0 ]
-  then
-    buildExitCode=$lastexit
-    echo
-    echo "*** npm install failed"
-    popd
-    exit $buildExitCode
-  fi
-
-  echo "*** bower install ..."
-  bower install
-  lastexit=$?
-  if [ $lastexit -ne 0 ]
-  then
-    buildExitCode=$lastexit
-    echo
-    echo "*** bower install failed"
-    popd
-    exit $buildExitCode
-  fi
-
-  echo "*** gulp npmtolib..."
-  gulp npmtolib
-  lastexit=$?
-  if [ $lastexit -ne 0 ]
-  then
-    buildExitCode=$lastexit
-    echo
-    echo "*** gulp npmtolib failed"
-    popd
-    exit $buildExitCode
-  fi
-
-  echo "*** gulp compiletsforadminui..."
-  gulp compiletsforadminui
-  lastexit=$?
-  if [ $lastexit -ne 0 ]
-  then
-    buildExitCode=$lastexit
-    echo
-    echo "*** gulp compiletsforadminui failed"
-    popd
-    exit $buildExitCode
-  fi
-
-  echo "*** done."
-  popd
-fi
-
 
 
 ##
@@ -177,19 +97,6 @@ do
     fi
   fi
 done < "build/build-order.txt"
-
-# Run gulp task for typescript
-cd src/Nether.Web
-gulp compiletsforadminui
-cd ..
-cd ..
-
-if [ $buildExitCode -ne 0 ]
-then
-  echo
-  echo "*** Build failed"
-  exit $buildExitCode
-fi
 
 echo "*** Build completed"
 

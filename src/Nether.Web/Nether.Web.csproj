@@ -69,7 +69,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\AdminWebUi\" />
     <Folder Include="config\" />
   </ItemGroup>
 
