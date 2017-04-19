@@ -49,7 +49,7 @@ namespace NetherLoadTest
         public string AdminPassword
         {
             get { return ConfigurationManager.AppSettings["AdminPassword"].ToString(); }
-        }        
+        }
 
 
         /////////////////////////////////////////////
@@ -97,7 +97,7 @@ namespace NetherLoadTest
             {
                 UserName = "loadUser_" + UserId; // hard coded user names created for the load test in the memory store
                 Password = UserName;
-            }            
+            }
 
             var baseUrl = BaseUrl ?? "http://localhost:5000";
             _client = new NetherClient(baseUrl, ClientId, ClientSecret);
@@ -153,7 +153,7 @@ namespace NetherLoadTest
 
             TestContext.BeginTimer("PlayLevelGetScore");
             await _client.GetScoresAsync("Top_10");
-            TestContext.EndTimer("PlayLevelGetScore");            
+            TestContext.EndTimer("PlayLevelGetScore");
         }
 
         [TestMethod]
@@ -171,7 +171,7 @@ namespace NetherLoadTest
             TestContext.BeginTimer("GetScore");
             await _client.GetScoresAsync("Top_10");
             TestContext.EndTimer("GetScore");
-            
+
             // sleep for 10 seconds
             Thread.Sleep(10 * 1000);
 
@@ -205,9 +205,9 @@ namespace NetherLoadTest
             var adminClient = await GetClientAsync(AdminUserName, AdminPassword);
 
             // check if the user already exist            
-            var response = await adminClient.GetAsync($"/api/identity/users/{UserName}");  
+            var response = await adminClient.GetAsync($"/api/identity/users/{UserName}");
             // 404 - user not found - create the user         
-            if (response.StatusCode.Equals(HttpStatusCode.NotFound)) 
+            if (response.StatusCode.Equals(HttpStatusCode.NotFound))
             {
                 TestContext.WriteLine($"User {UserName} does not exist. Creating...");
 
@@ -228,7 +228,7 @@ namespace NetherLoadTest
                     {
                         Password
                     });
-                
+
                 // sign in as player and create gamertag - assuming the password did not change
                 var playerClient = await GetClientAsync(UserName, Password);
                 var player = new
@@ -238,9 +238,9 @@ namespace NetherLoadTest
                     customTag = "LoadTestUser"
                 };
 
-                response = await playerClient.PutAsJsonAsync("api/player", player);                
+                response = await playerClient.PutAsJsonAsync("api/player", player);
                 response.EnsureSuccessStatusCode();
-            }                                                                     
+            }
         }
 
         private async Task<HttpClient> GetClientAsync(string username, string password)
