@@ -85,14 +85,20 @@ namespace NetherLoadTest
             set { UserContext["Test_Password"] = value; }
         }
 
+        public int UserId
+        {
+            get { return UserContext.UserId; }
+        }
+
         [TestInitialize]
         public void Init()
         {
             if (UserName == null)
             {
-                UserName = "loadUser" + s_random.Next(10000); // hard coded user names created for the load test in the memory store
-                Password = "password";
+                UserName = "loadUser_" + UserId; // hard coded user names created for the load test in the memory store
+                Password = UserName;
             }
+
             var baseUrl = BaseUrl ?? "http://localhost:5000";
             _client = new NetherClient(baseUrl, ClientId, ClientSecret);
             if (LoggedIn)
@@ -125,21 +131,56 @@ namespace NetherLoadTest
         [TestMethod]
         public async Task PlayGame()
         {
-            // simuate game - users logs in, get the scores from the leaderbaord 
-            // after a random wait time the user will post the new score and get the leaderboard again. 
+            // simuate game:
+            // 1. log in
+            // 2. get top 10 leaderboard 
+            // 3. wait random time
+            // 4. post new score
+            // 5. get top 10 leaderboard
+
             await EnsureLoggedInAsync();
 
             TestContext.BeginTimer("GetScore");
-            await _client.GetScoresAsync();
+            await _client.GetScoresAsync("Top_10");
             TestContext.EndTimer("GetScore");
+
             // sleep between 30 seconds to 5 minutes
             Thread.Sleep(s_random.Next(30, 300) * 1000);
 
             TestContext.BeginTimer("PlayLevelPostScore");
             await _client.PostScoreAsync(s_random.Next(100, 1000));
             TestContext.EndTimer("PlayLevelPostScore");
+
             TestContext.BeginTimer("PlayLevelGetScore");
-            await _client.GetScoresAsync();
+            await _client.GetScoresAsync("Top_10");
+            TestContext.EndTimer("PlayLevelGetScore");
+        }
+
+        [TestMethod]
+        public async Task StressPlayGame()
+        {
+            // simuate game:
+            // 1. log in
+            // 2. get top 10 leaderboard 
+            // 3. wait 10 seconds
+            // 4. post new score
+            // 5. get top 10 leaderboard
+
+            await EnsureLoggedInAsync();
+
+            TestContext.BeginTimer("GetScore");
+            await _client.GetScoresAsync("Top_10");
+            TestContext.EndTimer("GetScore");
+
+            // sleep for 10 seconds
+            Thread.Sleep(10 * 1000);
+
+            TestContext.BeginTimer("PlayLevelPostScore");
+            await _client.PostScoreAsync(s_random.Next(100, 1000));
+            TestContext.EndTimer("PlayLevelPostScore");
+
+            TestContext.BeginTimer("PlayLevelGetScore");
+            await _client.GetScoresAsync("Top_10");
             TestContext.EndTimer("PlayLevelGetScore");
         }
 
@@ -163,34 +204,43 @@ namespace NetherLoadTest
             // Log in as admin
             var adminClient = await GetClientAsync(AdminUserName, AdminPassword);
 
-            // Create the user
-            var response = await adminClient.PutAsJsonAsync(
-                $"/api/identity/users/{UserName}",
-                new
-                {
-                    role = "Player",
-                    active = true
-                });
-            response.EnsureSuccessStatusCode();
-
-            // create login
-            response = await adminClient.PutAsJsonAsync(
-                $"/api/identity/users/{UserName}/logins/password/{UserName}", // reuse username as gamertag
-                new
-                {
-                    Password
-                });
-
-            // sign in as player and create gamertag
-            var playerClient = await GetClientAsync(UserName, Password);
-            var player = new
+            // check if the user already exist            
+            var response = await adminClient.GetAsync($"/api/identity/users/{UserName}");
+            // 404 - user not found - create the user         
+            if (response.StatusCode.Equals(HttpStatusCode.NotFound))
             {
-                gamertag = UserName,
-                country = "UK",
-                customTag = "LoadTestUser"
-            };
-            response = await playerClient.PutAsJsonAsync("api/player", player);
-            response.EnsureSuccessStatusCode();
+                TestContext.WriteLine($"User {UserName} does not exist. Creating...");
+
+                // Create the user
+                response = await adminClient.PutAsJsonAsync(
+                    $"/api/identity/users/{UserName}",
+                    new
+                    {
+                        role = "Player",
+                        active = true
+                    });
+                response.EnsureSuccessStatusCode();
+
+                // create login
+                response = await adminClient.PutAsJsonAsync(
+                    $"/api/identity/users/{UserName}/logins/password/{UserName}", // reuse username as gamertag
+                    new
+                    {
+                        Password
+                    });
+
+                // sign in as player and create gamertag - assuming the password did not change
+                var playerClient = await GetClientAsync(UserName, Password);
+                var player = new
+                {
+                    gamertag = UserName,
+                    country = "UK",
+                    customTag = "LoadTestUser"
+                };
+
+                response = await playerClient.PutAsJsonAsync("api/player", player);
+                response.EnsureSuccessStatusCode();
+            }
         }
 
         private async Task<HttpClient> GetClientAsync(string username, string password)
