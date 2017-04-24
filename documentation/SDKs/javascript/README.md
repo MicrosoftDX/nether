@@ -13,10 +13,10 @@ To use the nether SDK include the nether script in your project. Reference the s
 ```
 ```javascript
 var config = {
-        netherClientId: '',
-        netherClientSecret: '',
-        facebookAppId: '',
-        netherBaseUrl: ''
+        netherClientId: '<client Id>',
+        netherClientSecret: '<client secret>',
+        facebookAppId: '<facebook app Id>',
+        netherBaseUrl: '<nether url>'
     }
     nether.init(config, facebookInitailised, netherInitialised);
 ```

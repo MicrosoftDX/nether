@@ -1,6 +1,5 @@
 /* TODO: Review callbacks for improvements
          Review code for any further issues
-         Look at improving configuration of code
          Check if identity/users, identity/users/{userid} methods are required
 */
 var nether = (function () {
