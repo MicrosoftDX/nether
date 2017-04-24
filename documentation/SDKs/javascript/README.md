@@ -11,9 +11,17 @@ To use the nether SDK include the nether script in your project. Reference the s
 ```html
 <script src="/scripts/nether.js"></script>
 ```
-
-When a page loads that references nether.js, nether is initialised automatically. Nether will check to see if the user is logged into facebook and if so proceed to log the user into nether.
-Nether provides two callbacks when initialising: -
+```javascript
+var config = {
+        netherClientId: '',
+        netherClientSecret: '',
+        facebookAppId: '',
+        netherBaseUrl: ''
+    }
+    nether.init(config, facebookInitailised, netherInitialised);
+```
+To initialise Nether use the ***nether.init*** method passing the Nether configuration parameters and the callbacks. When nether is initialised, Nether checks to see if the user is logged into facebook and if so proceeds to authenticate the user with Nether.
+nether.init provides two callbacks: -
 ### facebookInitialised(loggedin)
 The facebookInitialised callback provides you with information about whether the user is logged into facebook by parsing a boolean value.
 #### Example usage
@@ -151,7 +159,7 @@ showLeaderboard = function(leaderboard) {
     var currentPlayerRank = leaderboard.currentPlayer.rank;
     var currentPlayerScore = leaderboard.currentPlayer.score;
 }
-var leaderboard = nether.leaderboard.getLeaderboard('default', showLeaderboard);
+nether.leaderboard.getLeaderboard('default', showLeaderboard);
 
 ```
 

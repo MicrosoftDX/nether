@@ -5,13 +5,36 @@
 */
 var nether = (function () {
     var nether = {
-        netherBaseUrl: 'http://localhost:5000'
+        netherBaseUrl: ''
     };
 
     // Initialise nether
-    nether.init = function(facebookCallback, netherCallback) {
-        nether.analytics.init();
-        nether.player.identity.init(facebookCallback, netherCallback);
+    nether.init = function(config, facebookCallback, netherCallback) {
+        nether.player.identity.netherClientId = config.netherClientId;
+        nether.player.identity.netherClientSecret = config.netherClientSecret;
+        nether.player.identity.facebookAppId = config.facebookAppId;
+        nether.netherBaseUrl = config.netherBaseUrl;
+
+        // Load the facebook SDK asynchronously and then initialise nether
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = '//connect.facebook.net/en_US/sdk.js';
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        fbAsyncInit = function() {
+            FB.init({
+                appId: nether.player.identity.facebookAppId,
+                cookie: true,
+                xfbml: true,
+                version: 'v2.8'
+            });
+
+            nether.analytics.init();
+            nether.player.identity.init(facebookCallback, netherCallback);
+        }
     };
     
     return nether;
@@ -442,9 +465,9 @@ nether.player = (function() {
 
 nether.player.identity = (function() {
     var identity = {
-        netherClientId: 'jstest',
-        netherClientSecret: 'jssecret',
-        facebookAppId: '278565649258663',
+        netherClientId: '',
+        netherClientSecret: '',
+        facebookAppId: '',
         facebookAccessToken: '',
         accessToken: '',
         loggedIn: false
@@ -518,24 +541,4 @@ nether.player.identity = (function() {
 
     return identity;
 }());
-
-// Load the facebook SDK asynchronously and then initialise nether
-(function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = '//connect.facebook.net/en_US/sdk.js';
-    fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
-
-window.fbAsyncInit = function() {
-    FB.init({
-        appId: nether.player.identity.facebookAppId,
-        cookie: true,
-        xfbml: true,
-        version: 'v2.8'
-    });
-
-    // Initialise nether once facebook login has loaded and use default callback function names
-    nether.init(facebookInitailised, netherInitialised);
-};
+    
