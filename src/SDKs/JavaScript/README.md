@@ -1,1 +1,3 @@
-# Source Code for Nether SDK for JavaScript
+# Javascript SDK for Nether
+
+Check [here](/documentation/SDKs/javascript) for latest documentation
