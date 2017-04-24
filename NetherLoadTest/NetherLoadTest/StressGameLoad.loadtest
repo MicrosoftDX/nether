@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LoadTest Name="PlayGameLoad" Description="" Owner="" storage="c:\projects\nether\netherloadtest\netherloadtest\playgameload.loadtest" Priority="2147483647" Enabled="true" CssProjectStructure="" CssIteration="" DeploymentItemsEditable="" WorkItemIds="" TraceLevel="None" CurrentRunConfig="Run Settings1" Id="559b31c9-5284-4ab6-b454-5ec600aac5cf" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+<LoadTest Name="StressGameLoad" Description="" Owner="" storage="c:\projects\nether\netherloadtest\netherloadtest\stressgameload.loadtest" Priority="2147483647" Enabled="true" CssProjectStructure="" CssIteration="" DeploymentItemsEditable="" WorkItemIds="" TraceLevel="None" CurrentRunConfig="Run Settings1" Id="d5d6c4ee-4257-420f-96e7-2144b58ca8f0" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
   <Scenarios>
-    <Scenario Name="PlayGame" DelayBetweenIterations="0" PercentNewUsers="0" IPSwitching="false" TestMixType="PercentageOfTestsStarted" ApplyDistributionToPacingDelay="true" MaxTestIterations="0" DisableDuringWarmup="false" DelayStartTime="0" AllowedAgents="">
+    <Scenario Name="StressScenario" DelayBetweenIterations="0" PercentNewUsers="0" IPSwitching="false" TestMixType="PercentageOfTestsStarted" ApplyDistributionToPacingDelay="true" MaxTestIterations="0" DisableDuringWarmup="false" DelayStartTime="0" AllowedAgents="">
       <ThinkProfile Value="0.2" Pattern="NormalDistribution" />
-      <LoadProfile Pattern="Constant" InitialUsers="1000" />
+      <LoadProfile Pattern="Constant" InitialUsers="500" />
       <TestMix>
-        <TestProfile Name="PlayGame" Path="bin\debug\netherloadtest.dll" Id="a4b503d4-9a76-e20b-06b7-413e2bf07203" Percentage="100" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="StressPlayGame" Path="bin\debug\netherloadtest.dll" Id="ba8dfdf4-f8a5-8ab0-8342-c1d333d1e13f" Percentage="100" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
       </TestMix>
       <NetworkMix>
         <NetworkProfile Percentage="100">
@@ -409,7 +409,7 @@
     </CounterSet>
   </CounterSets>
   <RunConfigurations>
-    <RunConfiguration Name="Run Settings1" Description="" ResultsStoreType="Database" TimingDetailsStorage="AllIndividualDetails" SaveTestLogsOnError="true" SaveTestLogsFrequency="0" MaxErrorDetails="200" MaxErrorsPerType="1000" MaxThresholdViolations="1000" MaxRequestUrlsReported="1000" UseTestIterations="false" RunDuration="1800" WarmupTime="0" CoolDownTime="0" TestIterations="100" WebTestConnectionModel="ConnectionPerUser" WebTestConnectionPoolSize="50" SampleRate="15" ValidationLevel="High" SqlTracingConnectString="" SqlTracingConnectStringDisplayValue="" SqlTracingDirectory="" SqlTracingEnabled="false" SqlTracingFileCount="2" SqlTracingRolloverEnabled="true" SqlTracingMinimumDuration="500" RunUnitTestsInAppDomain="true" CoreCount="0" ResourcesRetentionTimeInMinutes="0" UseMultipleIPs="false" TestAgentConfiguration="Default" AgentDiagnosticsLevel="Warning">
+    <RunConfiguration Name="Run Settings1" Description="" ResultsStoreType="Database" TimingDetailsStorage="AllIndividualDetails" SaveTestLogsOnError="true" SaveTestLogsFrequency="0" MaxErrorDetails="200" MaxErrorsPerType="1000" MaxThresholdViolations="1000" MaxRequestUrlsReported="1000" UseTestIterations="false" RunDuration="300" WarmupTime="0" CoolDownTime="0" TestIterations="100" WebTestConnectionModel="ConnectionPerUser" WebTestConnectionPoolSize="50" SampleRate="15" ValidationLevel="High" SqlTracingConnectString="" SqlTracingConnectStringDisplayValue="" SqlTracingDirectory="" SqlTracingEnabled="false" SqlTracingFileCount="2" SqlTracingRolloverEnabled="true" SqlTracingMinimumDuration="500" RunUnitTestsInAppDomain="true" CoreCount="0" ResourcesRetentionTimeInMinutes="0" UseMultipleIPs="false" TestAgentConfiguration="Default" AgentDiagnosticsLevel="Warning">
       <CounterSetMappings>
         <CounterSetMapping ComputerName="[CONTROLLER MACHINE]">
           <CounterSetReferences>
@@ -426,9 +426,13 @@
       <Applications>
         <AutComponent Description="" Id="ApplicationInsights~/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load/providers/microsoft.insights/components/nether-load-insights" Name="nether-load-insights" Type="ApplicationInsights" Separator="\" Version="3.0">
           <AutCounters>
+            <AutCounter Description="Exceptions" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load/providers/microsoft.insights/components/nether-load-insights~exceptions/count~sum" Name="Exceptions" Path="\nether-load-insights\Exceptions\exceptions/count\sum" />
+            <AutCounter Description="Failed requests" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load/providers/microsoft.insights/components/nether-load-insights~requests/failed~sum" Name="Failed requests" Path="\nether-load-insights\Failed requests\requests/failed\sum" />
             <AutCounter Description="Server exceptions" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load/providers/microsoft.insights/components/nether-load-insights~exceptions/server~sum" Name="Server exceptions" Path="\nether-load-insights\Server exceptions\exceptions/server\sum" />
             <AutCounter Description="Server requests" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load/providers/microsoft.insights/components/nether-load-insights~requests/count~sum" Name="Server requests" Path="\nether-load-insights\Server requests\requests/count\sum" />
-            <AutCounter Description="Server response time" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load/providers/microsoft.insights/components/nether-load-insights~requests/duration~avg" Name="Server response time" Path="\nether-load-insights\Server response time\requests/duration\avg" />
+            <AutCounter Description="Sessions" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load/providers/microsoft.insights/components/nether-load-insights~sessions/count~unique" Name="Sessions" Path="\nether-load-insights\Sessions\sessions/count\unique" />
+            <AutCounter Description="Users, authenticated" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load/providers/microsoft.insights/components/nether-load-insights~users/authenticated~unique" Name="Users, authenticated" Path="\nether-load-insights\Users, authenticated\users/authenticated\unique" />
+            <AutCounter Description="Users" Id="/subscriptions/5af1b655-8c87-46af-a1d2-07a337964600/resourceGroups/nether-load/providers/microsoft.insights/components/nether-load-insights~users/count~unique" Name="Users" Path="\nether-load-insights\Users\users/count\unique" />
           </AutCounters>
         </AutComponent>
       </Applications>
