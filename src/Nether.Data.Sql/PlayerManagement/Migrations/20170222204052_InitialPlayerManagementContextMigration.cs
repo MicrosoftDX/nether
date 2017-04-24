@@ -12,20 +12,6 @@ namespace Nether.Data.Sql.PlayerManagement.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Groups",
-                columns: table => new
-                {
-                    Name = table.Column<string>(nullable: false),
-                    CustomType = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
-                    Image = table.Column<byte[]>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Groups", x => x.Name);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Players",
                 columns: table => new
                 {
@@ -51,35 +37,6 @@ namespace Nether.Data.Sql.PlayerManagement.Migrations
                 {
                     table.PrimaryKey("PK_PlayersExtended", x => x.Gamertag);
                 });
-
-            migrationBuilder.CreateTable(
-                name: "PlayerGroups",
-                columns: table => new
-                {
-                    GroupName = table.Column<string>(nullable: false),
-                    Gamertag = table.Column<string>(maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PlayerGroups", x => new { x.GroupName, x.Gamertag });
-                    table.ForeignKey(
-                        name: "FK_PlayerGroups_Players_Gamertag",
-                        column: x => x.Gamertag,
-                        principalTable: "Players",
-                        principalColumn: "Gamertag",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PlayerGroups_Groups_GroupName",
-                        column: x => x.GroupName,
-                        principalTable: "Groups",
-                        principalColumn: "Name",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PlayerGroups_Gamertag",
-                table: "PlayerGroups",
-                column: "Gamertag");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -88,13 +45,7 @@ namespace Nether.Data.Sql.PlayerManagement.Migrations
                 name: "PlayersExtended");
 
             migrationBuilder.DropTable(
-                name: "PlayerGroups");
-
-            migrationBuilder.DropTable(
                 name: "Players");
-
-            migrationBuilder.DropTable(
-                name: "Groups");
         }
     }
 }

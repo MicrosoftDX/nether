@@ -20,8 +20,6 @@ namespace Nether.Data.EntityFramework.PlayerManagement
         public string Country { get; set; }
         public string CustomTag { get; set; }
 
-        public List<PlayerGroupEntity> PlayerGroups { get; set; }
-
         public Player ToPlayer()
         {
             return new Player

@@ -178,49 +178,5 @@ namespace Nether.Web.Features.PlayerManagement
             // Return result
             return Ok();
         }
-
-        /// <summary>
-        /// Gets the list of groups current player belongs to.
-        /// </summary>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupListResponseModel))]
-        [HttpGet("groups")]
-        public async Task<ActionResult> GetPlayerGroups()
-        {
-            var gamertag = User.GetGamerTag();
-            var groups = await _store.GetPlayersGroupsAsync(gamertag);
-
-            return Ok(GroupListResponseModel.FromGroups(groups));
-        }
-
-        /// <summary>
-        /// Adds currently logged in player to a group.
-        /// </summary>
-        /// <param name="groupName">Group name.</param>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [HttpPut("groups/{groupName}")]
-        public async Task<ActionResult> AddCurrentPlayerToGroup(string groupName)
-        {
-            var gamertag = User.GetGamerTag();
-            Group group = await _store.GetGroupDetailsAsync(groupName);
-            if (group == null)
-            {
-                _logger.LogWarning("group '{0}' not found", groupName);
-                return NotFound();
-            }
-
-            Player player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
-            if (player == null)
-            {
-                _logger.LogError("player '{0}' not found", gamertag);
-                return BadRequest();
-            }
-
-            await _store.AddPlayerToGroupAsync(group, player);
-
-            return NoContent();
-        }
     }
 }
