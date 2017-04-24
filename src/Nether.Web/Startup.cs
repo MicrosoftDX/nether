@@ -304,7 +304,7 @@ namespace Nether.Web
                 {
                     options.RouteTemplate = "swagger/{documentName}/swagger.json";
                 });
-                apiapp.UseSwaggerUi(options =>
+                apiapp.UseSwaggerUI(options =>
                 {
                     options.RoutePrefix = "swagger/ui";
                     options.SwaggerEndpoint("/api/swagger/v0.1/swagger.json", "v0.1 Docs");
