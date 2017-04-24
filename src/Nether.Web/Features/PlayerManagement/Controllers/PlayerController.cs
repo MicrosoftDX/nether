@@ -13,6 +13,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using Nether.Common.ApplicationPerformanceMonitoring;
+using Microsoft.Net.Http.Headers;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -142,7 +143,8 @@ namespace Nether.Web.Features.PlayerManagement
         /// Gets the player state for the current player
         /// </summary>
         /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerStateGetResponseModel))]
+        [Produces("text/plain")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpGet("state")]
         public async Task<ActionResult> GetCurrentPlayerState()
@@ -153,27 +155,25 @@ namespace Nether.Web.Features.PlayerManagement
             var state = await _store.GetPlayerStateByGamertagAsync(gamertag);
 
             // Return result
-            return Ok(new PlayerStateGetResponseModel { Gamertag = gamertag, State = state });
+            return Content(state ?? "", new MediaTypeHeaderValue("text/plain"));
         }
 
 
         /// <summary>
-        /// Updates JSON state for the current player
+        /// Updates state for the current player
         /// </summary>
         /// <param name="state">Player data</param>
         /// <returns></returns>
+        [Consumes("text/plain")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [HttpPut("state")]
-        public async Task<ActionResult> PutCurrentPlayerState([FromBody] JObject state) // TODO update binding to use raw string
+        public async Task<ActionResult> PutCurrentPlayerState([FromBody] string state) // TODO update binding to use raw string
         {
             string gamertag = User.GetGamerTag();
 
-            // TODO - update this to use model binding. Keeping param for now for API docs, but binding to it isn't working
-            var stateString = JsonConvert.SerializeObject(state);
-
             // Update extended player information
             // Update player
-            await _store.SavePlayerStateByGamertagAsync(gamertag, stateString);
+            await _store.SavePlayerStateByGamertagAsync(gamertag, state);
 
             // Return result
             return Ok();

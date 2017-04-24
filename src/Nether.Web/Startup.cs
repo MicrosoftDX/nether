@@ -90,6 +90,7 @@ namespace Nether.Web
                 {
                     options.Conventions.Add(new FeatureConvention());
                     options.Filters.AddService(typeof(ExceptionLoggingFilterAttribute));
+                    options.InputFormatters.Add(new PlainTextInputFormatter());
                 })
                 .ConfigureApplicationPartManager(partManager =>
                 {

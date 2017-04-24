@@ -12,6 +12,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
+using Nether.Web.IntegrationTests;
+using System.Net.Http.Headers;
+using System.Text;
+
 namespace Nether.Web.IntegrationTests.PlayerManagement
 {
     public class PlayerManagementTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
@@ -38,6 +42,58 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
 
             PlayerGetResponse afterUpdate = await GetPlayerAsync(client);
             Assert.Equal(newCountry, afterUpdate.Player.Country);
+        }
+
+        [Fact]
+        public async Task As_a_player_I_can_update_my_player_state()
+        {
+            var client = await GetClientAsync(username: "testuser-state");
+            var newState = Guid.NewGuid().ToString();
+
+            // Update state
+            var response = await client.PutAsync($"{BasePath}player/state", new StringContent("SomeNewState", Encoding.UTF8, "text/plain"));
+            await response.AssertStatusCodeAsync(HttpStatusCode.OK);
+
+            // Read state
+            response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{BasePath}player/state")
+            {
+                Headers =
+                {
+                    Accept =
+                    {
+                        new MediaTypeWithQualityHeaderValue("text/plain")
+                    }
+                }
+            });
+            await response.AssertStatusCodeAsync(HttpStatusCode.OK);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.Equal("SomeNewState", content);
+        }
+
+        [Fact]
+        public async Task As_an_admin_I_can_update_player_state()
+        {
+            var client = await GetAdminClientAsync();
+            var newState = Guid.NewGuid().ToString();
+
+            // Update state
+            var response = await client.PutAsync($"{BasePath}admin/players/testuser-state/state", new StringContent("SomeNewState", Encoding.UTF8, "text/plain"));
+            await response.AssertStatusCodeAsync(HttpStatusCode.OK);
+
+            // Read state
+            response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{BasePath}admin/players/testuser-state/state")
+            {
+                Headers =
+                {
+                    Accept =
+                    {
+                        new MediaTypeWithQualityHeaderValue("text/plain")
+                    }
+                }
+            });
+            await response.AssertStatusCodeAsync(HttpStatusCode.OK);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.Equal("SomeNewState", content);
         }
 
         [Fact]

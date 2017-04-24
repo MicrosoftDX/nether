@@ -14,9 +14,9 @@ PUT     | `/api/admin/players/{gamertag}/state`
 
 No parameters
 
-### JSON Body
+### Request Body
 
-The body should be the new JSON state.
+The body should be the new player state.
 
 ### Response
 
@@ -24,6 +24,6 @@ The body should be the new JSON state.
 |-------------|-------------|
 |200|Player state updated successfully|
 
-### JSON Body
+### Response Body
 
 Empty body

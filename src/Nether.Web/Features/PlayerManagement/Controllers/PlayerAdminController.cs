@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System;
 using Nether.Web.Features.PlayerManagement.Models.PlayerAdmin;
+using Microsoft.Net.Http.Headers;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -137,18 +138,17 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="gamertag">Gamer tag</param>
         /// <returns>Player extended information</returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerStateGetResponseModel))]
+        [Produces("text/plain")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpGet("{gamertag}/state")]
         public async Task<ActionResult> GetPlayerState(string gamertag)
         {
             // Call data store
             var state = await _store.GetPlayerStateByGamertagAsync(gamertag);
-            if (state == null)
-                return NotFound();
 
             // Return result
-            return Ok(new PlayerStateGetResponseModel { Gamertag = gamertag, State = state });
+            return Content(state ?? "", new MediaTypeHeaderValue("text/plain"));
         }
 
         /// <summary>
@@ -159,8 +159,9 @@ namespace Nether.Web.Features.PlayerManagement
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [Consumes("text/plain")]
         [HttpPut("{gamertag}/state")]
-        public async Task<IActionResult> PostState([FromRoute] string gamertag, [FromBody]string state)
+        public async Task<IActionResult> PutState([FromRoute] string gamertag, [FromBody]string state)
         {
             if (string.IsNullOrWhiteSpace(gamertag))
             {
@@ -171,7 +172,7 @@ namespace Nether.Web.Features.PlayerManagement
             await _store.SavePlayerStateByGamertagAsync(gamertag, state);
 
             // Return result
-            return CreatedAtRoute(nameof(GetPlayer), new { gamertag }, null);
+            return Ok();
         }
     }
 }
