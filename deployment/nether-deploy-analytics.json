@@ -1,0 +1,149 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "Query": {
+      "type": "string",
+      "metadata": {
+        "description": ""
+      }
+    },
+    "TemplateBaseURL": {
+      "type": "string",
+      "metadata": {
+        "description": "The base location for all linked templates."
+      }
+    },
+    "DeployPackageURI": {
+      "minLength": 1,
+      "type": "string",
+      "metadata": {
+        "description": "WebDeploy package location."
+      }
+    },
+    "sqlServerAdminName": {
+      "type": "string"
+    },
+    "sqlServerAdminPassword": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "deploymentAPI": "2015-01-01",
+    "IngestUri": "[concat(parameters('TemplateBaseURL'), 'NetherAnalyticsIngest.json')]",
+    "IngestTemplateName": "IngestTemplate",
+    "HotPathUri": "[concat(parameters('TemplateBaseURL'), 'NetherAnalyticsHotPath.json')]",
+    "ColdPathUri": "[concat(parameters('TemplateBaseURL'), 'NetherAnalyticsColdPath.json')]",
+    "ColdDurationsUri": "[concat(parameters('TemplateBaseURL'), 'cold-path/analyticsADFdurations.json')]",
+    "ColdCountsUri": "[concat(parameters('TemplateBaseURL'), 'cold-path/analyticsADFcounts.json')]",
+    "ColdActiveUsersUri": "[concat(parameters('TemplateBaseURL'), 'cold-path/analyticsADFactiveUsers.json')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "[variables('deploymentAPI')]",
+      "name": "[variables('IngestTemplateName')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('IngestUri')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "DeployPackageURI": {
+            "value": "[parameters('DeployPackageURI')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "[variables('deploymentAPI')]",
+      "name": "HotPathTemplate",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/', variables('IngestTemplateName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('HotPathUri')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "Query": {
+            "value": "[parameters('Query')]"
+          },
+          "serviceBusNamespace": {
+            "value": "[reference(variables('IngestTemplateName')).outputs.serviceBusNamespace.value]"
+          },
+          "eventHubName": {
+            "value": "[reference(variables('IngestTemplateName')).outputs.eventHubName.value]"
+          },
+          "sharedAccessPolicyName": {
+            "value": "[reference(variables('IngestTemplateName')).outputs.sharedAccessPolicyName.value]"
+          },
+          "sharedAccessPolicyKey": {
+            "value": "[reference(variables('IngestTemplateName')).outputs.sharedAccessPolicyKey.value]"
+          },
+          "consumerGroupName": {
+            "value": "[reference(variables('IngestTemplateName')).outputs.consumerGroupName.value]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "[variables('deploymentAPI')]",
+      "name": "ColdPathTemplate",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/', variables('IngestTemplateName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('ColdPathUri')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "scriptsStorageSASUri": {
+            "value": "https://oknetherscripts.blob.core.windows.net/scripts?st=2017-04-13T11%3A07%3A00Z&se=2017-04-14T11%3A07%3A00Z&sp=rl&sv=2016-05-31&sr=c&sig=qtV7NqVzeWsjnI6wM%2FbxWx50USuphlbknMCfz8lKqdI%3D"
+          },
+          "storageAccountName": {
+            "value": "[reference(variables('IngestTemplateName')).outputs.analyticsStorageName.value]"
+          },
+          "sqlServerAdminName": {
+            "value": "[parameters('sqlServerAdminName')]"
+          },
+          "sqlServerAdminPassword": {
+            "value": "[parameters('sqlServerAdminPassword')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "[variables('deploymentAPI')]",
+      "name": "ColdActiveUsers",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/', variables('IngestTemplateName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('ColdActiveUsersUri')]"
+        },
+        "parameters": {
+          "storageAccountName": {
+            "value": "[reference(variables('IngestTemplateName')).outputs.analyticsStorageName.value]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "analyticsStorageName": {
+      "type": "string",
+      "value": "[reference('IngestTemplate').outputs.analyticsStorageName.value]"
+    }
+  }
+}
