@@ -3,23 +3,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Nether.Data.EntityFramework.PlayerManagement;
+using Nether.Data.Sql.PlayerManagement;
 
 namespace Nether.Data.Sql.PlayerManagement.Migrations
 {
     [DbContext(typeof(SqlPlayerManagementContext))]
-    [Migration("20170222204052_InitialPlayerManagementContextMigration")]
-    partial class InitialPlayerManagementContextMigration
+    [Migration("20170427115004_InitialSqlPlayerManagementContextMigration")]
+    partial class InitialSqlPlayerManagementContextMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
+                .HasAnnotation("ProductVersion", "1.1.1")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Nether.Data.EntityFramework.PlayerManagement.PlayerEntity", b =>
                 {
-                    b.Property<string>("Gamertag")
+                    b.Property<string>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50);
 
@@ -27,13 +27,13 @@ namespace Nether.Data.Sql.PlayerManagement.Migrations
 
                     b.Property<string>("CustomTag");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("Gamertag")
                         .IsRequired()
                         .HasMaxLength(50);
 
-                    b.HasKey("Gamertag");
+                    b.HasKey("UserId");
 
-                    b.HasAlternateKey("UserId");
+                    b.HasAlternateKey("Gamertag");
 
                     b.ToTable("Players");
 
@@ -42,19 +42,18 @@ namespace Nether.Data.Sql.PlayerManagement.Migrations
 
             modelBuilder.Entity("Nether.Data.EntityFramework.PlayerManagement.PlayerExtendedEntity", b =>
                 {
-                    b.Property<string>("Gamertag")
+                    b.Property<string>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50);
 
                     b.Property<string>("State");
 
-                    b.HasKey("Gamertag");
+                    b.HasKey("UserId");
 
                     b.ToTable("PlayersExtended");
 
                     b.HasAnnotation("SqlServer:TableName", "PlayersExtended");
                 });
-
         }
     }
 }

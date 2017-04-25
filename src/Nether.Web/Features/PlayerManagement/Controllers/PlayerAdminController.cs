@@ -142,10 +142,21 @@ namespace Nether.Web.Features.PlayerManagement
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpGet("{gamertag}/state")]
-        public async Task<ActionResult> GetPlayerState(string gamertag)
+        public async Task<IActionResult> GetPlayerState(string gamertag)
         {
+            if (string.IsNullOrWhiteSpace(gamertag))
+            {
+                return this.ValidationFailed(new ErrorDetail("gamertag", "gamertag is required"));
+            }
+
+            var player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
+            if (player == null)
+            {
+                return NotFound();
+            }
+
             // Call data store
-            var state = await _store.GetPlayerStateByGamertagAsync(gamertag);
+            var state = await _store.GetPlayerStateByUserIdAsync(player.UserId);
 
             // Return result
             return Content(state ?? "", new MediaTypeHeaderValue("text/plain"));
@@ -157,8 +168,9 @@ namespace Nether.Web.Features.PlayerManagement
         /// <param name="gamertag"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.Created)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [Consumes("text/plain")]
         [HttpPut("{gamertag}/state")]
         public async Task<IActionResult> PutState([FromRoute] string gamertag, [FromBody]string state)
@@ -168,8 +180,14 @@ namespace Nether.Web.Features.PlayerManagement
                 return this.ValidationFailed(new ErrorDetail("gamertag", "gamertag is required"));
             }
 
+            var player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
+            if (player == null)
+            {
+                return NotFound();
+            }
+
             // Save player extended information
-            await _store.SavePlayerStateByGamertagAsync(gamertag, state);
+            await _store.SavePlayerStateByUserIdAsync(player.UserId, state);
 
             // Return result
             return Ok();

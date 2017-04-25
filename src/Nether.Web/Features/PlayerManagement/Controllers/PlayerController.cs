@@ -74,18 +74,21 @@ namespace Nether.Web.Features.PlayerManagement
         {
             string userId = User.GetId();
 
-            // prevent modifying gamertag
-            var existingPlayerForGamertag = await _store.GetPlayerDetailsByGamertagAsync(player.Gamertag);
-            if (existingPlayerForGamertag != null && existingPlayerForGamertag.UserId != userId)
-            {
-                // Can't use a gamertag from another user
-                return this.ValidationFailed(new ErrorDetail("gamertag", "Gamertag already in use"));
-            }
             bool newPlayer = false;
             var playerEntity = await _store.GetPlayerDetailsByUserIdAsync(userId);
             if (playerEntity == null)
             {
                 newPlayer = true;
+                if (player.Gamertag != null)
+                {
+                    // check if gamertag is already in use
+                    var existingPlayerForGamertag = await _store.GetPlayerDetailsByUserIdAsync(player.Gamertag);
+                    if (existingPlayerForGamertag != null && existingPlayerForGamertag.UserId != userId)
+                    {
+                        // Can't use a gamertag from another user
+                        return this.ValidationFailed(new ErrorDetail("gamertag", "Gamertag already in use"));
+                    }
+                }
                 playerEntity = new Player
                 {
                     UserId = userId,
@@ -126,14 +129,8 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpDelete("")]
         public async Task<ActionResult> DeleteCurrentPlayer()
         {
-            string gamertag = User.GetGamerTag();
-            if (string.IsNullOrWhiteSpace(gamertag))
-            {
-                return NotFound();
-            }
-
             // Call data store
-            await _store.DeletePlayerDetailsAsync(gamertag);
+            await _store.DeletePlayerDetailsForUserIdAsync(User.GetId());
 
             // Return result
             return NoContent();
@@ -149,10 +146,8 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpGet("state")]
         public async Task<ActionResult> GetCurrentPlayerState()
         {
-            string gamertag = User.GetGamerTag();
-
             // Call data store
-            var state = await _store.GetPlayerStateByGamertagAsync(gamertag);
+            var state = await _store.GetPlayerStateByUserIdAsync(User.GetId());
 
             // Return result
             return Content(state ?? "", new MediaTypeHeaderValue("text/plain"));
@@ -169,11 +164,8 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpPut("state")]
         public async Task<ActionResult> PutCurrentPlayerState([FromBody] string state) // TODO update binding to use raw string
         {
-            string gamertag = User.GetGamerTag();
-
             // Update extended player information
-            // Update player
-            await _store.SavePlayerStateByGamertagAsync(gamertag, state);
+            await _store.SavePlayerStateByUserIdAsync(User.GetId(), state);
 
             // Return result
             return Ok();

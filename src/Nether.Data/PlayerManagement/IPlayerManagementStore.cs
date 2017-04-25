@@ -10,15 +10,13 @@ namespace Nether.Data.PlayerManagement
 {
     public interface IPlayerManagementStore
     {
-        //Players
+        // Players
         Task SavePlayerAsync(Player player);
         Task<Player> GetPlayerDetailsByUserIdAsync(string id);
         Task<Player> GetPlayerDetailsByGamertagAsync(string gamertag);
         Task<List<Player>> GetPlayersAsync();
-        Task UploadPlayerImageAsync(string gamertag, byte[] image);
-        Task<byte[]> GetPlayerImageAsync(string gamertag);
-        Task SavePlayerStateByGamertagAsync(string gamertag, string state);
-        Task<string> GetPlayerStateByGamertagAsync(string gamertag);
-        Task DeletePlayerDetailsAsync(string gamertag);
+        Task<string> GetPlayerStateByUserIdAsync(string id);
+        Task SavePlayerStateByUserIdAsync(string id, string state);
+        Task DeletePlayerDetailsForUserIdAsync(string id);
     }
 }

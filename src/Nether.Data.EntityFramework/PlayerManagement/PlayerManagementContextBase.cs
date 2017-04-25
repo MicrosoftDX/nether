@@ -28,15 +28,15 @@ namespace Nether.Data.EntityFramework.PlayerManagement
             base.OnModelCreating(builder);
 
             builder.Entity<PlayerEntity>()
-                .HasKey(p => p.Gamertag);
+                .HasKey(p => p.UserId);
             builder.Entity<PlayerEntity>()
-                .HasAlternateKey(p => p.UserId);
+                .HasAlternateKey(p => p.Gamertag);
             builder.Entity<PlayerEntity>().Property(p => p.UserId).HasMaxLength(50);
             builder.Entity<PlayerEntity>().Property(p => p.Gamertag).HasMaxLength(50);
 
             builder.Entity<PlayerExtendedEntity>()
-                .HasKey(p => p.Gamertag);
-            builder.Entity<PlayerExtendedEntity>().Property(p => p.Gamertag).HasMaxLength(50);
+                .HasKey(p => p.UserId);
+            builder.Entity<PlayerExtendedEntity>().Property(p => p.UserId).HasMaxLength(50);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)

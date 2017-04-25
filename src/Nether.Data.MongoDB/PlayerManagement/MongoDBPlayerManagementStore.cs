@@ -88,41 +88,27 @@ namespace Nether.Data.MongoDB.PlayerManagement
             return await getPlayer.ToListAsync();
         }
 
-        public Task UploadPlayerImageAsync(string gamertag, byte[] image)
+        public async Task SavePlayerStateByUserIdAsync(string userId, string state)
         {
-            throw new NotSupportedException();
-        }
-
-        public Task<byte[]> GetPlayerImageAsync(string gamertag)
-        {
-            throw new NotSupportedException();
-        }
-
-        public async Task SavePlayerStateByGamertagAsync(string gamertag, string state)
-        {
-            _logger.LogDebug("Saving Player Extended {0}", gamertag);
+            _logger.LogDebug("Saving Player Extended {0}", userId);
             await PlayersExtendedCollection.ReplaceOneAsync(
-                p => p.Gamertag == gamertag,
-                new MongoDBPlayerExtended { Gamertag = gamertag, ExtendedInformation = state },
+                p => p.PlayerId == userId,
+                new MongoDBPlayerExtended { PlayerId = userId, ExtendedInformation = state },
                 s_upsertOptions);
         }
 
-        public async Task<string> GetPlayerStateByGamertagAsync(string gamertag)
+        public async Task<string> GetPlayerStateByUserIdAsync(string userId)
         {
             var getPlayerExtended = from s in PlayersExtendedCollection.AsQueryable()
-                                    where s.Gamertag == gamertag
-                                    orderby s.Gamertag descending
-                                    select new PlayerState
-                                    {
-                                        Gamertag = s.Gamertag,
-                                        State = s.ExtendedInformation
-                                    };
+                                    where s.PlayerId == userId
+                                    orderby s.PlayerId descending
+                                    select s.ExtendedInformation;
 
             var playerState = await getPlayerExtended.FirstOrDefaultAsync();
-            return playerState?.State;
+            return playerState;
         }
 
-        public Task DeletePlayerDetailsAsync(string gamertag)
+        public Task DeletePlayerDetailsForUserIdAsync(string userId)
         {
             throw new NotImplementedException();
         }

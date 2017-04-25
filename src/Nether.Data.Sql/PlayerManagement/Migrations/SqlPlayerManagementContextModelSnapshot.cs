@@ -1,7 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -11,17 +8,17 @@ using Nether.Data.Sql.PlayerManagement;
 namespace Nether.Data.Sql.PlayerManagement.Migrations
 {
     [DbContext(typeof(SqlPlayerManagementContext))]
-    internal partial class SqlPlayerManagementContextModelSnapshot : ModelSnapshot
+    partial class SqlPlayerManagementContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
+                .HasAnnotation("ProductVersion", "1.1.1")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Nether.Data.Sql.PlayerManagement.PlayerEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.PlayerManagement.PlayerEntity", b =>
                 {
-                    b.Property<string>("Gamertag")
+                    b.Property<string>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50);
 
@@ -29,28 +26,28 @@ namespace Nether.Data.Sql.PlayerManagement.Migrations
 
                     b.Property<string>("CustomTag");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("Gamertag")
                         .IsRequired()
                         .HasMaxLength(50);
 
-                    b.HasKey("Gamertag");
+                    b.HasKey("UserId");
 
-                    b.HasAlternateKey("UserId");
+                    b.HasAlternateKey("Gamertag");
 
                     b.ToTable("Players");
 
                     b.HasAnnotation("SqlServer:TableName", "Players");
                 });
 
-            modelBuilder.Entity("Nether.Data.Sql.PlayerManagement.PlayerExtendedEntity", b =>
+            modelBuilder.Entity("Nether.Data.EntityFramework.PlayerManagement.PlayerExtendedEntity", b =>
                 {
-                    b.Property<string>("Gamertag")
+                    b.Property<string>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50);
 
                     b.Property<string>("State");
 
-                    b.HasKey("Gamertag");
+                    b.HasKey("UserId");
 
                     b.ToTable("PlayersExtended");
 
