@@ -384,7 +384,7 @@ nether.player = (function() {
             authorise: true,
             data: {
                 country: country,
-                gamertag: gamerTag,
+                gamerTag: gamerTag,
                 customTag: customTag
             },
             callback: function(status, res) {
@@ -416,6 +416,7 @@ nether.player = (function() {
                 if (status === 204) {
                     player.gameSessionId = '';
                     player.gamertag = '';
+                    player.country = '';
                     player.state = '';
 
                     callback(true);
