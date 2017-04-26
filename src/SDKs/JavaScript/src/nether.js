@@ -8,31 +8,46 @@ var nether = (function () {
     };
 
     // Initialise nether
-    nether.init = function(config, facebookCallback, netherCallback) {
+    nether.init = function(config, facebookCallback, netherCallback, netherHost) {
         nether.player.identity.netherClientId = config.netherClientId;
         nether.player.identity.netherClientSecret = config.netherClientSecret;
         nether.player.identity.facebookAppId = config.facebookAppId;
         nether.netherBaseUrl = config.netherBaseUrl;
 
-        // Load the facebook SDK asynchronously and then initialise nether
-        (function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            js.src = '//connect.facebook.net/en_US/sdk.js';
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
+        if (typeof FB === "undefined") {
+            // Load the facebook SDK asynchronously and then initialise nether
+            (function(d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s); js.id = id;
+                js.src = '//connect.facebook.net/en_US/sdk.js';
+                fjs.parentNode.insertBefore(js, fjs);
+            }(netherHost? netherHost : document, 'script', 'facebook-jssdk'));
 
-        fbAsyncInit = function() {
-            FB.init({
-                appId: nether.player.identity.facebookAppId,
-                cookie: true,
-                xfbml: true,
-                version: 'v2.8'
-            });
+            fbAsyncInit = function() {
+                FB.init({
+                    appId: nether.player.identity.facebookAppId,
+                    cookie: true,
+                    xfbml: true,
+                    version: 'v2.8'
+                });
 
-            nether.analytics.init();
-            nether.player.identity.init(facebookCallback, netherCallback);
+                nether.analytics.init();
+                nether.player.identity.init(facebookCallback, netherCallback);
+            }
+        }
+        else {
+            fbAsyncInit = function() {
+                FB.init({
+                    appId: nether.player.identity.facebookAppId,
+                    cookie: true,
+                    xfbml: true,
+                    version: 'v2.8'
+                });
+
+                nether.analytics.init();
+                nether.player.identity.init(facebookCallback, netherCallback);
+            }
         }
     };
     
@@ -540,4 +555,3 @@ nether.player.identity = (function() {
 
     return identity;
 }());
-    
