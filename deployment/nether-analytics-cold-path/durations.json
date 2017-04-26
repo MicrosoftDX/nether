@@ -2,53 +2,26 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "scriptsStorageSASUri": {
+            "type": "string"
+        },
         "storageAccountName": {
-            "type": "string",
-            "metadata": {
-                "description": "Storage account containing the raw game event data"
-            }
-        },
-        "storageAccountKey": {
             "type": "string"
         },
-        "hiveScriptStorageAccountName": {
-            "type": "string",
-            "metadata": {
-                "description": "Storage account name where the hive script is stored."
-            }
-        },
-        "hiveScriptStorageAccountKey": {
-            "type": "string",
-            "metadata": {
-                "description": "Storage account key of blob storage where the hive script is stored."
-            }
-        },
-        "sqlServerName": {
-            "type": "string",
-            "metadata": {
-                "description": ""
-            }
-        },
-        "sqlDBName": {
-            "type": "string",
-            "metadata": {
-                "description": ""
-            }
-        },
-        "sqlServerAdminName": {
+        "dataFactoryUpload": {
             "type": "string"
         },
-        "sqlServerAdminPassword": {
-            "type": "string"
-        },
-        "dataFactoryName": {
+        "dataFactoryDurations": {
             "type": "string"
         }
     },
     "variables": {
-        "location": "[resourceGroup().location]",
         "dfApiVersion": "2015-10-01",
-        "uniqueIdentifier": "[uniqueString(resourceGroup().id)]",
+        "dfScriptsStorageLS": "ScriptsStorageLinkedService",
+        "dfStorageLS": "StorageLinkedService",
+        "dfOrigScriptsDS": "OrigScripts",
+        "dfDestScriptsDS": "DestScripts",
+        "dfDatePL": "2017-04-12T00:00:00Z",
         "rawEventsContainer": "gameevents",
         "intermediateEventsContainer": "intermediate",
         "resultEventsContainer": "results",
@@ -59,15 +32,9 @@
         "dailyDurationsFolder": "aggdurations/daily",
         "monthlyDurationsFolder": "aggdurations/monthly",
         "yearlyDurationsFolder": "aggdurations/yearly",
-        "dailyDurationsSQLTable": "DailyDurations",
-        "monthlyDurationsSQLTable": "MonthlyDurations",
-        "yearlyDurationsSQLTable": "YearlyDurations",
         "dfFrequency": "Minute",
         "dfInterval": 30,
-        "dfStorageLS": "StorageLinkedService",
-        "dfScriptsStorageLS": "ScriptsStorageLinkedService",
         "dfHDInsightLS": "HDIonDemandLinkedService",
-        "dfSqlLS": "SQLLinkedService",
         "dfStartDS": "RawStartEvents",
         "dfStopDS": "RawStopEvents",
         "dfDurationsDS": "Durations",
@@ -77,9 +44,6 @@
         "dfDailyDurationsCsvDS": "DailyDurationsCsv",
         "dfMonthlyDurationsCsvDS": "MonthlyDurationsCsv",
         "dfYearlyDurationsCsvDS": "YearlyDurationsCsv",
-        "dfDailyDurationsSqlDS": "DailyDurationsSql",
-        "dfMonthlyDurationsSqlDS": "MonthlyDurationsSql",
-        "dfYearlyDurationsSqlDS": "YearlyDurationsSql",
         "dfDurationsPL": "DurationsPipeline",
         "dfDailyDurationsPL": "DailyDurationsPipeline",
         "dfMonthlyDurationsPL": "MonthlyDurationsPipeline",
@@ -88,41 +52,195 @@
         "dfEndPL": "2017-03-11T00:00:00Z"
     },
     "resources": [
-        /* Azure Data Factory */
+        /* Storage Account */
         {
-            "name": "[parameters('dataFactoryName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[parameters('storageAccountName')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[parameters('storageAccountName')]"
+            },
+            "properties": {
+                "accountType": "Standard_LRS"
+            }
+        },
+        /* One time Azure Data Factory for uploading */
+        {
+            "name": "[parameters('dataFactoryUpload')]",
             "apiVersion": "[variables('dfApiVersion')]",
             "type": "Microsoft.DataFactory/datafactories",
-            "location": "[variables('location')]",
+            "location": "[resourceGroup().location]",
             "resources": [
-                /* Linked Services: Storage account containing the raw game events, storage account containing the scripts, HDI on demand, Azure SQL DB */ 
-                {
-                    "type": "linkedservices",
-                    "name": "[variables('dfStorageLS')]",
-                    "apiVersion": "[variables('dfApiVersion')]",
-                    "dependsOn": [
-                        "[parameters('dataFactoryName')]"
-                    ],
-                    "properties": {
-                        "type": "AzureStorage",
-                        "description": "Azure Storage linked service",
-                        "typeProperties": {
-                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',parameters('storageAccountKey'))]"
-                        }
-                    }
-                },
+                /* Linked Service: Storage account that contains the scripts and will be accessed using a SAS token */
                 {
                     "type": "linkedservices",
                     "name": "[variables('dfScriptsStorageLS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]"
+                        "[parameters('dataFactoryUpload')]"
+                    ],
+                    "properties": {
+                        "type": "AzureStorageSas",
+                        "description": "Azure Storage linked service",
+                        "typeProperties": {
+                            "sasUri": "[parameters('scriptsStorageSASUri')]"
+                        }
+                    }
+                },
+                /* Linked Service: Storage account that will contain the scripts and all raw game event data. */
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('dfStorageLS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[parameters('dataFactoryUpload')]"
                     ],
                     "properties": {
                         "type": "AzureStorage",
-                        "description": "Storage account in which the hive scripts are stored",
+                        "description": "Azure Storage linked service",
                         "typeProperties": {
-                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('hiveScriptStorageAccountName'),';AccountKey=', parameters('hiveScriptStorageAccountKey'))]"
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
+                        }
+                    }
+                },
+                /* Dataset: scripts in original storage account */
+                {
+                    "type": "datasets",
+                    "name": "[variables('dfOrigScriptsDS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[parameters('dataFactoryUpload')]",
+                        "[variables('dfScriptsStorageLS')]"
+                    ],
+                    "properties": {
+                        "type": "AzureBlob",
+                        "linkedServiceName": "[variables('dfScriptsStorageLS')]",
+                        "typeProperties": {
+                            "folderPath": "scripts",
+                            "format": {
+                                "type": "TextFormat",
+                                "columnDelimiter": ","
+                            }
+                        },
+                        "availability": {
+                            "frequency": "[variables('dfFrequency')]",
+                            "interval": "[variables('dfInterval')]"
+                        },
+                        "external": true,
+                        "policy": {}
+                    }
+                },
+                /* Dataset: scripts in destination storage account */
+                {
+                    "type": "datasets",
+                    "name": "[variables('dfDestScriptsDS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[parameters('dataFactoryUpload')]",
+                        "[variables('dfStorageLS')]"
+                    ],
+                    "properties": {
+                        "published": false,
+                        "type": "AzureBlob",
+                        "linkedServiceName": "[variables('dfStorageLS')]",
+                        "typeProperties": {
+                            "folderPath": "scripts",
+                            "format": {
+                                "type": "TextFormat",
+                                "columnDelimiter": ","
+                            }
+                        },
+                        "availability": {
+                            "frequency": "Day",
+                            "interval": "[variables('dfInterval')]"
+                        },
+                        "external": false,
+                        "policy": {}
+                    }
+                },
+                /* Copy Pipeline for all scripts */
+                {
+                    "type": "dataPipelines",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "name": "CopyPipeline",
+                    "dependsOn": [
+                        "[parameters('dataFactoryUpload')]",
+                        "[variables('dfStorageLS')]",
+                        "[variables('dfScriptsStorageLS')]",
+                        "[variables('dfOrigScriptsDS')]",
+                        "[variables('dfDestScriptsDS')]"
+                    ],
+                    "properties": {
+                        "activities": [
+                            {
+                                "type": "Copy",
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "BlobSource",
+                                        "recursive": true
+                                    },
+                                    "sink": {
+                                        "type": "BlobSink",
+                                        "copyBehavior": "preserveHierarchy",
+                                        "writeBatchSize": 0,
+                                        "writeBatchTimeout": "00:00:00"
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "name": "[variables('dfOrigScriptsDS')]"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "[variables('dfDestScriptsDS')]"
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "1.00:00:00",
+                                    "concurrency": 1,
+                                    "executionPriorityOrder": "NewestFirst",
+                                    "style": "StartOfInterval",
+                                    "retry": 0,
+                                    "longRetry": 0,
+                                    "longRetryInterval": "00:00:00"
+                                },
+                                "scheduler": {
+                                    "frequency": "Day",
+                                    "interval": "[variables('dfInterval')]"
+                                },
+                                "name": "CopyActivity-scripts"
+                            }
+                        ],
+                        "start": "[variables('dfDatePL')]",
+                        "end": "[variables('dfDatePL')]",
+                        "pipelineMode": "OneTime",
+                        "expirationTime": "3.00:00:00"
+                    }
+                }
+            ]
+        },
+        /* Regular ADF for calculating durations */
+        {
+            "name": "[parameters('dataFactoryDurations')]",
+            "apiVersion": "[variables('dfApiVersion')]",
+            "type": "Microsoft.DataFactory/datafactories",
+            "location": "[resourceGroup().location]",
+            "resources": [
+                /* Linked Services: Storage account containing the raw game events, storage account containing the scripts, HDI on demand, Azure SQL DB */
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('dfStorageLS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[parameters('dataFactoryDurations')]"
+                    ],
+                    "properties": {
+                        "type": "AzureStorage",
+                        "description": "Azure Storage linked service",
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
                         }
                     }
                 },
@@ -131,7 +249,7 @@
                     "name": "[variables('dfHDInsightLS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -145,29 +263,41 @@
                         }
                     }
                 },
+                /* Datasets */
+                /* Scripts */
                 {
-                    "type": "linkedservices",
-                    "name": "[variables('dfSqlLS')]",
+                    "type": "datasets",
+                    "name": "[variables('dfDestScriptsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]"
+                        "[parameters('dataFactoryDurations')]",
+                        "[variables('dfStorageLS')]"
                     ],
                     "properties": {
-                        "type": "AzureSqlDatabase",
-                        "description": "Azure SQL Database to store key game metrics, e.g. DAU, MAU etc.",
+                        "type": "AzureBlob",
+                        "linkedServiceName": "[variables('dfStorageLS')]",
                         "typeProperties": {
-                            "connectionString": "[concat('Server=tcp:', parameters('sqlServerName'),'.database.windows.net,1433;Database=', parameters('sqlDBName'), ';User ID=',parameters('sqlServerAdminName'),';Password=',parameters('sqlServerAdminPassword'),';Trusted_Connection=False;Encrypt=True;Connection Timeout=30')]"
-                        }
+                            "folderPath": "scripts",
+                            "format": {
+                                "type": "TextFormat",
+                                "columnDelimiter": ","
+                            }
+                        },
+                        "availability": {
+                            "frequency": "Day",
+                            "interval": "[variables('dfInterval')]"
+                        },
+                        "external": true,
+                        "policy": {}
                     }
                 },
-                /* Datasets */
                 /* Raw events: start, stop */
                 {
                     "type": "datasets",
                     "name": "[variables('dfStartDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -196,7 +326,7 @@
                     "name": "[variables('dfStopDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -226,7 +356,7 @@
                     "name": "[variables('dfDurationsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -255,7 +385,7 @@
                     "name": "[variables('dfDailyDurationsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -284,7 +414,7 @@
                     "name": "[variables('dfMonthlyDurationsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -313,7 +443,7 @@
                     "name": "[variables('dfYearlyDurationsDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -343,7 +473,7 @@
                     "name": "[variables('dfDailyDurationsCsvDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -386,7 +516,7 @@
                     "name": "[variables('dfMonthlyDurationsCsvDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -429,7 +559,7 @@
                     "name": "[variables('dfYearlyDurationsCsvDS')]",
                     "apiVersion": "[variables('dfApiVersion')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]"
                     ],
                     "properties": {
@@ -467,119 +597,17 @@
                         }
                     }
                 },
-                /* Average durations in SQL DB: daily, monthly, yearly */
-                {
-                    "type": "datasets",
-                    "name": "[variables('dfDailyDurationsSqlDS')]",
-                    "apiVersion": "[variables('dfApiVersion')]",
-                    "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[variables('dfSqlLS')]"
-                    ],
-                    "properties": {
-                        "structure": [
-                            {
-                                "name": "EventDate",
-                                "type": "Date"
-                            },
-                            {
-                                "name": "DisplayName",
-                                "type": "String"
-                            },
-                            {
-                                "name": "AverageGenericDuration",
-                                "type": "Int64"
-                            }
-                        ],
-                        "type": "AzureSqlTable",
-                        "linkedServiceName": "[variables('dfSqlLS')]",
-                        "typeProperties": {
-                            "tableName": "[variables('dailyDurationsSQLTable')]"
-                        },
-                        "availability": {
-                            "frequency": "[variables('dfFrequency')]",
-                            "interval": "[variables('dfInterval')]"
-                        }
-                    }
-                },
-                {
-                    "type": "datasets",
-                    "name": "[variables('dfMonthlyDurationsSqlDS')]",
-                    "apiVersion": "[variables('dfApiVersion')]",
-                    "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[variables('dfSqlLS')]"
-                    ],
-                    "properties": {
-                        "structure": [
-                            {
-                                "name": "EventMonth",
-                                "type": "Date"
-                            },
-                            {
-                                "name": "DisplayName",
-                                "type": "String"
-                            },
-                            {
-                                "name": "AverageGenericDuration",
-                                "type": "Int64"
-                            }
-                        ],
-                        "type": "AzureSqlTable",
-                        "linkedServiceName": "[variables('dfSqlLS')]",
-                        "typeProperties": {
-                            "tableName": "[variables('monthlyDurationsSQLTable')]"
-                        },
-                        "availability": {
-                            "frequency": "[variables('dfFrequency')]",
-                            "interval": "[variables('dfInterval')]"
-                        }
-                    }
-                },
-                {
-                    "type": "datasets",
-                    "name": "[variables('dfYearlyDurationsSqlDS')]",
-                    "apiVersion": "[variables('dfApiVersion')]",
-                    "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[variables('dfSqlLS')]"
-                    ],
-                    "properties": {
-                        "structure": [
-                            {
-                                "name": "Year",
-                                "type": "Int32"
-                            },
-                            {
-                                "name": "DisplayName",
-                                "type": "String"
-                            },
-                            {
-                                "name": "AverageGenericDuration",
-                                "type": "Int64"
-                            }
-                        ],
-                        "type": "AzureSqlTable",
-                        "linkedServiceName": "[variables('dfSqlLS')]",
-                        "typeProperties": {
-                            "tableName": "[variables('yearlyDurationsSQLTable')]"
-                        },
-                        "availability": {
-                            "frequency": "[variables('dfFrequency')]",
-                            "interval": "[variables('dfInterval')]"
-                        }
-                    }
-                },
                 /* Durations Pipeline */
                 {
                     "type": "dataPipelines",
                     "name": "[variables('dfDurationsPL')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfStartDS')]",
                         "[variables('dfStopDS')]",
-                        "[variables('dfDurationsDS')]"
+                        "[variables('dfDurationsDS')]",
+                        "[variables('dfDestScriptsDS')]"
                     ],
                     "apiVersion": "[variables('dfApiVersion')]",
                     "properties": {
@@ -591,7 +619,7 @@
                                 "type": "HDInsightHive",
                                 "typeProperties": {
                                     "scriptPath": "scripts/durations/durations.hql",
-                                    "scriptLinkedService": "[variables('dfScriptsStorageLS')]",
+                                    "scriptLinkedService": "[variables('dfStorageLS')]",
                                     "defines": {
                                         "starteventsloc": "[concat('wasbs://', variables('rawEventsContainer'), '@', parameters('storageAccountName'), '.blob.core.windows.net/', variables('startsFolder'), '/')]",
                                         "stopeventsloc": "[concat('wasbs://', variables('rawEventsContainer'), '@', parameters('storageAccountName'), '.blob.core.windows.net/', variables('stopsFolder'), '/')]",
@@ -604,6 +632,9 @@
                                     },
                                     {
                                         "name": "[variables('dfStopDS')]"
+                                    },
+                                    {
+                                        "name": "[variables('dfDestScriptsDS')]"
                                     }
                                 ],
                                 "outputs": [
@@ -631,10 +662,11 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfDailyDurationsPL')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfDurationsDS')]",
-                        "[variables('dfDailyDurationsDS')]"
+                        "[variables('dfDailyDurationsDS')]",
+                        "[variables('dfDestScriptsDS')]"
                     ],
                     "apiVersion": "[variables('dfApiVersion')]",
                     "properties": {
@@ -646,7 +678,7 @@
                                 "type": "HDInsightHive",
                                 "typeProperties": {
                                     "scriptPath": "scripts/durations/dailydurations.hql",
-                                    "scriptLinkedService": "[variables('dfScriptsStorageLS')]",
+                                    "scriptLinkedService": "[variables('dfStorageLS')]",
                                     "defines": {
                                         "dailydurations": "[concat('wasbs://', variables('intermediateEventsContainer'), '@', parameters('storageAccountName'), '.blob.core.windows.net/', variables('dailyDurationsFolder'), '/')]"
                                     }
@@ -654,6 +686,9 @@
                                 "inputs": [
                                     {
                                         "name": "[variables('dfDurationsDS')]"
+                                    },
+                                    {
+                                        "name": "[variables('dfDestScriptsDS')]"
                                     }
                                 ],
                                 "outputs": [
@@ -680,10 +715,11 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfMonthlyDurationsPL')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfDurationsDS')]",
-                        "[variables('dfMonthlyDurationsDS')]"
+                        "[variables('dfMonthlyDurationsDS')]",
+                        "[variables('dfDestScriptsDS')]"
                     ],
                     "apiVersion": "[variables('dfApiVersion')]",
                     "properties": {
@@ -695,7 +731,7 @@
                                 "type": "HDInsightHive",
                                 "typeProperties": {
                                     "scriptPath": "scripts/durations/monthlydurations.hql",
-                                    "scriptLinkedService": "[variables('dfScriptsStorageLS')]",
+                                    "scriptLinkedService": "[variables('dfStorageLS')]",
                                     "defines": {
                                         "monthlydurations": "[concat('wasbs://', variables('intermediateEventsContainer'), '@', parameters('storageAccountName'), '.blob.core.windows.net/', variables('monthlyDurationsFolder'), '/')]"
                                     }
@@ -703,6 +739,9 @@
                                 "inputs": [
                                     {
                                         "name": "[variables('dfDurationsDS')]"
+                                    },
+                                    {
+                                        "name": "[variables('dfDestScriptsDS')]"
                                     }
                                 ],
                                 "outputs": [
@@ -729,11 +768,12 @@
                     "type": "dataPipelines",
                     "name": "[variables('dfYearlyDurationsPL')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfScriptsStorageLS')]",
                         "[variables('dfDurationsDS')]",
-                        "[variables('dfYearlyDurationsDS')]"
+                        "[variables('dfYearlyDurationsDS')]",
+                        "[variables('dfDestScriptsDS')]"
                     ],
                     "apiVersion": "[variables('dfApiVersion')]",
                     "properties": {
@@ -745,7 +785,7 @@
                                 "type": "HDInsightHive",
                                 "typeProperties": {
                                     "scriptPath": "scripts/durations/annualdurations.hql",
-                                    "scriptLinkedService": "[variables('dfScriptsStorageLS')]",
+                                    "scriptLinkedService": "[variables('dfStorageLS')]",
                                     "defines": {
                                         "yearlydurations": "[concat('wasbs://', variables('intermediateEventsContainer'), '@', parameters('storageAccountName'), '.blob.core.windows.net/', variables('yearlyDurationsFolder'), '/')]"
                                     }
@@ -753,6 +793,9 @@
                                 "inputs": [
                                     {
                                         "name": "[variables('dfDurationsDS')]"
+                                    },
+                                    {
+                                        "name": "[variables('dfDestScriptsDS')]"
                                     }
                                 ],
                                 "outputs": [
@@ -780,7 +823,7 @@
                     "type": "datapipelines",
                     "name": "DailyDurations2Csv",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfDailyDurationsDS')]",
                         "[variables('dfDailyDurationsCsvDS')]"
@@ -830,7 +873,7 @@
                     "type": "datapipelines",
                     "name": "MonthlyDurations2CSV",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfMonthlyDurationsDS')]",
                         "[variables('dfMonthlyDurationsCsvDS')]"
@@ -880,7 +923,7 @@
                     "type": "datapipelines",
                     "name": "YearlyDurations2CSV",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('dataFactoryDurations')]",
                         "[variables('dfStorageLS')]",
                         "[variables('dfYearlyDurationsDS')]",
                         "[variables('dfYearlyDurationsCsvDS')]"
@@ -915,187 +958,6 @@
                                 "policy": {
                                     "concurrency": 1,
                                     "retry": 0
-                                },
-                                "scheduler": {
-                                    "frequency": "[variables('dfFrequency')]",
-                                    "interval": "[variables('dfInterval')]"
-                                }
-                            }
-                        ],
-                        "start": "[variables('dfStartPL')]",
-                        "end": "[variables('dfEndPL')]"
-                    }
-                },
-                /* Average durations to SQL pipeline: daily, monthly, yearly */
-                {
-                    "type": "datapipelines",
-                    "name": "DailyDurations2SQL",
-                    "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[variables('dfStorageLS')]",
-                        "[variables('dfSqlLS')]",
-                        "[variables('dfDailyDurationsCsvDS')]",
-                        "[variables('dfDailyDurationsSqlDS')]"
-                    ],
-                    "apiVersion": "[variables('dfApiVersion')]",
-                    "properties": {
-                        "description": "Copies the daily generic durations into Azure SQL",
-                        "activities": [
-                            {
-                                "name": "DailyDurations2SQLActivity",
-                                "type": "Copy",
-                                "typeProperties": {
-                                    "source": {
-                                        "type": "BlobSource"
-                                    },
-                                    "sink": {
-                                        "type": "SqlSink",
-                                        "writeBatchSize": 0,
-                                        "writeBatchTimeout": "00:00:00"
-                                    },
-                                    "translator": {
-                                        "type": "TabularTranslator",
-                                        "columnMappings": "EventDate:EventDate,DisplayName:DisplayName,AverageGenericDuration:AverageGenericDuration"
-                                    }
-                                },
-                                "inputs": [
-                                    {
-                                        "name": "[variables('dfDailyDurationsCsvDS')]"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "[variables('dfDailyDurationsSqlDS')]"
-                                    }
-                                ],
-                                "policy": {
-                                    "timeout": "1.00:00:00",
-                                    "concurrency": 1,
-                                    "executionPriorityOrder": "NewestFirst",
-                                    "style": "StartOfInterval",
-                                    "retry": 3,
-                                    "longRetry": 0,
-                                    "longRetryInterval": "00:00:00"
-                                },
-                                "scheduler": {
-                                    "frequency": "[variables('dfFrequency')]",
-                                    "interval": "[variables('dfInterval')]"
-                                }
-                            }
-                        ],
-                        "start": "[variables('dfStartPL')]",
-                        "end": "[variables('dfEndPL')]"
-                    }
-                },
-                {
-                    "type": "datapipelines",
-                    "name": "MonthlyDurations2SQL",
-                    "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[variables('dfStorageLS')]",
-                        "[variables('dfSqlLS')]",
-                        "[variables('dfMonthlyDurationsCsvDS')]",
-                        "[variables('dfMonthlyDurationsSqlDS')]"
-                    ],
-                    "apiVersion": "[variables('dfApiVersion')]",
-                    "properties": {
-                        "description": "Copies the monthly average durations into Azure SQL DB",
-                        "activities": [
-                            {
-                                "name": "MonthlyDurations2SQLActivity",
-                                "type": "Copy",
-                                "typeProperties": {
-                                    "source": {
-                                        "type": "BlobSource"
-                                    },
-                                    "sink": {
-                                        "type": "SqlSink",
-                                        "writeBatchSize": 0,
-                                        "writeBatchTimeout": "00:00:00"
-                                    },
-                                    "translator": {
-                                        "type": "TabularTranslator",
-                                        "columnMappings": "EventMonth:EventMonth,DisplayName:DisplayName,AverageGenericDuration:AverageGenericDuration"
-                                    }
-                                },
-                                "inputs": [
-                                    {
-                                        "name": "[variables('dfMonthlyDurationsCsvDS')]"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "[variables('dfMonthlyDurationsSqlDS')]"
-                                    }
-                                ],
-                                "policy": {
-                                    "timeout": "1.00:00:00",
-                                    "concurrency": 1,
-                                    "executionPriorityOrder": "NewestFirst",
-                                    "style": "StartOfInterval",
-                                    "retry": 3,
-                                    "longRetry": 0,
-                                    "longRetryInterval": "00:00:00"
-                                },
-                                "scheduler": {
-                                    "frequency": "[variables('dfFrequency')]",
-                                    "interval": "[variables('dfInterval')]"
-                                }
-                            }
-                        ],
-                        "start": "[variables('dfStartPL')]",
-                        "end": "[variables('dfEndPL')]"
-                    }
-                },
-                {
-                    "type": "datapipelines",
-                    "name": "YearlyDurations2SQL",
-                    "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[variables('dfStorageLS')]",
-                        "[variables('dfSqlLS')]",
-                        "[variables('dfYearlyDurationsCsvDS')]",
-                        "[variables('dfYearlyDurationsSqlDS')]"
-                    ],
-                    "apiVersion": "[variables('dfApiVersion')]",
-                    "properties": {
-                        "description": "Copies the annual average durations into Azure SQL",
-                        "activities": [
-                            {
-                                "name": "YearlyDurations2SQLActivity",
-                                "type": "Copy",
-                                "typeProperties": {
-                                    "source": {
-                                        "type": "BlobSource"
-                                    },
-                                    "sink": {
-                                        "type": "SqlSink",
-                                        "writeBatchSize": 0,
-                                        "writeBatchTimeout": "00:00:00"
-                                    },
-                                    "translator": {
-                                        "type": "TabularTranslator",
-                                        "columnMappings": "Year:Year,DisplayName:DisplayName,AverageGenericDuration:AverageGenericDuration"
-                                    }
-                                },
-                                "inputs": [
-                                    {
-                                        "name": "[variables('dfYearlyDurationsCsvDS')]"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "[variables('dfYearlyDurationsSqlDS')]"
-                                    }
-                                ],
-                                "policy": {
-                                    "timeout": "1.00:00:00",
-                                    "concurrency": 1,
-                                    "executionPriorityOrder": "NewestFirst",
-                                    "style": "StartOfInterval",
-                                    "retry": 3,
-                                    "longRetry": 0,
-                                    "longRetryInterval": "00:00:00"
                                 },
                                 "scheduler": {
                                     "frequency": "[variables('dfFrequency')]",

@@ -1,4 +1,13 @@
-$codeFormatterDownloadUri = "https://github.com/dotnet/codeformatter/releases/download/v1.0.0-alpha6/CodeFormatter.zip"
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+param(
+    [switch] $ForceCodeFormatterDownload
+)
+
+# $codeFormatterDownloadUri = "https://github.com/dotnet/codeformatter/releases/download/v1.0.0-alpha6/CodeFormatter.zip"
+# Use temporary download location. This is for a custom build that we've made using VS2017
+# See https://github.com/MicrosoftDX/nether/issues/451 for details
+$codeFormatterDownloadUri = "https://netherartifacts.blob.core.windows.net/code-formatter/code-formatter.zip"
 $codeFormatterDownloadLocation = "$env:TEMP\code-formatter.zip"
 $codeFormatterExtractLocation = "$env:TEMP\code-formatter\"
 
@@ -14,8 +23,18 @@ if($gitHasChanges)
 }
 Write-Host "No changes, continuing..."
 
-if (-not (Test-Path "$codeFormatterExtractLocation\CodeFormatter\CodeFormatter.exe")){
+$downloadCodeFormatter = $false
+if (Test-Path "$codeFormatterExtractLocation\CodeFormatter\CodeFormatter.exe"){
+    if ($ForceCodeFormatterDownload){
+        Write-Host "CodeFormatter found, but ForceCodeFormatterDownload switch was passed. Deleting and re-downloading..."
+        Remove-Item $codeFormatterExtractLocation -Recurse -Force
+        $downloadCodeFormatter = $true
+    }
+}else {
     Write-Host "CodeFormatter not found, downloading..."
+    $downloadCodeFormatter = $true
+}
+if ($downloadCodeFormatter){
     (New-Object Net.WebClient).DownloadFile($codeFormatterDownloadUri, $codeFormatterDownloadLocation)
     Expand-Archive -Path $codeFormatterDownloadLocation -DestinationPath $codeFormatterExtractLocation -Force
 }
