@@ -263,10 +263,13 @@ nether.leaderboard = (function () {
             callback: function(status, res) {
                 var data;
 
-                if (status === 200)
+                if (status === 200) {
                     data = JSON.parse(res);
-
-                callback(status, data.leaderboards);
+                    callback(status, data.leaderboards);
+                }
+                else {
+                    callback(status, res);
+                }
             }
         });
     };
@@ -278,10 +281,13 @@ nether.leaderboard = (function () {
             callback: function(status, res) {
                 var data;
 
-                if (status === 200)
+                if (status === 200) {
                     data = JSON.parse(res);
-
-                callback(status, data);
+                    callback(status, data);
+                }
+                else {
+                    callback(status, res);
+                }
             }
         });
     };
