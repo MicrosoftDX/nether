@@ -268,3 +268,4 @@ checkAuth = function(status) {
 }
 nether.player.identity.authWithFacebookToken(checkAuth);
 ```
+
