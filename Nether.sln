@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26228.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solution Items", "{C3F7DE95-BCD3-4340-AE80-4848443F2B39}"
 	ProjectSection(SolutionItems) = preProject
@@ -62,11 +62,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.GameEvents
 EndProject
 Project("{81BE5007-4CAB-4670-AEEB-3DA6572B9D12}") = "Nether.Analytics.HiveScripts", "src\Nether.Analytics.HiveScripts\Nether.Analytics.HiveScripts.hiveproj", "{1E982066-A6A2-434F-BFF8-A4C09716D429}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Data.EntityFramework", "src\Nether.Data.EntityFramework\Nether.Data.EntityFramework.csproj", "{44AF2745-059D-4040-BFC7-8478389B1479}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Data.EntityFramework", "src\Nether.Data.EntityFramework\Nether.Data.EntityFramework.csproj", "{44AF2745-059D-4040-BFC7-8478389B1479}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Data.InMemory", "src\Nether.Data.InMemory\Nether.Data.InMemory.csproj", "{E193CDEF-0298-4E87-8B4D-47B5CA1E019B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Data.InMemory", "src\Nether.Data.InMemory\Nether.Data.InMemory.csproj", "{E193CDEF-0298-4E87-8B4D-47B5CA1E019B}"
 EndProject
-
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics.EventProcessor.Host", "src\Nether.Analytics.EventProcessor.Host\Nether.Analytics.EventProcessor.Host.csproj", "{471D015F-DD55-49F9-872E-3DA1F5550BB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -182,6 +183,12 @@ Global
 		{E193CDEF-0298-4E87-8B4D-47B5CA1E019B}.Release - Full|Any CPU.Build.0 = Release|Any CPU
 		{E193CDEF-0298-4E87-8B4D-47B5CA1E019B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E193CDEF-0298-4E87-8B4D-47B5CA1E019B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{471D015F-DD55-49F9-872E-3DA1F5550BB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{471D015F-DD55-49F9-872E-3DA1F5550BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{471D015F-DD55-49F9-872E-3DA1F5550BB8}.Release - Full|Any CPU.ActiveCfg = Release|Any CPU
+		{471D015F-DD55-49F9-872E-3DA1F5550BB8}.Release - Full|Any CPU.Build.0 = Release|Any CPU
+		{471D015F-DD55-49F9-872E-3DA1F5550BB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{471D015F-DD55-49F9-872E-3DA1F5550BB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -208,5 +215,6 @@ Global
 		{1E982066-A6A2-434F-BFF8-A4C09716D429} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
 		{44AF2745-059D-4040-BFC7-8478389B1479} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
 		{E193CDEF-0298-4E87-8B4D-47B5CA1E019B} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
+		{471D015F-DD55-49F9-872E-3DA1F5550BB8} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
 	EndGlobalSection
 EndGlobal

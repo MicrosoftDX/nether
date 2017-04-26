@@ -4,7 +4,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Nether.Analytics.GameEvents;
+using Nether.Analytics.MessageFormats;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using AnalyticsTestClient.Utils;
@@ -24,7 +24,7 @@ namespace AnalyticsTestClient
             var menuKey = 'a';
             foreach (var gameEventType in gameEventTypes)
             {
-                var gameEvent = (IGameEvent)Activator.CreateInstance(gameEventType);
+                var gameEvent = (INetherMessage)Activator.CreateInstance(gameEventType);
                 MenuItems.Add(menuKey++,
                     new ConsoleMenuItem(
                         $"{gameEvent.Type}, {gameEvent.Version}",
@@ -48,7 +48,7 @@ namespace AnalyticsTestClient
                 }
 
                 var typeToSend = GetGameEventTypes().TakeRandom();
-                var gameEvent = (IGameEvent)Activator.CreateInstance(typeToSend);
+                var gameEvent = (INetherMessage)Activator.CreateInstance(typeToSend);
 
                 gameEvent.ClientUtcTime = DateTime.UtcNow;
 
@@ -73,11 +73,11 @@ namespace AnalyticsTestClient
         {
             if (s_gameEventTypes == null)
             {
-                var assembly = typeof(IGameEvent).GetTypeInfo().Assembly;
+                var assembly = typeof(INetherMessage).GetTypeInfo().Assembly;
                 var types = assembly.GetTypes();
                 var gameEventTypes =
                     from t in types
-                    where typeof(IGameEvent).IsAssignableFrom(t) && t != typeof(IGameEvent)
+                    where typeof(INetherMessage).IsAssignableFrom(t) && t != typeof(INetherMessage)
                     orderby t.Name
                     select t;
 
@@ -87,13 +87,13 @@ namespace AnalyticsTestClient
             return s_gameEventTypes;
         }
 
-        private void StaticGameEventSelected(IGameEvent gameEvent)
+        private void StaticGameEventSelected(INetherMessage gameEvent)
         {
             EditGameEventProperties(gameEvent);
             SendGameEvent(gameEvent);
         }
 
-        private static void SendGameEvent(IGameEvent gameEvent)
+        private static void SendGameEvent(INetherMessage gameEvent)
         {
             // Serialize object to JSON
             var msg = JsonConvert.SerializeObject(
@@ -105,7 +105,7 @@ namespace AnalyticsTestClient
             EventHubManager.SendMessageToEventHub(msg).Wait();
         }
 
-        private void EditGameEventProperties(IGameEvent gameEvent)
+        private void EditGameEventProperties(INetherMessage gameEvent)
         {
             gameEvent.ClientUtcTime = DateTime.UtcNow;
 
