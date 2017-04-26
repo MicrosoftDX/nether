@@ -14,7 +14,7 @@ namespace NetherSDK
 {
     public class NetherClient : MonoBehaviour
     {
-        public string NetherDeploymentUrl = "https://netherwebjppy3olypaayo.azurewebsites.net";
+        public string NetherDeploymentUrl;
 
         private string _netherAuthorizationToken;
 
