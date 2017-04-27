@@ -115,7 +115,5 @@ namespace Nether.Data.EntityFramework.PlayerManagement
             entity.State = state;
             await _context.SaveChangesAsync();
         }
-
-
     }
 }
