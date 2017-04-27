@@ -1,5 +1,7 @@
 image: Visual Studio 2017
 version: 1.0.{build}
+services:
+  - mssql2016
 build_script:
 - ps: ./RunCodeFormatter.ps1
 - ps: ./build.ps1
