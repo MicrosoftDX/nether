@@ -34,7 +34,7 @@ var nether = (function () {
 
                 nether.analytics.init();
                 nether.player.identity.init(facebookCallback, netherCallback);
-            }
+            };
         }
         else {
             fbAsyncInit = function() {
@@ -47,7 +47,7 @@ var nether = (function () {
 
                 nether.analytics.init();
                 nether.player.identity.init(facebookCallback, netherCallback);
-            }
+            };
         }
     };
     
@@ -124,7 +124,7 @@ nether.analytics = (function () {
                     try {
                         data = JSON.parse(res);
                         analytics.analyticsUrl = data.url;
-                        analytics.analyticsAuth = data.authorization
+                        analytics.analyticsAuth = data.authorization;
                     } catch(ex) { }
                     if (callback !== undefined)
                     {
@@ -513,7 +513,7 @@ nether.player.identity = (function() {
         });
 
         FB.AppEvents.logPageView();
-    }
+    };
 
     // trigger logging in
     identity.facebookLogin = function(callback) {
@@ -533,7 +533,7 @@ nether.player.identity = (function() {
                 }   
             });
         }
-    }
+    };
 
     // exchange facebook access token to identity token
     identity.authWithFacebookToken = function(callback) {
@@ -558,7 +558,7 @@ nether.player.identity = (function() {
                 }
             }
         });
-    }
+    };
 
     return identity;
 }());

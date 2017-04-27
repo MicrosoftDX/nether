@@ -29,6 +29,12 @@ describe("nether scores addScore", function() {
     expect(nether.common.ajax).toHaveBeenCalledWith(jasmine.objectContaining({"url":"/api/scores"}));
   });
 
+  it("sends an ajax message using HTTP POST method", function() {    
+    nether.scores.addScore(1, jasmine.createSpy("successCallback"));
+    
+    expect(nether.common.ajax).toHaveBeenCalledWith(jasmine.objectContaining({"method":"POST"}));
+  });
+
   it("sends an ajax message to a configurable place", function() {    
     nether.init(exampleConfig, function(){}, function(){}, document);
     nether.scores.addScore(1, jasmine.createSpy("successCallback"));    
@@ -106,6 +112,12 @@ describe("nether scores dropMyScore", function() {
     nether.scores.dropMyScore(jasmine.createSpy("successCallback"));
     
     expect(nether.common.ajax).toHaveBeenCalledWith(jasmine.objectContaining({"url":"/api/scores"}));
+  });
+
+  it("sends an ajax message using HTTP DELETE method", function() {    
+    nether.scores.dropMyScore(jasmine.createSpy("successCallback"));
+    
+    expect(nether.common.ajax).toHaveBeenCalledWith(jasmine.objectContaining({"method":"DELETE"}));
   });
 
   it("sends an ajax message to a configurable place", function() {    

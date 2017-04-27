@@ -29,6 +29,12 @@ describe("nether getAllLeaderboards", function() {
     expect(nether.common.ajax).toHaveBeenCalledWith(jasmine.objectContaining({"url":"/api/leaderboards"}));
   });
 
+  it("sends an ajax message using the default (HTTP GET) method", function() {    
+    nether.player.deletePlayer(jasmine.createSpy("successCallback"));
+    
+    expect(nether.common.ajax).not.toHaveBeenCalledWith(jasmine.objectContaining({"method":"GET"}));
+  });
+
   it("sends an ajax message to a configurable place", function() {    
     nether.init(exampleConfig, function(){}, function(){}, document);
     nether.leaderboard.getAllLeaderboards(jasmine.createSpy("successCallback"));    
@@ -82,6 +88,12 @@ describe("nether getLeaderboard", function() {
     nether.leaderboard.getLeaderboard(1, jasmine.createSpy("successCallback"));
     
     expect(nether.common.ajax).toHaveBeenCalledWith(jasmine.objectContaining({"url":"/api/leaderboards/1"}));
+  });
+
+  it("sends an ajax message using the default (HTTP DELETE) method", function() {    
+    nether.player.deletePlayer(jasmine.createSpy("successCallback"));
+    
+    expect(nether.common.ajax).not.toHaveBeenCalledWith(jasmine.objectContaining({"method":"GET"}));
   });
 
   it("sends an ajax message to a configurable place", function() {    

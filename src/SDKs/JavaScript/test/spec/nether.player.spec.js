@@ -15,6 +15,12 @@ describe("nether player getPlayer", function() {
     expect(nether.common.ajax).toHaveBeenCalled();
   });
 
+  it("sends an ajax message using default (HTTP GET) method", function() {    
+    nether.player.getPlayer(jasmine.createSpy("successCallback"));
+    
+    expect(nether.common.ajax).not.toHaveBeenCalledWith(jasmine.objectContaining({"method":"GET"}));
+  });
+
   it("sends an ajax message to a sensible place", function() {    
     //reinit to blank baseurl
     nether.init({ 
@@ -76,6 +82,12 @@ describe("nether player setPlayer", function() {
     nether.player.setPlayer("country", "gamerTag", "customTag", jasmine.createSpy("successCallback"));
     
     expect(nether.common.ajax).toHaveBeenCalled();
+  });
+
+  it("sends an ajax message using HTTP PUT method", function() {    
+    nether.player.setPlayer("country", "gamerTag", "customTag", jasmine.createSpy("successCallback"));
+    
+    expect(nether.common.ajax).toHaveBeenCalledWith(jasmine.objectContaining({"method":"PUT"}));
   });
 
   it("sends an ajax message to a sensible place", function() {    
@@ -169,6 +181,13 @@ describe("nether player deletePlayer", function() {
     expect(nether.common.ajax).toHaveBeenCalled();
   });
 
+  it("sends an ajax message using HTTP DELETE method", function() {    
+    nether.player.deletePlayer(jasmine.createSpy("successCallback"));
+    
+    expect(nether.common.ajax).toHaveBeenCalledWith(jasmine.objectContaining({"method":"DELETE"}));
+  });
+
+
   it("sends an ajax message to a sensible place", function() {    
     //reinit to blank baseurl
     nether.init({ 
@@ -234,6 +253,12 @@ describe("nether player getPlayerState", function() {
     nether.player.getState(jasmine.createSpy("successCallback"));
     
     expect(nether.common.ajax).toHaveBeenCalled();
+  });
+
+  it("sends an ajax message using defautl (HTTP DELETE) method", function() {    
+    nether.player.deletePlayer(jasmine.createSpy("successCallback"));
+    
+    expect(nether.common.ajax).not.toHaveBeenCalledWith(jasmine.objectContaining({"method":"GET"}));
   });
 
   it("sends an ajax message to a sensible place", function() {    
@@ -314,6 +339,12 @@ describe("nether player setPlayerState", function() {
     nether.player.setState({}, jasmine.createSpy("successCallback"));
     
     expect(nether.common.ajax).toHaveBeenCalledWith(jasmine.objectContaining({"url":"/api/player/state"}));
+  });
+
+  it("sends an ajax message using HTTP PUT method", function() {    
+    nether.player.setState({}, jasmine.createSpy("successCallback"));
+    
+    expect(nether.common.ajax).toHaveBeenCalledWith(jasmine.objectContaining({"method":"PUT"}));
   });
 
   it("sends an ajax message to a configurable place", function() {    
