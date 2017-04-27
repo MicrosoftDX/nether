@@ -38,16 +38,16 @@ function ConfigureSqlServer() {
     sqlcmd -S "(local)\SQL2016" -Q "Use [master]; CREATE DATABASE [nether]"
 
     ${env:Identity:Store:wellknown} = "sql"
-    ${env:Identity:Store:properties:ConnectionString} = "Server=(local)\SQL2016x;Database=nether;User ID=sa;Password=Password12!"
+    ${env:Identity:Store:properties:ConnectionString} = "Server=(local)\SQL2016;Database=nether;User ID=sa;Password=Password12!"
 
     ${env:Leaderboard:Store:wellknown} = "sql"
-    ${env:Leaderboard:Store:properties:ConnectionString} = "Server=(local)\SQL2016x;Database=nether;User ID=sa;Password=Password12!"
+    ${env:Leaderboard:Store:properties:ConnectionString} = "Server=(local)\SQL2016;Database=nether;User ID=sa;Password=Password12!"
 
     ${env:PlayerManagement:Store:wellknown} = "sql"
-    ${env:PlayerManagement:Store:properties:ConnectionString} = "Server=(local)\SQL2016x;Database=nether;User ID=sa;Password=Password12!"
+    ${env:PlayerManagement:Store:properties:ConnectionString} = "Server=(local)\SQL2016;Database=nether;User ID=sa;Password=Password12!"
 
     ${env:Analytics:Store:wellknown} = "sql"
-    ${env:Analytics:Store:properties:ConnectionString} = "Server=(local)\SQL2016x;Database=nether;User ID=sa;Password=Password12!"
+    ${env:Analytics:Store:properties:ConnectionString} = "Server=(local)\SQL2016;Database=nether;User ID=sa;Password=Password12!"
 }
 
 Write-Host "***************************************************************************"
