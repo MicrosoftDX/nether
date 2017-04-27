@@ -72,6 +72,25 @@ To run, set the `ASPNETCORE_ENVIRONMENT` environment variable to `Development` a
     ./rundev.sh
 ```
 
+
+## Entity Framework migrations
+
+To add migrations for the Entity Framework contexts run this command from `src/Nether.Web`, with your connection string configuration in place to point to the database **in the pre-migration state**:
+
+	dotnet ef migrations add <migration name> -c <context name> -p <project path> -o <output folder>
+
+parameter | description
+------- | -------
+Migration name | Something descriptive of the changes
+Context name | Name of the class with the SQL context
+Project path | Path to the Project to add the migration to
+Output folder | Where to place the generated migration files. (This should be a folder called Migrations under the folder for the context, e.g. Identity\Migrations) 
+
+
+E.g. 
+
+	dotnet ef migrations add InitialSqlIdentityContextMigration -c SqlIdentityContext -p ..\Nether.Data.Sql\ -o Identity\Migrations
+
 # 3rd party packages
 
 [MongoDB.Driver](https://www.nuget.org/packages/MongoDB.Driver/2.3.0-rc1)  
