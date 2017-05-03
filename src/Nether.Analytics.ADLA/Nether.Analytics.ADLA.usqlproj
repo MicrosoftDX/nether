@@ -1,0 +1,42 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>b684b7d9-a09c-4767-8d79-6c2c401556a9</ProjectGuid>
+    <OutputType>File</OutputType>
+    <AssemblyName>Algebra.xml</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <Name>Nether.Analytics.ADLA</Name>
+    <RootNamespace>Nether.Analytics.ADLA</RootNamespace>
+    <RuntimeVersion>default</RuntimeVersion>
+    <OutputStreamPath>C:\Users\oliviak\AppData\Local\USQLDataRoot</OutputStreamPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Script Include="locations-1-createTable.usql" />
+    <Script Include="locations-2-read.usql" />
+    <Script Include="locations-count.usql" />
+    <Script Include="locations-geohash-coordinates.usql" />
+    <ScriptCode Include="locations-1-createTable.usql.cs">
+      <DependentUpon>locations-1-createTable.usql</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="locations-2-read.usql.cs">
+      <DependentUpon>locations-2-read.usql</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="locations-count.usql.cs">
+      <DependentUpon>locations-count.usql</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="locations-geohash-coordinates.usql.cs">
+      <DependentUpon>locations-geohash-coordinates.usql</DependentUpon>
+    </ScriptCode>
+  </ItemGroup>
+  <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Usql.targets" />
+</Project>

@@ -1,0 +1,7 @@
+﻿CREATE TABLE IF NOT EXISTS GeoHashCoordinates
+(
+    geoHash double,
+    coordinates SQL.MAP<float, float>,
+    INDEX [idx GeoHashCoordinates] CLUSTERED (geoHash ASC) DISTRIBUTED BY HASH (geoHash)
+);
+

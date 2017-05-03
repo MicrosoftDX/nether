@@ -1,0 +1,24 @@
+﻿DROP TABLE IF EXISTS LocationEvents_1_0_0;
+CREATE TABLE LocationEvents_1_0_0
+(
+    type string,
+    version string,
+    enqueueTime DateTime,
+    dequeueTime DateTime,
+    clientUtcTime DateTime,
+    gameSessionId string,
+    lat float,
+    lon float,
+    geoHash double,
+    geoHashPrecision int,
+    geoHashCenterlat float,
+    geoHashCenterlon float,
+    country string,
+    district string,
+    city string,
+    properties string,
+    randomLat float,
+    randomLon float,
+    INDEX [idx LocationEvents_1_0_0] CLUSTERED(geoHash ASC)
+                                            DISTRIBUTED BY HASH (geoHash)
+);
