@@ -51,6 +51,7 @@ namespace Nether.Web.IntegrationTests
             new UserInfo { UserName = "testuser10", Password = "password123", Role = "Player", Gamertag = "testuser10" },
             new UserInfo { UserName = "testuser11", Password = "password123", Role = "Player", Gamertag = "testuser11" },
             new UserInfo { UserName = "testuser12", Password = "password123", Role = "Player", Gamertag = "testuser12" },
+            new UserInfo { UserName = "testuser-state", Password = "password123", Role = "Player", Gamertag = "testuser-state" },
             new UserInfo { UserName = "testuser-notag", Password = "password123", Role = "Player" },
             new UserInfo { UserName = "testuser-notag2", Password = "password123", Role = "Player" },
             new UserInfo { UserName = "devadmin", Password = "devadmin", Role = "Admin" },

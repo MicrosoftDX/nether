@@ -10,7 +10,7 @@ Method  | Request URI
 ------- | -----------
 GET     | `/api/player/state`
 
-### JSON Body
+### Request Body
 
 Empty body
 
@@ -19,19 +19,7 @@ Empty body
 | Status Code | Description |
 |-------------|-------------|
 |200|Success|
-|404|Extended player information not found|
 
-### JSON Body
+### Response Body
 
-```json
-{
-    "gamertag": "string",
-    "state": {}
-}
-
-```
-
-Element name        | Required  | Type       | Description
-------------------- | --------- | ---------  | -----------
-gamertag            | Yes       | String     | Tag of the player
-state               | No        | JSON Object     | Player state
+The returned body is the persisted player state

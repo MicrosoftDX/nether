@@ -1,7 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -11,9 +8,10 @@ using Nether.Data.Sql.PlayerManagement;
 namespace Nether.Data.Sql.PlayerManagement.Migrations
 {
     [DbContext(typeof(SqlPlayerManagementContext))]
-    internal partial class SqlPlayerManagementContextModelSnapshot : ModelSnapshot
+    [Migration("20170427115004_InitialSqlPlayerManagementContextMigration")]
+    partial class InitialSqlPlayerManagementContextMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.1")

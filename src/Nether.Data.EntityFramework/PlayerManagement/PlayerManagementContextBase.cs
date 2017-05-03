@@ -15,9 +15,7 @@ namespace Nether.Data.EntityFramework.PlayerManagement
     {
         private readonly ILoggerFactory _loggerFactory;
 
-        public DbSet<PlayerGroupEntity> PlayerGroups { get; set; }
         public DbSet<PlayerEntity> Players { get; set; }
-        public DbSet<GroupEntity> Groups { get; set; }
         public DbSet<PlayerExtendedEntity> PlayersExtended { get; set; }
 
         public PlayerManagementContextBase(ILoggerFactory loggerFactory)
@@ -29,31 +27,16 @@ namespace Nether.Data.EntityFramework.PlayerManagement
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<PlayerGroupEntity>()
-                .HasKey(pg => new { pg.GroupName, pg.Gamertag });
-            builder.Entity<PlayerGroupEntity>()
-                .HasOne(pg => pg.Player)
-                .WithMany(p => p.PlayerGroups)
-                .HasForeignKey(pg => pg.Gamertag);
-            builder.Entity<PlayerGroupEntity>()
-                .HasOne(pg => pg.Group)
-                .WithMany(g => g.PlayerGroups)
-                .HasForeignKey(pg => pg.GroupName);
-            builder.Entity<PlayerGroupEntity>().Property(p => p.Gamertag).HasMaxLength(50);
-
             builder.Entity<PlayerEntity>()
-                .HasKey(p => p.Gamertag);
+                .HasKey(p => p.UserId);
             builder.Entity<PlayerEntity>()
-                .HasAlternateKey(p => p.UserId);
+                .HasAlternateKey(p => p.Gamertag);
             builder.Entity<PlayerEntity>().Property(p => p.UserId).HasMaxLength(50);
             builder.Entity<PlayerEntity>().Property(p => p.Gamertag).HasMaxLength(50);
 
             builder.Entity<PlayerExtendedEntity>()
-                .HasKey(p => p.Gamertag);
-            builder.Entity<PlayerExtendedEntity>().Property(p => p.Gamertag).HasMaxLength(50);
-
-            builder.Entity<GroupEntity>()
-                .HasKey(g => g.Name);
+                .HasKey(p => p.UserId);
+            builder.Entity<PlayerExtendedEntity>().Property(p => p.UserId).HasMaxLength(50);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
