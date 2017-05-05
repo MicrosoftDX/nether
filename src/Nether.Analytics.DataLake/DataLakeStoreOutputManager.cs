@@ -12,21 +12,22 @@ namespace Nether.Analytics.DataLake
 {
     public class DataLakeStoreOutputManager : DataLakeStoreOutputManager<Message>
     {
-        public DataLakeStoreOutputManager(ServiceClientCredentials serviceClientCredentials, string adlsAccountName) : base(serviceClientCredentials, adlsAccountName)
+        public DataLakeStoreOutputManager(IMessageSerializer serializer, ServiceClientCredentials serviceClientCredentials, string subscriptionId, string adlsAccountName) : base(serializer, serviceClientCredentials, subscriptionId, adlsAccountName)
         {
         }
 
-        public DataLakeStoreOutputManager(string domain, ClientCredential clientCredential, string subscriptionId, string adlsAccountName) : base(domain, clientCredential, subscriptionId, adlsAccountName)
+        public DataLakeStoreOutputManager(IMessageSerializer serializer, string domain, ClientCredential clientCredential, string subscriptionId, string adlsAccountName) : base(serializer, domain, clientCredential, subscriptionId, adlsAccountName)
         {
         }
 
-        public DataLakeStoreOutputManager(string domain, string clientId, string clientSecret, string subscriptionId, string adlsAccountName) : base(domain, clientId, clientSecret, subscriptionId, adlsAccountName)
+        public DataLakeStoreOutputManager(IMessageSerializer serializer, string domain, string clientId, string clientSecret, string subscriptionId, string adlsAccountName) : base(serializer, domain, clientId, clientSecret, subscriptionId, adlsAccountName)
         {
         }
     }
 
     public class DataLakeStoreOutputManager<T> : IOutputManager<T>
     {
+        private IMessageSerializer<T> _serializer;
         private ClientCredential _clientCredential;
         private string _domain;
         private string _subscriptionId;
@@ -44,46 +45,50 @@ namespace Nether.Analytics.DataLake
             }
         }
 
-        public DataLakeStoreOutputManager(string domain, string clientId, string clientSecret, string subscriptionId, string adlsAccountName)
-            : this(domain, new ClientCredential(clientId, clientSecret), subscriptionId, adlsAccountName)
+        public DataLakeStoreOutputManager(IMessageSerializer<T> serializer, string domain, string clientId, string clientSecret, string subscriptionId, string adlsAccountName)
+            : this(serializer, domain, new ClientCredential(clientId, clientSecret), subscriptionId, adlsAccountName)
         {
         }
 
-        public DataLakeStoreOutputManager(string domain, ClientCredential clientCredential, string subscriptionId, string adlsAccountName)
+        public DataLakeStoreOutputManager(IMessageSerializer<T> serializer, string domain, ClientCredential clientCredential, string subscriptionId, string adlsAccountName)
         {
+            _serializer = serializer;
+
             _domain = domain;
             _clientCredential = clientCredential;
+
             _subscriptionId = subscriptionId;
             _adlsAccountName = adlsAccountName;
         }
 
-        public DataLakeStoreOutputManager(ServiceClientCredentials serviceClientCredentials, string adlsAccountName)
+        public DataLakeStoreOutputManager(IMessageSerializer<T> serializer, ServiceClientCredentials serviceClientCredentials, string subscriptionId, string adlsAccountName)
         {
+            _serializer = serializer;
+
             _serviceClientCredentials = serviceClientCredentials;
+
+            _subscriptionId = subscriptionId;
             _adlsAccountName = adlsAccountName;
 
-            SetupClient();
+            _adlsFileSystemClient = new DataLakeStoreFileSystemManagementClient(_serviceClientCredentials);
         }
 
-        private async Task Authenticate()
+        private async Task AuthenticateAsync()
         {
             _serviceClientCredentials = await ApplicationTokenProvider.LoginSilentAsync(_domain, _clientCredential);
-        }
-
-        private void SetupClient()
-        {
-            _adlsFileSystemClient = new DataLakeStoreFileSystemManagementClient(_serviceClientCredentials);
         }
 
         public async Task OutputMessageAsync(T msg)
         {
             if (!IsAuthenticated)
             {
-                await Authenticate();
-                SetupClient();
+                await AuthenticateAsync();
+                _adlsFileSystemClient = new DataLakeStoreFileSystemManagementClient(_serviceClientCredentials);
             }
 
-            var result = await _adlsFileSystemClient.FileSystem.MkdirsAsync(_adlsAccountName, "test");
+            _adlsFileSystemClient.FileSystem.Mkdirs(_adlsAccountName, "/nutestarvi");
+
+            var result = await _adlsFileSystemClient.FileSystem.MkdirsAsync(_adlsAccountName, "/test");
 
             Console.WriteLine(result);
         }

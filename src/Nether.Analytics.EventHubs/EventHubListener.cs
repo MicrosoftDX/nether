@@ -89,14 +89,14 @@ namespace Nether.Analytics.EventHubs
 
         public Task CloseAsync(PartitionContext context, CloseReason reason)
         {
-            Console.WriteLine($"EventHubProcessor.CloseAsync Owner:{context.Owner}, ParitionId:{context.PartitionId}");
+            Console.WriteLine($"EventHubProcessor.CloseAsync Owner:{context.Owner}, PartitionId:{context.PartitionId}");
 
             return Task.CompletedTask;
         }
 
         public Task OpenAsync(PartitionContext context)
         {
-            Console.WriteLine($"EventHubProcessor.OpenAsync Owner:{context.Owner}, ParitionId:{context.PartitionId}");
+            Console.WriteLine($"EventHubProcessor.OpenAsync Owner:{context.Owner}, PartitionId:{context.PartitionId}");
 
             return Task.CompletedTask;
         }

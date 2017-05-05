@@ -15,4 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Nether.Analytics.MessageFormats\Nether.Analytics.MessageFormats.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>

@@ -82,13 +82,15 @@ namespace Nether.Analytics.Host
             //var eventHubOutputManager = new EventHubOutputManager(outputEventHubConnectionString);
             var consoleOutputManager = new ConsoleOutputManager(new MessageJsonSerializer());
             var consoleOutputManager2 = new ConsoleOutputManager(new MessageCsvSerializer());
-            var dlsOutputManager = new DataLakeStoreOutputManager(
+
+            var dlsOutputManager = new DataLakeStoreOutputManager(new MessageJsonSerializer(),
                 domain: Configuration[NAH_AAD_Domain],
                 clientId: Configuration[NAH_AAD_ClientId],
                 clientSecret: Configuration[NAH_AAD_ClientSecret],
                 subscriptionId: Configuration[NAH_Azure_SubscriptionId],
                 adlsAccountName: Configuration[NAH_Azure_DLSOutputManager_AccountName]);
 
+            dlsOutputManager.OutputMessageAsync(new Message()).Wait();
 
             // Build up the Router Pipeline
             var builder = new MessageRouterBuilder();
