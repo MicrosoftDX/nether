@@ -5,18 +5,18 @@ using System.Collections.Generic;
 
 namespace Nether.Analytics
 {
-    public class MessageRouter<ParsedMessageType> : IMessageRouter<ParsedMessageType> where ParsedMessageType : IKnownMessageType
+    public class MessageRouter : IMessageRouter
     {
-        private Dictionary<string, MessagePipeline<ParsedMessageType>> _eventPipelines;
-        private MessagePipeline<ParsedMessageType> _unhandledEventPipeline;
+        private Dictionary<string, MessagePipeline> _eventPipelines;
+        private MessagePipeline _unhandledEventPipeline;
 
-        public MessageRouter(Dictionary<string, MessagePipeline<ParsedMessageType>> eventPipelines, MessagePipeline<ParsedMessageType> unhandledEventPipeline)
+        public MessageRouter(Dictionary<string, MessagePipeline> eventPipelines, MessagePipeline unhandledEventPipeline)
         {
             _eventPipelines = eventPipelines;
             _unhandledEventPipeline = unhandledEventPipeline;
         }
 
-        public void RouteMessage(ParsedMessageType msg)
+        public void RouteMessage(IMessage msg)
         {
             if (_eventPipelines.TryGetValue(msg.MessageType, out var pipeline))
             {

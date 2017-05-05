@@ -7,27 +7,16 @@ using Microsoft.Rest;
 using Microsoft.Rest.Azure.Authentication;
 using System.Threading.Tasks;
 using System;
+using System.IO;
+using System.Text;
+using Microsoft.Azure.Management.DataLake.Store.Models;
 
 namespace Nether.Analytics.DataLake
 {
-    public class DataLakeStoreOutputManager : DataLakeStoreOutputManager<Message>
+    public class DataLakeStoreOutputManager : IOutputManager
     {
-        public DataLakeStoreOutputManager(IMessageSerializer serializer, ServiceClientCredentials serviceClientCredentials, string subscriptionId, string adlsAccountName) : base(serializer, serviceClientCredentials, subscriptionId, adlsAccountName)
-        {
-        }
-
-        public DataLakeStoreOutputManager(IMessageSerializer serializer, string domain, ClientCredential clientCredential, string subscriptionId, string adlsAccountName) : base(serializer, domain, clientCredential, subscriptionId, adlsAccountName)
-        {
-        }
-
-        public DataLakeStoreOutputManager(IMessageSerializer serializer, string domain, string clientId, string clientSecret, string subscriptionId, string adlsAccountName) : base(serializer, domain, clientId, clientSecret, subscriptionId, adlsAccountName)
-        {
-        }
-    }
-
-    public class DataLakeStoreOutputManager<T> : IOutputManager<T>
-    {
-        private IMessageSerializer<T> _serializer;
+        private IMessageSerializer _serializer;
+        //private IFilePathAlgoritm _filePathAlgoritm;
         private ClientCredential _clientCredential;
         private string _domain;
         private string _subscriptionId;
@@ -45,12 +34,12 @@ namespace Nether.Analytics.DataLake
             }
         }
 
-        public DataLakeStoreOutputManager(IMessageSerializer<T> serializer, string domain, string clientId, string clientSecret, string subscriptionId, string adlsAccountName)
+        public DataLakeStoreOutputManager(IMessageSerializer serializer, string domain, string clientId, string clientSecret, string subscriptionId, string adlsAccountName)
             : this(serializer, domain, new ClientCredential(clientId, clientSecret), subscriptionId, adlsAccountName)
         {
         }
 
-        public DataLakeStoreOutputManager(IMessageSerializer<T> serializer, string domain, ClientCredential clientCredential, string subscriptionId, string adlsAccountName)
+        public DataLakeStoreOutputManager(IMessageSerializer serializer, string domain, ClientCredential clientCredential, string subscriptionId, string adlsAccountName)
         {
             _serializer = serializer;
 
@@ -61,7 +50,7 @@ namespace Nether.Analytics.DataLake
             _adlsAccountName = adlsAccountName;
         }
 
-        public DataLakeStoreOutputManager(IMessageSerializer<T> serializer, ServiceClientCredentials serviceClientCredentials, string subscriptionId, string adlsAccountName)
+        public DataLakeStoreOutputManager(IMessageSerializer serializer, ServiceClientCredentials serviceClientCredentials, string subscriptionId, string adlsAccountName)
         {
             _serializer = serializer;
 
@@ -73,29 +62,53 @@ namespace Nether.Analytics.DataLake
             _adlsFileSystemClient = new DataLakeStoreFileSystemManagementClient(_serviceClientCredentials);
         }
 
-        private async Task AuthenticateAsync()
-        {
-            _serviceClientCredentials = await ApplicationTokenProvider.LoginSilentAsync(_domain, _clientCredential);
-        }
 
-        public async Task OutputMessageAsync(T msg)
+        public async Task OutputMessageAsync(IMessage msg)
         {
-            if (!IsAuthenticated)
+            await CheckAuthentication();
+
+            var filePath = GetFilePath(msg);
+            var content = _serializer.Serialize(msg);
+
+            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(content)))
             {
-                await AuthenticateAsync();
-                _adlsFileSystemClient = new DataLakeStoreFileSystemManagementClient(_serviceClientCredentials);
+                await _adlsFileSystemClient.FileSystem.ConcurrentAppendAsync(_adlsAccountName, filePath, stream, AppendModeType.Autocreate);
             }
-
-            _adlsFileSystemClient.FileSystem.Mkdirs(_adlsAccountName, "/nutestarvi");
-
-            var result = await _adlsFileSystemClient.FileSystem.MkdirsAsync(_adlsAccountName, "/test");
-
-            Console.WriteLine(result);
         }
 
         public Task Flush()
         {
             return Task.CompletedTask;
         }
+
+        private async Task CheckAuthentication()
+        {
+            if (!IsAuthenticated)
+            {
+                _serviceClientCredentials = await ApplicationTokenProvider.LoginSilentAsync(_domain, _clientCredential);
+                _adlsFileSystemClient = new DataLakeStoreFileSystemManagementClient(_serviceClientCredentials);
+            }
+        }
+
+        private string GetFilePath(IMessage msg)
+        {
+            var t = msg.EnqueueTimeUtc;
+
+            var path = $"/nether/{msg.MessageType}/{t.Year:D4}/{t.Month:D2}/{t.Day:D2}/";
+            var fileName = $"{t.Hour:D2}_{t.Minute:D2}";
+            var fileExtension = ".csv";
+
+            return path + fileName + fileExtension;
+        }
     }
+
+    //public interface IFilePathAlgoritm
+    //{
+    //    string GetPath(IMessage msg);
+    //}
+
+    //public interface IFileNameAlgoritm
+    //{
+    //    string GetName(IMessage msg);
+    //}
 }

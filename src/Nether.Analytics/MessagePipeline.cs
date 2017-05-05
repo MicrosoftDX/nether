@@ -4,23 +4,23 @@
 
 namespace Nether.Analytics
 {
-    public class MessagePipeline<ParsedMessageType> where ParsedMessageType : IKnownMessageType
+    public class MessagePipeline
     {
-        private IMessageHandler<ParsedMessageType>[] _gameEventHandlers;
-        private IOutputManager<ParsedMessageType>[] _outputManagers;
+        private IMessageHandler[] _gameEventHandlers;
+        private IOutputManager[] _outputManagers;
 
         public string MessageType { get; private set; }
 
         public MessagePipeline(string messageType,
-            IMessageHandler<ParsedMessageType>[] gameEventHandlers,
-            IOutputManager<ParsedMessageType>[] outputManagers)
+            IMessageHandler[] gameEventHandlers,
+            IOutputManager[] outputManagers)
         {
             MessageType = messageType;
             _gameEventHandlers = gameEventHandlers;
             _outputManagers = outputManagers;
         }
 
-        public void ProcessMessage(ParsedMessageType msg)
+        public void ProcessMessage(IMessage msg)
         {
             foreach (var handler in _gameEventHandlers)
             {

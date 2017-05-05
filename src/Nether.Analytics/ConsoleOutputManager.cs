@@ -6,18 +6,11 @@ using System.Threading.Tasks;
 
 namespace Nether.Analytics
 {
-    public class ConsoleOutputManager : ConsoleOutputManager<Message>
+    public class ConsoleOutputManager : IOutputManager
     {
-        public ConsoleOutputManager(IMessageSerializer<Message> serializer) : base(serializer)
-        {
-        }
-    }
+        private IMessageSerializer _serializer;
 
-    public class ConsoleOutputManager<T> : IOutputManager<T>
-    {
-        private IMessageSerializer<T> _serializer;
-
-        public ConsoleOutputManager(IMessageSerializer<T> serializer)
+        public ConsoleOutputManager(IMessageSerializer serializer)
         {
             _serializer = serializer;
         }
@@ -27,7 +20,7 @@ namespace Nether.Analytics
             return Task.CompletedTask;
         }
 
-        public Task OutputMessageAsync(T msg)
+        public Task OutputMessageAsync(IMessage msg)
         {
             var str = _serializer.Serialize(msg);
 

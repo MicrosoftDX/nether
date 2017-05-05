@@ -5,11 +5,7 @@ using System;
 
 namespace Nether.Analytics
 {
-    public class NullMessageHandler : NullMessageHandler<Message>
-    {
-    }
-
-    public class NullMessageHandler<T> : IMessageHandler<T> where T : IKnownMessageType
+    public class NullMessageHandler : IMessageHandler
     {
         private object[] _outputManagers;
 
@@ -18,7 +14,7 @@ namespace Nether.Analytics
             _outputManagers = outputManagers;
         }
 
-        public MessageHandlerResluts ProcessMessage(T message)
+        public MessageHandlerResluts ProcessMessage(IMessage msg)
         {
             // Don't do anything since this is a NullMessageHandler
 

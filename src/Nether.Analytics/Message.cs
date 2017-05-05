@@ -6,9 +6,10 @@ using System.Collections.Generic;
 
 namespace Nether.Analytics
 {
-    public class Message : IKnownMessageType
+    public class Message : IMessage
     {
         public string MessageType { get; set; }
+        public DateTime EnqueueTimeUtc { get; set; }
         public Dictionary<string, string> Properties { get; } = new Dictionary<string, string>();
     }
 }

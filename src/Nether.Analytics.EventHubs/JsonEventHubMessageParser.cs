@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Nether.Analytics.Parsers
 {
-    public class EventHubJsonMessageParser : IMessageParser<EventHubJsonMessage>
+    public class EventHubJsonMessageParser : IMessageParser<EventHubMessage>
     {
-        public Task<Message> ParseAsync(EventHubJsonMessage unparsedMsg)
+        public IMessage ParseMessage(EventHubMessage unparsedMsg)
         {
             var data = Encoding.UTF8.GetString(unparsedMsg.Body.Array, unparsedMsg.Body.Offset, unparsedMsg.Body.Count);
 
@@ -23,8 +23,9 @@ namespace Nether.Analytics.Parsers
             if (gameEventType == null || version == null)
                 throw new Exception("Unable to resolve Game Event Type, since game event doesn't contain type and/or version property");
 
-            var parsedMsg = new Message();
-            parsedMsg.MessageType = $"{gameEventType}|{version}";
+            var msg = new Message();
+            msg.MessageType = $"{gameEventType}|{version}";
+            msg.EnqueueTimeUtc = unparsedMsg.EnqueuedTime;
 
             foreach (var p in json)
             {
@@ -35,16 +36,16 @@ namespace Nether.Analytics.Parsers
                 {
                     var value = (string)json[p.Key];
 
-                    parsedMsg.Properties[key] = value;
+                    msg.Properties[key] = value;
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine($"Unable to parse property:{key} as string on {parsedMsg.MessageType}");
+                    Console.WriteLine($"Unable to parse property:{key} as string on {msg.MessageType}");
                     Console.WriteLine("WARNING: Coninuing anyway!!! TODO: Fix this parsing problem!!!");
                 }
             }
 
-            return Task.FromResult(parsedMsg);
+            return msg;
         }
     }
 }

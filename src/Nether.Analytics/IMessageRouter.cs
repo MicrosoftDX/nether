@@ -3,13 +3,9 @@
 
 namespace Nether.Analytics
 {
-    public interface IMessageRouter : IMessageRouter<Message>
-    {
-    }
-
-    public interface IMessageRouter<T> where T : IKnownMessageType
+    public interface IMessageRouter
     {
         //TODO: Make method Async
-        void RouteMessage(T message);
+        void RouteMessage(IMessage msg);
     }
 }

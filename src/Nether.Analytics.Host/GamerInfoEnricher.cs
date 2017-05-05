@@ -1,18 +1,18 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-// KEEP
+
 
 using Nether.Analytics.Parsers;
 using System;
 
 namespace Nether.Analytics.Host
 {
-    public class GamerInfoEnricher : IMessageHandler<Message>
+    public class GamerInfoEnricher : IMessageHandler
     {
-        public MessageHandlerResluts ProcessMessage(Message message)
+        public MessageHandlerResluts ProcessMessage(IMessage msg)
         {
-            message.Properties.Add("Greeting", "Event was enriched");
+            msg.Properties.Add("Greeting", "Event was enriched");
 
             return MessageHandlerResluts.Success;
         }

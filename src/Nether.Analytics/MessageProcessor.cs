@@ -9,25 +9,18 @@ using System.Threading.Tasks;
 
 namespace Nether.Analytics
 {
-    public class MessageProcessor<T> : MessageProcessor<T, Message>
+    public class MessageProcessor<T>
     {
-        public MessageProcessor(IMessageListener<T> listner, IMessageParser<T> parser, IMessageRouter<Message> router) : base(listner, parser, router)
-        {
-        }
-    }
-
-    public class MessageProcessor<TUnparsedMessage, TParsedMessage> where TParsedMessage : IKnownMessageType
-    {
-        public MessageProcessor(IMessageListener<TUnparsedMessage> listner, IMessageParser<TUnparsedMessage, TParsedMessage> parser, IMessageRouter<TParsedMessage> router)
+        public MessageProcessor(IMessageListener<T> listner, IMessageParser<T> parser, IMessageRouter router)
         {
             Listener = listner;
             Parser = parser;
             Router = router;
         }
 
-        public IMessageListener<TUnparsedMessage> Listener { get; set; }
-        public IMessageParser<TUnparsedMessage, TParsedMessage> Parser { get; set; }
-        public IMessageRouter<TParsedMessage> Router { get; set; }
+        public IMessageListener<T> Listener { get; set; }
+        public IMessageParser<T> Parser { get; set; }
+        public IMessageRouter Router { get; set; }
 
         public async Task ProcessAndBlockAsync()
         {
@@ -42,12 +35,12 @@ namespace Nether.Analytics
             await cancellationToken.WhenCanceled();
         }
 
-        private async Task ExecutePipeline(IEnumerable<TUnparsedMessage> unparsedMessages)
+        private async Task ExecutePipeline(IEnumerable<T> unparsedMessages)
         {
             //TODO: Run this loop in parallel
             foreach (var unparsedMessage in unparsedMessages)
             {
-                var parsedMessage = await Parser.ParseAsync(unparsedMessage);
+                var parsedMessage = Parser.ParseMessage(unparsedMessage);
                 Router.RouteMessage(parsedMessage);
             }
         }

@@ -15,7 +15,7 @@ namespace Nether.Analytics
             _options = options ?? new MessageCsvSerializerOptions();
         }
 
-        public string Serialize(Message message)
+        public string Serialize(IMessage message)
         {
             string[] columns;
 

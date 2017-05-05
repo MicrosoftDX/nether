@@ -3,12 +3,8 @@
 
 namespace Nether.Analytics
 {
-    public interface IMessageSerializer : IMessageSerializer<Message>
+    public interface IMessageSerializer
     {
-    }
-
-    public interface IMessageSerializer<T>
-    {
-        string Serialize(T message);
+        string Serialize(IMessage msg);
     }
 }

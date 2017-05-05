@@ -90,8 +90,6 @@ namespace Nether.Analytics.Host
                 subscriptionId: Configuration[NAH_Azure_SubscriptionId],
                 adlsAccountName: Configuration[NAH_Azure_DLSOutputManager_AccountName]);
 
-            dlsOutputManager.OutputMessageAsync(new Message()).Wait();
-
             // Build up the Router Pipeline
             var builder = new MessageRouterBuilder();
 
@@ -104,7 +102,7 @@ namespace Nether.Analytics.Host
 
             var router = builder.Build();
 
-            var messageProcessor = new MessageProcessor<EventHubJsonMessage>(listener, parser, router);
+            var messageProcessor = new MessageProcessor<EventHubMessage>(listener, parser, router);
 
 
             // Run in an async context since main method is not allowed to be marked as async

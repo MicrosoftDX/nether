@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.EventHubs.Processor;
 
-// KEEP
+
 
 namespace Nether.Analytics.EventHubs
 {
-    public class EventHubsListener : IEventProcessor, IMessageListener<EventHubJsonMessage>
+    public class EventHubsListener : IEventProcessor, IMessageListener<EventHubMessage>
     {
         private readonly EventProcessorHost _host;
-        private Func<IEnumerable<EventHubJsonMessage>, Task> _messageHandler;
+        private Func<IEnumerable<EventHubMessage>, Task> _messageHandler;
 
         public EventHubsListener(EventHubsListenerConfiguration config)
         {
@@ -44,7 +44,7 @@ namespace Nether.Analytics.EventHubs
                 config.LeaseContainerName);
         }
 
-        public async Task StartAsync(Func<IEnumerable<EventHubJsonMessage>, Task> messageHandler)
+        public async Task StartAsync(Func<IEnumerable<EventHubMessage>, Task> messageHandler)
         {
             _messageHandler = messageHandler;
             // Register this object as the processor of incomming EventHubMessages by using
@@ -60,12 +60,12 @@ namespace Nether.Analytics.EventHubs
 
         public async Task ProcessEventsAsync(PartitionContext context, IEnumerable<EventData> messages)
         {
-            var gameMessages = new List<EventHubJsonMessage>();
+            var gameMessages = new List<EventHubMessage>();
             var dequeuedTime = DateTime.UtcNow;
 
             foreach (var msg in messages)
             {
-                gameMessages.Add(new EventHubJsonMessage
+                gameMessages.Add(new EventHubMessage
                 {
                     Body = msg.Body,
                     EnqueuedTime = msg.SystemProperties.EnqueuedTimeUtc,

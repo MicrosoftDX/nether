@@ -7,11 +7,9 @@ namespace Nether.Analytics
 {
     public class MessageJsonSerializer : IMessageSerializer
     {
-        public string Serialize(Message message)
+        public string Serialize(IMessage msg)
         {
-            string json = JsonConvert.SerializeObject(message.Properties);
-
-            return json;
+            return JsonConvert.SerializeObject(msg.Properties);
         }
     }
 }

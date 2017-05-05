@@ -6,30 +6,30 @@ using System.Linq;
 
 namespace Nether.Analytics
 {
-    public class MessagePipelineBuilder<ParsedMessageType> where ParsedMessageType : IKnownMessageType
+    public class MessagePipelineBuilder
     {
         private string _eventName;
-        private List<IMessageHandler<ParsedMessageType>> _handlers = new List<IMessageHandler<ParsedMessageType>>();
-        private IOutputManager<ParsedMessageType>[] _outputManagers;
+        private List<IMessageHandler> _handlers = new List<IMessageHandler>();
+        private IOutputManager[] _outputManagers;
 
         public MessagePipelineBuilder(string eventName)
         {
             _eventName = eventName;
         }
 
-        public MessagePipelineBuilder<ParsedMessageType> AddHandler(IMessageHandler<ParsedMessageType> eventHandler)
+        public MessagePipelineBuilder AddHandler(IMessageHandler msgHandler)
         {
-            _handlers.Add(eventHandler);
+            _handlers.Add(msgHandler);
 
             return this;
         }
 
-        public MessagePipeline<ParsedMessageType> Build(List<IMessageHandler<ParsedMessageType>> globalHandlers)
+        public MessagePipeline Build(List<IMessageHandler> globalMsgHandlers)
         {
-            return new MessagePipeline<ParsedMessageType>(_eventName, globalHandlers.Concat(_handlers).ToArray(), _outputManagers);
+            return new MessagePipeline(_eventName, globalMsgHandlers.Concat(_handlers).ToArray(), _outputManagers);
         }
 
-        public void OutputTo(params IOutputManager<ParsedMessageType>[] outputManagers)
+        public void OutputTo(params IOutputManager[] outputManagers)
         {
             _outputManagers = outputManagers;
         }
