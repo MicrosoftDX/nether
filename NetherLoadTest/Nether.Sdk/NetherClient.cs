@@ -100,7 +100,7 @@ namespace Nether.Sdk
                 "/api/scores",
                 new
                 {
-                    country = "missing",                    
+                    country = "missing",
                     score = score
                 }
             );

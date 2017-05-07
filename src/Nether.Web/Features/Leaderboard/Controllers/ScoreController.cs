@@ -79,7 +79,7 @@ namespace Nether.Web.Features.Leaderboard
                 _store.SaveScoreAsync(new GameScore
                 {
                     Gamertag = gamertag,
-                    Country = request.Country,                    
+                    Country = request.Country,
                     Score = request.Score
                 }),
                 SendScoreEventAndLogErrors(request));

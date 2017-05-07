@@ -37,7 +37,7 @@ namespace Nether.Data.EntityFramework.Leaderboard
 
             builder.Entity<SavedGamerScore>().Property(s => s.DateAchieved).IsRequired();
             builder.Entity<SavedGamerScore>().Property(s => s.Gamertag).IsRequired();
-            builder.Entity<SavedGamerScore>().Property(s => s.Gamertag).HasMaxLength(50);            
+            builder.Entity<SavedGamerScore>().Property(s => s.Gamertag).HasMaxLength(50);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)

@@ -12,7 +12,7 @@ namespace Nether.Data.EntityFramework.Leaderboard
     {
         public Guid Id { get; set; }
         public int Score { get; set; }
-        public string Gamertag { get; set; }        
+        public string Gamertag { get; set; }
         public DateTime DateAchieved { get; set; }
     }
 }

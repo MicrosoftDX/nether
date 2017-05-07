@@ -15,7 +15,7 @@ namespace Nether.Data.Sql.Leaderboard.Migrations
                 name: "Ranks",
                 columns: table => new
                 {
-                    Gamertag = table.Column<string>(nullable: false),                    
+                    Gamertag = table.Column<string>(nullable: false),
                     Ranking = table.Column<long>(nullable: false),
                     Score = table.Column<int>(nullable: false)
                 },
@@ -28,7 +28,7 @@ namespace Nether.Data.Sql.Leaderboard.Migrations
                 name: "Scores",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),                    
+                    Id = table.Column<Guid>(nullable: false),
                     DateAchieved = table.Column<DateTime>(nullable: false),
                     Gamertag = table.Column<string>(maxLength: 50, nullable: false),
                     Score = table.Column<int>(nullable: false)

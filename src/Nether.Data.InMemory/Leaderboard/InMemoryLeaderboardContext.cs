@@ -69,7 +69,7 @@ namespace Nether.Data.InMemory.Leaderboard
                     .GroupBy(s => s.Gamertag)
                     .Select(g => new
                     {
-                        Gamertag = g.Key,                        
+                        Gamertag = g.Key,
                         Score = g.Max(s => s.Score),
                     });
 
@@ -78,7 +78,7 @@ namespace Nether.Data.InMemory.Leaderboard
                     .OrderByDescending(s => s.Score)
                     .Select((s, index) => new
                     {
-                        s.Gamertag,                        
+                        s.Gamertag,
                         s.Score,
                         RowNumber = index + 1
                     })
@@ -98,7 +98,7 @@ namespace Nether.Data.InMemory.Leaderboard
             {
                 Rank = g.StartRank,
                 Gamertag = p.Gamertag,
-                Score = p.Score                
+                Score = p.Score
             })).ToList();
         }
     }
