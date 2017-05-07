@@ -11,8 +11,7 @@ namespace Nether.Data.Sql.Leaderboard
     public class QueriedGamerScore
     {
         public int Score { get; set; }
-        public string Gamertag { get; set; }
-        public string CustomTag { get; set; }
+        public string Gamertag { get; set; }        
         public long Ranking { get; set; }
     }
 }

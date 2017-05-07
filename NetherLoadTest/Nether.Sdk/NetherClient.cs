@@ -100,8 +100,7 @@ namespace Nether.Sdk
                 "/api/scores",
                 new
                 {
-                    country = "missing",
-                    customTag = "testclient",
+                    country = "missing",                    
                     score = score
                 }
             );

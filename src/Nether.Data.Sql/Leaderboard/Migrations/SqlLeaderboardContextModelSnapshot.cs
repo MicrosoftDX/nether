@@ -22,9 +22,7 @@ namespace Nether.Data.Sql.Leaderboard.Migrations
             modelBuilder.Entity("Nether.Data.Sql.Leaderboard.QueriedGamerScore", b =>
                 {
                     b.Property<string>("Gamertag")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("CustomTag");
+                        .ValueGeneratedOnAdd();                    
 
                     b.Property<long>("Ranking");
 
@@ -38,10 +36,7 @@ namespace Nether.Data.Sql.Leaderboard.Migrations
             modelBuilder.Entity("Nether.Data.Sql.Leaderboard.SavedGamerScore", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("CustomTag")
-                        .HasMaxLength(50);
+                        .ValueGeneratedOnAdd();                    
 
                     b.Property<DateTime>("DateAchieved");
 

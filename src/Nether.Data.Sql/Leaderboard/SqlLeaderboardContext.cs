@@ -60,8 +60,7 @@ namespace Nether.Data.Sql.Leaderboard
                 new GameScore
                 {
                     Score = s.Score,
-                    Gamertag = s.Gamertag,
-                    CustomTag = s.CustomTag,
+                    Gamertag = s.Gamertag,                    
                     Rank = s.Ranking
                 }).ToListAsync();
         }
@@ -73,8 +72,7 @@ namespace Nether.Data.Sql.Leaderboard
                 new GameScore
                 {
                     Score = s.Score,
-                    Gamertag = s.Gamertag,
-                    CustomTag = s.CustomTag,
+                    Gamertag = s.Gamertag,                    
                     Rank = s.Ranking
                 }).ToListAsync();
         }
