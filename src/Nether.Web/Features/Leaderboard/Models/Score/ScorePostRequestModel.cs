@@ -12,12 +12,7 @@ namespace Nether.Web.Features.Leaderboard.Models.Score
         /// </summary>
         [Required]
         public string Country { get; set; }
-
-        /// <summary>
-        /// Optional tag
-        /// </summary>
-        public string CustomTag { get; set; }
-
+       
         /// <summary>
         /// Achieved score
         /// </summary>

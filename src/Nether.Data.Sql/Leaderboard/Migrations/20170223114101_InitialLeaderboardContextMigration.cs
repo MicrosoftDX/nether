@@ -83,7 +83,7 @@ FROM
 		FROM (
 			SELECT
 				Gamertag,
-				MAX(Score) AS Score,				
+				MAX(Score) AS Score				
 			FROM Scores
 			GROUP BY GamerTag
 		) AS T
@@ -114,7 +114,6 @@ BEGIN
 
     FROM(
         SELECT
-
             Gamertag,
             MAX(Score) AS Score,            
             RANK() OVER(ORDER BY MAX(Score) DESC) AS Ranking
