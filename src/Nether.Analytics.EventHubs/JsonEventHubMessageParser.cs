@@ -20,11 +20,13 @@ namespace Nether.Analytics.Parsers
             var gameEventType = (string)json["type"];
             var version = (string)json["version"];
 
+            //TODO: Handle incorrect message formats better
             if (gameEventType == null || version == null)
                 throw new Exception("Unable to resolve Game Event Type, since game event doesn't contain type and/or version property");
 
             var msg = new Message();
-            msg.MessageType = $"{gameEventType}|{version}";
+            msg.MessageType = gameEventType;
+            msg.Version = version;
             msg.EnqueueTimeUtc = unparsedMsg.EnqueuedTime;
 
             foreach (var p in json)

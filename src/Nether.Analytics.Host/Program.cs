@@ -100,6 +100,24 @@ namespace Nether.Analytics.Host
                 .AddHandler(new NullMessageHandler())
                 .OutputTo(consoleOutputManager, dlsOutputManager);
 
+            var x = new Tuple<string, string>("", "");
+
+            //builder.XXXPipeline("geo-clustering")
+            //    .XXXHandles(new MsgVer("location", "1.0.0"));
+
+
+            //builder.Pipeline("clustering")
+            //    .Handles("geo-location|1.0.0", "geo-location|1.0.1")
+            //    .AddHandler(new NullMessageHandler())
+            //    .OutputTo(consoleOutputManager, dlsOutputManager);
+
+            //builder.Pipeline("everything")
+            //    .HandlesEveryMessage()
+            //    .AddHandler(new NullMessageHandler());
+
+
+
+
             var router = builder.Build();
 
             var messageProcessor = new MessageProcessor<EventHubMessage>(listener, parser, router);

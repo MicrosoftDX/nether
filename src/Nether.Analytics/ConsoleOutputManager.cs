@@ -15,7 +15,7 @@ namespace Nether.Analytics
             _serializer = serializer;
         }
 
-        public Task Flush()
+        public Task FlushAsync()
         {
             return Task.CompletedTask;
         }

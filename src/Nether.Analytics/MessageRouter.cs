@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Nether.Analytics
 {
@@ -16,15 +17,15 @@ namespace Nether.Analytics
             _unhandledEventPipeline = unhandledEventPipeline;
         }
 
-        public void RouteMessage(IMessage msg)
+        public async Task RouteMessageAsync(IMessage msg)
         {
             if (_eventPipelines.TryGetValue(msg.MessageType, out var pipeline))
             {
-                pipeline.ProcessMessage(msg);
+                await pipeline.ProcessMessageAsync(msg);
             }
             else
             {
-                _unhandledEventPipeline?.ProcessMessage(msg);
+                await _unhandledEventPipeline?.ProcessMessageAsync(msg);
             }
         }
     }

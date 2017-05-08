@@ -9,6 +9,6 @@ namespace Nether.Analytics
     public interface IOutputManager
     {
         Task OutputMessageAsync(IMessage msg);
-        Task Flush();
+        Task FlushAsync();
     }
 }

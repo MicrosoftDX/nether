@@ -6,9 +6,8 @@ using System.Collections.Generic;
 
 namespace Nether.Analytics
 {
-    public interface IMessage
+    public interface IMessage : IVersionedMessageType
     {
-        string MessageType { get; set; }
         DateTime EnqueueTimeUtc { get; set; }
         Dictionary<string, string> Properties { get; }
     }

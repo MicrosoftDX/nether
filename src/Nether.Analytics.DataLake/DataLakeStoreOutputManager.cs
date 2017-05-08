@@ -76,7 +76,7 @@ namespace Nether.Analytics.DataLake
             }
         }
 
-        public Task Flush()
+        public Task FlushAsync()
         {
             return Task.CompletedTask;
         }

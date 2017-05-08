@@ -31,17 +31,17 @@ namespace Nether.Analytics
 
         public async Task ProcessAndBlockAsync(CancellationToken cancellationToken)
         {
-            await Listener.StartAsync(ExecutePipeline);
+            await Listener.StartAsync(ProcessMessagesAsync);
             await cancellationToken.WhenCanceled();
         }
 
-        private async Task ExecutePipeline(IEnumerable<T> unparsedMessages)
+        private async Task ProcessMessagesAsync(IEnumerable<T> unparsedMessages)
         {
             //TODO: Run this loop in parallel
             foreach (var unparsedMessage in unparsedMessages)
             {
                 var parsedMessage = Parser.ParseMessage(unparsedMessage);
-                Router.RouteMessage(parsedMessage);
+                await Router.RouteMessageAsync(parsedMessage);
             }
         }
     }

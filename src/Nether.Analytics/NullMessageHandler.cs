@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
+using System.Threading.Tasks;
 
 namespace Nether.Analytics
 {
@@ -14,11 +15,11 @@ namespace Nether.Analytics
             _outputManagers = outputManagers;
         }
 
-        public MessageHandlerResluts ProcessMessage(IMessage msg)
+        public Task<MessageHandlerResluts> ProcessMessageAsync(IMessage msg)
         {
             // Don't do anything since this is a NullMessageHandler
 
-            return MessageHandlerResluts.Success;
+            return Task.FromResult(MessageHandlerResluts.Success);
         }
     }
 }

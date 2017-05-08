@@ -18,7 +18,7 @@ namespace Nether.Analytics
             _outputblobStorageConnectionString = outputblobStorageConnectionString;
         }
 
-        public Task Flush()
+        public Task FlushAsync()
         {
             throw new NotImplementedException();
         }

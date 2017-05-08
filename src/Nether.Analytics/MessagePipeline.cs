@@ -2,6 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 
+using System.Threading.Tasks;
+
 namespace Nether.Analytics
 {
     public class MessagePipeline
@@ -20,20 +22,22 @@ namespace Nether.Analytics
             _outputManagers = outputManagers;
         }
 
-        public void ProcessMessage(IMessage msg)
+        public async Task ProcessMessageAsync(IMessage msg)
         {
             foreach (var handler in _gameEventHandlers)
             {
-                var result = handler.ProcessMessage(msg);
+                var result = await handler.ProcessMessageAsync(msg);
                 if (result == MessageHandlerResluts.FailStopProcessing)
                 {
+                    //TODO: Implement better solution to breaking out of chain of processing messages
                     return;
                 }
             }
 
+            //TODO: Run output managers in parallel
             foreach (var outputManager in _outputManagers)
             {
-                outputManager.OutputMessageAsync(msg);
+                await outputManager.OutputMessageAsync(msg);
             }
         }
     }

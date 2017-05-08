@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Threading.Tasks;
 
 namespace Nether.Analytics
 {
-    public interface IMessageHandler
+    public interface IVersionedMessageType
     {
-        Task<MessageHandlerResluts> ProcessMessageAsync(IMessage msg);
+        string MessageType { get; set; }
+        string Version { get; set; }
     }
 }

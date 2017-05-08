@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -44,6 +45,11 @@ namespace Nether.Analytics
             var eventPipelines = _eventPipelineBuilders.Select(p => p.Build(_messageHandlers)).ToDictionary(p => p.MessageType);
 
             return new MessageRouter(eventPipelines, unhandledEventPipeline);
+        }
+
+        public object XXXPipeline(string v)
+        {
+            throw new NotImplementedException();
         }
     }
 }

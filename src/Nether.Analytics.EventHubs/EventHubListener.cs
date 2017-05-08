@@ -14,7 +14,7 @@ namespace Nether.Analytics.EventHubs
     public class EventHubsListener : IEventProcessor, IMessageListener<EventHubMessage>
     {
         private readonly EventProcessorHost _host;
-        private Func<IEnumerable<EventHubMessage>, Task> _messageHandler;
+        private Func<IEnumerable<EventHubMessage>, Task> _messageHandlerAsync;
 
         public EventHubsListener(EventHubsListenerConfiguration config)
         {
@@ -44,9 +44,9 @@ namespace Nether.Analytics.EventHubs
                 config.LeaseContainerName);
         }
 
-        public async Task StartAsync(Func<IEnumerable<EventHubMessage>, Task> messageHandler)
+        public async Task StartAsync(Func<IEnumerable<EventHubMessage>, Task> messageHandlerAsync)
         {
-            _messageHandler = messageHandler;
+            _messageHandlerAsync = messageHandlerAsync;
             // Register this object as the processor of incomming EventHubMessages by using
             // a custom EventHubProcessorFactory
             await _host.RegisterEventProcessorFactoryAsync(new EventHubProcessorFactory(this));
@@ -55,7 +55,7 @@ namespace Nether.Analytics.EventHubs
         public async Task StopAsync()
         {
             await _host.UnregisterEventProcessorAsync();
-            _messageHandler = null;
+            _messageHandlerAsync = null;
         }
 
         public async Task ProcessEventsAsync(PartitionContext context, IEnumerable<EventData> messages)
@@ -73,7 +73,7 @@ namespace Nether.Analytics.EventHubs
                 });
             }
 
-            await _messageHandler(gameMessages);
+            await _messageHandlerAsync(gameMessages);
 
             await context.CheckpointAsync();
         }
