@@ -8,6 +8,6 @@ namespace Nether.Analytics
     public interface IMessageRouter
     {
         //TODO: Make method Async
-        Task RouteMessageAsync(IMessage msg);
+        Task RouteMessageAsync(Message msg);
     }
 }

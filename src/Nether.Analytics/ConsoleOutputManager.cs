@@ -20,7 +20,7 @@ namespace Nether.Analytics
             return Task.CompletedTask;
         }
 
-        public Task OutputMessageAsync(IMessage msg)
+        public Task OutputMessageAsync(string pipelineName, int idx, Message msg)
         {
             var str = _serializer.Serialize(msg);
 

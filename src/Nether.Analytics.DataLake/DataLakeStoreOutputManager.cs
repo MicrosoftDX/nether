@@ -10,13 +10,14 @@ using System;
 using System.IO;
 using System.Text;
 using Microsoft.Azure.Management.DataLake.Store.Models;
+using System.Linq;
 
 namespace Nether.Analytics.DataLake
 {
     public class DataLakeStoreOutputManager : IOutputManager
     {
         private IMessageSerializer _serializer;
-        //private IFilePathAlgoritm _filePathAlgoritm;
+        private IFilePathAlgorithm _filePathAlgorithm;
         private ClientCredential _clientCredential;
         private string _domain;
         private string _subscriptionId;
@@ -34,14 +35,15 @@ namespace Nether.Analytics.DataLake
             }
         }
 
-        public DataLakeStoreOutputManager(IMessageSerializer serializer, string domain, string clientId, string clientSecret, string subscriptionId, string adlsAccountName)
-            : this(serializer, domain, new ClientCredential(clientId, clientSecret), subscriptionId, adlsAccountName)
+        public DataLakeStoreOutputManager(IMessageSerializer serializer, IFilePathAlgorithm filePathAlgorithm, string domain, string clientId, string clientSecret, string subscriptionId, string adlsAccountName)
+            : this(serializer, filePathAlgorithm, domain, new ClientCredential(clientId, clientSecret), subscriptionId, adlsAccountName)
         {
         }
 
-        public DataLakeStoreOutputManager(IMessageSerializer serializer, string domain, ClientCredential clientCredential, string subscriptionId, string adlsAccountName)
+        public DataLakeStoreOutputManager(IMessageSerializer serializer, IFilePathAlgorithm filePathAlgorithm, string domain, ClientCredential clientCredential, string subscriptionId, string adlsAccountName)
         {
             _serializer = serializer;
+            _filePathAlgorithm = filePathAlgorithm;
 
             _domain = domain;
             _clientCredential = clientCredential;
@@ -50,9 +52,10 @@ namespace Nether.Analytics.DataLake
             _adlsAccountName = adlsAccountName;
         }
 
-        public DataLakeStoreOutputManager(IMessageSerializer serializer, ServiceClientCredentials serviceClientCredentials, string subscriptionId, string adlsAccountName)
+        public DataLakeStoreOutputManager(IMessageSerializer serializer, IFilePathAlgorithm filePathAlgorithm, ServiceClientCredentials serviceClientCredentials, string subscriptionId, string adlsAccountName)
         {
             _serializer = serializer;
+            _filePathAlgorithm = filePathAlgorithm;
 
             _serviceClientCredentials = serviceClientCredentials;
 
@@ -63,11 +66,11 @@ namespace Nether.Analytics.DataLake
         }
 
 
-        public async Task OutputMessageAsync(IMessage msg)
+        public async Task OutputMessageAsync(string pipelineName, int idx, Message msg)
         {
             await CheckAuthentication();
 
-            var filePath = GetFilePath(msg);
+            var filePath = GetFilePath(pipelineName, idx, msg);
             var content = _serializer.Serialize(msg);
 
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(content)))
@@ -90,25 +93,15 @@ namespace Nether.Analytics.DataLake
             }
         }
 
-        private string GetFilePath(IMessage msg)
+        private string GetFilePath(string pipelineName, int idx, Message msg)
         {
-            var t = msg.EnqueueTimeUtc;
+            var fp = _filePathAlgorithm.GetFilePath(pipelineName, idx, msg);
 
-            var path = $"/nether/{msg.MessageType}/{t.Year:D4}/{t.Month:D2}/{t.Day:D2}/";
-            var fileName = $"{t.Hour:D2}_{t.Minute:D2}";
-            var fileExtension = ".csv";
+            var path = "/" + string.Join("/", fp.hierarchy) + "/";
+            var fileName = $"{fp.name}.{_serializer.FileExtension}";
 
-            return path + fileName + fileExtension;
+            return path + fileName;
         }
     }
 
-    //public interface IFilePathAlgoritm
-    //{
-    //    string GetPath(IMessage msg);
-    //}
-
-    //public interface IFileNameAlgoritm
-    //{
-    //    string GetName(IMessage msg);
-    //}
 }

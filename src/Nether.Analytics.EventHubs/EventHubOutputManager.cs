@@ -21,7 +21,7 @@ namespace Nether.Analytics
             throw new NotImplementedException();
         }
 
-        public Task OutputMessageAsync(IMessage msg)
+        public Task OutputMessageAsync(string pipelineName, int idx, Message msg)
         {
             throw new NotImplementedException();
         }

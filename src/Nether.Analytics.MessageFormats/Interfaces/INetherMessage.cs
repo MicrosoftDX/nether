@@ -11,6 +11,6 @@ namespace Nether.Analytics.MessageFormats
         string Type { get; }
         string Version { get; }
         DateTime ClientUtcTime { get; set; }
-        Dictionary<string, string> Properties { get; }
+        //Dictionary<string, string> Properties { get; }
     }
 }

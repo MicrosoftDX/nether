@@ -12,7 +12,7 @@ namespace Nether.Analytics.Parsers
 {
     public class EventHubJsonMessageParser : IMessageParser<EventHubMessage>
     {
-        public IMessage ParseMessage(EventHubMessage unparsedMsg)
+        public Message ParseMessage(EventHubMessage unparsedMsg)
         {
             var data = Encoding.UTF8.GetString(unparsedMsg.Body.Array, unparsedMsg.Body.Offset, unparsedMsg.Body.Count);
 

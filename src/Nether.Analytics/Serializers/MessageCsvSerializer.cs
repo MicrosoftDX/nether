@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
 using System.Linq;
 using System.Text;
 
@@ -10,12 +11,18 @@ namespace Nether.Analytics
     {
         private readonly MessageCsvSerializerOptions _options;
 
+        public MessageCsvSerializer(params string[] columns) : this(new MessageCsvSerializerOptions(columns))
+        {
+        }
+
         public MessageCsvSerializer(MessageCsvSerializerOptions options = null)
         {
             _options = options ?? new MessageCsvSerializerOptions();
         }
 
-        public string Serialize(IMessage message)
+        public string FileExtension => "csv";
+
+        public string Serialize(Message message)
         {
             string[] columns;
 

@@ -7,6 +7,6 @@ namespace Nether.Analytics
 {
     public interface IMessageHandler
     {
-        Task<MessageHandlerResluts> ProcessMessageAsync(IMessage msg);
+        Task<MessageHandlerResluts> ProcessMessageAsync(string pipelineName, int idx, Message msg);
     }
 }

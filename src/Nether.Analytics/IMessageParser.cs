@@ -5,6 +5,6 @@ namespace Nether.Analytics.Parsers
 {
     public interface IMessageParser<T>
     {
-        IMessage ParseMessage(T msg);
+        Message ParseMessage(T msg);
     }
 }

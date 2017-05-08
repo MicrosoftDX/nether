@@ -11,22 +11,26 @@ namespace Nether.Analytics
         private IMessageHandler[] _gameEventHandlers;
         private IOutputManager[] _outputManagers;
 
-        public string MessageType { get; private set; }
+        public string PipelineName { get; private set; }
+        public VersionedMessageType[] HandledMessageTypes { get; private set; }
 
-        public MessagePipeline(string messageType,
+        public MessagePipeline(string pipelineName,
+            VersionedMessageType[] handledMessageTypes,
             IMessageHandler[] gameEventHandlers,
             IOutputManager[] outputManagers)
         {
-            MessageType = messageType;
+            PipelineName = pipelineName;
+            HandledMessageTypes = handledMessageTypes;
             _gameEventHandlers = gameEventHandlers;
             _outputManagers = outputManagers;
         }
 
-        public async Task ProcessMessageAsync(IMessage msg)
+        public async Task ProcessMessageAsync(Message msg)
         {
+            var handlerIdx = 0;
             foreach (var handler in _gameEventHandlers)
             {
-                var result = await handler.ProcessMessageAsync(msg);
+                var result = await handler.ProcessMessageAsync(PipelineName, handlerIdx++, msg);
                 if (result == MessageHandlerResluts.FailStopProcessing)
                 {
                     //TODO: Implement better solution to breaking out of chain of processing messages
@@ -35,9 +39,10 @@ namespace Nether.Analytics
             }
 
             //TODO: Run output managers in parallel
+            var outputManagerIdx = 0;
             foreach (var outputManager in _outputManagers)
             {
-                await outputManager.OutputMessageAsync(msg);
+                await outputManager.OutputMessageAsync(PipelineName, outputManagerIdx++, msg);
             }
         }
     }

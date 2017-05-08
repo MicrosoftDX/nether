@@ -1,13 +1,16 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
 using Newtonsoft.Json;
 
 namespace Nether.Analytics
 {
     public class MessageJsonSerializer : IMessageSerializer
     {
-        public string Serialize(IMessage msg)
+        public string FileExtension => "json";
+
+        public string Serialize(Message msg)
         {
             return JsonConvert.SerializeObject(msg.Properties);
         }

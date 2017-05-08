@@ -8,7 +8,7 @@ namespace Nether.Analytics.Bing
 {
     public class BingLocationLookupHandler : IMessageHandler
     {
-        public Task<MessageHandlerResluts> ProcessMessageAsync(IMessage msg)
+        public Task<MessageHandlerResluts> ProcessMessageAsync(string pipelineName, int idx, Message msg)
         {
             throw new NotImplementedException();
         }

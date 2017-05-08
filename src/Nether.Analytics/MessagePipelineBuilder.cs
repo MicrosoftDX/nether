@@ -8,13 +8,21 @@ namespace Nether.Analytics
 {
     public class MessagePipelineBuilder
     {
-        private string _eventName;
+        private string _pipelineName;
+        private List<VersionedMessageType> _messageTypesToHandle = new List<VersionedMessageType>();
         private List<IMessageHandler> _handlers = new List<IMessageHandler>();
         private IOutputManager[] _outputManagers;
 
-        public MessagePipelineBuilder(string eventName)
+        public MessagePipelineBuilder(string pipelineName)
         {
-            _eventName = eventName;
+            _pipelineName = pipelineName;
+        }
+
+        public MessagePipelineBuilder Handles(string messageType, string version)
+        {
+            _messageTypesToHandle.Add(new VersionedMessageType { MessageType = messageType, Version = version });
+
+            return this;
         }
 
         public MessagePipelineBuilder AddHandler(IMessageHandler msgHandler)
@@ -24,9 +32,9 @@ namespace Nether.Analytics
             return this;
         }
 
-        public MessagePipeline Build(List<IMessageHandler> globalMsgHandlers)
+        public MessagePipeline Build()
         {
-            return new MessagePipeline(_eventName, globalMsgHandlers.Concat(_handlers).ToArray(), _outputManagers);
+            return new MessagePipeline(_pipelineName, _messageTypesToHandle.ToArray(), _handlers.ToArray(), _outputManagers);
         }
 
         public void OutputTo(params IOutputManager[] outputManagers)

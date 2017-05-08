@@ -5,6 +5,7 @@ namespace Nether.Analytics
 {
     public interface IMessageSerializer
     {
-        string Serialize(IMessage msg);
+        string FileExtension { get; }
+        string Serialize(Message msg);
     }
 }

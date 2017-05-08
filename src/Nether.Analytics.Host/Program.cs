@@ -42,6 +42,7 @@ namespace Nether.Analytics.Host
 
             SetupConfigurationProviders();
 
+            // Check that all configurations are set before continuing
             var configStatus = CheckConfigurationStatus(
                 NAH_EHListener_ConnectionString,
                 NAH_EHListener_EventHubPath,
@@ -62,7 +63,8 @@ namespace Nether.Analytics.Host
                 return;
             }
 
-            // Setup Listener
+
+            // Setup Listener. This will be the same for all pipelines we are building.
             var listenerConfig = new EventHubsListenerConfiguration
             {
                 EventHubConnectionString = Configuration[NAH_EHListener_ConnectionString],
@@ -71,57 +73,46 @@ namespace Nether.Analytics.Host
                 StorageConnectionString = Configuration[NAH_EHListener_StorageConnectionString],
                 LeaseContainerName = Configuration[NAH_EHListener_LeaseContainerName]
             };
-
             var listener = new EventHubsListener(listenerConfig);
 
-            // Setup Message Parser
+            // Setup Message Parser. By default we are using Nether JSON Messages
+            // Setting up parser that knows how to parse those messages.
             var parser = new EventHubJsonMessageParser();
 
-            // Setup Output Managers
-            //var blobOutputManager = new BlobOutputManager(outputblobStorageConnectionString);
-            //var eventHubOutputManager = new EventHubOutputManager(outputEventHubConnectionString);
-            var consoleOutputManager = new ConsoleOutputManager(new MessageJsonSerializer());
-            var consoleOutputManager2 = new ConsoleOutputManager(new MessageCsvSerializer());
+            // User a builder to create routing infrastructure for messages and the pipelines
+            var builder = new MessageRouterBuilder();
 
-            var dlsOutputManager = new DataLakeStoreOutputManager(new MessageJsonSerializer(),
+            // Setting up "Geo Clustering Recipe"
+
+            var clusteringSerializer = new MessageCsvSerializer("type", "version", "enqueueTime", "gameSessionId", "lat", "lon", "geohash", "precission");
+
+            var clusteringDlsOutputManager = new DataLakeStoreOutputManager(
+                clusteringSerializer,
+                new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every5Minutes),
+
                 domain: Configuration[NAH_AAD_Domain],
                 clientId: Configuration[NAH_AAD_ClientId],
                 clientSecret: Configuration[NAH_AAD_ClientSecret],
                 subscriptionId: Configuration[NAH_Azure_SubscriptionId],
                 adlsAccountName: Configuration[NAH_Azure_DLSOutputManager_AccountName]);
 
-            // Build up the Router Pipeline
-            var builder = new MessageRouterBuilder();
+            var clusteringConsoleOutputManager = new ConsoleOutputManager(clusteringSerializer);
 
-            builder.AddMessageHandler(new GamerInfoEnricher());
-            builder.UnhandledEvent().OutputTo(consoleOutputManager);
-
-            builder.Event("geo-location|1.0.0")
+            builder.Pipeline("clustering")
+                .Handles("location", "1.0.0")
+                .Handles("location", "1.0.1")
+                .AddHandler(new DebugMessageHandler())
                 .AddHandler(new NullMessageHandler())
-                .OutputTo(consoleOutputManager, dlsOutputManager);
-
-            var x = new Tuple<string, string>("", "");
-
-            //builder.XXXPipeline("geo-clustering")
-            //    .XXXHandles(new MsgVer("location", "1.0.0"));
+                .AddHandler(new GamerInfoEnricher())
+                .AddHandler(new DebugMessageHandler())
+                .OutputTo(clusteringConsoleOutputManager, clusteringDlsOutputManager);
 
 
-            //builder.Pipeline("clustering")
-            //    .Handles("geo-location|1.0.0", "geo-location|1.0.1")
-            //    .AddHandler(new NullMessageHandler())
-            //    .OutputTo(consoleOutputManager, dlsOutputManager);
-
-            //builder.Pipeline("everything")
-            //    .HandlesEveryMessage()
-            //    .AddHandler(new NullMessageHandler());
-
-
-
-
+            // Build all pipelines
             var router = builder.Build();
 
+            // Attach the differeing parts of the message processor together
             var messageProcessor = new MessageProcessor<EventHubMessage>(listener, parser, router);
-
 
             // Run in an async context since main method is not allowed to be marked as async
             Task.Run(async () =>
