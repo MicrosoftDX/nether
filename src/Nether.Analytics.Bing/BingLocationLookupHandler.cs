@@ -5,8 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.Net;
-using System.Threading.Tasks;
-
+using System.Net.Http;
 
 namespace Nether.Analytics.Bing
 {
@@ -16,7 +15,7 @@ namespace Nether.Analytics.Bing
         string _latProperty;
         string _lonProperty;
 
-        public BingLocationLookupHandler(string bingMapsKey, string latProperty, string lonProperty)
+        public BingLocationLookupHandler(string bingMapsKey, string latProperty = "lat", string lonProperty = "lon")
         {
             _bingMapsKey = bingMapsKey;
             _latProperty = latProperty;
@@ -26,21 +25,34 @@ namespace Nether.Analytics.Bing
         public async Task<MessageHandlerResluts> ProcessMessageAsync(Message msg, string pipelineName, int idx)
         {
             //TODO: Implement cache layer that caches result based on a surounding for example use a geohash if present
+            //TODO: Replace all console logging of exceptions to generic log solution
 
-            var lat = msg.Properties[_latProperty];
-            var lon = msg.Properties[_lonProperty];
+            string lat;
+            string lon;
 
-            var client = new WebClient();
+            try
+            {
+                lat = msg.Properties[_latProperty];
+                lon = msg.Properties[_lonProperty];
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unable to find required properties: '{_latProperty}' and '{_lonProperty}' on message");
+                return MessageHandlerResluts.FailStopProcessing;
+            }
+
             var bingUrl = $"http://dev.virtualearth.net/REST/v1/Locations/{lat},{lon}?key={_bingMapsKey}";
             string bingResult;
 
             try
             {
-                bingResult = await client.DownloadStringTaskAsync(bingUrl);
+                //var client = new WebClient();
+                //bingResult = await client.DownloadStringTaskAsync(bingUrl);
+                var client = new HttpClient();
+                bingResult = await client.GetStringAsync(bingUrl);
             }
             catch (Exception ex)
             {
-                //TODO: Replace all console logging of exceptions to generic log solution
                 Console.WriteLine("An exception occurred while calling Bing to Lookup coordinates");
                 Console.WriteLine(ex);
 

@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-
-
 using System;
-using Nether.Analytics.Parsers;
 using System.Threading.Tasks;
 
 namespace Nether.Analytics
 {
+    //TODO: Implement a working solution for outputting to Azure Blob Storage.
+    // Take a look at the implementation for DataLakeStoreOutputManager for inspiration and sync
     public class BlobOutputManager : IOutputManager
     {
         private string _outputblobStorageConnectionString;

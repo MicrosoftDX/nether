@@ -14,6 +14,5 @@ namespace Nether.Analytics.MessageFormats
         public DateTime ClientUtcTime { get; set; }
         public string GameSessionId { get; set; }
         public string GamerTag { get; set; }
-        public Dictionary<string, string> Properties { get; set; }
     }
 }

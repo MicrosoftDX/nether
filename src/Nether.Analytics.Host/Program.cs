@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.Extensions.Configuration;
+using Nether.Analytics;
 using Nether.Analytics.Bing;
 using Nether.Analytics.DataLake;
 using Nether.Analytics.EventHubs;
@@ -84,7 +85,7 @@ namespace Nether.Analytics.Host
 
             // Setting up "Geo Clustering Recipe"
 
-            var clusteringSerializer = new MessageCsvSerializer("type", "version", "enqueueTime", "gameSessionId", "lat", "lon", "geohash", "precission");
+            var clusteringSerializer = new MessageCsvSerializer("type", "version", "enqueueTime", "gameSessionId", "lat", "lon", "geohash", "precision");
 
             var clusteringDlsOutputManager = new DataLakeStoreOutputManager(
                 clusteringSerializer,
@@ -99,8 +100,8 @@ namespace Nether.Analytics.Host
             var clusteringConsoleOutputManager = new ConsoleOutputManager(clusteringSerializer);
 
             builder.Pipeline("clustering")
-                .Handles("location", "1.0.0")
-                .Handles("location", "1.0.1")
+                .HandlesMessageType("geo-location", "1.0.0")
+                .HandlesMessageType("geo-location", "1.0.1")
                 .AddHandler(new DebugMessageHandler())
                 .AddHandler(new NullMessageHandler())
                 .AddHandler(new GamerInfoEnricher())

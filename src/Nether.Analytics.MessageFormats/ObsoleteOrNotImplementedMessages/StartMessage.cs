@@ -15,6 +15,5 @@ namespace Nether.Analytics.MessageFormats
         public string EventCorrelationId { get; set; }
         public string DisplayName { get; set; }
         public string GameSessionId { get; set; }
-        public Dictionary<string, string> Properties { get; set; }
     }
 }

@@ -13,6 +13,5 @@ namespace Nether.Analytics.MessageFormats
         public string Version => "1.0.0";
         public DateTime ClientUtcTime { get; set; }
         public string GameSessionId { get; set; }
-        public Dictionary<string, string> Properties { get; set; }
     }
 }

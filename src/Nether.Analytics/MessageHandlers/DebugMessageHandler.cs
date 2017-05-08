@@ -6,18 +6,17 @@ using System.Threading.Tasks;
 
 namespace Nether.Analytics
 {
-    public class NullMessageHandler : IMessageHandler
+    public class DebugMessageHandler : IMessageHandler
     {
-        //private object[] _outputManagers;
-
-        //public NullMessageHandler(params object[] outputManagers)
-        //{
-        //    _outputManagers = outputManagers;
-        //}
-
         public Task<MessageHandlerResluts> ProcessMessageAsync(Message msg, string pipelineName, int idx)
         {
-            // Don't do anything since this is a NullMessageHandler
+            Console.WriteLine();
+            Console.WriteLine("DebugMessageHandler");
+            Console.WriteLine("-------------------");
+            Console.WriteLine($"Pipeline Name:  {pipelineName}");
+            Console.WriteLine($"Handler Idx:    {idx}");
+            Console.WriteLine(msg.ToString());
+            Console.WriteLine();
 
             return Task.FromResult(MessageHandlerResluts.Success);
         }

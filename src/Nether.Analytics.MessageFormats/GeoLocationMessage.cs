@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace Nether.Analytics.MessageFormats
 {
-    public class LocationMessage : INetherMessage
+    public class GeoLocationMessage : INetherMessage
     {
-        public string Type => "location";
+        public string Type => "geo-location";
         public string Version => "1.0.0";
         public DateTime ClientUtcTime { get; set; }
         public string GameSessionId { get; set; }

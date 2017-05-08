@@ -11,7 +11,7 @@ namespace Nether.Analytics
     {
         private readonly MessageCsvSerializerOptions _options;
 
-        public MessageCsvSerializer(params string[] columns) : this(new MessageCsvSerializerOptions(columns))
+        public MessageCsvSerializer(params string[] columns) : this(new MessageCsvSerializerOptions { Columns = columns })
         {
         }
 
@@ -51,7 +51,15 @@ namespace Nether.Analytics
 
             foreach (var column in columns)
             {
-                builder.Append(message.Properties[column]);
+                if (message.Properties.TryGetValue(column, out var value))
+                {
+                    builder.Append(value);
+                }
+                else
+                {
+                    builder.Append(_options.EmptyValue);
+                }
+
                 builder.Append(_options.Separator);
             }
 

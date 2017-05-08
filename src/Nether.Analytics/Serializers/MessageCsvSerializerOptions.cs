@@ -5,28 +5,10 @@ namespace Nether.Analytics
 {
     public class MessageCsvSerializerOptions
     {
-        private readonly char _separator = '\t';
-        private readonly bool _includeHeaderRow = false;
-        private readonly string[] _columns;
+        public char Separator { get; set; } = '\t';
+        public string EmptyValue { get; set; } = "";
+        public bool IncludeHeaderRow { get; set; } = false;
+        public string[] Columns { get; set; }
 
-        public MessageCsvSerializerOptions()
-        {
-        }
-
-        public MessageCsvSerializerOptions(params string[] columns)
-        {
-            _columns = columns;
-        }
-
-        public MessageCsvSerializerOptions(char separator, bool includeHeaderRow = false, params string[] columns)
-        {
-            _separator = separator;
-            _includeHeaderRow = includeHeaderRow;
-            _columns = columns;
-        }
-
-        public char Separator => _separator;
-        public bool IncludeHeaderRow => _includeHeaderRow;
-        public string[] Columns => _columns;
     }
 }

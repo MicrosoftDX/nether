@@ -18,7 +18,7 @@ namespace Nether.Analytics
             _pipelineName = pipelineName;
         }
 
-        public MessagePipelineBuilder Handles(string messageType, string version)
+        public MessagePipelineBuilder HandlesMessageType(string messageType, string version)
         {
             _messageTypesToHandle.Add(new VersionedMessageType { MessageType = messageType, Version = version });
 

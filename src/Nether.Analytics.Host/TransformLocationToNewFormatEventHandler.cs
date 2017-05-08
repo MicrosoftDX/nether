@@ -8,7 +8,7 @@ namespace Nether.Analytics.Host
 {
     public class TransformLocationToNewFormatEventHandler : IMessageHandler
     {
-        public Task<MessageHandlerResluts> ProcessMessageAsync(string pipelineName, int idx, Message msg)
+        public Task<MessageHandlerResluts> ProcessMessageAsync(Message msg, string pipelineName, int idx)
         {
             throw new NotImplementedException();
         }
