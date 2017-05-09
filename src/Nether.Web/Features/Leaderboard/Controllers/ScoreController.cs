@@ -11,7 +11,6 @@ using Nether.Integration.Analytics;
 using Nether.Web.Utilities;
 using System.Net;
 using Microsoft.Extensions.Logging;
-using Nether.Analytics.GameEvents;
 using Nether.Web.Features.Leaderboard.Models.Score;
 using Nether.Common.ApplicationPerformanceMonitoring;
 using System.Collections.Generic;
@@ -95,23 +94,28 @@ namespace Nether.Web.Features.Leaderboard
 
         private async Task SendScoreEventAndLogErrors(ScorePostRequestModel request)
         {
-            try
-            {
-                await _analyticsIntegrationClient.SendGameEventAsync(new ScoreEvent()
-                {
-                    //GamerTag = gamertag,
-                    ClientUtcTime = DateTime.UtcNow,
-                    GameSessionId = "unknowngamesession",
-                    Score = request.Score
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error sending analytics ScoreEvent: {0}", ex);
-                _appMonitor.LogError(ex, properties: new Dictionary<string, string> {
-                    { "Score", request.Score.ToString() }
-                });
-            }
+            //try
+            //{
+            //    await _analyticsIntegrationClient.SendGameEventAsync(new ScoreEvent()
+            //    {
+            //        //GamerTag = gamertag,
+            //        ClientUtcTime = DateTime.UtcNow,
+            //        GameSessionId = "unknowngamesession",
+            //        Score = request.Score
+            //    });
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError("Error sending analytics ScoreEvent: {0}", ex);
+            //    _appMonitor.LogError(ex, properties: new Dictionary<string, string> {
+            //        { "Score", request.Score.ToString() }
+            //    });
+            //}
+
+            // Temporary disabling sending of Scores to Nether Analytics, since that message is currently not supported.
+            // Will be enabled again once, we start supporting that message type again.
+
+            return;
         }
 
         /// <summary>

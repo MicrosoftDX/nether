@@ -14,7 +14,6 @@ using Nether.Web.Features.Leaderboard.Configuration;
 using Nether.Web.Utilities;
 using System.Net;
 using Microsoft.Extensions.Logging;
-using Nether.Analytics.GameEvents;
 using Nether.Web.Features.Leaderboard.Models.Leaderboard;
 using Nether.Common.ApplicationPerformanceMonitoring;
 

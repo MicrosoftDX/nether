@@ -17,15 +17,9 @@ Travis:   [![Build Status](https://travis-ci.org/MicrosoftDX/nether.svg?branch=m
 
 Nether is a project composed of reusable set of building blocks, projects, services and best practices designed for Gaming workloads powered by Microsoft Azure, aimed to be beneficial for many type of game developers seeking inspiration or a fully implemented solution.
 
-## Documentation Index
+## Documentation
 
-1. [Overview](documentation/overview.md)
-1. [Architecture](documentation/architecture.md)
-1. Getting Started
- * [Set up the development environment](documentation/devsetup.md)
- * [Configuration](documentation/configuration/README.md)
-1. [Deploying Nether](documentation/deployment.md)
-1. [Nether API](documentation/api/README.md)
+Want to learn more about Nether, then just head over to our [documentation section](documentation) that will guide you through how to get started as well as explain the details in how it all works. Or if you feel more adventurous, why not just deploy Nether directly to your Azure Subscription by clicking the button above.
 
 ## Reporting issues and feedback
 
@@ -35,7 +29,7 @@ section of our GitHub repo.
 ## Contribute Code
 
 
-We welcome contributions. To contribute please follow the instrctions on
+We welcome contributions. To contribute please follow the instructions on
 [How to contribute?](CONTRIBUTING.md)
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).

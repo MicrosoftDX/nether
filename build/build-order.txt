@@ -5,3 +5,13 @@ src/TestClients/IdentityServerTestClient
 src/PerformanceTests/LeaderboardLoadTest
 tests/Nether.Web.UnitTests
 tests/Nether.Web.IntegrationTests
+
+src/Nether.Analytics
+src/Nether.Analytics.BlobStorage
+src/Nether.Analytics.DataLake
+src/Nether.Analytics.EventHubs
+src/Nether.Analytics.GeoLocation
+src/Nether.Analytics.Host
+
+src/Nether.Analytics.MessageFormats
+src/TestClients/AnalyticsTestClient
