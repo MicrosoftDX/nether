@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Nether.Analytics.GameEvents;
 using Nether.Integration.Analytics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -23,7 +22,7 @@ namespace Nether.Integration.Default.Analytics
             _eventHubClient = EventHubClient.CreateFromConnectionString(eventhubConnectionString);
         }
 
-        public async Task SendGameEventAsync(IGameEvent gameEvent)
+        public async Task SendGameEventAsync(INetherMessage gameEvent)
         {
             var json = JsonConvert.SerializeObject(gameEvent);
             var eventData = new EventData(Encoding.UTF8.GetBytes(json));

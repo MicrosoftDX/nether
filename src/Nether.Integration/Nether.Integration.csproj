@@ -11,8 +11,4 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Nether.Analytics.GameEvents\Nether.Analytics.GameEvents.csproj" />
-  </ItemGroup>
-
 </Project>
