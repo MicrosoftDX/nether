@@ -4,7 +4,7 @@ services:
   - mssql2016
 build_script:
 - ps: ./RunCodeFormatter.ps1
-- ps: ./build.ps1
+- ps: ./build.ps1 -BuildVersion "0.0.1-alpha$($env:APPVEYOR_BUILD_NUMBER)"
 - git rev-parse HEAD > commit.txt
 test_script:
 - ps: ./run-unit-tests.ps1
