@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Nether.Analytics.Parsers
 {
-    public class EventHubJsonMessageParser : IMessageParser<EventHubMessage>
+    public class EventHubListenerMessageJsonParser : IMessageParser<EventHubListenerMessage>
     {
-        public Message ParseMessage(EventHubMessage unparsedMsg)
+        public Message ParseMessage(EventHubListenerMessage unparsedMsg)
         {
             var data = Encoding.UTF8.GetString(unparsedMsg.Body.Array, unparsedMsg.Body.Offset, unparsedMsg.Body.Count);
 
@@ -24,14 +24,22 @@ namespace Nether.Analytics.Parsers
             if (gameEventType == null || version == null)
                 throw new Exception("Unable to resolve Game Event Type, since game event doesn't contain type and/or version property");
 
-            var msg = new Message();
-            msg.MessageType = gameEventType;
-            msg.Version = version;
-            msg.EnqueueTimeUtc = unparsedMsg.EnqueuedTime;
+            var id = unparsedMsg.PartitionId + "_" + unparsedMsg.SequenceNumber;
+
+            var msg = new Message
+            {
+                Id = id,
+                MessageType = gameEventType,
+                Version = version,
+                EnqueueTimeUtc = unparsedMsg.EnqueuedTime,
+            };
+
+            msg.Properties["id"] = id;
+            msg.Properties["enqueueTimeUtc"] = msg.EnqueueTimeUtc.ToString();
 
             foreach (var p in json)
             {
-                //TODO: Replace below naive parse implementation with more sofisticated
+                //TODO: Replace below naive JSON parsing implementation with more sofisticated and robust
 
                 var key = p.Key;
                 try
@@ -43,7 +51,7 @@ namespace Nether.Analytics.Parsers
                 catch (Exception)
                 {
                     Console.WriteLine($"Unable to parse property:{key} as string on {msg.MessageType}");
-                    Console.WriteLine("WARNING: Coninuing anyway!!! TODO: Fix this parsing problem!!!");
+                    Console.WriteLine("WARNING: Continuing anyway!!! TODO: Fix this parsing problem!!!");
                 }
             }
 

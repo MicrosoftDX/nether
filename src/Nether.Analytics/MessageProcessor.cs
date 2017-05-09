@@ -4,6 +4,7 @@
 using Nether.Analytics.Parsers;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,12 +38,27 @@ namespace Nether.Analytics
 
         private async Task ProcessMessagesAsync(IEnumerable<T> unparsedMessages)
         {
+            SetupCultureInfo();
+
             //TODO: Run this loop in parallel
             foreach (var unparsedMessage in unparsedMessages)
             {
                 var parsedMessage = Parser.ParseMessage(unparsedMessage);
                 await Router.RouteMessageAsync(parsedMessage);
             }
+        }
+
+        private static void SetupCultureInfo()
+        {
+            // Create a unique culture for all threads inside the MessageProcessor
+            // in order to make sure input and output of serialization and de-
+            // serialization all look according to expected results
+            // Nether uses a modified en-US culture
+            var netherCultureInfo = new CultureInfo("en-US");
+            netherCultureInfo.DateTimeFormat.ShortDatePattern = "yyyy-MM-dd";
+            netherCultureInfo.DateTimeFormat.LongTimePattern = "HH:mm:ss";
+
+            CultureInfo.DefaultThreadCurrentCulture = netherCultureInfo;
         }
     }
 }

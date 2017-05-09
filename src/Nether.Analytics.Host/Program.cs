@@ -78,14 +78,14 @@ namespace Nether.Analytics.Host
 
             // Setup Message Parser. By default we are using Nether JSON Messages
             // Setting up parser that knows how to parse those messages.
-            var parser = new EventHubJsonMessageParser();
+            var parser = new EventHubListenerMessageJsonParser();
 
             // User a builder to create routing infrastructure for messages and the pipelines
             var builder = new MessageRouterBuilder();
 
             // Setting up "Geo Clustering Recipe"
 
-            var clusteringSerializer = new MessageCsvSerializer("type", "version", "enqueueTime", "gameSessionId", "lat", "lon", "geohash", "precision");
+            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueueTime", "gameSessionId", "lat", "lon", "geohash", "precision");
 
             var clusteringDlsOutputManager = new DataLakeStoreOutputManager(
                 clusteringSerializer,
@@ -102,10 +102,7 @@ namespace Nether.Analytics.Host
             builder.Pipeline("clustering")
                 .HandlesMessageType("geo-location", "1.0.0")
                 .HandlesMessageType("geo-location", "1.0.1")
-                .AddHandler(new DebugMessageHandler())
                 .AddHandler(new NullMessageHandler())
-                .AddHandler(new GamerInfoEnricher())
-                .AddHandler(new DebugMessageHandler())
                 .OutputTo(clusteringConsoleOutputManager, clusteringDlsOutputManager);
 
 
@@ -113,7 +110,7 @@ namespace Nether.Analytics.Host
             var router = builder.Build();
 
             // Attach the differeing parts of the message processor together
-            var messageProcessor = new MessageProcessor<EventHubMessage>(listener, parser, router);
+            var messageProcessor = new MessageProcessor<EventHubListenerMessage>(listener, parser, router);
 
             // Run in an async context since main method is not allowed to be marked as async
             Task.Run(async () =>

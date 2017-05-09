@@ -8,9 +8,9 @@ namespace Nether.Analytics
 {
     public class ConsoleOutputManager : IOutputManager
     {
-        private IMessageSerializer _serializer;
+        private IOutputFormatter _serializer;
 
-        public ConsoleOutputManager(IMessageSerializer serializer)
+        public ConsoleOutputManager(IOutputFormatter serializer)
         {
             _serializer = serializer;
         }
@@ -22,9 +22,9 @@ namespace Nether.Analytics
 
         public Task OutputMessageAsync(string pipelineName, int idx, Message msg)
         {
-            var str = _serializer.Serialize(msg);
+            var str = _serializer.Format(msg);
 
-            Console.WriteLine(str);
+            Console.Write(str);
 
             return Task.CompletedTask;
         }

@@ -11,10 +11,10 @@ using Microsoft.Azure.EventHubs.Processor;
 
 namespace Nether.Analytics.EventHubs
 {
-    public class EventHubsListener : IEventProcessor, IMessageListener<EventHubMessage>
+    public class EventHubsListener : IEventProcessor, IMessageListener<EventHubListenerMessage>
     {
         private readonly EventProcessorHost _host;
-        private Func<IEnumerable<EventHubMessage>, Task> _messageHandlerAsync;
+        private Func<IEnumerable<EventHubListenerMessage>, Task> _messageHandlerAsync;
 
         public EventHubsListener(EventHubsListenerConfiguration config)
         {
@@ -44,7 +44,7 @@ namespace Nether.Analytics.EventHubs
                 config.LeaseContainerName);
         }
 
-        public async Task StartAsync(Func<IEnumerable<EventHubMessage>, Task> messageHandlerAsync)
+        public async Task StartAsync(Func<IEnumerable<EventHubListenerMessage>, Task> messageHandlerAsync)
         {
             _messageHandlerAsync = messageHandlerAsync;
             // Register this object as the processor of incomming EventHubMessages by using
@@ -60,20 +60,22 @@ namespace Nether.Analytics.EventHubs
 
         public async Task ProcessEventsAsync(PartitionContext context, IEnumerable<EventData> messages)
         {
-            var gameMessages = new List<EventHubMessage>();
+            var eventHubListenerMessages = new List<EventHubListenerMessage>();
             var dequeuedTime = DateTime.UtcNow;
 
             foreach (var msg in messages)
             {
-                gameMessages.Add(new EventHubMessage
+                eventHubListenerMessages.Add(new EventHubListenerMessage
                 {
+                    PartitionId = context.PartitionId,
+                    SequenceNumber = msg.SystemProperties.SequenceNumber,
                     Body = msg.Body,
                     EnqueuedTime = msg.SystemProperties.EnqueuedTimeUtc,
                     DequeuedTime = dequeuedTime
                 });
             }
 
-            await _messageHandlerAsync(gameMessages);
+            await _messageHandlerAsync(eventHubListenerMessages);
 
             await context.CheckpointAsync();
         }

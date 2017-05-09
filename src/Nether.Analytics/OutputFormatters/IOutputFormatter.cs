@@ -3,9 +3,12 @@
 
 namespace Nether.Analytics
 {
-    public interface IMessageSerializer
+    public interface IOutputFormatter
     {
         string FileExtension { get; }
-        string Serialize(Message msg);
+        bool IncludeHeaderRow { get; }
+        string Header { get; }
+
+        string Format(Message msg);
     }
 }

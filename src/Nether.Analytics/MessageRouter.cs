@@ -51,7 +51,7 @@ namespace Nether.Analytics
             }
             else
             {
-                throw new Exception($"No pipeline found for message type: {msg.MessageType}, version: {msg.Version}");
+                Console.WriteLine($"No pipeline found for message type: {msg.MessageType}, version: {msg.Version}");
                 //TODO Implement unhandled pipeline here
                 //await _unhandledEventPipeline?.ProcessMessageAsync(msg);
             }

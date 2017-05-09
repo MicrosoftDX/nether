@@ -9,6 +9,7 @@ namespace Nether.Analytics
 {
     public class Message
     {
+        public string Id { get; set; }
         public string MessageType { get; set; }
         public string Version { get; set; }
         public DateTime EnqueueTimeUtc { get; set; }
@@ -18,6 +19,7 @@ namespace Nether.Analytics
         {
             var str = new StringBuilder();
 
+            str.AppendLine($"Id:             {Id}");
             str.AppendLine($"MessageType:    {MessageType}");
             str.AppendLine($"Version:        {Version}");
             str.AppendLine($"EnqueueTimeUtc: {EnqueueTimeUtc}");
