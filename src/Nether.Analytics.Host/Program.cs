@@ -2,15 +2,13 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.Extensions.Configuration;
-using Nether.Analytics;
-using Nether.Analytics.Bing;
 using Nether.Analytics.DataLake;
 using Nether.Analytics.EventHubs;
+using Nether.Analytics.GeoLocation;
 using Nether.Analytics.Parsers;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Nether.Analytics.Host

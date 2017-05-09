@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http;
 
-namespace Nether.Analytics.Bing
+namespace Nether.Analytics.GeoLocation
 {
     public class BingLocationLookupHandler : IMessageHandler
     {

@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics", "src\Nether.Analytics\Nether.Analytics.csproj", "{91FC225B-140C-4E94-9803-526A90A8F66E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics.Bing", "src\Nether.Analytics.Bing\Nether.Analytics.Bing.csproj", "{6DC4E3D5-199C-48E8-B13A-8FE41957F067}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics.EventHubs", "src\Nether.Analytics.EventHubs\Nether.Analytics.EventHubs.csproj", "{97E1751C-7801-48CD-A10E-360835F50B42}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics.BlobStorage", "src\Nether.Analytics.BlobStorage\Nether.Analytics.BlobStorage.csproj", "{DBB73E90-E2A3-4C1E-9E18-FBED4FF6F2F8}"
@@ -19,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.MessageFor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnalyticsTestClient", "src\TestClients\AnalyticsTestClient\AnalyticsTestClient.csproj", "{1D727394-9645-472F-B4FF-4EABE29CB461}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.GeoLocation", "src\Nether.Analytics.GeoLocation\Nether.Analytics.GeoLocation.csproj", "{B350640B-7ED6-4EBA-B9E1-327C88D882DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +29,6 @@ Global
 		{91FC225B-140C-4E94-9803-526A90A8F66E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91FC225B-140C-4E94-9803-526A90A8F66E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91FC225B-140C-4E94-9803-526A90A8F66E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6DC4E3D5-199C-48E8-B13A-8FE41957F067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6DC4E3D5-199C-48E8-B13A-8FE41957F067}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6DC4E3D5-199C-48E8-B13A-8FE41957F067}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6DC4E3D5-199C-48E8-B13A-8FE41957F067}.Release|Any CPU.Build.0 = Release|Any CPU
 		{97E1751C-7801-48CD-A10E-360835F50B42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{97E1751C-7801-48CD-A10E-360835F50B42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97E1751C-7801-48CD-A10E-360835F50B42}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,6 +53,10 @@ Global
 		{1D727394-9645-472F-B4FF-4EABE29CB461}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D727394-9645-472F-B4FF-4EABE29CB461}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D727394-9645-472F-B4FF-4EABE29CB461}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B350640B-7ED6-4EBA-B9E1-327C88D882DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B350640B-7ED6-4EBA-B9E1-327C88D882DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B350640B-7ED6-4EBA-B9E1-327C88D882DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B350640B-7ED6-4EBA-B9E1-327C88D882DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
