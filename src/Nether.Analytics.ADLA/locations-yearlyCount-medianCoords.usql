@@ -1,0 +1,77 @@
+﻿DECLARE @YEAR int = 2017;
+DECLARE @INPUT_FILE string = String.Concat( "/", @YEAR.ToString(), "/{*}/{*}/locations.csv");
+DECLARE @OUTPUT_FILE string = String.Concat( "/output/locations/yearly/", @YEAR.ToString(), ".csv");
+DECLARE @OUTPUT_FILE_COORDS string = String.Concat( "/output/geoHashCoordinates/yearly/", @YEAR.ToString(), "coords.csv");
+
+// Read raw location events
+@LOCATIONS_RAW =
+    EXTRACT type string,
+            version string,
+            enqueueTime DateTime,
+            dequeueTime DateTime,
+            clientUtcTime DateTime,
+            gameSessionId string,
+            lat float,
+            lon float,
+            geoHash double,
+            geoHashPrecision int,
+            geoHashCenterlat float,
+            geoHashCenterlon float,
+            country string,
+            district string,
+            city string,
+            properties string
+    FROM @INPUT_FILE
+    USING Extractors.Text(delimiter: '|', encoding: Encoding.UTF8, skipFirstNRows: 1);
+
+// Create temporary table with median latitude and row number
+@MEDIAN_LAT_COORDS_TMP = 
+    SELECT 
+        l.geoHash AS geoHash, 
+        l.lat AS latitude,
+        l.lon AS longitude,
+        ROW_NUMBER() OVER (PARTITION BY l.geoHash ORDER BY l.lat ASC) AS rowNumber
+    FROM @LOCATIONS_RAW AS l
+    JOIN
+        (SELECT 
+            geoHash,
+            PERCENTILE_DISC(0.5) WITHIN GROUP ( ORDER BY lat ASC ) OVER ( PARTITION BY geoHash ) AS medianLatitude
+        FROM @LOCATIONS_RAW) AS g 
+    ON l.geoHash == g.geoHash AND g.medianLatitude == l.lat;
+
+// Table that contains geoHash and its associated coordinates: median latitude and the minimum corresponding longitude
+@MEDIAN_COORDS = 
+    SELECT
+        geoHash,
+        latitude,
+        longitude
+    FROM @MEDIAN_LAT_COORDS_TMP
+    WHERE rowNumber == 1;
+
+// Table with raw counts per geoHash
+@RAW_COUNTS = 
+    SELECT geoHash,
+           COUNT(*) AS numPts
+    FROM @LOCATIONS_RAW
+    GROUP BY geoHash;
+
+// Table with counts and coordinates per geoHash
+@COUNTS =
+    SELECT l.geoHash,
+           l.numPts,
+           g.latitude,
+           g.longitude
+    FROM @RAW_COUNTS AS l
+         JOIN @MEDIAN_COORDS AS g
+         ON l.geoHash == g.geoHash;
+
+
+// Output coordinates of geoHashes
+OUTPUT @MEDIAN_COORDS
+TO @OUTPUT_FILE_COORDS
+USING Outputters.Csv();
+
+// Output counts per geoHash and its corresponding coordinates
+OUTPUT @COUNTS
+TO @OUTPUT_FILE
+USING Outputters.Csv();
