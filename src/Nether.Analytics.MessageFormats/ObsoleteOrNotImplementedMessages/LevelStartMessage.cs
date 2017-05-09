@@ -17,6 +17,5 @@ namespace Nether.Analytics.MessageFormats
 
         public string GameSessionId { get; set; }
         public long Level { get; set; }
-
     }
 }

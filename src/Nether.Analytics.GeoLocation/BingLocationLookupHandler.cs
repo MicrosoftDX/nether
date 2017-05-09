@@ -11,9 +11,9 @@ namespace Nether.Analytics.GeoLocation
 {
     public class BingLocationLookupHandler : IMessageHandler
     {
-        string _bingMapsKey;
-        string _latProperty;
-        string _lonProperty;
+        private string _bingMapsKey;
+        private string _latProperty;
+        private string _lonProperty;
 
         public BingLocationLookupHandler(string bingMapsKey, string latProperty = "lat", string lonProperty = "lon")
         {

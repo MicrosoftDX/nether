@@ -6,8 +6,8 @@ namespace Nether.Analytics
 {
     public class PipelineDateFilePathAlgorithm : IFilePathAlgorithm
     {
-        string _rootFolder;
-        NewFileNameOptions _newFileOption;
+        private string _rootFolder;
+        private NewFileNameOptions _newFileOption;
 
         public PipelineDateFilePathAlgorithm(string rootFolder = "nether", NewFileNameOptions newFileOption = NewFileNameOptions.Every15Minutes)
         {
@@ -15,7 +15,7 @@ namespace Nether.Analytics
             _newFileOption = newFileOption;
         }
 
-        public (string[] hierarchy, string name) GetFilePath(string pipelineName, int idx, Message msg)
+        public (private string[] _hierarchy,private string _name) private GetFilePath(string pipelineName, int idx, Message msg)
         {
             // _rootFolder/pipelineName/messageType/year/month/day
             var hierarchy = new string[]

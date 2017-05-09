@@ -13,7 +13,6 @@ namespace Nether.Integration.Analytics
 
     public interface INetherMessage
     {
-
     }
 }
 

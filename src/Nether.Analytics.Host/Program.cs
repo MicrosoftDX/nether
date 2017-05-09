@@ -33,7 +33,7 @@ namespace Nether.Analytics.Host
         private const string NAH_Azure_DLSOutputManager_AccountName = "NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME";
 
 
-        private static IConfigurationRoot Configuration;
+        private static IConfigurationRoot s_configuration;
 
         private static void Main(string[] args)
         {
@@ -66,11 +66,11 @@ namespace Nether.Analytics.Host
             // Setup Listener. This will be the same for all pipelines we are building.
             var listenerConfig = new EventHubsListenerConfiguration
             {
-                EventHubConnectionString = Configuration[NAH_EHListener_ConnectionString],
-                EventHubPath = Configuration[NAH_EHListener_EventHubPath],
-                ConsumerGroupName = Configuration[NAH_EHListener_ConsumerGroup],
-                StorageConnectionString = Configuration[NAH_EHListener_StorageConnectionString],
-                LeaseContainerName = Configuration[NAH_EHListener_LeaseContainerName]
+                EventHubConnectionString = s_configuration[NAH_EHListener_ConnectionString],
+                EventHubPath = s_configuration[NAH_EHListener_EventHubPath],
+                ConsumerGroupName = s_configuration[NAH_EHListener_ConsumerGroup],
+                StorageConnectionString = s_configuration[NAH_EHListener_StorageConnectionString],
+                LeaseContainerName = s_configuration[NAH_EHListener_LeaseContainerName]
             };
             var listener = new EventHubsListener(listenerConfig);
 
@@ -89,18 +89,18 @@ namespace Nether.Analytics.Host
                 clusteringSerializer,
                 new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every5Minutes),
 
-                domain: Configuration[NAH_AAD_Domain],
-                clientId: Configuration[NAH_AAD_ClientId],
-                clientSecret: Configuration[NAH_AAD_ClientSecret],
-                subscriptionId: Configuration[NAH_Azure_SubscriptionId],
-                adlsAccountName: Configuration[NAH_Azure_DLSOutputManager_AccountName]);
+                domain: s_configuration[NAH_AAD_Domain],
+                clientId: s_configuration[NAH_AAD_ClientId],
+                clientSecret: s_configuration[NAH_AAD_ClientSecret],
+                subscriptionId: s_configuration[NAH_Azure_SubscriptionId],
+                adlsAccountName: s_configuration[NAH_Azure_DLSOutputManager_AccountName]);
 
             var clusteringConsoleOutputManager = new ConsoleOutputManager(clusteringSerializer);
 
             builder.Pipeline("clustering")
                 .HandlesMessageType("geo-location", "1.0.0")
                 .HandlesMessageType("geo-location", "1.0.1")
-                .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true})
+                .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
                 .OutputTo(clusteringConsoleOutputManager, clusteringDlsOutputManager);
 
 
@@ -135,7 +135,7 @@ namespace Nether.Analytics.Host
                 .AddJsonFile(AppSettingsFile, optional: true)
                 .AddEnvironmentVariables();
 
-            Configuration = configBuilder.Build();
+            s_configuration = configBuilder.Build();
         }
 
         private static ConfigurationStatus CheckConfigurationStatus(params string[] settings)
@@ -149,7 +149,7 @@ namespace Nether.Analytics.Host
 
             foreach (var setting in settings)
             {
-                var val = Configuration[setting];
+                var val = s_configuration[setting];
 
                 if (string.IsNullOrWhiteSpace(val))
                 {

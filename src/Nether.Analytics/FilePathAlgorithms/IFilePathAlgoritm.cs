@@ -5,6 +5,6 @@ namespace Nether.Analytics
 {
     public interface IFilePathAlgorithm
     {
-        (string[] hierarchy, string name) GetFilePath(string pipelineName, int idx, Message msg);
+        (string[] _hierarchy,string _name) GetFilePath(string pipelineName, int idx, Message msg);
     }
 }

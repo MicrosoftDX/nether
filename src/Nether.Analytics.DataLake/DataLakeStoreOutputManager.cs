@@ -189,5 +189,4 @@ namespace Nether.Analytics.DataLake
             } while (tryAgain);
         }
     }
-
 }
