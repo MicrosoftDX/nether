@@ -101,8 +101,8 @@ namespace Nether.Analytics.DataLake
         {
             var fp = _filePathAlgorithm.GetFilePath(pipelineName, idx, msg);
 
-            var path = "/" + string.Join("/", fp.hierarchy) + "/";
-            var fileName = $"{fp.name}.{_serializer.FileExtension}";
+            var path = "/" + string.Join("/", fp.Hierarchy) + "/";
+            var fileName = $"{fp.Name}.{_serializer.FileExtension}";
 
             return path + fileName;
         }

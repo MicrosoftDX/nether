@@ -15,7 +15,7 @@ namespace Nether.Analytics
             _newFileOption = newFileOption;
         }
 
-        public (private string[] _hierarchy,private string _name) private GetFilePath(string pipelineName, int idx, Message msg)
+        public FilePathResult GetFilePath(string pipelineName, int idx, Message msg)
         {
             // _rootFolder/pipelineName/messageType/year/month/day
             var hierarchy = new string[]
@@ -42,7 +42,7 @@ namespace Nether.Analytics
                 name = $"{hour}_{minute}";
             }
 
-            return (hierarchy, name);
+            return new FilePathResult { Hierarchy = hierarchy, Name = name };
         }
     }
 
