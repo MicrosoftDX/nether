@@ -1,0 +1,6 @@
+src/Nether.Analytics
+src/Nether.Analytics.BlobStorage
+src/Nether.Analytics.DataLake
+src/Nether.Analytics.EventHubs
+src/Nether.Analytics.GeoLocation
+src/Nether.Analytics.MessageFormats

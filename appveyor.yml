@@ -4,15 +4,14 @@ services:
   - mssql2016
 build_script:
 - ps: ./RunCodeFormatter.ps1
-- ps: ./build.ps1
+- ps: ./build.ps1 -BuildVersion "0.0.1-alpha$($env:APPVEYOR_BUILD_NUMBER.PadLeft(6,'0'))"
 - git rev-parse HEAD > commit.txt
 test_script:
 - ps: ./run-unit-tests.ps1
 - ps: ./appveyor-run-with-integration-tests.ps1
 after_test:
 - ps: ./appveyor-packageweb.ps1
-- ps:  Push-AppveyorArtifact src/Nether.Web/bin/Release/netcoreapp1.1/Nether.Web.zip -FileName Nether.Web.Zip -Type WebDeployPackage
-- ps:  Push-AppveyorArtifact commit.txt -FileName commit.txt -Type Auto
+- ps: ./appveyor-publishartifacts.ps1
 deploy:
 - provider: AzureBlob
   storage_account_name: netherartifacts
