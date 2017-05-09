@@ -1,7 +1,6 @@
 ﻿DECLARE @YEAR int = 2017;
 DECLARE @INPUT_FILE string = String.Concat( "/", @YEAR.ToString(), "/{*}/{*}/locations.csv");
 DECLARE @OUTPUT_FILE string = String.Concat( "/output/locations/yearly/", @YEAR.ToString(), ".csv");
-DECLARE @OUTPUT_FILE_COORDS string = String.Concat( "/output/geoHashCoordinates/yearly/", @YEAR.ToString(), "coords.csv");
 
 // Read raw location events
 @LOCATIONS_RAW =
@@ -65,11 +64,6 @@ DECLARE @OUTPUT_FILE_COORDS string = String.Concat( "/output/geoHashCoordinates/
          JOIN @MEDIAN_COORDS AS g
          ON l.geoHash == g.geoHash;
 
-
-// Output coordinates of geoHashes
-OUTPUT @MEDIAN_COORDS
-TO @OUTPUT_FILE_COORDS
-USING Outputters.Csv();
 
 // Output counts per geoHash and its corresponding coordinates
 OUTPUT @COUNTS
