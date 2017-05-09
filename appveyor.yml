@@ -23,7 +23,7 @@ deploy:
   artifact: Nether.Web.Zip,commit.txt
   on:
     branch: master
-deploy:
+
   provider: NuGet
   server: https://www.myget.org/F/nether/api/v2/package
   api_key:
