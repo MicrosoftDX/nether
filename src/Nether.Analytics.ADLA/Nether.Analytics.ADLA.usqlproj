@@ -21,34 +21,9 @@
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Script Include="locations-1-createTable.usql" />
-    <Script Include="locations-2-read.usql" />
-    <Script Include="locations-count.usql" />
-    <Script Include="locations-geohash-coordinates.usql" />
-    <Script Include="locations-random-count.usql" />
-    <Script Include="median-geohash-coords.usql" />
-    <Script Include="Test.usql" />
-    <ScriptCode Include="locations-1-createTable.usql.cs">
-      <DependentUpon>locations-1-createTable.usql</DependentUpon>
-    </ScriptCode>
-    <ScriptCode Include="locations-2-read.usql.cs">
-      <DependentUpon>locations-2-read.usql</DependentUpon>
-    </ScriptCode>
-    <ScriptCode Include="locations-count.usql.cs">
-      <DependentUpon>locations-count.usql</DependentUpon>
-    </ScriptCode>
-    <ScriptCode Include="locations-geohash-coordinates.usql.cs">
-      <DependentUpon>locations-geohash-coordinates.usql</DependentUpon>
-    </ScriptCode>
-    <ScriptCode Include="locations-random-count.usql.cs">
-      <DependentUpon>locations-random-count.usql</DependentUpon>
-    </ScriptCode>
-    <ScriptCode Include="median-geohash-coords.usql.cs">
-      <DependentUpon>median-geohash-coords.usql</DependentUpon>
-    </ScriptCode>
-    <ScriptCode Include="Test.usql.cs">
-      <DependentUpon>Test.usql</DependentUpon>
-    </ScriptCode>
+    <Script Include="locations-dailyCount-medianCoords.usql" />
+    <Script Include="locations-monthlyCount-medianCoords.usql" />
+    <Script Include="locations-yearlyCount-medianCoords.usql" />
   </ItemGroup>
   <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Usql.targets" />
 </Project>
