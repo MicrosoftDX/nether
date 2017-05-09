@@ -13,35 +13,64 @@ To use the nether SDK include the nether script in your project. Reference the s
 ```
 ```javascript
 var config = {
-        netherClientId: '<client Id>',
-        netherClientSecret: '<client secret>',
-        facebookAppId: '<facebook app Id>',
-        netherBaseUrl: '<nether url>'
+        netherBaseUrl: '<nether url>',
+        providers: nether.Player.Identity.facebookProvider | nether.Player.Identity.tokenProvider,
+        providerConfig: [{
+                provider: nether.Player.Identity.facebookProvider,
+                netherClientId: '<client Id>',
+                netherClientSecret: '<client secret>',
+                facebookAppId: '<facebook app Id>',
+            },
+            {
+                provider: nether.Player.Identity.tokenProvider,
+                netherClientId: '<client Id>',
+                netherClientSecret: '<client secret>' 
+            }]
     }
-    nether.init(config, facebookInitailised, netherInitialised);
+    nether.init(config, netherInitialised);
 ```
-To initialise Nether use the ***nether.init*** method passing the Nether configuration parameters and the callbacks. When nether is initialised, Nether checks to see if the user is logged into facebook and if so proceeds to authenticate the user with Nether.
-nether.init provides two callbacks: -
-### facebookInitialised(loggedin)
-The facebookInitialised callback provides you with information about whether the user is logged into facebook by parsing a boolean value.
+To initialise Nether use the ***nether.init*** method passing the Nether configuration parameters and the callback. When Nether is initialised the facebook JS SDK is also loaded if it's not already loaded in the environment.
+nether.init provides one callback: -
+### netherInitialised(success)
+The netherInitialised callback provides you with information about whether Nether was successfully initialised. 
+#### Example usage
+```html
+<script>
+    function netherInitialised(success) {
+        if (connected === true) {
+            console.log('Nether initialised');
+            nether.initProviders(facebookProviderInitialised, netherProviderInitialised);
+        } else {
+            console.log('Could not initialise Nether');
+        }
+    }
+    </script>
+```
+### Check if user has a provider token and auto log in to Nether
+```javascript
+    nether.initProviders(providersInitialised, netherLoggedIn);
+```
+
+### providersInitialised(loggedin)
+The ***providersInitialised*** callback provides you with information about whether the user is logged into a provider by parsing a boolean value.
 #### Example usage
 ```html
     <script>
-    function facebookInitialised(loggedin) {
+    function providersInitialised(loggedin) {
         if (connected === true) {
-            console.log('The user is logged into facebook')
+            console.log('The user is logged in')
         } else {
-            console.log('The user is not logged into facebook');
+            console.log('The user is not logged in');
         }
     }
     </script>
 ``` 
-### netherInitialised(loggedin)
-The netherInitialised callback provides you with information about whether the user is logged into nether. 
+### netherLoggedIn(loggedin)
+The netherLoggedIn callback provides you with information about whether the user is logged into nether. 
 #### Example usage
 ```html
 <script>
-    function netherInitialised(loggedin) {
+    function netherLoggedIn(loggedin) {
         if (connected === true) {
             console.log('The user is logged into nether')
         } else {
@@ -257,6 +286,17 @@ loginUser = function() {
 </script>
 ```
 
+### Provider authentication with Nether
+You can use the ***nether.player.identity.authWithToken(provider, callback)*** method to authenticate a user with Nether.
+### Example usage
+```javascript
+checkAuth = function(status) {
+    if (status === true) 
+        console.log('User authenticated with nether');
+}
+nether.player.identity.authWithToken(nether.Player.Identity.tokenProvider, checkAuth);
+```
+
 ### authWithFacebookToken
 You can use the ***nether.player.identity.authWithFacebookToken(callback)*** method to authenticate a user logged into facebook with Nether.
 The user must be logged into facebook first before calling this method.
@@ -268,4 +308,3 @@ checkAuth = function(status) {
 }
 nether.player.identity.authWithFacebookToken(checkAuth);
 ```
-
