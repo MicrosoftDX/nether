@@ -25,6 +25,6 @@ deploy:
 - provider: NuGet
   server: https://www.myget.org/F/nether/api/v2/package
   api_key:
-    secure: PsZJT2tXyw1DEvAU8bN7gPLbNUtQeJ1L4qMkPXlemjdZJyBvKH+uM7CuHRf148yN
+    secure: uv4s9X8ApSpnFne/nhln42uV6PJ0sE2D2U4LZZhTzWAjbmnJWWK3ocpjgAkkvTsW
   on:
     branch: master
