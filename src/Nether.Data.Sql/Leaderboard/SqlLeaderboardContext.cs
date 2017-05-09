@@ -18,7 +18,7 @@ namespace Nether.Data.Sql.Leaderboard
         private readonly SqlLeaderboardContextOptions _options;
 
         private static string s_topSql = "EXEC GetHighScores @StartRank = 0, @Count = {0}";
-        private static string s_aroundMeSql = "EXEC GetScoresAroundPlayer @Gamertag = {0}, @Radius = {1}";
+        private static string s_aroundMeSql = "EXEC GetScoresAroundPlayer @UserId = {0}, @Radius = {1}";
 
         public DbSet<QueriedGamerScore> Ranks { get; set; }
 
@@ -33,7 +33,7 @@ namespace Nether.Data.Sql.Leaderboard
             base.OnModelCreating(builder);
 
             builder.Entity<QueriedGamerScore>()
-                .HasKey(c => c.Gamertag);
+                .HasKey(c => c.UserId);
 
             builder.Entity<SavedGamerScore>()
                 .ForSqlServerToTable("Scores");
@@ -60,19 +60,19 @@ namespace Nether.Data.Sql.Leaderboard
                 new GameScore
                 {
                     Score = s.Score,
-                    Gamertag = s.Gamertag,
+                    UserId = s.UserId,
                     Rank = s.Ranking
                 }).ToListAsync();
         }
 
-        public override async Task<List<GameScore>> GetScoresAroundMeAsync(string gamertag, int radius)
+        public override async Task<List<GameScore>> GetScoresAroundMeAsync(string userId, int radius)
         {
-            return await Ranks.FromSql(s_aroundMeSql, gamertag, radius)
+            return await Ranks.FromSql(s_aroundMeSql, userId, radius)
                 .Select(s =>
                 new GameScore
                 {
                     Score = s.Score,
-                    Gamertag = s.Gamertag,
+                    UserId = s.UserId,
                     Rank = s.Ranking
                 }).ToListAsync();
         }

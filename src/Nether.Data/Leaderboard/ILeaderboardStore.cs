@@ -11,8 +11,8 @@ namespace Nether.Data.Leaderboard
         Task SaveScoreAsync(GameScore score);
         Task<List<GameScore>> GetAllHighScoresAsync();
         Task<List<GameScore>> GetTopHighScoresAsync(int n);
-        Task<List<GameScore>> GetScoresAroundMeAsync(string gamerTag, int radius);
-        Task DeleteAllScoresAsync(string gamerTag);
+        Task<List<GameScore>> GetScoresAroundMeAsync(string userId, int radius);
+        Task DeleteAllScoresAsync(string userId);
     }
 }
 

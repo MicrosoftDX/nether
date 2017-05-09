@@ -66,18 +66,21 @@ namespace Nether.Web.Features.Leaderboard
             }
 
             //TODO: Handle exceptions and retries
-            var gamertag = User.GetGamerTag();
+            /*var gamertag = User.GetGamerTag();
             if (string.IsNullOrWhiteSpace(gamertag))
             {
                 _logger.LogError("user has no gamertag: '{0}'", User.GetId());
                 return this.ValidationFailed(new ErrorDetail("gamertag", "The user doesn't have a gamertag"));
-            }
+            }*/
+
+
+            var userId = User.GetId();          
 
             // Save score and call analytics in parallel
             await Task.WhenAll(
                 _store.SaveScoreAsync(new GameScore
                 {
-                    Gamertag = gamertag,
+                    UserId = userId,
                     Country = request.Country,
                     Score = request.Score
                 }),
@@ -126,14 +129,14 @@ namespace Nether.Web.Features.Leaderboard
         [HttpDelete("")]
         public async Task<IActionResult> DropMyScores()
         {
-            var gamerTag = User.GetGamerTag();
-            if (string.IsNullOrWhiteSpace(gamerTag))
+            var userId = User.GetId();            
+            if (string.IsNullOrWhiteSpace(userId))
             {
-                _logger.LogError("user has no gamertag: '{0}'", User.GetId());
-                return this.ValidationFailed(new ErrorDetail("gamertag", "The user doesn't have a gamertag"));
+                _logger.LogError("user has no user ID");
+                return this.ValidationFailed(new ErrorDetail("userid", "The user doesn't have a userID"));
             }
 
-            await _store.DeleteAllScoresAsync(gamerTag);
+            await _store.DeleteAllScoresAsync(userId);
 
             return Ok();
         }

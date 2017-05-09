@@ -33,11 +33,11 @@ namespace Nether.Data.EntityFramework.Leaderboard
                 .Property(s => s.Id).HasValueGenerator<GuidValueGenerator>();
 
             builder.Entity<SavedGamerScore>()
-                .HasIndex(s => new { s.DateAchieved, s.Gamertag, s.Score });
+                .HasIndex(s => new { s.DateAchieved, s.UserId, s.Score });
 
             builder.Entity<SavedGamerScore>().Property(s => s.DateAchieved).IsRequired();
-            builder.Entity<SavedGamerScore>().Property(s => s.Gamertag).IsRequired();
-            builder.Entity<SavedGamerScore>().Property(s => s.Gamertag).HasMaxLength(50);
+            builder.Entity<SavedGamerScore>().Property(s => s.UserId).IsRequired();
+            builder.Entity<SavedGamerScore>().Property(s => s.UserId).HasMaxLength(50);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -50,18 +50,18 @@ namespace Nether.Data.EntityFramework.Leaderboard
 
         public abstract Task<List<GameScore>> GetHighScoresAsync(int n);
 
-        public abstract Task<List<GameScore>> GetScoresAroundMeAsync(string gamertag, int radius);
+        public abstract Task<List<GameScore>> GetScoresAroundMeAsync(string userid, int radius);
 
 
         public virtual async Task SaveScoreAsync(GameScore score)
         {
-            await Scores.AddAsync(new SavedGamerScore { Score = score.Score, Gamertag = score.Gamertag, DateAchieved = DateTime.UtcNow });
+            await Scores.AddAsync(new SavedGamerScore { Score = score.Score, UserId = score.UserId, DateAchieved = DateTime.UtcNow });
             await SaveChangesAsync();
         }
 
-        public async Task DeleteScores(string gamerTag)
+        public async Task DeleteScoresAsync(string userId)
         {
-            List<SavedGamerScore> scores = await Scores.Where(_ => _.Gamertag == gamerTag).ToListAsync();
+            List<SavedGamerScore> scores = await Scores.Where(_ => _.UserId == userId).ToListAsync();
             RemoveRange(scores);
             await SaveChangesAsync();
         }

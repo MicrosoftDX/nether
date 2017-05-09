@@ -89,9 +89,9 @@ namespace Nether.Data.EntityFramework.PlayerManagement
                 await _context.SaveChangesAsync();
             }
         }
-        public async Task DeletePlayerDetailsForUserIdAsync(string gamertag)
+        public async Task DeletePlayerDetailsForUserIdAsync(string userid)
         {
-            var entity = await _context.Players.SingleOrDefaultAsync(p => p.Gamertag == gamertag);
+            var entity = await _context.Players.SingleOrDefaultAsync(p => p.UserId == userid);
             _context.Players.Remove(entity);
             await _context.SaveChangesAsync();
         }

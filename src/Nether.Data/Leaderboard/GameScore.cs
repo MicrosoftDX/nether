@@ -5,10 +5,10 @@ using System.Diagnostics;
 
 namespace Nether.Data.Leaderboard
 {
-    [DebuggerDisplay("GameScore (tag '{Gamertag}', score {Score})")]
+    [DebuggerDisplay("GameScore (tag '{UserId}', score {Score})")]
     public class GameScore
     {
-        public string Gamertag { get; set; }
+        public string UserId { get; set; }
         public string Country { get; set; }
         public int Score { get; set; }
         public long Rank { get; set; }

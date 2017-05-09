@@ -83,7 +83,7 @@ namespace Nether.Web.Features.Leaderboard
         [HttpGet("{name}", Name = nameof(Get))]
         public async Task<IActionResult> Get(string name)
         {
-            var gamertag = User.GetGamerTag();
+            var userId = User.GetId();
 
             _appMonitor.LogEvent("Leaderboard", properties: new Dictionary<string, string> {
                 { "Name", name }
@@ -99,11 +99,11 @@ namespace Nether.Web.Features.Leaderboard
             switch (type)
             {
                 case LeaderboardType.AroundMe:
-                    if (gamertag == null)
+                    if (userId == null)
                     {
-                        return this.ValidationFailed(new ErrorDetail("gamertag", "Must be signed in as a player with a gamertag to retrive this leaderboard"));
+                        return this.ValidationFailed(new ErrorDetail("userId", "Must be signed in as a player with a userId to retrive this leaderboard"));
                     }
-                    scores = await _store.GetScoresAroundMeAsync(gamertag, config.Radius);
+                    scores = await _store.GetScoresAroundMeAsync(userId, config.Radius);
                     break;
                 case LeaderboardType.Top:
                     scores = await _store.GetTopHighScoresAsync(config.Top);
@@ -114,16 +114,16 @@ namespace Nether.Web.Features.Leaderboard
             }
 
             GameScore currentPlayer = null;
-            if (config.IncludeCurrentPlayer && gamertag != null)
+            if (config.IncludeCurrentPlayer && userId != null)
             {
-                currentPlayer = (await _store.GetScoresAroundMeAsync(gamertag, 0)).FirstOrDefault();
+                currentPlayer = (await _store.GetScoresAroundMeAsync(userId, 0)).FirstOrDefault();
             }
 
             // Format response model
             var resultModel = new LeaderboardGetResponseModel
             {
                 Entries = scores
-                            ?.Select(s => LeaderboardGetResponseModel.LeaderboardEntry.Map(s, gamertag))
+                            ?.Select(s => LeaderboardGetResponseModel.LeaderboardEntry.Map(s, userId))
                             ?.ToList(),
                 CurrentPlayer = LeaderboardGetResponseModel.LeaderboardEntry.Map(currentPlayer, null)
             };
