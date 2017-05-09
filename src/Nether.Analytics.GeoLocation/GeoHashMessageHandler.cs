@@ -19,7 +19,7 @@ namespace Nether.Analytics.GeoLocation
         public string GeoHashCenterLatProperty { get; set; } = "geoHashCenterLat";
         public string GeoHashCenterLonProperty { get; set; } = "geoHashCenterLon";
 
-        public async Task<MessageHandlerResluts> ProcessMessageAsync(Message msg, string pipelineName, int idx)
+        public Task<MessageHandlerResluts> ProcessMessageAsync(Message msg, string pipelineName, int idx)
         {
             //TODO: Handle incorrect messages that doesn't have the required properties
             var lat = double.Parse(msg.Properties[InputLatProperty]);
@@ -39,7 +39,7 @@ namespace Nether.Analytics.GeoLocation
                 msg.Properties[GeoHashCenterLonProperty] = x.Coordinates.Lon.ToString();
             }
 
-            return MessageHandlerResluts.Success;
+            return Task.FromResult(MessageHandlerResluts.Success);
         }
     }
 }

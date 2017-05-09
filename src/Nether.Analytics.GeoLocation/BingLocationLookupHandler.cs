@@ -30,12 +30,13 @@ namespace Nether.Analytics.GeoLocation
             string lat;
             string lon;
 
+            //TODO: Catch more specific error if property doesn't exist or use another method to get the properties
             try
             {
                 lat = msg.Properties[_latProperty];
                 lon = msg.Properties[_lonProperty];
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Console.WriteLine($"Unable to find required properties: '{_latProperty}' and '{_lonProperty}' on message");
                 return MessageHandlerResluts.FailStopProcessing;
