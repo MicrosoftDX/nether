@@ -24,4 +24,8 @@
     <ProjectReference Include="..\Nether.Analytics\Nether.Analytics.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-setversion" Version="1.0.0" />
+  </ItemGroup>
+
 </Project>
