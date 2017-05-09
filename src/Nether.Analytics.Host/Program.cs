@@ -100,7 +100,9 @@ namespace Nether.Analytics.Host
             builder.Pipeline("clustering")
                 .HandlesMessageType("geo-location", "1.0.0")
                 .HandlesMessageType("geo-location", "1.0.1")
-                .AddHandler(new NullMessageHandler())
+                .AddHandler(new DebugMessageHandler())
+                .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true})
+                .AddHandler(new DebugMessageHandler())
                 .OutputTo(clusteringConsoleOutputManager, clusteringDlsOutputManager);
 
 
