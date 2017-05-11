@@ -89,7 +89,7 @@ do
   if [ "x$var" != "x" ]
   then
     echo "*** dotnet build $var"
-    dotnet build "$var"
+    dotnet build "$var" --framework netcoreapp1.1
     lastexit=$?
     if [ $lastexit -ne 0 ]
     then
