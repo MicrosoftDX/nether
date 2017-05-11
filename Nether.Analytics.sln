@@ -19,6 +19,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnalyticsTestClient", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.GeoLocation", "src\Nether.Analytics.GeoLocation\Nether.Analytics.GeoLocation.csproj", "{B350640B-7ED6-4EBA-B9E1-327C88D882DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics.DataLake.UnitTests", "tests\Nether.Analytics.DataLake.UnitTests\Nether.Analytics.DataLake.UnitTests.csproj", "{977E45B6-81DA-4915-A388-B495E2CCBC1F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B636CA26-4412-4202-AA24-EF028D8FE4DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,8 +61,15 @@ Global
 		{B350640B-7ED6-4EBA-B9E1-327C88D882DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B350640B-7ED6-4EBA-B9E1-327C88D882DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B350640B-7ED6-4EBA-B9E1-327C88D882DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{977E45B6-81DA-4915-A388-B495E2CCBC1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{977E45B6-81DA-4915-A388-B495E2CCBC1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{977E45B6-81DA-4915-A388-B495E2CCBC1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{977E45B6-81DA-4915-A388-B495E2CCBC1F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{977E45B6-81DA-4915-A388-B495E2CCBC1F} = {B636CA26-4412-4202-AA24-EF028D8FE4DB}
 	EndGlobalSection
 EndGlobal
