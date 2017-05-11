@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics", "src\Nether.Analytics\Nether.Analytics.csproj", "{91FC225B-140C-4E94-9803-526A90A8F66E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics", "src\Nether.Analytics\Nether.Analytics.csproj", "{91FC225B-140C-4E94-9803-526A90A8F66E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics.EventHubs", "src\Nether.Analytics.EventHubs\Nether.Analytics.EventHubs.csproj", "{97E1751C-7801-48CD-A10E-360835F50B42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.EventHubs", "src\Nether.Analytics.EventHubs\Nether.Analytics.EventHubs.csproj", "{97E1751C-7801-48CD-A10E-360835F50B42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics.BlobStorage", "src\Nether.Analytics.BlobStorage\Nether.Analytics.BlobStorage.csproj", "{DBB73E90-E2A3-4C1E-9E18-FBED4FF6F2F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.BlobStorage", "src\Nether.Analytics.BlobStorage\Nether.Analytics.BlobStorage.csproj", "{DBB73E90-E2A3-4C1E-9E18-FBED4FF6F2F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics.DataLake", "src\Nether.Analytics.DataLake\Nether.Analytics.DataLake.csproj", "{3D91B9E7-02E2-43F8-A9F8-10D9912E20C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.DataLake", "src\Nether.Analytics.DataLake\Nether.Analytics.DataLake.csproj", "{3D91B9E7-02E2-43F8-A9F8-10D9912E20C9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.Host", "src\Nether.Analytics.Host\Nether.Analytics.Host.csproj", "{D766D132-CA72-4B91-8E52-0536592AB843}"
 EndProject
