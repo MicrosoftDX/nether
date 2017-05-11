@@ -122,6 +122,5 @@ namespace Nether.Analytics.DataLake
                 throw new Exception($"Variable {variable} was found in more than one place in the script");
             }
         }
-
     }
 }

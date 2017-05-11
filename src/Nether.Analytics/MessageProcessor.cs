@@ -39,8 +39,6 @@ namespace Nether.Analytics
 
         private async Task ProcessMessagesAsync(IEnumerable<T> unparsedMessages)
         {
-
-
             //TODO: Run this loop in parallel
             foreach (var unparsedMessage in unparsedMessages)
             {
