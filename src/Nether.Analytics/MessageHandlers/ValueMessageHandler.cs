@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace Nether.Analytics
@@ -8,7 +11,7 @@ namespace Nether.Analytics
     /// </summary>
     public class ValueMessageHandler : IMessageHandler
     {
-        IValueGenerator _generator;
+        private IValueGenerator _generator;
         private string[] _properties;
 
         /// <summary>

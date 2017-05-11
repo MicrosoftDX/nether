@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 
 namespace Nether.Analytics
 {
@@ -11,13 +14,13 @@ namespace Nether.Analytics
 
     public class RandomDoubleValueGenerator : IValueGenerator
     {
-        private static Random _rnd = new Random();
+        private static Random s_rnd = new Random();
 
         public string DefaultProperty => "rnd";
 
         public string GeneratePropertyValue()
         {
-            return _rnd.NextDouble().ToString();
+            return s_rnd.NextDouble().ToString();
         }
     }
 }

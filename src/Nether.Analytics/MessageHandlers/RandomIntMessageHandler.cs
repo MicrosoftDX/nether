@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 
 namespace Nether.Analytics
 {
@@ -19,7 +22,7 @@ namespace Nether.Analytics
 
     public class RandomIntValueGenerator : IValueGenerator
     {
-        private static Random _rnd = new Random();
+        private static Random s_rnd = new Random();
 
         private int _minValue;
         private int _maxValue;
@@ -34,7 +37,7 @@ namespace Nether.Analytics
 
         public string GeneratePropertyValue()
         {
-            return _rnd.Next(_minValue, _maxValue).ToString();
+            return s_rnd.Next(_minValue, _maxValue).ToString();
         }
     }
 }
