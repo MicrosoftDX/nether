@@ -1,1 +1,2 @@
 tests/Nether.Web.UnitTests/Nether.Web.UnitTests.csproj
+tests/Nether.Analytics.DataLake.UnitTests/Nether.Analytics.DataLake.UnitTests.csproj
