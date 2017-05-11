@@ -12,6 +12,8 @@ https://www.myget.org/feed/netherjs/package/npm/nether-js-sdk
 
 There are two steps to restoring the package, all powered by NPM. First (*as a one off*) set the registry to the myget so that this package 
 
+npm install npm install oidc-client
+npm install npm install babel-polyfill@>=6.9.1
 npm config set registry https://www.myget.org/F/netherjs/npm/
 npm install nether-js-sdk@2.1.0
 
@@ -22,76 +24,60 @@ To use the nether SDK include the nether script in your project. Reference the s
 
 ```html
 <script src="/scripts/nether.js"></script>
+<script src="/scripts/oidc-client.js"></script>
 ```
 
-*Note that if you restored from NPM your path may be "node_modules/nether-js-sdk/src/nether.js"*
+*Note that if you restored from NPM your path may be "node_modules/nether-js-sdk/src/nether.js and node_modules/node_modules\oidc-client-node\lib/"*
 
 ```javascript
 var config = {
         netherBaseUrl: '<nether url>',
-        providers: nether.Player.Identity.facebookProvider | nether.Player.Identity.tokenProvider,
+        providers: nether.player.identity.providers.facebook | nether.player.identity.providers.nether,
         providerConfig: [{
-                provider: nether.Player.Identity.facebookProvider,
+                provider: nether.player.identity.providers.facebook,
                 netherClientId: '<client Id>',
                 netherClientSecret: '<client secret>',
                 facebookAppId: '<facebook app Id>',
             },
             {
-                provider: nether.Player.Identity.tokenProvider,
+                provider: nether.player.identity.providers.nether,
                 netherClientId: '<client Id>',
-                netherClientSecret: '<client secret>' 
+                redirectUrl: '<callback page>',
+                postLogoutRedirectUrl: '<home url>' 
             }]
     }
-    nether.init(config, netherInitialised);
+    nether.init(config);
 ```
-To initialise Nether use the ***nether.init*** method passing the Nether configuration parameters and the callback. When Nether is initialised the facebook JS SDK is also loaded if it's not already loaded in the environment.
-nether.init provides one callback: -
-### netherInitialised(success)
-The netherInitialised callback provides you with information about whether Nether was successfully initialised. 
-#### Example usage
-```html
-<script>
-    function netherInitialised(success) {
-        if (connected === true) {
-            console.log('Nether initialised');
-            nether.initProviders(facebookProviderInitialised, netherProviderInitialised);
-        } else {
-            console.log('Could not initialise Nether');
-        }
-    }
-    </script>
-```
+To initialise Nether use the ***nether.init*** method passing the Nether configuration parameters.
 ### Check if user has a provider token and auto log in to Nether
+
+### initProvider(nether.player.identity.provider, providerInitCallback, netherInitCallback, document)
+The ***initProvider*** callback initialises the specified login provider and authenticates the user with Nether if the user is already logged in to that provider. 
+#### Example usage
 ```javascript
-    nether.initProviders(providersInitialised, netherLoggedIn);
+    function providerInitCallback(provider, status) {
+        console.log(provider + ' ' + status);
+    }
+
+    function netherInitCallback(status) {
+        console.log(status)
+    }
+
+    nether.initProvider(nether.player.identity.provider.nether, providerInitCallback, netherInitCallback);
+    nether.initProvider(nether.player.identity.provider.facebook, providerInitCallback, netherInitCallback, document)
 ```
 
-### providersInitialised(loggedin)
-The ***providersInitialised*** callback provides you with information about whether the user is logged into a provider by parsing a boolean value.
+### Nether provider callback page
+If you are using the Nether provider you will need to create a callback page within your web app. 
 #### Example usage
-```html
+```javascript
+    <script src="oidc-client.js"></script>
     <script>
-    function providersInitialised(loggedin) {
-        if (connected === true) {
-            console.log('The user is logged in')
-        } else {
-            console.log('The user is not logged in');
-        }
-    }
-    </script>
-``` 
-### netherLoggedIn(loggedin)
-The netherLoggedIn callback provides you with information about whether the user is logged into nether. 
-#### Example usage
-```html
-<script>
-    function netherLoggedIn(loggedin) {
-        if (connected === true) {
-            console.log('The user is logged into nether')
-        } else {
-            console.log('The user is not logged into nether');
-        }
-    }
+        new Oidc.UserManager().signinRedirectCallback().then(function () {
+            window.location = "<home url>";
+        }).catch(function (e) {
+            console.error(e);
+        });
     </script>
 ```
 ### Analytics
@@ -322,4 +308,18 @@ checkAuth = function(status) {
         console.log('User authenticated with nether');
 }
 nether.player.identity.authWithFacebookToken(checkAuth);
+```
+
+### netherLogout
+Use the ***nether.player.identity.netherLogout()*** method to log users out of the Nether provider.
+#### Example usage
+```javascript
+nether.player.identity.netherLogout();
+```
+
+### netherLogin
+Use the ***nether.player.identity.netherLogin()*** method to log users in using the Nether provider. The user will be redirected to the login page
+#### Example usage
+```javascript
+nether.player.identity.netherLogin();
 ```

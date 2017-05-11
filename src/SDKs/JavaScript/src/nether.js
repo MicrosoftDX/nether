@@ -1,55 +1,93 @@
-/* TODO: Review callbacks for improvements
-         Review code for any further issues
-         Check if identity/users, identity/users/{userid} methods are required
-*/
 var nether = (function () {
     var nether = {
-        netherBaseUrl: ''
+        netherBaseUrl: '',
+        siteUrl: ''
     };
+
+    nether.oidcMgr;
 
     // Initialise nether
-    nether.init = function(config, facebookCallback, netherCallback, netherHost) {
-        nether.player.identity.netherClientId = config.netherClientId;
-        nether.player.identity.netherClientSecret = config.netherClientSecret;
+    nether.init = function(config) {
+        nether.player.identity.providerConfig = config.providerConfig;
+        nether.player.identity.enabledProviders = config.providers;
+
         nether.player.identity.facebookAppId = config.facebookAppId;
         nether.netherBaseUrl = config.netherBaseUrl;
+        nether.siteUrl = config.siteUrl;   
 
-        if (typeof FB === "undefined") {
-            // Load the facebook SDK asynchronously and then initialise nether
-            (function(d, s, id) {
-                var js, fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) return;
-                js = d.createElement(s); js.id = id;
-                js.src = '//connect.facebook.net/en_US/sdk.js';
-                fjs.parentNode.insertBefore(js, fjs);
-            }(netherHost? netherHost : document, 'script', 'facebook-jssdk'));
-
-            fbAsyncInit = function() {
-                FB.init({
-                    appId: nether.player.identity.facebookAppId,
-                    cookie: true,
-                    xfbml: true,
-                    version: 'v2.8'
-                });
-
-                nether.analytics.init();
-                nether.player.identity.init(facebookCallback, netherCallback);
-            };
-        }
-        else {
-            fbAsyncInit = function() {
-                FB.init({
-                    appId: nether.player.identity.facebookAppId,
-                    cookie: true,
-                    xfbml: true,
-                    version: 'v2.8'
-                });
-
-                nether.analytics.init();
-                nether.player.identity.init(facebookCallback, netherCallback);
-            };
-        }
+        return true;
     };
+
+    nether.initProvider = function(provider, providerCallback, netherCallback, netherHost) {
+        if (provider === nether.player.identity.providers.facebook) {
+            if (typeof FB === "undefined") {
+                // Load the facebook SDK asynchronously and then initialise nether
+                (function(d, s, id){
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) return;
+                    js = d.createElement(s); js.id = id;
+                    js.src = "//connect.facebook.net/es_GB/sdk.js";
+                    fjs.parentNode.insertBefore(js, fjs);
+                }(netherHost? netherHost : document, 'script', 'facebook-jssdk'));
+
+                facebookConfig = getProviderConfig(nether.player.identity.providers.facebook);
+                fbAsyncInit = function() {
+                    FB.init({
+                        appId: facebookConfig.facebookAppId,
+                        cookie: true,
+                        xfbml: true,
+                        version: 'v2.8'
+                    });
+
+                    nether.analytics.init();
+                    nether.player.identity.init(providerCallback, netherCallback);
+                };
+            }
+            else {
+                fbAsyncInit = function() {
+                    FB.init({
+                        appId: facebookConfig.facebookAppId,
+                        cookie: true,
+                        xfbml: true,
+                        version: 'v2.8'
+                    });
+
+                    nether.analytics.init();
+                    nether.player.identity.init(providerCallback, netherCallback);
+                };
+            }
+        }
+
+        if (provider === nether.player.identity.providers.nether) {
+            if (typeof Oidc === "undefined") {
+                alert('oidc-client.js needs including in your project');
+            }
+            else {
+                netherConfig = getProviderConfig(nether.player.identity.providers.nether);
+
+                var config = {
+                    authority: nether.netherBaseUrl + '/identity/',
+                    client_id: netherConfig.netherClientId,
+                    redirect_uri: nether.siteUrl + netherConfig.redirectUrl,
+                    response_type: "id_token token",
+                    scope: "openid profile nether-all",
+                    post_logout_redirect_uri: nether.siteUrl + netherConfig.postLogoutRedirectUrl
+                }
+                
+                nether.oidcMgr = new Oidc.UserManager(config);
+
+                nether.oidcMgr.getUser().then(function (user) {
+                    if (user) {
+                        nether.player.identity.accessToken = user.access_token;
+                        providerCallback('nether', true);
+                    }
+                    else {
+                        providerCallback('nether', false);
+                    }
+                });
+            }
+        }
+    }
     
     return nether;
 }());
@@ -485,6 +523,9 @@ nether.player = (function() {
 }());
 
 nether.player.identity = (function() {
+    var providerConfig;
+    var enabledProviders;
+
     var identity = {
         netherClientId: '',
         netherClientSecret: '',
@@ -494,7 +535,12 @@ nether.player.identity = (function() {
         loggedIn: false
     };
 
-    identity.init = function(facebookCallback, netherCallback) {
+    identity.providers = {
+        facebook: 'facebook',
+        nether: 'nether'
+    }
+
+    identity.init = function(providerCallback, netherCallback) {
         // Check to see if user is logged into facebook
         FB.getLoginStatus(function(res) {
             if (res.status === 'connected' && res.authResponse.accessToken) {
@@ -505,9 +551,9 @@ nether.player.identity = (function() {
             }
             // callback with facebook login status
             if (res.status === "connected") {
-                facebookCallback(true);
+                providerCallback('facebook', true);
             } else {
-                facebookCallback(false);
+                providerCallback('facebook', false);
             }
             
         });
@@ -537,13 +583,15 @@ nether.player.identity = (function() {
 
     // exchange facebook access token to identity token
     identity.authWithFacebookToken = function(callback) {
+        netherConfig = getProviderConfig(nether.player.identity.providers.facebook);
+        
         nether.common.ajax({
             url: nether.netherBaseUrl + '/identity/connect/token',
             method: 'POST',
             headers: {
                 'Content-type': 'application/x-www-form-urlencoded'
             },
-            data: 'grant_type=fb-usertoken&client_id=' + identity.netherClientId + '&client_secret=' + identity.netherClientSecret + '&scope=openid+profile+nether-all&token=' + identity.facebookAccessToken,
+            data: "grant_type=fb-usertoken&client_id=" + netherConfig.netherClientId + "&client_secret=" + netherConfig.netherClientSecret + "&scope=openid+profile+nether-all&token=" + identity.facebookAccessToken,
             callback: function(status, res) {
                 var data = JSON.parse(res);
                 
@@ -559,6 +607,23 @@ nether.player.identity = (function() {
             }
         });
     };
+
+    // nether login
+    identity.netherLogin = function() {
+        nether.oidcMgr.signinRedirect();
+    }
+
+    identity.netherLogout = function() {
+        nether.oidcMgr.signoutRedirect();
+    }
+
+    getProviderConfig = function(provider) {
+        for (var i = 0; i < nether.player.identity.providerConfig.length; i++ ) {
+            if (nether.player.identity.providerConfig[i].provider === provider) {
+                return nether.player.identity.providerConfig[i];
+            }
+        }
+    }
 
     return identity;
 }());
