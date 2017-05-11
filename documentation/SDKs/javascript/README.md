@@ -1,16 +1,31 @@
 #JavaScript SDK for Nether
 
-## Work in Progress
+*Work in Progress*
 
 ## Downloading the JavaScript SDK for Nether
+
+The Nether JS SDK is installable via NPM in a public feed hosted by (myget.org)[http://www.myget.org]. 
+
+https://www.myget.org/feed/netherjs/package/npm/nether-js-sdk
+
+### How to add the package 
+
+There are two steps to restoring the package, all powered by NPM. First (*as a one off*) set the registry to the myget so that this package 
+
+npm config set registry https://www.myget.org/F/netherjs/npm/
+npm install nether-js-sdk@2.1.0
 
 ### Installing the JavaScript SDK for Nether
 
 ## Usage
-To use the nether SDK include the nether script in your project. Reference the script in the webpage using 
+To use the nether SDK include the nether script in your project. Reference the script in the webpage using a reference to the js file: 
+
 ```html
 <script src="/scripts/nether.js"></script>
 ```
+
+*Note that if you restored from NPM your path may be "node_modules/nether-js-sdk/src/nether.js"*
+
 ```javascript
 var config = {
         netherBaseUrl: '<nether url>',
