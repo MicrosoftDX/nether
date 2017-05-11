@@ -89,7 +89,7 @@ namespace Nether.Analytics.Host
 
             // Setting up "Geo Clustering Recipe"
 
-            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueueTimeUtc", "gameSessionId", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon");
+            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueueTimeUtc", "gameSessionId", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "rnd");
 
             var clusteringDlsOutputManager = new DataLakeStoreOutputManager(
                 clusteringSerializer,
@@ -104,6 +104,7 @@ namespace Nether.Analytics.Host
                 .HandlesMessageType("geo-location", "1.0.0")
                 .HandlesMessageType("geo-location", "1.0.1")
                 .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
+                .AddHandler(new RandomIntMessageHandler())
                 .OutputTo(clusteringConsoleOutputManager, clusteringDlsOutputManager);
 
 
