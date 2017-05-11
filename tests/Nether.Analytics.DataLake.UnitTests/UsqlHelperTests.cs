@@ -17,10 +17,22 @@ namespace Nether.Analytics.DataLake.UnitTests
         [Fact]
         public void WhenParameterDoesNotExist_LeaveScriptIntact()
         {
+            Console.WriteLine("***************************************************");
+            Console.WriteLine("*** WhenParameterDoesNotExist_LeaveScriptIntact ***");
+            Console.WriteLine("***************************************************");
+
             var script = Resources.Script001;
             var expectedScript = script;
 
+            Console.WriteLine("Script (before):");
+            Console.WriteLine(script);
+            Console.WriteLine("---");
+
             var result = UsqlHelper.ReplaceVariableValueInScript(script, "@XYZ", 4711, out var variableFound);
+
+            Console.WriteLine("Result:");
+            Console.WriteLine(result);
+            Console.WriteLine("---");
 
             Assert.False(variableFound);
             Assert.Equal(expectedScript, result);
@@ -29,10 +41,22 @@ namespace Nether.Analytics.DataLake.UnitTests
         [Fact]
         public void WhenOneNumericParameterExists_ReplaceItsValue()
         {
+            Console.WriteLine("*****************************************************");
+            Console.WriteLine("*** WhenOneNumericParameterExists_ReplaceItsValue ***");
+            Console.WriteLine("*****************************************************");
+
             var script = Resources.Script001;
             var expectedScript = Resources.Script001a;
 
+            Console.WriteLine("Script (before):");
+            Console.WriteLine(script);
+            Console.WriteLine("---");
+
             var result = UsqlHelper.ReplaceVariableValueInScript(script, "@MONTH", 8, out var variableFound);
+
+            Console.WriteLine("Result:");
+            Console.WriteLine(result);
+            Console.WriteLine("---");
 
             Assert.True(variableFound);
             Assert.Equal(expectedScript, result);
