@@ -16,4 +16,5 @@ src/Nether.Analytics.PowerBI
 
 src/Nether.Analytics.MessageFormats
 src/TestClients/AnalyticsTestClient
+tests/Nether.Analytics.UnitTests
 tests/Nether.Analytics.DataLake.UnitTests

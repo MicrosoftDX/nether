@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics", "src\Nether.Analytics\Nether.Analytics.csproj", "{91FC225B-140C-4E94-9803-526A90A8F66E}"
 EndProject
@@ -26,6 +26,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics.Cosmos", "src\Nether.Analytics.Cosmos\Nether.Analytics.Cosmos.csproj", "{CB54F5E1-BFB6-49FC-92E2-B9CC5FDF4262}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics.PowerBI", "src\Nether.Analytics.PowerBI\Nether.Analytics.PowerBI.csproj", "{F12F811E-959F-44A8-9A5E-6D52BBDCDCBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics.UnitTests", "tests\Nether.Analytics.UnitTests\Nether.Analytics.UnitTests.csproj", "{3993AA0E-EE21-4A4A-9A9E-FC827AEBD1D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,11 +79,16 @@ Global
 		{F12F811E-959F-44A8-9A5E-6D52BBDCDCBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F12F811E-959F-44A8-9A5E-6D52BBDCDCBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F12F811E-959F-44A8-9A5E-6D52BBDCDCBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3993AA0E-EE21-4A4A-9A9E-FC827AEBD1D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3993AA0E-EE21-4A4A-9A9E-FC827AEBD1D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3993AA0E-EE21-4A4A-9A9E-FC827AEBD1D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3993AA0E-EE21-4A4A-9A9E-FC827AEBD1D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{977E45B6-81DA-4915-A388-B495E2CCBC1F} = {B636CA26-4412-4202-AA24-EF028D8FE4DB}
+		{3993AA0E-EE21-4A4A-9A9E-FC827AEBD1D4} = {B636CA26-4412-4202-AA24-EF028D8FE4DB}
 	EndGlobalSection
 EndGlobal
