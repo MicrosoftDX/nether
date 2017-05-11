@@ -79,7 +79,6 @@ namespace Nether.Web.Features.Leaderboard
                 {
                     Gamertag = gamertag,
                     Country = request.Country,
-                    CustomTag = request.CustomTag,
                     Score = request.Score
                 }),
                 SendScoreEventAndLogErrors(request));

@@ -16,7 +16,6 @@ namespace Nether.Data.Sql.Leaderboard.Migrations
                 columns: table => new
                 {
                     Gamertag = table.Column<string>(nullable: false),
-                    CustomTag = table.Column<string>(nullable: true),
                     Ranking = table.Column<long>(nullable: false),
                     Score = table.Column<int>(nullable: false)
                 },
@@ -30,7 +29,6 @@ namespace Nether.Data.Sql.Leaderboard.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    CustomTag = table.Column<string>(maxLength: 50, nullable: true),
                     DateAchieved = table.Column<DateTime>(nullable: false),
                     Gamertag = table.Column<string>(maxLength: 50, nullable: false),
                     Score = table.Column<int>(nullable: false)
@@ -58,8 +56,7 @@ SELECT
 FROM (
 	SELECT
 		Gamertag,
-		MAX(Score) AS Score,
-		MAX(CustomTag) AS CustomTag,
+		MAX(Score) AS Score,		
 		RANK() OVER (ORDER BY MAX(Score) DESC) AS Ranking
 	FROM Scores
 	GROUP BY Gamertag
@@ -76,20 +73,17 @@ CREATE PROCEDURE [dbo].[GetHighScores]
 AS
 SELECT
 	Score,
-	Gamertag,
-	CustomTag,
+	Gamertag,	
 	Ranking
 FROM
 	(SELECT
 		Score,
-		Gamertag,
-		CustomTag,
+		Gamertag,		
 		RANK() OVER(ORDER BY Score DESC) AS Ranking
 		FROM (
 			SELECT
 				Gamertag,
-				MAX(Score) AS Score,
-				MAX(CustomTag) AS CustomTag
+				MAX(Score) AS Score				
 			FROM Scores
 			GROUP BY GamerTag
 		) AS T
@@ -115,16 +109,13 @@ BEGIN
     SELECT
 
         Gamertag,
-        Score,
-        CustomTag,
+        Score,        
         Ranking
 
     FROM(
         SELECT
-
             Gamertag,
-            MAX(Score) AS Score,
-            MAX(CustomTag) AS CustomTag,
+            MAX(Score) AS Score,            
             RANK() OVER(ORDER BY MAX(Score) DESC) AS Ranking
 
         FROM Scores
@@ -140,8 +131,7 @@ ELSE
 BEGIN
     SELECT
         Gamertag = NULL,
-        Score = NULL,
-        CustomTag = NULL,
+        Score = NULL,        
         Ranking = NULL
     WHERE 1 = 0
 END

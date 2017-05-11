@@ -19,7 +19,6 @@ No parameters
 ```json
 {
 	"country": "US",
-	"customtag": "tag",
 	"score": 4711    
 }
 ```
@@ -27,7 +26,6 @@ No parameters
 |  Name  | Required  | Type  | Description |
 |--------|-----------|-------|-------------|
 |country|yes|string|Country code (US, UK, etc.)|
-|customtag|no|string|Custom player tag, which is any additional information you would like to include with the score|
 |score|yes|number|Achieved score, must be non-negative|
 
 ### Response
