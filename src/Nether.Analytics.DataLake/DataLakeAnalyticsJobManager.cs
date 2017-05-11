@@ -44,7 +44,7 @@ namespace Nether.Analytics.DataLake
         {
             if (variables != null)
             {
-                script = ReplaceUSqlVariableValues(script, variables);
+                script = UsqlHelper.ReplaceVariableValuesInScript(script, variables, out var variablesFound);
             }
 
             Console.WriteLine(script);
@@ -67,60 +67,6 @@ namespace Nether.Analytics.DataLake
                 Console.WriteLine(jobInfo.State);
             }
             return jobInfo;
-        }
-
-        private static string ReplaceUSqlVariableValues(string script, params Tuple<string, object>[] variableValuePairs)
-        {
-            return ReplaceUSqlVariableValues(script, variableValuePairs.ToDictionary(t => t.Item1, t => t.Item2));
-        }
-
-        private static string ReplaceUSqlVariableValues(string script, Dictionary<string, object> variables)
-        {
-            var variablesToAdd = new List<KeyValuePair<string, object>>();
-
-            foreach (var variable in variables)
-            {
-                script = ReplaceUsqlVariableValue(script, variable.Key, variable.Value, out var variableFound);
-                if (!variableFound)
-                {
-                    variablesToAdd.Add(variable);
-                }
-            }
-
-            return script;
-        }
-
-        private static string ReplaceUsqlVariableValue(string script, string variable, object value, out bool variableFound)
-        {
-            //TODO: Find better regex that allows string variables in just one replace statement
-            // Current implementation doesn't isolate content of quoted values, therefor the extra
-            // check to see if value is string or not
-
-            var pattern = @"(?<=DECLARE\s*" + variable + @"((\s*)|(\s.*))=\s*)([\S].*)(?=\s*;)";
-
-            var matches = Regex.Matches(script, pattern, RegexOptions.Multiline);
-            if (matches.Count == 0)
-            {
-                variableFound = false;
-                return script;
-            }
-            else if (matches.Count == 1)
-            {
-                variableFound = true;
-
-                if (value is string)
-                {
-                    return Regex.Replace(script, pattern, "\"" + value + "\"");
-                }
-                else
-                {
-                    return Regex.Replace(script, pattern, value.ToString());
-                }
-            }
-            else
-            {
-                throw new Exception($"Variable {variable} was found in more than one place in the script");
-            }
         }
     }
 }
