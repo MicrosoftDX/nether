@@ -60,7 +60,7 @@
             "minValue": 1,
             "maxValue": 7,
             "metadata": {
-                "description": "For basic teir this must be 1. For standard tier this can be 1-7"
+                "description": "For basic tier this must be 1. For standard tier this can be 1-7"
             }
         },
         "PartitionCount": {

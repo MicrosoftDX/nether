@@ -19,6 +19,7 @@
             "type": "string", 
             "defaultValue": "Basic", 
             "allowedValues": [ 
+                "Free",
                 "Basic", 
                 "Standard", 
                 "Standard S1", 
@@ -55,6 +56,10 @@
         "databaseName": "nether",
         /* The databaseSKU specified in the input parameter is translated into the proper edition via this array */
         "databasePricingTiers" : {
+            "Free" : {
+                "edition": "Free",
+                "requestedServiceObjectiveName": "Free"
+            },
             "Basic" : {
                 "edition": "Basic",
                 "requestedServiceObjectiveName": "Basic"
