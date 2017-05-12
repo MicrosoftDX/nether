@@ -91,7 +91,7 @@ namespace Nether.Web.Features.Leaderboard
             return Ok();
         }
 
-        private async Task SendScoreEventAndLogErrors(ScorePostRequestModel request)
+        private Task SendScoreEventAndLogErrors(ScorePostRequestModel request)
         {
             //try
             //{
@@ -114,7 +114,7 @@ namespace Nether.Web.Features.Leaderboard
             // Temporary disabling sending of Scores to Nether Analytics, since that message is currently not supported.
             // Will be enabled again once, we start supporting that message type again.
 
-            return;
+            return Task.CompletedTask;
         }
 
         /// <summary>

@@ -2,15 +2,13 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.Azure.Management.DataLake.Store;
+using Microsoft.Azure.Management.DataLake.Store.Models;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
 using Microsoft.Rest.Azure.Authentication;
-using System.Threading.Tasks;
-using System;
 using System.IO;
 using System.Text;
-using Microsoft.Azure.Management.DataLake.Store.Models;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace Nether.Analytics.DataLake
 {
@@ -18,13 +16,10 @@ namespace Nether.Analytics.DataLake
     {
         private IOutputFormatter _serializer;
         private IFilePathAlgorithm _filePathAlgorithm;
-        private ClientCredential _clientCredential;
-        private string _domain;
         private string _subscriptionId;
-        private string _adlsAccountName;
+        private string _dlsAccountName;
 
-        //private DataLakeStoreAccountManagementClient _adlsClient;
-        private DataLakeStoreFileSystemManagementClient _adlsFileSystemClient;
+        private DataLakeStoreFileSystemManagementClient _dlsFileSystemClient;
         private ServiceClientCredentials _serviceClientCredentials;
 
         public bool IsAuthenticated
@@ -35,24 +30,7 @@ namespace Nether.Analytics.DataLake
             }
         }
 
-        public DataLakeStoreOutputManager(IOutputFormatter serializer, IFilePathAlgorithm filePathAlgorithm, string domain, string clientId, string clientSecret, string subscriptionId, string adlsAccountName)
-            : this(serializer, filePathAlgorithm, domain, new ClientCredential(clientId, clientSecret), subscriptionId, adlsAccountName)
-        {
-        }
-
-        public DataLakeStoreOutputManager(IOutputFormatter serializer, IFilePathAlgorithm filePathAlgorithm, string domain, ClientCredential clientCredential, string subscriptionId, string adlsAccountName)
-        {
-            _serializer = serializer;
-            _filePathAlgorithm = filePathAlgorithm;
-
-            _domain = domain;
-            _clientCredential = clientCredential;
-
-            _subscriptionId = subscriptionId;
-            _adlsAccountName = adlsAccountName;
-        }
-
-        public DataLakeStoreOutputManager(IOutputFormatter serializer, IFilePathAlgorithm filePathAlgorithm, ServiceClientCredentials serviceClientCredentials, string subscriptionId, string adlsAccountName)
+        public DataLakeStoreOutputManager(IOutputFormatter serializer, IFilePathAlgorithm filePathAlgorithm, ServiceClientCredentials serviceClientCredentials, string subscriptionId, string dlsAccountName)
         {
             _serializer = serializer;
             _filePathAlgorithm = filePathAlgorithm;
@@ -60,16 +38,14 @@ namespace Nether.Analytics.DataLake
             _serviceClientCredentials = serviceClientCredentials;
 
             _subscriptionId = subscriptionId;
-            _adlsAccountName = adlsAccountName;
+            _dlsAccountName = dlsAccountName;
 
-            _adlsFileSystemClient = new DataLakeStoreFileSystemManagementClient(_serviceClientCredentials);
+            _dlsFileSystemClient = new DataLakeStoreFileSystemManagementClient(serviceClientCredentials);
         }
 
 
         public async Task OutputMessageAsync(string pipelineName, int idx, Message msg)
         {
-            await CheckAuthentication();
-
             var serializedMessage = _serializer.Format(msg);
             var filePath = GetFilePath(pipelineName, idx, msg);
 
@@ -88,15 +64,6 @@ namespace Nether.Analytics.DataLake
             return Task.CompletedTask;
         }
 
-        private async Task CheckAuthentication()
-        {
-            if (!IsAuthenticated)
-            {
-                _serviceClientCredentials = await ApplicationTokenProvider.LoginSilentAsync(_domain, _clientCredential);
-                _adlsFileSystemClient = new DataLakeStoreFileSystemManagementClient(_serviceClientCredentials);
-            }
-        }
-
         private string GetFilePath(string pipelineName, int idx, Message msg)
         {
             var fp = _filePathAlgorithm.GetFilePath(pipelineName, idx, msg);
@@ -113,7 +80,7 @@ namespace Nether.Analytics.DataLake
             // just use the following simple implementation for writing to the file
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(serializedMessage)))
             {
-                await _adlsFileSystemClient.FileSystem.ConcurrentAppendAsync(_adlsAccountName, filePath, stream, AppendModeType.Autocreate, SyncFlag.CLOSE);
+                await _dlsFileSystemClient.FileSystem.ConcurrentAppendAsync(_dlsAccountName, filePath, stream, AppendModeType.Autocreate, SyncFlag.CLOSE);
             }
         }
 
@@ -127,7 +94,7 @@ namespace Nether.Analytics.DataLake
                 {
                     using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(serializedMessage)))
                     {
-                        await _adlsFileSystemClient.FileSystem.ConcurrentAppendAsync(_adlsAccountName, filePath, stream, syncFlag: SyncFlag.CLOSE);
+                        await _dlsFileSystemClient.FileSystem.ConcurrentAppendAsync(_dlsAccountName, filePath, stream, syncFlag: SyncFlag.CLOSE);
                     }
 
                     tryAgain = false;
@@ -150,7 +117,7 @@ namespace Nether.Analytics.DataLake
 
                         // The next operation could throw an exception if a race condition occurrs where
                         // two or more threads both found that the file was missing at the same time.
-                        _adlsFileSystemClient.FileSystem.Create(_adlsAccountName, filePath, overwrite: false);
+                        _dlsFileSystemClient.FileSystem.Create(_dlsAccountName, filePath, overwrite: false);
 
                         // Since the above operation would throw an exception if more than one thread
                         // tried to create the file, we can now be sure that the below operation will only
@@ -165,7 +132,7 @@ namespace Nether.Analytics.DataLake
 
                         using (var headerStream = new MemoryStream(Encoding.UTF8.GetBytes(header)))
                         {
-                            _adlsFileSystemClient.FileSystem.ConcurrentAppend(_adlsAccountName, filePath, headerStream, syncFlag: SyncFlag.CLOSE);
+                            _dlsFileSystemClient.FileSystem.ConcurrentAppend(_dlsAccountName, filePath, headerStream, syncFlag: SyncFlag.CLOSE);
                         }
                     }
                     catch (AdlsErrorException createEx)

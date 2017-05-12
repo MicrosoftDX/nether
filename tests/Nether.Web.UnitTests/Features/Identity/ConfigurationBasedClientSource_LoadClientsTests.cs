@@ -173,7 +173,7 @@ namespace Nether.Web.UnitTests.Features.Identity
             Assert.Equal(1, clients.Count);
 
             var client = clients[0];
-            Assert.Equal(true, client.AllowAccessTokensViaBrowser);
+            Assert.True(client.AllowAccessTokensViaBrowser);
         }
 
         [Fact]

@@ -39,6 +39,12 @@ namespace Nether.Analytics
 
             foreach (var column in columns)
             {
+                if (builder.Length > 0)
+                {
+                    // Append column separator if this isn't the first column
+                    builder.Append(Separator);
+                }
+
                 if (message.Properties.TryGetValue(column, out var value))
                 {
                     builder.Append(value);
@@ -47,8 +53,6 @@ namespace Nether.Analytics
                 {
                     builder.Append(EmptyValue);
                 }
-
-                builder.Append(Separator);
             }
 
             builder.AppendLine();
