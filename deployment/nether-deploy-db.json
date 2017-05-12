@@ -17,7 +17,7 @@
         },
         "databaseSKU": { 
             "type": "string", 
-            "defaultValue": "Basic", 
+            "defaultValue": "Free", 
             "allowedValues": [ 
                 "Free",
                 "Basic", 
