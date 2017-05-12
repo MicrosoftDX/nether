@@ -11,9 +11,7 @@ describe("Initialisation", function() {
   it("can be configured", function() {
   
     nether.init(exampleConfig, function(){}, function(){}, document);
-    expect(nether.player.identity.netherClientId).toBe(exampleConfig.netherClientId);
-    expect(nether.player.identity.netherClientSecret).toBe(exampleConfig.netherClientSecret);
-    expect(nether.player.identity.facebookAppId).toBe(exampleConfig.facebookAppId);
+    expect(nether.player.identity.providerConfig).toBe(exampleConfig.providerConfig);
     expect(nether.netherBaseUrl).toBe(exampleConfig.netherBaseUrl);
   });
 });
