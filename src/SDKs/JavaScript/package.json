@@ -1,10 +1,10 @@
 {
   "name": "nether-js-sdk",
   "version": "2.1.0",
-  "description": "Javascript SDK for Microsoft's Nether project",
+  "description": "Javascript SDK for Nether, a library to help you build gaming backends on Microsoft Azure.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/elastacloud/nether.git"
+    "url": "https://github.com/microsoftdx/nether.git"
   },
   "main": "src\\nether.js",
   "dependencies": {
