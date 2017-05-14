@@ -1,0 +1,39 @@
+﻿DECLARE @in = "/nether/clustering/geo-location/2017/05/11/{*}.csv";
+DECLARE @out = "/nether/clustering/output/clusters.csv";
+
+@geoLocations =
+    EXTRACT id string,
+            type string,
+            version string,
+            enqueueTime DateTime,
+            gameSessionId string,
+            lat double,
+            lon double,
+            geoHash double,
+            geoHashPrecision int,
+            geoHashCenterLat float,
+            geoHashCenterLon float,
+            rnd int
+    FROM @in
+    USING Extractors.Csv(skipFirstNRows: 1);
+
+@locationsPerGeoHash =
+    SELECT geoHash,
+           COUNT(*) AS size
+    FROM @geoLocations
+    GROUP BY geoHash;
+
+@clusters =
+    SELECT geoHash, size
+    FROM @locationsPerGeoHash
+    WHERE size > 2;
+
+@result =
+    SELECT g.geoHash, g.lat, g.lon, g.rnd, c.size
+    FROM @geoLocations AS g
+         JOIN @clusters AS c
+         ON g.geoHash == c.geoHash;
+
+OUTPUT @result
+TO @out
+USING Outputters.Csv();
