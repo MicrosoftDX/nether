@@ -24,8 +24,6 @@ namespace Nether.Data.Sql.Leaderboard.Migrations
                     b.Property<string>("Gamertag")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CustomTag");
-
                     b.Property<long>("Ranking");
 
                     b.Property<int>("Score");
@@ -39,9 +37,6 @@ namespace Nether.Data.Sql.Leaderboard.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<string>("CustomTag")
-                        .HasMaxLength(50);
 
                     b.Property<DateTime>("DateAchieved");
 

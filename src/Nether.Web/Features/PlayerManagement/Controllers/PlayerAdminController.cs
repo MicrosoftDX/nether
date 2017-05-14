@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System;
 using Nether.Web.Features.PlayerManagement.Models.PlayerAdmin;
+using Microsoft.Net.Http.Headers;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -137,18 +138,28 @@ namespace Nether.Web.Features.PlayerManagement
         /// </summary>
         /// <param name="gamertag">Gamer tag</param>
         /// <returns>Player extended information</returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerStateGetResponseModel))]
+        [Produces("text/plain")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpGet("{gamertag}/state")]
-        public async Task<ActionResult> GetPlayerState(string gamertag)
+        public async Task<IActionResult> GetPlayerState(string gamertag)
         {
-            // Call data store
-            var state = await _store.GetPlayerStateByGamertagAsync(gamertag);
-            if (state == null)
+            if (string.IsNullOrWhiteSpace(gamertag))
+            {
+                return this.ValidationFailed(new ErrorDetail("gamertag", "gamertag is required"));
+            }
+
+            var player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
+            if (player == null)
+            {
                 return NotFound();
+            }
+
+            // Call data store
+            var state = await _store.GetPlayerStateByUserIdAsync(player.UserId);
 
             // Return result
-            return Ok(new PlayerStateGetResponseModel { Gamertag = gamertag, State = state });
+            return Content(state ?? "", new MediaTypeHeaderValue("text/plain"));
         }
 
         /// <summary>
@@ -157,87 +168,29 @@ namespace Nether.Web.Features.PlayerManagement
         /// <param name="gamertag"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.Created)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [Consumes("text/plain")]
         [HttpPut("{gamertag}/state")]
-        public async Task<IActionResult> PostState([FromRoute] string gamertag, [FromBody]string state)
+        public async Task<IActionResult> PutState([FromRoute] string gamertag, [FromBody]string state)
         {
             if (string.IsNullOrWhiteSpace(gamertag))
             {
                 return this.ValidationFailed(new ErrorDetail("gamertag", "gamertag is required"));
             }
 
-            // Save player extended information
-            await _store.SavePlayerStateByGamertagAsync(gamertag, state);
-
-            // Return result
-            return CreatedAtRoute(nameof(GetPlayer), new { gamertag }, null);
-        }
-
-
-        /// <summary>
-        /// Gets the list of group a player belongs to.
-        /// </summary>
-        /// <param name="gamertag">Player's gamertag.</param>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupListResponseModel))]
-        [HttpGet("{gamertag}/groups")]
-        public async Task<ActionResult> GetPlayerGroups(string gamertag)
-        {
-            // Call data store
-            var groups = await _store.GetPlayersGroupsAsync(gamertag);
-
-            // Return result
-            return Ok(GroupListResponseModel.FromGroups(groups));
-        }
-
-
-        /// <summary>
-        /// Adds player to a group.
-        /// </summary>
-        /// <param name="gamertag">Player's gamer tag</param>
-        /// <param name="groupName">Group name.</param>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [HttpPut("{gamertag}/groups/{groupName}")]
-        public async Task<IActionResult> AddPlayerToGroup(string gamertag, string groupName)
-        {
-            Group group = await _store.GetGroupDetailsAsync(groupName);
-            if (group == null)
-            {
-                _logger.LogWarning("group '{0}' not found", groupName);
-                return this.ValidationFailed(new ErrorDetail("groupName", "group not found"));
-            }
-
-            Player player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
+            var player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
             if (player == null)
             {
-                _logger.LogError("player '{0}' not found", gamertag);
-                return BadRequest();
+                return NotFound();
             }
 
-            await _store.AddPlayerToGroupAsync(group, player);
+            // Save player extended information
+            await _store.SavePlayerStateByUserIdAsync(player.UserId, state);
 
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Removes a player from a group.
-        /// </summary>
-        /// <param name="groupName">Group name</param>
-        /// <param name="gamertag">Player name</param>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [HttpDelete("{gamertag}/groups/{groupName}")]
-        public async Task<ActionResult> DeletePlayerFromGroup(string gamertag, string groupName)
-        {
-            Player player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
-            Group group = await _store.GetGroupDetailsAsync(groupName);
-
-            await _store.RemovePlayerFromGroupAsync(group, player);
-
-            return NoContent();
+            // Return result
+            return Ok();
         }
     }
 }

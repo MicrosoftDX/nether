@@ -1,0 +1,27 @@
+{
+  "name": "nether-js-sdk",
+  "version": "2.1.0",
+  "description": "Javascript SDK for Nether, a library to help you build gaming backends on Microsoft Azure.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/microsoftdx/nether.git"
+  },
+  "main": "src\\nether.js",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "karma-jasmine": "^1.1.0",
+    "jasmine-core": "^2.6.0",
+    "jshint": "^2.9.4",
+    "karma": "^1.6.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-jasmine": "^1.1.0",
+    "karma-requirejs": "^1.1.0",
+    "requirejs": "^2.3.3"
+  },
+  "scripts": {
+    "test": "node .\\node_modules\\karma\\bin\\karma start "
+  },
+  "author": "andy@elastacloud.com",
+  "license": "MIT"
+}

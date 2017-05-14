@@ -22,9 +22,7 @@ namespace Nether.Data.Sql.PlayerManagement
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<PlayerGroupEntity>().ForSqlServerToTable("PlayerGroups");
             builder.Entity<PlayerEntity>().ForSqlServerToTable("Players");
-            builder.Entity<GroupEntity>().ForSqlServerToTable("Groups");
             builder.Entity<PlayerExtendedEntity>().ForSqlServerToTable("PlayersExtended");
         }
 

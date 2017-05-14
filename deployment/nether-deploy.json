@@ -71,6 +71,7 @@
             "type": "string", 
             "defaultValue": "Basic", 
             "allowedValues": [ 
+                "Free",
                 "Basic", 
                 "Standard", 
                 "Standard S1", 

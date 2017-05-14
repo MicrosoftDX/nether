@@ -13,6 +13,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using Nether.Common.ApplicationPerformanceMonitoring;
+using Microsoft.Net.Http.Headers;
 
 //TO DO: The group and player Image type is not yet implemented. Seperate methods need to be implemented to upload a player or group image
 //TODO: Add versioning support
@@ -73,18 +74,21 @@ namespace Nether.Web.Features.PlayerManagement
         {
             string userId = User.GetId();
 
-            // prevent modifying gamertag
-            var existingPlayerForGamertag = await _store.GetPlayerDetailsByGamertagAsync(player.Gamertag);
-            if (existingPlayerForGamertag != null && existingPlayerForGamertag.UserId != userId)
-            {
-                // Can't use a gamertag from another user
-                return this.ValidationFailed(new ErrorDetail("gamertag", "Gamertag already in use"));
-            }
             bool newPlayer = false;
             var playerEntity = await _store.GetPlayerDetailsByUserIdAsync(userId);
             if (playerEntity == null)
             {
                 newPlayer = true;
+                if (player.Gamertag != null)
+                {
+                    // check if gamertag is already in use
+                    var existingPlayerForGamertag = await _store.GetPlayerDetailsByUserIdAsync(player.Gamertag);
+                    if (existingPlayerForGamertag != null && existingPlayerForGamertag.UserId != userId)
+                    {
+                        // Can't use a gamertag from another user
+                        return this.ValidationFailed(new ErrorDetail("gamertag", "Gamertag already in use"));
+                    }
+                }
                 playerEntity = new Player
                 {
                     UserId = userId,
@@ -125,14 +129,8 @@ namespace Nether.Web.Features.PlayerManagement
         [HttpDelete("")]
         public async Task<ActionResult> DeleteCurrentPlayer()
         {
-            string gamertag = User.GetGamerTag();
-            if (string.IsNullOrWhiteSpace(gamertag))
-            {
-                return NotFound();
-            }
-
             // Call data store
-            await _store.DeletePlayerDetailsAsync(gamertag);
+            await _store.DeletePlayerDetailsForUserIdAsync(User.GetId());
 
             // Return result
             return NoContent();
@@ -142,85 +140,35 @@ namespace Nether.Web.Features.PlayerManagement
         /// Gets the player state for the current player
         /// </summary>
         /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PlayerStateGetResponseModel))]
+        [Produces("text/plain")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpGet("state")]
         public async Task<ActionResult> GetCurrentPlayerState()
         {
-            string gamertag = User.GetGamerTag();
-
             // Call data store
-            var state = await _store.GetPlayerStateByGamertagAsync(gamertag);
+            var state = await _store.GetPlayerStateByUserIdAsync(User.GetId());
 
             // Return result
-            return Ok(new PlayerStateGetResponseModel { Gamertag = gamertag, State = state });
+            return Content(state ?? "", new MediaTypeHeaderValue("text/plain"));
         }
 
 
         /// <summary>
-        /// Updates JSON state for the current player
+        /// Updates state for the current player
         /// </summary>
         /// <param name="state">Player data</param>
         /// <returns></returns>
+        [Consumes("text/plain")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [HttpPut("state")]
-        public async Task<ActionResult> PutCurrentPlayerState([FromBody] JObject state) // TODO update binding to use raw string
+        public async Task<ActionResult> PutCurrentPlayerState([FromBody] string state) // TODO update binding to use raw string
         {
-            string gamertag = User.GetGamerTag();
-
-            // TODO - update this to use model binding. Keeping param for now for API docs, but binding to it isn't working
-            var stateString = JsonConvert.SerializeObject(state);
-
             // Update extended player information
-            // Update player
-            await _store.SavePlayerStateByGamertagAsync(gamertag, stateString);
+            await _store.SavePlayerStateByUserIdAsync(User.GetId(), state);
 
             // Return result
             return Ok();
-        }
-
-        /// <summary>
-        /// Gets the list of groups current player belongs to.
-        /// </summary>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GroupListResponseModel))]
-        [HttpGet("groups")]
-        public async Task<ActionResult> GetPlayerGroups()
-        {
-            var gamertag = User.GetGamerTag();
-            var groups = await _store.GetPlayersGroupsAsync(gamertag);
-
-            return Ok(GroupListResponseModel.FromGroups(groups));
-        }
-
-        /// <summary>
-        /// Adds currently logged in player to a group.
-        /// </summary>
-        /// <param name="groupName">Group name.</param>
-        /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [HttpPut("groups/{groupName}")]
-        public async Task<ActionResult> AddCurrentPlayerToGroup(string groupName)
-        {
-            var gamertag = User.GetGamerTag();
-            Group group = await _store.GetGroupDetailsAsync(groupName);
-            if (group == null)
-            {
-                _logger.LogWarning("group '{0}' not found", groupName);
-                return NotFound();
-            }
-
-            Player player = await _store.GetPlayerDetailsByGamertagAsync(gamertag);
-            if (player == null)
-            {
-                _logger.LogError("player '{0}' not found", gamertag);
-                return BadRequest();
-            }
-
-            await _store.AddPlayerToGroupAsync(group, player);
-
-            return NoContent();
         }
     }
 }

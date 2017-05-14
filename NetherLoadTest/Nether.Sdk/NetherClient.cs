@@ -101,7 +101,6 @@ namespace Nether.Sdk
                 new
                 {
                     country = "missing",
-                    customTag = "testclient",
                     score = score
                 }
             );
