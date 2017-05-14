@@ -29,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics.PowerBI", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.Analytics.UnitTests", "tests\Nether.Analytics.UnitTests\Nether.Analytics.UnitTests.csproj", "{3993AA0E-EE21-4A4A-9A9E-FC827AEBD1D4}"
 EndProject
-Project("{182E2583-ECAD-465B-BB50-91101D7C24CE}") = "Nether.Analytics.ADLA", "src\Nether.Analytics.ADLA\Nether.Analytics.ADLA.usqlproj", "{B684B7D9-A09C-4767-8D79-6C2C401556A9}"
+Project("{182E2583-ECAD-465B-BB50-91101D7C24CE}") = "Nether.Analytics.DataLake.Jobs", "src\Nether.Analytics.DataLake.Jobs\Nether.Analytics.DataLake.Jobs.usqlproj", "{B684B7D9-A09C-4767-8D79-6C2C401556A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
