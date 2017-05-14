@@ -1,6 +1,6 @@
-#JavaScript SDK for Nether
+# JavaScript SDK for Nether
 
-*Work in Progress*
+*Work in Progress, things in this documentation may not be correct or can change without any notice*
 
 ## Downloading the JavaScript SDK for Nether
 
@@ -10,12 +10,14 @@ https://www.myget.org/feed/netherjs/package/npm/nether-js-sdk
 
 ### How to add the package 
 
-There are two steps to restoring the package, all powered by NPM. First (*as a one off*) set the registry to the myget so that this package 
+There are two steps to restoring the package, all powered by NPM. First (*as a one off*) set the registry to the myget so that this package can be downloaded.
 
-npm install npm install oidc-client
-npm install npm install babel-polyfill@>=6.9.1
+```bash
+npm install oidc-client
+npm install babel-polyfill@>=6.9.1
 npm config set registry https://www.myget.org/F/netherjs/npm/
 npm install nether-js-sdk@2.1.0
+```
 
 ### Installing the JavaScript SDK for Nether
 
