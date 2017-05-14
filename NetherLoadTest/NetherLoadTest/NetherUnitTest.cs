@@ -235,7 +235,6 @@ namespace NetherLoadTest
                 {
                     gamertag = UserName,
                     country = "UK",
-                    customTag = "LoadTestUser"
                 };
 
                 response = await playerClient.PutAsJsonAsync("api/player", player);

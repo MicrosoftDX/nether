@@ -70,7 +70,6 @@ namespace Nether.Data.InMemory.Leaderboard
                     .Select(g => new
                     {
                         Gamertag = g.Key,
-                        CustomTag = "TODO",// We haven't factored custom tags into the scores yet
                         Score = g.Max(s => s.Score),
                     });
 
@@ -80,7 +79,6 @@ namespace Nether.Data.InMemory.Leaderboard
                     .Select((s, index) => new
                     {
                         s.Gamertag,
-                        s.CustomTag,
                         s.Score,
                         RowNumber = index + 1
                     })
@@ -100,8 +98,7 @@ namespace Nether.Data.InMemory.Leaderboard
             {
                 Rank = g.StartRank,
                 Gamertag = p.Gamertag,
-                Score = p.Score,
-                CustomTag = p.CustomTag
+                Score = p.Score
             })).ToList();
         }
     }

@@ -85,7 +85,7 @@ namespace Nether.Web.IntegrationTests.Identity
             string userId = user.userId;
             Assert.NotNull(userId);
             Assert.Equal("Admin", (string)user.role);
-            Assert.Equal(true, (bool)user.active);
+            Assert.True((bool)user.active);
 
 
             // Update user
@@ -102,7 +102,7 @@ namespace Nether.Web.IntegrationTests.Identity
             user = userContent.user;
             Assert.Equal(userId, (string)user.userId);
             Assert.Equal("Player", (string)user.role);
-            Assert.Equal(false, (bool)user.active);
+            Assert.False((bool)user.active);
 
 
             // Get user again
@@ -113,7 +113,7 @@ namespace Nether.Web.IntegrationTests.Identity
             user = userContent.user;
             Assert.Equal(userId, (string)user.userId);
             Assert.Equal("Player", (string)user.role);
-            Assert.Equal(false, (bool)user.active);
+            Assert.False((bool)user.active);
 
 
             // Remove user

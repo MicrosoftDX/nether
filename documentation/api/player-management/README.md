@@ -1,6 +1,6 @@
 # Nether Players (part of Player Management)
 
-Player Management (players) provides a simple way to manage players and teams (or groups)
+Player Management (players) provides a simple way to manage players
 * Player Management serves a single game
 
 
@@ -24,9 +24,6 @@ There are two sets of APIs - those intented to be callable by players, and those
 |DELETE|[`/api/player`](delete-current-player.md)|Deletes information about the current player.|
 |GET|[`/api/player/state`](get-current-playerstate.md)|Gets the player state for the current player.|
 |PUT|[`/api/player/state`](put-current-playerstate.md)|Updates player state for the current player.|
-|GET|[`/api/player/groups`](get-current-player-groups.md)|Gets the list of groups current player belongs to.|
-|PUT|[`/api/player/groups/{groupName}`](add-current-player-to-group.md)|Adds currently logged in user to a group.|
-|GET|[`/api/groups/{groupName}/players`](get-group-members.md)|Gets the members of the group as gamertags.|
 
 ### Administrator-callable APIs 
 
@@ -38,10 +35,3 @@ There are two sets of APIs - those intented to be callable by players, and those
 |GET|[`/api/admin/players/{gamertag}/state`](admin-get-playerstate.md)|Gets the player state for a player.|
 |PUT|[`/api/admin/players/{gamertag}/state`](admin-put-playerstate.md)|Updates player state for a player.|
 |GET|[`/api/admin/players/{gamertag}/groups`](admin-get-player-groups.md)|Gets the list of groups a player belongs to.|
-|GET|[`/api/admin/groups`](admin-get-all-groups.md)|Get list of all groups.|
-|POST|[`/api/admin/groups`](admin-add-new-group.md)|Creates a new group.|
-|GET|[`/api/admin/groups/{groupName}`](admin-get-group-by-name.md)|Gets a group by name.|
-|PUT|[`/api/admin/groups/{groupName}`](admin-put-group.md)|Updates group information.|
-|GET|[`/api/admin/groups/{groupName}/players`](admin-get-group-members.md)|Gets the members of the group as gamertags.|
-|PUT|[`/api/admin/players/{playerName}/groups/{groupName}`](admin-add-player-to-group.md)|Adds player to a group.|
-|DELETE|[`/api/admin/groups/{groupName}/players/{playerName}`](admin-delete-player-from-group.md)|Removes player from a group.|   

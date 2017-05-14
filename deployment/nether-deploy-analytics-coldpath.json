@@ -1,0 +1,251 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "scriptsStorageSASUri": {
+            "type": "string"
+        },
+        "storageAccountName": {
+            "type": "string"
+        },
+        "sqlServerAdminName": {
+            "type": "string"
+        },
+        "sqlServerAdminPassword": {
+            "type": "string"
+        },
+        "dbnameCollation": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
+        },
+        "dbnameEdition": {
+            "type": "string",
+            "defaultValue": "Standard"
+        },
+        "dbnameRequestedServiceObjectiveName": {
+            "type": "string",
+            "defaultValue": "S0"
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]",
+        "dataFactoryName": "[concat('uploadScripts', uniqueString(resourceGroup().id))]",
+        "dfApiVersion": "2015-10-01",
+        "sqlApiVersion": "2014-04-01",
+        "dfScriptsStorageLS": "ScriptsStorageLinkedService",
+        "dfStorageLS": "StorageLinkedService",
+        "dfOrigScriptsDS": "OrigScripts",
+        "dfDestScriptsDS": "DestScripts",
+        "dfDatePL": "2017-04-12T00:00:00Z",
+        "sqlServerName": "[concat( resourceGroup().name, 'server')]",
+        "sqlDBName": "[concat( resourceGroup().name, 'db')]"
+    },
+    "resources": [
+        /* SQL Server */
+        {
+            "apiVersion": "[variables('sqlApiVersion')]",
+            "name": "[variables('sqlServerName')]",
+            "type": "Microsoft.Sql/servers",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('sqlServerName')]"
+            },
+            "properties": {
+                "administratorLogin": "[parameters('sqlServerAdminName')]",
+                "administratorLoginPassword": "[parameters('sqlServerAdminPassword')]",
+                "version": "12.0"
+            },
+            "resources": [
+                {
+                    "apiVersion": "[variables('sqlApiVersion')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
+                    ],
+                    "location": "[resourceGroup().location]",
+                    "name": "AllowAllWindowsAzureIps",
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "0.0.0.0"
+                    },
+                    "type": "firewallrules"
+                }
+            ]
+        },
+        /* Azure SQL DB */
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "name": "[variables('sqlDBName')]",
+            "apiVersion": "[variables('sqlApiVersion')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('sqlDBName')]"
+            },
+            "dependsOn": [
+                "[variables('sqlServerName')]"
+            ],
+            "properties": {
+                "collation": "[parameters('dbnameCollation')]",
+                "edition": "[parameters('dbnameEdition')]",
+                "maxSizeBytes": "1073741824",
+                "requestedServiceObjectiveName": "[parameters('dbnameRequestedServiceObjectiveName')]"
+            }
+        },
+        /* Azure Data Factory */
+        {
+            "name": "[variables('dataFactoryName')]",
+            "apiVersion": "[variables('dfApiVersion')]",
+            "type": "Microsoft.DataFactory/datafactories",
+            "location": "[variables('location')]",
+            "resources": [
+                /* Linked Service: Storage account that contains the scripts and will be accessed using a SAS token */
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('dfScriptsStorageLS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dataFactoryName')]"
+                    ],
+                    "properties": {
+                        "type": "AzureStorageSas",
+                        "description": "Azure Storage linked service",
+                        "typeProperties": {
+                            "sasUri": "[parameters('scriptsStorageSASUri')]"
+                        }
+                    }
+                },
+                /* Linked Service: Storage account that will contain the scripts and all raw game event data. */
+                {
+                    "type": "linkedservices",
+                    "name": "[variables('dfStorageLS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dataFactoryName')]"
+                    ],
+                    "properties": {
+                        "type": "AzureStorage",
+                        "description": "Azure Storage linked service",
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]"
+                        }
+                    }
+                },
+                /* Dataset: scripts in original storage account */
+                {
+                    "type": "datasets",
+                    "name": "[variables('dfOrigScriptsDS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dataFactoryName')]",
+                        "[variables('dfScriptsStorageLS')]"
+                    ],
+                    "properties": {
+                        "type": "AzureBlob",
+                        "linkedServiceName": "[variables('dfScriptsStorageLS')]",
+                        "typeProperties": {
+                            "folderPath": "scripts",
+                            "format": {
+                                "type": "TextFormat",
+                                "columnDelimiter": ","
+                            }
+                        },
+                        "availability": {
+                            "frequency": "Day",
+                            "interval": 1
+                        },
+                        "external": true,
+                        "policy": {}
+                    }
+                },
+                /* Dataset: scripts in destination storage account */
+                {
+                    "type": "datasets",
+                    "name": "[variables('dfDestScriptsDS')]",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "dependsOn": [
+                        "[variables('dataFactoryName')]",
+                        "[variables('dfStorageLS')]"
+                    ],
+                    "properties": {
+                        "published": false,
+                        "type": "AzureBlob",
+                        "linkedServiceName": "[variables('dfStorageLS')]",
+                        "typeProperties": {
+                            "folderPath": "scripts",
+                            "format": {
+                                "type": "TextFormat",
+                                "columnDelimiter": ","
+                            }
+                        },
+                        "availability": {
+                            "frequency": "Day",
+                            "interval": 1
+                        },
+                        "external": false,
+                        "policy": {}
+                    }
+                },
+                /* Copy Pipeline for all scripts */
+                {
+                    "type": "dataPipelines",
+                    "apiVersion": "[variables('dfApiVersion')]",
+                    "name": "CopyPipeline",
+                    "dependsOn": [
+                        "[variables('dataFactoryName')]",
+                        "[variables('dfStorageLS')]",
+                        "[variables('dfScriptsStorageLS')]",
+                        "[variables('dfOrigScriptsDS')]",
+                        "[variables('dfDestScriptsDS')]"
+                    ],
+                    "properties": {
+                        "activities": [
+                            {
+                                "type": "Copy",
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "BlobSource",
+                                        "recursive": true
+                                    },
+                                    "sink": {
+                                        "type": "BlobSink",
+                                        "copyBehavior": "preserveHierarchy",
+                                        "writeBatchSize": 0,
+                                        "writeBatchTimeout": "00:00:00"
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "name": "[variables('dfOrigScriptsDS')]"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "[variables('dfDestScriptsDS')]"
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "1.00:00:00",
+                                    "concurrency": 1,
+                                    "executionPriorityOrder": "NewestFirst",
+                                    "style": "StartOfInterval",
+                                    "retry": 0,
+                                    "longRetry": 0,
+                                    "longRetryInterval": "00:00:00"
+                                },
+                                "scheduler": {
+                                    "frequency": "Day",
+                                    "interval": 1
+                                },
+                                "name": "CopyActivity-scripts"
+                            }
+                        ],
+                        "start": "[variables('dfDatePL')]",
+                        "end": "[variables('dfDatePL')]",
+                        "pipelineMode": "OneTime",
+                        "expirationTime": "3.00:00:00"
+                    }
+                }
+            ]
+        }
+    ]
+}

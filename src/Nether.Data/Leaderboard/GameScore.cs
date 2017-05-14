@@ -10,7 +10,6 @@ namespace Nether.Data.Leaderboard
     {
         public string Gamertag { get; set; }
         public string Country { get; set; }
-        public string CustomTag { get; set; }
         public int Score { get; set; }
         public long Rank { get; set; }
     }
