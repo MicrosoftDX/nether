@@ -10,10 +10,21 @@ namespace Nether.Analytics
     public class EventHubOutputManager : IOutputManager
     {
         private string _outputEventHubConnectionString;
+        private IOutputFormatter _serializer;
+        private string _ehConnectionString;
 
-        public EventHubOutputManager(string outputEventHubConnectionString)
+        /// <summary>
+        /// Creates a new instance, with a JSON output formatter as the default serializer.
+        /// </summary>
+        /// <param name="outputEventHubConnectionString">The connection string for the event hub output.</param>
+        public EventHubOutputManager(string outputEventHubConnectionString) : this(outputEventHubConnectionString, new JsonOutputFormatter())
         {
-            _outputEventHubConnectionString = outputEventHubConnectionString;
+        }
+
+        public EventHubOutputManager(string outputEventHubConnectionString, IOutputFormatter serializer)
+        {
+            _serializer = serializer;
+            _ehConnectionString = outputEventHubConnectionString;
         }
 
         public Task FlushAsync()
