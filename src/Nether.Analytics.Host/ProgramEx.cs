@@ -107,7 +107,7 @@ namespace Nether.Analytics.Host
                 .AddHandler(new RandomIntMessageHandler())
                 //.AddHandler(new BingLocationLookupHandler("BING_MAPS_KEY", new InMemoryGeoHashCacheProvider(), 24))
                 .OutputTo(clusteringConsoleOutputManager, clusteringDlsOutputManager);
-                
+
 
             // Build all pipelines
             var router = builder.Build();

@@ -12,7 +12,6 @@ using System.Diagnostics;
 
 namespace Nether.Analytics.GeoLocation
 {
-
     public class BingLocationLookupHandler : IMessageHandler
     {
         private string _bingMapsKey;
@@ -92,7 +91,7 @@ namespace Nether.Analytics.GeoLocation
 
                     //create a bing parsing result instance and cache it
                     bingParsingResult = new BingResult() { City = (string)address["locality"], Country = (string)address["countryRegion"], District = (string)address["adminDistrict"] };
-                    _geoHashCacheProvider.AppendToCache(geoHash, bingParsingResult); 
+                    _geoHashCacheProvider.AppendToCache(geoHash, bingParsingResult);
                 }
                 catch (Exception ex)
                 {

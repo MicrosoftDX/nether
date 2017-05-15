@@ -8,15 +8,15 @@ namespace Nether.Analytics.GeoLocation
 {
     public class InMemoryGeoHashCacheProvider : IGeoHashCacheProvider
     {
-        private int precision;
+        private int _precision;
         public int Precision
         {
-            get { return precision; }
+            get { return _precision; }
             set
             {
                 if (value <= 0)
                     throw new ArgumentException("Precision must be > 0");
-                precision = value;
+                _precision = value;
             }
         }
 
@@ -24,30 +24,30 @@ namespace Nether.Analytics.GeoLocation
         {
             get
             {
-                if (!cache.ContainsKey(geohash))
+                if (!_cache.ContainsKey(geohash))
                 {
                     throw new ArgumentException($"Geohash {geohash} not found in cache");
                 }
-                return cache[geohash];
+                return _cache[geohash];
             }
         }
 
-        Dictionary<Int64, BingResult> cache = new Dictionary<Int64, BingResult>();
+        private Dictionary<Int64, BingResult> _cache = new Dictionary<Int64, BingResult>();
 
         public void AppendToCache(Int64 geohash, BingResult bingResult)
         {
-            if (precision <= 0)
+            if (_precision <= 0)
                 throw new ArgumentException("Precision must be greater than 0");
 
-            cache.Add(geohash, bingResult);
+            _cache.Add(geohash, bingResult);
         }
 
         public bool ContainsGeoHash(Int64 geohash)
         {
-            if (precision <= 0)
+            if (_precision <= 0)
                 throw new ArgumentException("Precision must be greater than 0");
 
-            return cache.ContainsKey(geohash);
+            return _cache.ContainsKey(geohash);
         }
     }
 }
