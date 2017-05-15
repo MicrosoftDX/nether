@@ -25,7 +25,7 @@ namespace Nether.Analytics
             _properties = properties;
         }
 
-        public Task<MessageHandlerResluts> ProcessMessageAsync(Message msg, string pipelineName, int idx)
+        public Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int idx)
         {
             if (_properties.Length == 0)
             {
@@ -39,7 +39,7 @@ namespace Nether.Analytics
                 }
             }
 
-            return Task.FromResult(MessageHandlerResluts.Success);
+            return Task.FromResult(MessageHandlerResults.Success);
         }
     }
 

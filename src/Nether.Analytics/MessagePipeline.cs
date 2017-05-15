@@ -31,7 +31,7 @@ namespace Nether.Analytics
             foreach (var handler in _gameEventHandlers)
             {
                 var result = await handler.ProcessMessageAsync(msg, PipelineName, handlerIdx++);
-                if (result == MessageHandlerResluts.FailStopProcessing)
+                if (result == MessageHandlerResults.FailStopProcessing)
                 {
                     //TODO: Implement better solution to breaking out of chain of processing messages
                     return;

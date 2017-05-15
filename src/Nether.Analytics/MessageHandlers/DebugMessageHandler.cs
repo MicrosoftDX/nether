@@ -8,7 +8,7 @@ namespace Nether.Analytics
 {
     public class DebugMessageHandler : IMessageHandler
     {
-        public Task<MessageHandlerResluts> ProcessMessageAsync(Message msg, string pipelineName, int idx)
+        public Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int idx)
         {
             Console.WriteLine();
             Console.WriteLine("DebugMessageHandler");
@@ -18,7 +18,7 @@ namespace Nether.Analytics
             Console.WriteLine(msg.ToString());
             Console.WriteLine();
 
-            return Task.FromResult(MessageHandlerResluts.Success);
+            return Task.FromResult(MessageHandlerResults.Success);
         }
     }
 }
