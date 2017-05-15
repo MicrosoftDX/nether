@@ -105,8 +105,9 @@ namespace Nether.Analytics.Host
                 .HandlesMessageType("geo-location", "1.0.1")
                 .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
                 .AddHandler(new RandomIntMessageHandler())
+                //.AddHandler(new BingLocationLookupHandler("BING_MAPS_KEY", new InMemoryGeoHashCacheProvider(), 24))
                 .OutputTo(clusteringConsoleOutputManager, clusteringDlsOutputManager);
-
+                
 
             // Build all pipelines
             var router = builder.Build();

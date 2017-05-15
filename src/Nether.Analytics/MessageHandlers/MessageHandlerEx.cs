@@ -11,17 +11,17 @@ namespace Nether.Analytics
     /// </summary>
     public static class MessageHandlerEx
     {
-        public static MessagePipelineBuilder AddHandler(this MessagePipelineBuilder builder, Func<Message, string, int, Task<MessageHandlerResluts>> asyncFunc)
+        public static MessagePipelineBuilder AddHandler(this MessagePipelineBuilder builder, Func<Message, string, int, Task<MessageHandlerResults>> asyncFunc)
         {
             return builder.AddHandler(new GenericMessageHandler(asyncFunc));
         }
 
-        public static MessagePipelineBuilder AddHandler(this MessagePipelineBuilder builder, Func<Message, string, Task<MessageHandlerResluts>> asyncFunc)
+        public static MessagePipelineBuilder AddHandler(this MessagePipelineBuilder builder, Func<Message, string, Task<MessageHandlerResults>> asyncFunc)
         {
             return builder.AddHandler(new GenericMessageHandler((msg, pipelineName, idx) => asyncFunc(msg, pipelineName)));
         }
 
-        public static MessagePipelineBuilder AddHandler(this MessagePipelineBuilder builder, Func<Message, Task<MessageHandlerResluts>> asyncFunc)
+        public static MessagePipelineBuilder AddHandler(this MessagePipelineBuilder builder, Func<Message, Task<MessageHandlerResults>> asyncFunc)
         {
             return builder.AddHandler(new GenericMessageHandler((msg, pipelineName, idx) => asyncFunc(msg)));
         }
@@ -32,7 +32,7 @@ namespace Nether.Analytics
             {
                 action(msg, pipelineName, idx);
 
-                return Task.FromResult(MessageHandlerResluts.Success);
+                return Task.FromResult(MessageHandlerResults.Success);
             }));
         }
 

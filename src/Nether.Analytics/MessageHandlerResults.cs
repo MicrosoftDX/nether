@@ -4,7 +4,7 @@
 
 namespace Nether.Analytics
 {
-    public enum MessageHandlerResluts
+    public enum MessageHandlerResults
     {
         Success,
         FailStopProcessing

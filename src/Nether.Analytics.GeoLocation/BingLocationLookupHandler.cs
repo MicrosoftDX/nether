@@ -6,82 +6,116 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http;
+using NGeoHash;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Nether.Analytics.GeoLocation
 {
+
     public class BingLocationLookupHandler : IMessageHandler
     {
         private string _bingMapsKey;
         private string _latProperty;
         private string _lonProperty;
+        private IGeoHashCacheProvider _geoHashCacheProvider;
 
-        public BingLocationLookupHandler(string bingMapsKey, string latProperty = "lat", string lonProperty = "lon")
+        public BingLocationLookupHandler(string bingMapsKey, IGeoHashCacheProvider geoHashCacheProvider, int geoHashPrecision,
+            string latProperty = "lat", string lonProperty = "lon")
         {
             _bingMapsKey = bingMapsKey;
             _latProperty = latProperty;
             _lonProperty = lonProperty;
+            _geoHashCacheProvider = geoHashCacheProvider;
+            _geoHashCacheProvider.Precision = geoHashPrecision;
         }
 
-        public async Task<MessageHandlerResluts> ProcessMessageAsync(Message msg, string pipelineName, int idx)
+        public async Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int idx)
         {
-            //TODO: Implement cache layer that caches result based on a surounding for example use a geohash if present
             //TODO: Replace all console logging of exceptions to generic log solution
 
-            string lat;
-            string lon;
+            double lat;
+            double lon;
 
             //TODO: Catch more specific error if property doesn't exist or use another method to get the properties
             try
             {
-                lat = msg.Properties[_latProperty];
-                lon = msg.Properties[_lonProperty];
+                lat = double.Parse(msg.Properties[_latProperty]);
+                lon = double.Parse(msg.Properties[_lonProperty]);
             }
             catch (Exception)
             {
                 Console.WriteLine($"Unable to find required properties: '{_latProperty}' and '{_lonProperty}' on message");
-                return MessageHandlerResluts.FailStopProcessing;
+                return MessageHandlerResults.FailStopProcessing;
             }
 
-            var bingUrl = $"http://dev.virtualearth.net/REST/v1/Locations/{lat},{lon}?key={_bingMapsKey}";
-            string bingResult;
+            var geoHash = GeoHash.EncodeInt(lat, lon, _geoHashCacheProvider.Precision);
 
-            try
+            BingResult bingParsingResult;
+            //if we have the result in the cache, fetch it
+            if (_geoHashCacheProvider.ContainsGeoHash(geoHash))
             {
-                //var client = new WebClient();
-                //bingResult = await client.DownloadStringTaskAsync(bingUrl);
-                var client = new HttpClient();
-                bingResult = await client.GetStringAsync(bingUrl);
+                bingParsingResult = _geoHashCacheProvider[geoHash];
+                Debug.WriteLine("Found in cache");
             }
-            catch (Exception ex)
+            //else, query bing directly
+            else
             {
-                Console.WriteLine("An exception occurred while calling Bing to Lookup coordinates");
-                Console.WriteLine(ex);
+                Debug.WriteLine("Not found in cache");
+                double geoHashCenterLat, geoHashCenterLon;
 
-                return MessageHandlerResluts.FailStopProcessing;
+                //get the center of the geoHash in order to call Bing API with this {lat,lon}
+                var decodedGeoHash = GeoHash.DecodeInt(geoHash, _geoHashCacheProvider.Precision);
+                geoHashCenterLat = decodedGeoHash.Coordinates.Lat;
+                geoHashCenterLon = decodedGeoHash.Coordinates.Lon;
+
+                var bingUrl = $"http://dev.virtualearth.net/REST/v1/Locations/{geoHashCenterLat},{geoHashCenterLon}?key={_bingMapsKey}";
+                string bingResult;
+
+                try
+                {
+                    var client = new HttpClient();
+                    bingResult = await client.GetStringAsync(bingUrl);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("An exception occurred while calling Bing to Lookup coordinates");
+                    Console.WriteLine(ex);
+
+                    return MessageHandlerResults.FailStopProcessing;
+                }
+
+                try
+                {
+                    var json = JObject.Parse(bingResult);
+                    var address = json["resourceSets"][0]["resources"][0]["address"];
+
+                    //create a bing parsing result instance and cache it
+                    bingParsingResult = new BingResult() { City = (string)address["locality"], Country = (string)address["countryRegion"], District = (string)address["adminDistrict"] };
+                    _geoHashCacheProvider.AppendToCache(geoHash, bingParsingResult); 
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("An exception occurred while trying to parse Location Lookup results from Bing");
+                    Console.WriteLine(ex);
+
+                    return MessageHandlerResults.FailStopProcessing;
+                }
             }
 
-            try
-            {
-                var json = JObject.Parse(bingResult);
+            //add values to msg
+            msg.Properties.Add("country", bingParsingResult.Country);
+            msg.Properties.Add("district", bingParsingResult.District);
+            msg.Properties.Add("city", bingParsingResult.City);
 
-                var address = json["resourceSets"][0]["resources"][0]["address"];
-                var country = (string)address["countryRegion"];
-                var district = (string)address["adminDistrict"];
-                var city = (string)address["locality"];
-
-                msg.Properties.Add("country", country);
-                msg.Properties.Add("district", district);
-                msg.Properties.Add("city", city);
-
-                return MessageHandlerResluts.Success;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("An exception occurred while trying to parse Location Lookup results from Bing");
-                Console.WriteLine(ex);
-
-                return MessageHandlerResluts.FailStopProcessing;
-            }
+            return MessageHandlerResults.Success;
         }
+    }
+
+    public class BingResult
+    {
+        public string Country { get; set; }
+        public string City { get; set; }
+        public string District { get; set; }
     }
 }
