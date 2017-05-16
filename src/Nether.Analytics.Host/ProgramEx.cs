@@ -89,24 +89,33 @@ namespace Nether.Analytics.Host
 
             // Setting up "Geo Clustering Recipe"
 
-            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueueTimeUtc", "gameSessionId", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "rnd");
+            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueueTimeUtc", "gameSessionId", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "rnd")
+            {
+                IncludeHeaderRow = false
+            };
 
-            var clusteringDlsOutputManager = new DataLakeStoreOutputManager(
+            var pathAlgorithm = new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every5Minutes);
+
+            var dlsOutputManager = new DataLakeStoreOutputManager(
                 clusteringSerializer,
-                new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every5Minutes),
+                pathAlgorithm,
                 serviceClientCretentials,
                 subscriptionId: _configuration[NAH_Azure_SubscriptionId],
                 dlsAccountName: _configuration[NAH_Azure_DLSOutputManager_AccountName]);
 
-            var clusteringConsoleOutputManager = new ConsoleOutputManager(clusteringSerializer);
+            //var fileOutputManager = new FileOutputManager(
+            //    clusteringSerializer,
+            //    pathAlgorithm,
+            //    @"C:\dev\USQLDataRoot");
+
+            var consoleOutputManger = new ConsoleOutputManager(clusteringSerializer);
 
             builder.Pipeline("clustering")
                 .HandlesMessageType("geo-location", "1.0.0")
                 .HandlesMessageType("geo-location", "1.0.1")
                 .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
                 .AddHandler(new RandomIntMessageHandler())
-                //.AddHandler(new BingLocationLookupHandler("BING_MAPS_KEY", new InMemoryGeoHashCacheProvider(), 24))
-                .OutputTo(clusteringConsoleOutputManager, clusteringDlsOutputManager);
+                .OutputTo(consoleOutputManger, dlsOutputManager);
 
 
             // Build all pipelines
