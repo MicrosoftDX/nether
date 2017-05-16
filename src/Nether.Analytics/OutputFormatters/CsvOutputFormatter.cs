@@ -53,7 +53,7 @@ namespace Nether.Analytics
                 {
                     builder.Append(EmptyValue);
                 }
-            }            
+            }
 
             return builder.ToString();
         }

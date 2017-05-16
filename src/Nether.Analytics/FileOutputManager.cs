@@ -92,6 +92,5 @@ namespace Nether.Analytics
             } while (tryAgain);
         }
     }
-    
 }
 
