@@ -49,7 +49,8 @@ namespace Nether.Analytics.DataLake
             var serializedMessage = _serializer.Format(msg);
             var filePath = GetFilePath(pipelineName, idx, msg);
 
-            if (_serializer is IHeaderAwareOutputFormatter)
+            if (_serializer is IHeaderAwareOutputFormatter
+                && ((IHeaderAwareOutputFormatter)_serializer).IncludeHeaders)
             {
                 await AppendMessageToFileWithHeaderAsync(serializedMessage, filePath);
             }

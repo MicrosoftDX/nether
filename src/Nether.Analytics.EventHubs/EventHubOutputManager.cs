@@ -34,16 +34,12 @@ namespace Nether.Analytics
             _encoding = encoding;
             _serializer = serializer;
             _ehConnectionString = outputEventHubConnectionString;
-
-            // spin up the event hub client
-            EnsureEventHubClient();
         }
 
         private void EnsureEventHubClient()
         {
             if (_client == null)
             {
-                // TODO: is this useful?
                 if (string.IsNullOrEmpty(_ehConnectionString))
                 {
                     throw new ArgumentException("Missing Event Hub connection string.");
@@ -63,23 +59,24 @@ namespace Nether.Analytics
 
         public Task FlushAsync()
         {
-            // TODO: does it make sense to not do anything? The client doesn't support flushing.
-            return Task.FromResult(0);
+            // this client does not "support" flushing, per-se, but we don't
+            // want to throw an exception, so we're just "ignoring" this
+            return Task.CompletedTask;
         }
 
         public Task OutputMessageAsync(string pipelineName, int idx, Message msg)
         {
-            string payload;
+            string payload = _serializer.Format(msg);
 
-            if (_serializer is IHeaderAwareOutputFormatter)
+            if (_serializer is IHeaderAwareOutputFormatter
+                && (_serializer as IHeaderAwareOutputFormatter).IncludeHeaders)
             {
-                payload = ((IHeaderAwareOutputFormatter)_serializer).FormatWithHeaders(msg);
+                var headerFormatter = (IHeaderAwareOutputFormatter)_serializer;
+                if(headerFormatter.IncludeHeaders)
+                {
+                    payload = $"{headerFormatter.Header}{Environment.NewLine}{payload}";
+                }
             }
-            else
-            {
-                payload = _serializer.Format(msg);
-            }
-
 
             var eventData = new EventData(_encoding.GetBytes(payload));
 

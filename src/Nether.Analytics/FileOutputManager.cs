@@ -32,7 +32,7 @@ namespace Nether.Analytics
             var serializedMessage = _serializer.Format(msg);
             var filePath = GetFilePath(pipelineName, idx, msg);
 
-            if (_serializer.IncludeHeaderRow)
+            if (_serializer is IHeaderAwareOutputFormatter)
             {
                 await AppendMessageToFileWithHeaderAsync(serializedMessage, filePath);
             }
@@ -78,7 +78,7 @@ namespace Nether.Analytics
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
-                        string header = _serializer.Header;
+                        string header = ((IHeaderAwareOutputFormatter)_serializer).Header;
 
                         await AppendMessageToFileAsync(header, filePath);
                     }

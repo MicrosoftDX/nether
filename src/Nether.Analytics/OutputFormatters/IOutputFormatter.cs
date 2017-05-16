@@ -8,5 +8,9 @@ namespace Nether.Analytics
         string FileExtension { get; }
 
         string Format(Message msg);
+
+        string Header { get; }
+
+        bool IncludeHeaders { get; set; }
     }
 }
