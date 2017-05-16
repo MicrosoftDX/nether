@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -35,7 +38,7 @@ namespace Nether.Analytics
             {
                 await AppendMessageToFileAsync(serializedMessage, filePath);
             }
-        }        
+        }
 
         private string GetFilePath(string pipelineName, int idx, Message msg)
         {
@@ -51,7 +54,7 @@ namespace Nether.Analytics
             // just use the following simple implementation for writing to the file
             using (StreamWriter stream = File.AppendText(filePath))
             {
-                await stream.WriteLineAsync(serializedMessage);            
+                await stream.WriteLineAsync(serializedMessage);
             }
         }
 
@@ -67,7 +70,7 @@ namespace Nether.Analytics
                     {
                         using (StreamWriter stream = File.AppendText(filePath))
                         {
-                            await stream.WriteLineAsync(serializedMessage);                            
+                            await stream.WriteLineAsync(serializedMessage);
                         }
 
                         tryAgain = false;
@@ -84,7 +87,7 @@ namespace Nether.Analytics
                         }
                     }
                 }
-                catch (Exception e) 
+                catch (Exception e)
                 {
                     // it is possible that another thread is now creating the file and adding the header
                     // wait a while before continue to try and write the file
