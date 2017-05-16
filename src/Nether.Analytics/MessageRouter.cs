@@ -35,8 +35,6 @@ namespace Nether.Analytics
                     }
                 }
             }
-
-
         }
 
         public async Task RouteMessageAsync(Message msg)
@@ -60,7 +58,6 @@ namespace Nether.Analytics
                 msg.Properties.Add(Constants.Error, err);
 
                 await _unhandledEventPipeline.ProcessMessageAsync(msg);
-
             }
         }
     }

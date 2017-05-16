@@ -12,7 +12,6 @@ namespace Nether.Analytics.Parsers
 {
     public class EventHubListenerMessageJsonParser : IMessageParser<EventHubListenerMessage>
     {
-
         public EventHubListenerMessageJsonParser(ICorruptMessageHandler corruptMessageHandler)
         {
             _corruptMessageHandler = corruptMessageHandler;

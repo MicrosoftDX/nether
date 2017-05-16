@@ -23,13 +23,11 @@ namespace Nether.Analytics.GeoLocation
 
         public Task<BingResult> GetAsync(long geohash)
         {
-
             if (!_cache.ContainsKey(geohash))
             {
                 throw new ArgumentException($"Geohash {geohash} not found in cache");
             }
             return Task.FromResult(_cache[geohash]);
-
         }
 
         private Dictionary<Int64, BingResult> _cache = new Dictionary<Int64, BingResult>();
@@ -50,6 +48,5 @@ namespace Nether.Analytics.GeoLocation
 
             return Task.FromResult(_cache.ContainsKey(geohash));
         }
-
     }
 }

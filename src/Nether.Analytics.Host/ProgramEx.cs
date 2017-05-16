@@ -114,7 +114,7 @@ namespace Nether.Analytics.Host
                 .AddHandler(new RandomIntMessageHandler())
                 .OutputTo(new ConsoleOutputManager(new CsvOutputFormatter()));
 
-       
+
             // Build all pipelines
             var router = builder.Build();
 

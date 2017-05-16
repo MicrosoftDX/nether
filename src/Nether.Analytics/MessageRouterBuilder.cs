@@ -53,6 +53,5 @@ namespace Nether.Analytics
 
             return new MessageRouter(eventPipelines);
         }
-
     }
 }
