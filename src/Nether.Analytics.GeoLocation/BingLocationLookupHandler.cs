@@ -52,9 +52,9 @@ namespace Nether.Analytics.GeoLocation
 
             BingResult bingParsingResult;
             //if we have the result in the cache, fetch it
-            if (_geoHashCacheProvider.ContainsGeoHash(geoHash))
+            if (await _geoHashCacheProvider.ContainsGeoHashAsync(geoHash))
             {
-                bingParsingResult = _geoHashCacheProvider[geoHash];
+                bingParsingResult = await _geoHashCacheProvider.GetAsync(geoHash);
                 Debug.WriteLine("Found in cache");
             }
             //else, query bing directly
@@ -91,7 +91,7 @@ namespace Nether.Analytics.GeoLocation
 
                     //create a bing parsing result instance and cache it
                     bingParsingResult = new BingResult() { City = (string)address["locality"], Country = (string)address["countryRegion"], District = (string)address["adminDistrict"] };
-                    _geoHashCacheProvider.AppendToCache(geoHash, bingParsingResult);
+                    await _geoHashCacheProvider.AppendToCacheAsync(geoHash, bingParsingResult);
                 }
                 catch (Exception ex)
                 {

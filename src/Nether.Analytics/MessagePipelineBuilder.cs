@@ -41,5 +41,7 @@ namespace Nether.Analytics
         {
             _outputManagers = outputManagers;
         }
+
+    
     }
 }

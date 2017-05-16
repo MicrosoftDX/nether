@@ -82,7 +82,7 @@ namespace Nether.Analytics.Host
 
             // Setup Message Parser. By default we are using Nether JSON Messages
             // Setting up parser that knows how to parse those messages.
-            var parser = new EventHubListenerMessageJsonParser();
+            var parser = new EventHubListenerMessageJsonParser(new ConsoleCorruptMessageHandler());
 
             // User a builder to create routing infrastructure for messages and the pipelines
             var builder = new MessageRouterBuilder();
@@ -100,15 +100,21 @@ namespace Nether.Analytics.Host
 
             var clusteringConsoleOutputManager = new ConsoleOutputManager(clusteringSerializer);
 
-            builder.Pipeline("clustering")
+            builder
+                .Pipeline("clustering")
                 .HandlesMessageType("geo-location", "1.0.0")
                 .HandlesMessageType("geo-location", "1.0.1")
                 .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
                 .AddHandler(new RandomIntMessageHandler())
-                //.AddHandler(new BingLocationLookupHandler("BING_MAPS_KEY", new InMemoryGeoHashCacheProvider(), 24))
-                .OutputTo(clusteringConsoleOutputManager, clusteringDlsOutputManager);
+                .AddHandler(new BingLocationLookupHandler("YOUR_BING_MAPS_KEY_HERE", new InMemoryGeoHashCacheProvider(), 24))
+                //.OutputTo(clusteringConsoleOutputManager, clusteringDlsOutputManager);
+                .OutputTo(clusteringConsoleOutputManager);
 
+            builder.DefaultPipeline()
+                .AddHandler(new RandomIntMessageHandler())
+                .OutputTo(new ConsoleOutputManager(new CsvOutputFormatter()));
 
+       
             // Build all pipelines
             var router = builder.Build();
 
