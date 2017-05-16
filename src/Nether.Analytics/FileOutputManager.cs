@@ -15,7 +15,7 @@ namespace Nether.Analytics
         private IFilePathAlgorithm _filePathAlgorithm;
         private string _rootPath;
 
-        public FileOutputManager(IOutputFormatter serializer, IFilePathAlgorithm filePathAlgorithm, string rootPath)
+        public FileOutputManager(IOutputFormatter serializer, IFilePathAlgorithm filePathAlgorithm, string rootPath = @"C:\")
         {
             _serializer = serializer;
             _filePathAlgorithm = filePathAlgorithm;
@@ -47,7 +47,7 @@ namespace Nether.Analytics
             var fp = _filePathAlgorithm.GetFilePath(pipelineName, idx, msg);
             var fileName = $"{fp.Name}.{_serializer.FileExtension}";
 
-            return _rootPath + "/" + string.Join("/", fp.Hierarchy) + fileName;
+            return Path.Combine(_rootPath, Path.Combine(fp.Hierarchy), fileName);
         }
 
         private async Task AppendMessageToFileAsync(string serializedMessage, string filePath)
@@ -56,7 +56,7 @@ namespace Nether.Analytics
             // just use the following simple implementation for writing to the file
             using (StreamWriter stream = File.AppendText(filePath))
             {
-                await stream.WriteLineAsync(serializedMessage);
+                await stream.WriteAsync(serializedMessage);
             }
         }
 
@@ -83,7 +83,7 @@ namespace Nether.Analytics
                         await AppendMessageToFileAsync(header, filePath);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // it is possible that another thread is now creating the file and adding the header
                     // wait a while before continue to try and write the file
