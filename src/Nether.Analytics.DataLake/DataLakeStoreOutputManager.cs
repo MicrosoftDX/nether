@@ -49,7 +49,7 @@ namespace Nether.Analytics.DataLake
             var serializedMessage = _serializer.Format(msg);
             var filePath = GetFilePath(pipelineName, idx, msg);
 
-            if (_serializer.IncludeHeaderRow)
+            if (_serializer is IHeaderAwareOutputFormatter)
             {
                 await AppendMessageToFileWithHeaderAsync(serializedMessage, filePath);
             }
@@ -128,7 +128,7 @@ namespace Nether.Analytics.DataLake
                         //TODO: Fix the above described problem that can cause the Header Row to be written after another row
 
                         // Write headers to file
-                        string header = _serializer.Header;
+                        string header = ((IHeaderAwareOutputFormatter)_serializer).Header;
 
                         using (var headerStream = new MemoryStream(Encoding.UTF8.GetBytes(header)))
                         {

@@ -7,12 +7,12 @@ using System.Text;
 
 namespace Nether.Analytics
 {
-    public class CsvOutputFormatter : IOutputFormatter
+    public class CsvOutputFormatter : IHeaderAwareOutputFormatter
     {
         public char Separator { get; set; } = ',';
         public string EmptyValue { get; set; } = "";
         public string[] Columns { get; set; }
-        public bool IncludeHeaderRow { get; set; } = true;
+        
         public string FileExtension => "csv";
 
         public CsvOutputFormatter(params string[] columns)
@@ -60,11 +60,20 @@ namespace Nether.Analytics
             return builder.ToString();
         }
 
+        public string FormatWithHeaders(Message msg)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(Header);
+            sb.Append(Format(msg));
+
+            return sb.ToString();
+        }
+
         public string Header
         {
             get
             {
-                return string.Join(Separator.ToString(), Columns) + Environment.NewLine;
+                return string.Join(Separator.ToString(), Columns);
             }
         }
     }
