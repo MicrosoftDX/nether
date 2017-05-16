@@ -82,42 +82,39 @@ namespace Nether.Analytics.Host
 
             // Setup Message Parser. By default we are using Nether JSON Messages
             // Setting up parser that knows how to parse those messages.
-            var parser = new EventHubListenerMessageJsonParser();
+            var parser = new EventHubListenerMessageJsonParser(new ConsoleCorruptMessageHandler());
 
             // User a builder to create routing infrastructure for messages and the pipelines
             var builder = new MessageRouterBuilder();
 
             // Setting up "Geo Clustering Recipe"
 
-            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueueTimeUtc", "gameSessionId", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "rnd")
-            {
-                IncludeHeaderRow = false
-            };
+            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueueTimeUtc", "gameSessionId", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "rnd");
 
-            var pathAlgorithm = new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every5Minutes);
-
-            var dlsOutputManager = new DataLakeStoreOutputManager(
+            var clusteringDlsOutputManager = new DataLakeStoreOutputManager(
                 clusteringSerializer,
-                pathAlgorithm,
+                new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every5Minutes),
                 serviceClientCretentials,
                 subscriptionId: _configuration[NAH_Azure_SubscriptionId],
                 dlsAccountName: _configuration[NAH_Azure_DLSOutputManager_AccountName]);
 
-            //var fileOutputManager = new FileOutputManager(
-            //    clusteringSerializer,
-            //    pathAlgorithm,
-            //    @"C:\dev\USQLDataRoot");
+            var clusteringConsoleOutputManager = new ConsoleOutputManager(clusteringSerializer);
 
-            var consoleOutputManger = new ConsoleOutputManager(clusteringSerializer);
-
-            builder.Pipeline("clustering")
+            builder
+                .Pipeline("clustering")
                 .HandlesMessageType("geo-location", "1.0.0")
                 .HandlesMessageType("geo-location", "1.0.1")
                 .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
                 .AddHandler(new RandomIntMessageHandler())
-                .OutputTo(consoleOutputManger, dlsOutputManager);
+                .AddHandler(new BingLocationLookupHandler("YOUR_BING_MAPS_KEY_HERE", new InMemoryGeoHashCacheProvider(), 24))
+                //.OutputTo(clusteringConsoleOutputManager, clusteringDlsOutputManager);
+                .OutputTo(clusteringConsoleOutputManager);
 
+            builder.DefaultPipeline()
+                .AddHandler(new RandomIntMessageHandler())
+                .OutputTo(new ConsoleOutputManager(new CsvOutputFormatter()));
 
+       
             // Build all pipelines
             var router = builder.Build();
 

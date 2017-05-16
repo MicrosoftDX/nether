@@ -12,9 +12,9 @@ namespace Nether.Analytics
 {
     public class MessageProcessor<T>
     {
-        public MessageProcessor(IMessageListener<T> listner, IMessageParser<T> parser, IMessageRouter router)
+        public MessageProcessor(IMessageListener<T> listener, IMessageParser<T> parser, IMessageRouter router)
         {
-            Listener = listner;
+            Listener = listener;
             Parser = parser;
             Router = router;
         }
@@ -42,7 +42,9 @@ namespace Nether.Analytics
             //TODO: Run this loop in parallel
             foreach (var unparsedMessage in unparsedMessages)
             {
-                var parsedMessage = Parser.ParseMessage(unparsedMessage);
+                var parsedMessage = await Parser.ParseMessageAsync(unparsedMessage);
+                if (parsedMessage == null)//incoming message was corrupt
+                    continue;//go on with the next message
                 await Router.RouteMessageAsync(parsedMessage);
             }
         }

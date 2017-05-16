@@ -12,17 +12,41 @@ namespace Nether.Analytics.Parsers
 {
     public class EventHubListenerMessageJsonParser : IMessageParser<EventHubListenerMessage>
     {
-        public Message ParseMessage(EventHubListenerMessage unparsedMsg)
+
+        public EventHubListenerMessageJsonParser(ICorruptMessageHandler corruptMessageHandler)
+        {
+            _corruptMessageHandler = corruptMessageHandler;
+        }
+
+        private ICorruptMessageHandler _corruptMessageHandler;
+        public ICorruptMessageHandler CorruptMessageHandler
+        {
+            get { return _corruptMessageHandler; }
+        }
+
+        public async Task<Message> ParseMessageAsync(EventHubListenerMessage unparsedMsg)
         {
             var data = Encoding.UTF8.GetString(unparsedMsg.Body.Array, unparsedMsg.Body.Offset, unparsedMsg.Body.Count);
 
-            var json = JObject.Parse(data);
+            JObject json;
+            try
+            {
+                json = JObject.Parse(data);
+            }
+            catch //JSON serialization failed
+            {
+                await _corruptMessageHandler.HandleAsync(data);
+                return null;
+            }
+
             var gameEventType = (string)json["type"];
             var version = (string)json["version"];
 
-            //TODO: Handle incorrect message formats better
             if (gameEventType == null || version == null)
-                throw new Exception("Unable to resolve Game Event Type, since game event doesn't contain type and/or version property");
+            {
+                await _corruptMessageHandler.HandleAsync(data);
+                return null;
+            }
 
             var id = unparsedMsg.PartitionId + "_" + unparsedMsg.SequenceNumber;
 
@@ -31,7 +55,7 @@ namespace Nether.Analytics.Parsers
                 Id = id,
                 MessageType = gameEventType,
                 Version = version,
-                EnqueueTimeUtc = unparsedMsg.EnqueuedTime,
+                EnqueueTimeUtc = unparsedMsg.EnqueuedTime
             };
 
             msg.Properties["id"] = id;
@@ -39,7 +63,7 @@ namespace Nether.Analytics.Parsers
 
             foreach (var p in json)
             {
-                //TODO: Replace below naive JSON parsing implementation with more sofisticated and robust
+                //TODO: Replace below naive JSON parsing implementation with more sophisticated and robust
 
                 var key = p.Key;
                 try
