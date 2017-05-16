@@ -53,9 +53,7 @@ namespace Nether.Analytics
                 {
                     builder.Append(EmptyValue);
                 }
-            }
-
-            builder.AppendLine();
+            }            
 
             return builder.ToString();
         }
@@ -64,7 +62,7 @@ namespace Nether.Analytics
         {
             get
             {
-                return string.Join(Separator.ToString(), Columns) + Environment.NewLine;
+                return string.Join(Separator.ToString(), Columns);
             }
         }
     }

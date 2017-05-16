@@ -13,11 +13,13 @@ namespace Nether.Analytics
     {
         private IOutputFormatter _serializer;
         private IFilePathAlgorithm _filePathAlgorithm;
+        private string _rootPath;
 
-        public FileOutputManager(IOutputFormatter serializer, IFilePathAlgorithm filePathAlgorithm)
+        public FileOutputManager(IOutputFormatter serializer, IFilePathAlgorithm filePathAlgorithm, string rootPath)
         {
             _serializer = serializer;
             _filePathAlgorithm = filePathAlgorithm;
+            _rootPath = rootPath;
         }
 
         public Task FlushAsync()
@@ -45,7 +47,7 @@ namespace Nether.Analytics
             var fp = _filePathAlgorithm.GetFilePath(pipelineName, idx, msg);
             var fileName = $"{fp.Name}.{_serializer.FileExtension}";
 
-            return string.Join("/", fp.Hierarchy) + fileName;
+            return _rootPath + "/" + string.Join("/", fp.Hierarchy) + fileName;
         }
 
         private async Task AppendMessageToFileAsync(string serializedMessage, string filePath)
@@ -68,10 +70,7 @@ namespace Nether.Analytics
                 {
                     if (File.Exists(filePath))
                     {
-                        using (StreamWriter stream = File.AppendText(filePath))
-                        {
-                            await stream.WriteLineAsync(serializedMessage);
-                        }
+                        await AppendMessageToFileAsync(serializedMessage, filePath);
 
                         tryAgain = false;
                     }
@@ -81,10 +80,7 @@ namespace Nether.Analytics
 
                         string header = _serializer.Header;
 
-                        using (StreamWriter stream = File.AppendText(filePath))
-                        {
-                            await stream.WriteLineAsync(header);
-                        }
+                        await AppendMessageToFileAsync(header, filePath);
                     }
                 }
                 catch (Exception e)
@@ -96,5 +92,6 @@ namespace Nether.Analytics
             } while (tryAgain);
         }
     }
+    
 }
 
