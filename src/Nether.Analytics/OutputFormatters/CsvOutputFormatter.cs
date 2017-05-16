@@ -12,7 +12,7 @@ namespace Nether.Analytics
         public char Separator { get; set; } = ',';
         public string EmptyValue { get; set; } = "";
         public string[] Columns { get; set; }
-        
+
         public string FileExtension => "csv";
 
         public CsvOutputFormatter(params string[] columns)

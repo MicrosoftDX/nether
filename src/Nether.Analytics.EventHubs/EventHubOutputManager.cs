@@ -27,7 +27,6 @@ namespace Nether.Analytics
         public EventHubOutputManager(string outputEventHubConnectionString, IOutputFormatter serializer)
             : this(outputEventHubConnectionString, serializer, Encoding.UTF8)
         {
-
         }
 
         public EventHubOutputManager(string outputEventHubConnectionString, IOutputFormatter serializer, Encoding encoding)
@@ -61,7 +60,7 @@ namespace Nether.Analytics
                 return _client;
             }
         }
-        
+
         public Task FlushAsync()
         {
             // TODO: does it make sense to not do anything? The client doesn't support flushing.
@@ -71,18 +70,19 @@ namespace Nether.Analytics
         public Task OutputMessageAsync(string pipelineName, int idx, Message msg)
         {
             string payload;
-            
+
             if (_serializer is IHeaderAwareOutputFormatter)
             {
                 payload = ((IHeaderAwareOutputFormatter)_serializer).FormatWithHeaders(msg);
-            } else
+            }
+            else
             {
                 payload = _serializer.Format(msg);
             }
 
-            
-            var eventData = new EventData(_encoding.GetBytes(payload));            
-            
+
+            var eventData = new EventData(_encoding.GetBytes(payload));
+
             return Client.SendAsync(eventData);
         }
     }
