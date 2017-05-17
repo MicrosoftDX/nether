@@ -9,6 +9,7 @@ using Microsoft.Rest.Azure.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -44,7 +45,13 @@ namespace Nether.Analytics.DataLake
         {
             if (variables != null)
             {
-                script = UsqlHelper.ReplaceVariableValuesInScript(script, variables, out var variablesFound);
+                StringBuilder sb = new StringBuilder();
+                foreach (var kvp in variables)
+                {
+                    sb.AppendLine($"DECLARE @{kvp.Key} = \"{kvp.Value}\";");
+                }
+                sb.Append(script);
+                script = sb.ToString();
             }
 
             Console.WriteLine(script);
@@ -53,18 +60,19 @@ namespace Nether.Analytics.DataLake
             var properties = new USqlJobProperties(script);
             var jobParameters = new JobInformation(jobName, JobType.USql, properties, priority: 1, degreeOfParallelism: 1, jobId: jobId);
 
-            await _dlaJobClient.Job.CreateAsync("nether", jobId, jobParameters);
-
+            await _dlaJobClient.Job.CreateAsync(_dlaAccountName, jobId, jobParameters);
+            
             return jobId;
         }
 
-        public JobInformation WaitForJob(Guid jobId)
+        public async Task<JobInformation> WaitForJobAsync(Guid jobId, int pollingTimeout = 1000)
         {
             var jobInfo = _dlaJobClient.Job.Get(_dlaAccountName, jobId);
             while (jobInfo.State != JobState.Ended)
             {
                 jobInfo = _dlaJobClient.Job.Get(_dlaAccountName, jobId);
-                Console.WriteLine(jobInfo.State);
+                Console.WriteLine($"Job with ID:{jobId} currently has state {jobInfo.State}");
+                await Task.Delay(pollingTimeout);
             }
             return jobInfo;
         }

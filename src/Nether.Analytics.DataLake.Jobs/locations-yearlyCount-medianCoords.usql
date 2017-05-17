@@ -1,6 +1,6 @@
-﻿DECLARE @YEAR int = 2017;
-DECLARE @INPUT_FILE string = String.Concat( "/", @YEAR.ToString(), "/{*}/{*}/locations.csv");
-DECLARE @OUTPUT_FILE string = String.Concat( "/output/locations/yearly/", @YEAR.ToString(), ".csv");
+﻿DECLARE EXTERNAL @YEAR int = 2017;
+DECLARE EXTERNAL @INPUT_FILE string = String.Concat( "/", @YEAR.ToString(), "/{*}/{*}/locations.csv");
+DECLARE EXTERNAL @OUTPUT_FILE string = String.Concat( "/output/locations/yearly/", @YEAR.ToString(), ".csv");
 
 // Read raw location events
 @LOCATIONS_RAW =
