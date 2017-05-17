@@ -106,6 +106,7 @@ namespace Nether.Analytics.Host
                 .HandlesMessageType("geo-location", "1.0.1")
                 .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
                 .AddHandler(new RandomIntMessageHandler())
+<<<<<<< HEAD
                 .AddHandler(new BingLocationLookupHandler("YOUR_BING_MAPS_KEY_HERE", new InMemoryGeoHashCacheProvider(), 24))
                 //.OutputTo(clusteringConsoleOutputManager, clusteringDlsOutputManager);
                 .OutputTo(clusteringConsoleOutputManager);
@@ -114,6 +115,33 @@ namespace Nether.Analytics.Host
                 .AddHandler(new RandomIntMessageHandler())
                 .OutputTo(new ConsoleOutputManager(new CsvOutputFormatter()));
 
+=======
+                .OutputTo(new ConsoleOutputManager(clusteringSerializer)
+                        , new FileOutputManager(clusteringSerializer, filePathAlgorithm, @"C:\dev\USQLDataRoot")
+                        , new DataLakeStoreOutputManager(
+                            clusteringSerializer,
+                            filePathAlgorithm,
+                            serviceClientCretentials,
+                            _configuration[NAH_Azure_SubscriptionId],
+                            _configuration[NAH_Azure_DLSOutputManager_AccountName])
+                        );
+
+            // Setting up "Daily Active Users Recipe"
+
+            var dauSerializer = new CsvOutputFormatter("id", "type", "version", "gameSession", "enqueueTimeUtc", "gamerTag");
+
+            builder.Pipeline("dau")
+                .HandlesMessageType("session-start", "1.0.0")
+                .OutputTo(new ConsoleOutputManager(dauSerializer)
+                        , new FileOutputManager(dauSerializer, filePathAlgorithm, @"C:\dev\USQLDataRoot")
+                        , new DataLakeStoreOutputManager(
+                            dauSerializer,
+                            filePathAlgorithm,
+                            serviceClientCretentials,
+                            _configuration[NAH_Azure_SubscriptionId],
+                            _configuration[NAH_Azure_DLSOutputManager_AccountName])
+                        );
+>>>>>>> upstream/master
 
             // Build all pipelines
             var router = builder.Build();

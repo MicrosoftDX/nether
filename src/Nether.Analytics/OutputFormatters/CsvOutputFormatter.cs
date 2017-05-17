@@ -12,8 +12,10 @@ namespace Nether.Analytics
         public char Separator { get; set; } = ',';
         public string EmptyValue { get; set; } = "";
         public string[] Columns { get; set; }
-        public bool IncludeHeaderRow { get; set; } = true;
+
         public string FileExtension => "csv";
+
+        public bool IncludeHeaders { get; set; } = true;
 
         public CsvOutputFormatter(params string[] columns)
         {
@@ -55,16 +57,15 @@ namespace Nether.Analytics
                 }
             }
 
-            builder.AppendLine();
-
             return builder.ToString();
         }
+
 
         public string Header
         {
             get
             {
-                return string.Join(Separator.ToString(), Columns) + Environment.NewLine;
+                return string.Join(Separator.ToString(), Columns);
             }
         }
     }
