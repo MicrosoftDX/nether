@@ -21,6 +21,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Script Include="clusters.usql" />
+    <Script Include="geoclustering.usql" />
     <Script Include="locations-dailyCount-medianCoords.usql" />
     <Script Include="locations-monthlyCount-medianCoords.usql" />
     <Script Include="locations-yearlyCount-medianCoords.usql" />
@@ -28,6 +29,9 @@
   <ItemGroup>
     <ScriptCode Include="clusters.usql.cs">
       <DependentUpon>clusters.usql</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="geoclustering.usql.cs">
+      <DependentUpon>geoclustering.usql</DependentUpon>
     </ScriptCode>
   </ItemGroup>
   <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Usql.targets" />

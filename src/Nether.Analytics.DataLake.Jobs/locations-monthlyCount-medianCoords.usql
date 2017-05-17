@@ -1,9 +1,9 @@
-﻿DECLARE @YEAR int = 2017;
-DECLARE @MONTH int = 4;
+﻿DECLARE EXTERNAL @YEAR int = 2017;
+DECLARE EXTERNAL @MONTH int = 5;
 
 DECLARE @MONTH_STR string = (@MONTH < 10) ? String.Concat("0", @MONTH.ToString()) : @MONTH.ToString();
-DECLARE @INPUT_FILE string = String.Concat( "/", @YEAR.ToString(), "/", @MONTH_STR, "/{*}/locations.csv");
-DECLARE @OUTPUT_FILE string = String.Concat( "/output/locations/monthly/", @YEAR.ToString(), @MONTH_STR, ".csv");
+DECLARE @INPUT_FILE string = String.Concat( "/nether/clustering/geo-location/", @YEAR.ToString(), "/", @MONTH_STR, "/{*}/{*}.csv");
+DECLARE @OUTPUT_FILE string = String.Concat( "/nether/output/geo-location/monthly/", @YEAR.ToString(), @MONTH_STR, ".csv");
 
 // Read raw location events
 @LOCATIONS_RAW =
@@ -24,11 +24,12 @@ DECLARE @OUTPUT_FILE string = String.Concat( "/output/locations/monthly/", @YEAR
             city string,
             properties string
     FROM @INPUT_FILE
-    USING Extractors.Text(delimiter: '|', encoding: Encoding.UTF8, skipFirstNRows: 1);
+         USING Extractors.Csv(encoding: Encoding.UTF8, skipFirstNRows: 1);
 
 // Create temporary table with median latitude and row number
 @MEDIAN_LAT_COORDS_TMP = 
     SELECT 
+        DateTime(l.enqueueTime.Year, l.enqueueTime.Month, 1) AS date,
         l.geoHash AS geoHash, 
         l.lat AS latitude,
         l.lon AS longitude,
@@ -44,6 +45,7 @@ DECLARE @OUTPUT_FILE string = String.Concat( "/output/locations/monthly/", @YEAR
 // Table that contains geoHash and its associated coordinates: median latitude and the minimum corresponding longitude
 @MEDIAN_COORDS = 
     SELECT
+        date, 
         geoHash,
         latitude,
         longitude
@@ -59,7 +61,8 @@ DECLARE @OUTPUT_FILE string = String.Concat( "/output/locations/monthly/", @YEAR
 
 // Table with counts and coordinates per geoHash
 @COUNTS =
-    SELECT l.geoHash,
+    SELECT g.date,
+           l.geoHash,
            l.numPts,
            g.latitude,
            g.longitude
