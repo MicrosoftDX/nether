@@ -13,7 +13,6 @@ namespace Nether.Analytics
         private string _ehConnectionString;
         private IOutputFormatter _serializer;
         private EventHubClient _client;
-        private Encoding _encoding;
 
         /// <summary>
         /// Creates a new instance, with a JSON output formatter as the default serializer.
@@ -25,13 +24,7 @@ namespace Nether.Analytics
         }
 
         public EventHubOutputManager(string outputEventHubConnectionString, IOutputFormatter serializer)
-            : this(outputEventHubConnectionString, serializer, Encoding.UTF8)
         {
-        }
-
-        public EventHubOutputManager(string outputEventHubConnectionString, IOutputFormatter serializer, Encoding encoding)
-        {
-            _encoding = encoding;
             _serializer = serializer;
             _ehConnectionString = outputEventHubConnectionString;
         }
@@ -73,7 +66,7 @@ namespace Nether.Analytics
                 payload = $"{_serializer.Header}{Environment.NewLine}{payload}";
             }
 
-            var eventData = new EventData(_encoding.GetBytes(payload));
+            var eventData = new EventData(Encoding.UTF8.GetBytes(payload));
 
             return Client.SendAsync(eventData);
         }

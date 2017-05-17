@@ -12,7 +12,7 @@ namespace Nether.Analytics
 
         public string Header { get { throw new NotSupportedException("Json does not support outputting headers."); } }
 
-        public bool IncludeHeaders { get; set; } = true;
+        public bool IncludeHeaders => false;
 
         public string Format(Message msg)
         {

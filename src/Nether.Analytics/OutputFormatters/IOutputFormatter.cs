@@ -11,6 +11,6 @@ namespace Nether.Analytics
 
         string Header { get; }
 
-        bool IncludeHeaders { get; set; }
+        bool IncludeHeaders { get; }
     }
 }
