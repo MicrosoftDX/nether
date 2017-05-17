@@ -61,7 +61,7 @@ namespace Nether.Analytics.DataLake
             var jobParameters = new JobInformation(jobName, JobType.USql, properties, priority: 1, degreeOfParallelism: 1, jobId: jobId);
 
             await _dlaJobClient.Job.CreateAsync(_dlaAccountName, jobId, jobParameters);
-            
+
             return jobId;
         }
 
