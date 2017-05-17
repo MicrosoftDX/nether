@@ -100,22 +100,16 @@ namespace Nether.Analytics.Host
 
             var clusteringConsoleOutputManager = new ConsoleOutputManager(clusteringSerializer);
 
+            var filePathAlgorithm = new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every5Minutes);
+
             builder
                 .Pipeline("clustering")
                 .HandlesMessageType("geo-location", "1.0.0")
                 .HandlesMessageType("geo-location", "1.0.1")
                 .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
                 .AddHandler(new RandomIntMessageHandler())
-<<<<<<< HEAD
                 .AddHandler(new BingLocationLookupHandler("YOUR_BING_MAPS_KEY_HERE", new InMemoryGeoHashCacheProvider(), 24))
                 //.OutputTo(clusteringConsoleOutputManager, clusteringDlsOutputManager);
-                .OutputTo(clusteringConsoleOutputManager);
-
-            builder.DefaultPipeline()
-                .AddHandler(new RandomIntMessageHandler())
-                .OutputTo(new ConsoleOutputManager(new CsvOutputFormatter()));
-
-=======
                 .OutputTo(new ConsoleOutputManager(clusteringSerializer)
                         , new FileOutputManager(clusteringSerializer, filePathAlgorithm, @"C:\dev\USQLDataRoot")
                         , new DataLakeStoreOutputManager(
@@ -125,6 +119,12 @@ namespace Nether.Analytics.Host
                             _configuration[NAH_Azure_SubscriptionId],
                             _configuration[NAH_Azure_DLSOutputManager_AccountName])
                         );
+
+            builder.DefaultPipeline()
+                .AddHandler(new RandomIntMessageHandler())
+                .OutputTo(new ConsoleOutputManager(new CsvOutputFormatter()));
+
+               
 
             // Setting up "Daily Active Users Recipe"
 
@@ -141,7 +141,6 @@ namespace Nether.Analytics.Host
                             _configuration[NAH_Azure_SubscriptionId],
                             _configuration[NAH_Azure_DLSOutputManager_AccountName])
                         );
->>>>>>> upstream / master
 
             // Build all pipelines
             var router = builder.Build();
