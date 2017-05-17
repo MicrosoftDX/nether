@@ -10,7 +10,7 @@ namespace Nether.Analytics
     {
         public string FileExtension => "json";
 
-        public string Header => throw new NotSupportedException("Json does not support outputting headers.");
+        public string Header { get { throw new NotSupportedException("Json does not support outputting headers."); } }
 
         public bool IncludeHeaders { get; set; } = true;
 
