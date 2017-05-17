@@ -109,7 +109,7 @@ namespace Nether.Analytics.Host
 
             // Setting up "Daily Active Users Recipe"
 
-            var dauSerializer = new CsvOutputFormatter("id", "type", "version", "gameSession", "enqueueTimeUtc", "gamerTag") { IncludeHeaders = false };
+            var dauSerializer = new CsvOutputFormatter("id", "type", "version", "gameSession", "enqueueTimeUtc", "gamerTag");
 
             builder.Pipeline("dau")
                 .HandlesMessageType("session-start", "1.0.0")
