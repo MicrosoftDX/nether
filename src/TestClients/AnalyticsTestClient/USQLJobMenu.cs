@@ -16,6 +16,7 @@ namespace AnalyticsTestClient
         public USQLJobMenu()
         {
             Title = "Run Custom USQL scripts";
+            SetupConfigurationProviders();
             MenuItems.Add('1', new ConsoleMenuItem("Run", async () => { await RunUSQLScriptFlowAsync(); }));
         }
         private const string AppSettingsFile = "appsettings.json";
@@ -34,7 +35,7 @@ namespace AnalyticsTestClient
             string jobname = "My DLA Job";
             Console.Write($"Job name [My DLA Job]: ");
             string _jobname = Console.ReadLine();
-            if(!string.IsNullOrEmpty(_jobname.Trim()))
+            if (!string.IsNullOrEmpty(_jobname.Trim()))
             {
                 jobname = _jobname;
             }
@@ -42,33 +43,37 @@ namespace AnalyticsTestClient
             bool fileFound = false;
             do
             {
-                Console.WriteLine("Enter the path to the USQL file");
+                Console.Write("Path to the USQL file: ");
                 string path = Console.ReadLine();
+
                 try
                 {
-                     script = File.ReadAllText(path);
+                    script = File.ReadAllText(path);
                 }
                 catch
                 {
                     fileFound = false;
                 }
+
                 if (string.IsNullOrEmpty(script)) fileFound = false;
                 else fileFound = true;
+
+                if (!fileFound) Console.Write($"Error reading {path} - ");
             } while (!fileFound);
 
-            Console.WriteLine("Let's enter custom variables for the script. Enter a single . to stop");
-            
+            Console.WriteLine("Let's enter custom variables for the script. Enter a blank string for the name to stop");
+
             bool completed = false;
             do
             {
                 Console.Write("Variable name: ");
                 string name = Console.ReadLine();
-                if(name.Trim() == ".") { completed = true; }
+                if (string.IsNullOrEmpty(name.Trim())) { completed = true; }
                 else
                 {
-                    Console.Write("Variable value: ");
+                    Console.Write($"Value for {name}: ");
                     string value = Console.ReadLine();
-                    Console.WriteLine($"Variable called {name} with value {value}");
+                    Console.WriteLine($"Declared with name {name} and value {value}");
                     variables.Add(name, value);
                 }
             } while (!completed);
@@ -133,7 +138,7 @@ namespace AnalyticsTestClient
 
                 foreach (var setting in missingSettings)
                 {
-                    Console.WriteLine( $"  {setting}");
+                    Console.WriteLine($"  {setting}");
                 }
 
                 Console.WriteLine();
@@ -147,6 +152,17 @@ namespace AnalyticsTestClient
             {
                 return true;
             }
+        }
+
+        private void SetupConfigurationProviders()
+        {
+
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile(AppSettingsFile, optional: true)
+                .AddEnvironmentVariables();
+
+            _configuration = configBuilder.Build();
         }
     }
 }
