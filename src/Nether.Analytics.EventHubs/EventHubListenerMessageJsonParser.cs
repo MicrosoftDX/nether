@@ -4,7 +4,6 @@
 using Nether.Analytics.EventHubs;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,14 +13,10 @@ namespace Nether.Analytics.Parsers
     {
         public EventHubListenerMessageJsonParser(ICorruptMessageHandler corruptMessageHandler)
         {
-            _corruptMessageHandler = corruptMessageHandler;
+            CorruptMessageHandler = corruptMessageHandler;
         }
 
-        private ICorruptMessageHandler _corruptMessageHandler;
-        public ICorruptMessageHandler CorruptMessageHandler
-        {
-            get { return _corruptMessageHandler; }
-        }
+        public ICorruptMessageHandler CorruptMessageHandler { get; private set; }
 
         public async Task<Message> ParseMessageAsync(EventHubListenerMessage unparsedMsg)
         {
@@ -34,7 +29,7 @@ namespace Nether.Analytics.Parsers
             }
             catch //JSON serialization failed
             {
-                await _corruptMessageHandler.HandleAsync(data);
+                await CorruptMessageHandler.HandleAsync(data);
                 return null;
             }
 
@@ -43,7 +38,7 @@ namespace Nether.Analytics.Parsers
 
             if (gameEventType == null || version == null)
             {
-                await _corruptMessageHandler.HandleAsync(data);
+                await CorruptMessageHandler.HandleAsync(data);
                 return null;
             }
 

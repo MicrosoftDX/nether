@@ -12,15 +12,10 @@ namespace Nether.Analytics
         private MessagePipeline _unhandledEventPipeline;
         private Dictionary<string, List<MessagePipeline>> _routingDictionary = new Dictionary<string, List<MessagePipeline>>();
 
-        public MessageRouter(List<MessagePipeline> messagePipelines)
+        public MessageRouter(List<MessagePipeline> messagePipelines, MessagePipeline unhandledEventPipeline)
         {
             foreach (var pipeline in messagePipelines)
             {
-                if (pipeline.PipelineName == Constants.DefaultPipeline)
-                {
-                    _unhandledEventPipeline = pipeline;
-                    continue;
-                }
                 foreach (var messageType in pipeline.HandledMessageTypes)
                 {
                     if (_routingDictionary.TryGetValue(messageType.Key, out var existingPipelinesForMessageType))
@@ -35,6 +30,7 @@ namespace Nether.Analytics
                     }
                 }
             }
+            _unhandledEventPipeline = unhandledEventPipeline;
         }
 
         public async Task RouteMessageAsync(Message msg)
@@ -55,9 +51,7 @@ namespace Nether.Analytics
                 string err = $"No pipeline found for message type: {msg.MessageType}, version: {msg.Version}";
                 Console.WriteLine(err);
 
-                msg.Properties.Add(Constants.Error, err);
-
-                await _unhandledEventPipeline.ProcessMessageAsync(msg);
+                await _unhandledEventPipeline?.ProcessMessageAsync(msg);
             }
         }
     }

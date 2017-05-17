@@ -123,7 +123,7 @@ namespace Nether.Analytics.Host
                             _configuration[NAH_Azure_DLSOutputManager_AccountName])
                         );
 
-            builder.DefaultPipeline()
+            builder.DefaultPipeline
                 .AddHandler(new RandomIntMessageHandler())
                 .OutputTo(new ConsoleOutputManager(new CsvOutputFormatter()));
 
