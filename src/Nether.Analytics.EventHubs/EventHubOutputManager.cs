@@ -68,14 +68,9 @@ namespace Nether.Analytics
         {
             string payload = _serializer.Format(msg);
 
-            if (_serializer is IHeaderAwareOutputFormatter
-                && (_serializer as IHeaderAwareOutputFormatter).IncludeHeaders)
+            if (_serializer.IncludeHeaders)
             {
-                var headerFormatter = (IHeaderAwareOutputFormatter)_serializer;
-                if(headerFormatter.IncludeHeaders)
-                {
-                    payload = $"{headerFormatter.Header}{Environment.NewLine}{payload}";
-                }
+                payload = $"{_serializer.Header}{Environment.NewLine}{payload}";
             }
 
             var eventData = new EventData(_encoding.GetBytes(payload));
