@@ -3,16 +3,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Nether.Analytics.MessageFormats
 {
-    [Obsolete]
-    public class LevelCompletedMessage : INetherMessage
+    internal class SessionStart : INetherMessage
     {
-        public string Type => "level-completed";
+        public string Type => "session-start";
         public string Version => "1.0.0";
-        public DateTime ClientUtcTime { get; set; }
-        public string GameSessionId { get; set; }
-        public long Level { get; set; }
+        //public DateTime ClientUtcTime { get; set; }
+        public string GameSession { get; set; }
+        public string GamerTag { get; set; }
     }
 }

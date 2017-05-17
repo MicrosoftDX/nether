@@ -50,7 +50,7 @@ namespace AnalyticsTestClient
                 var typeToSend = GetGameEventTypes().TakeRandom();
                 var gameEvent = (INetherMessage)Activator.CreateInstance(typeToSend);
 
-                gameEvent.ClientUtcTime = DateTime.UtcNow;
+                //gameEvent.ClientUtcTime = DateTime.UtcNow;
 
                 var props = gameEvent.GetType().GetProperties();
 
@@ -107,7 +107,7 @@ namespace AnalyticsTestClient
 
         private void EditGameEventProperties(INetherMessage gameEvent)
         {
-            gameEvent.ClientUtcTime = DateTime.UtcNow;
+            //gameEvent.ClientUtcTime = DateTime.UtcNow;
 
             var props = gameEvent.GetType().GetProperties();
 
