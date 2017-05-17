@@ -8,9 +8,9 @@ namespace Nether.Analytics
 {
     public class ConsoleOutputManager : IOutputManager
     {
-        private IOutputFormatter _serializer;
+        private IMessageFormatter _serializer;
 
-        public ConsoleOutputManager(IOutputFormatter serializer)
+        public ConsoleOutputManager(IMessageFormatter serializer)
         {
             _serializer = serializer;
         }

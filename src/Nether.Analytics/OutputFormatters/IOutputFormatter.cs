@@ -3,7 +3,7 @@
 
 namespace Nether.Analytics
 {
-    public interface IOutputFormatter
+    public interface IMessageFormatter
     {
         string FileExtension { get; }
 

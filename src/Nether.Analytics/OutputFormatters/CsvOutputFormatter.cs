@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Nether.Analytics
 {
-    public class CsvOutputFormatter : IOutputFormatter
+    public class CsvOutputFormatter : IMessageFormatter
     {
         public char Separator { get; set; } = ',';
         public string EmptyValue { get; set; } = "";

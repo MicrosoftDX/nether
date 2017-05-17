@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Nether.Analytics
 {
-    public class JsonOutputFormatter : IOutputFormatter
+    public class JsonOutputFormatter : IMessageFormatter
     {
         public string FileExtension => "json";
 
