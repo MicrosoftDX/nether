@@ -9,19 +9,14 @@ namespace Nether.Analytics
     public class JsonOutputFormatter : IOutputFormatter
     {
         public string FileExtension => "json";
-        public bool IncludeHeaderRow => false;
 
-        public string Header
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public string Header { get { throw new NotSupportedException("Json does not support outputting headers."); } }
+
+        public bool IncludeHeaders => false;
 
         public string Format(Message msg)
         {
-            return JsonConvert.SerializeObject(msg.Properties) + Environment.NewLine;
+            return JsonConvert.SerializeObject(msg.Properties);
         }
     }
 }
