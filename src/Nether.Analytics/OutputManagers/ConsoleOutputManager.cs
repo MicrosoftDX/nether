@@ -24,7 +24,7 @@ namespace Nether.Analytics
         {
             var str = _serializer.Format(msg);
 
-            Console.Write(str);
+            Console.WriteLine(str);
 
             return Task.CompletedTask;
         }
