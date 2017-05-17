@@ -16,7 +16,7 @@ namespace Nether.Analytics
 
         public string Format(Message msg)
         {
-            return JsonConvert.SerializeObject(msg.Properties) + Environment.NewLine;
+            return JsonConvert.SerializeObject(msg.Properties);
         }
     }
 }

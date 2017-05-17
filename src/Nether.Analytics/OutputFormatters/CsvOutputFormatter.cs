@@ -57,8 +57,6 @@ namespace Nether.Analytics
                 }
             }
 
-            builder.AppendLine();
-
             return builder.ToString();
         }
 

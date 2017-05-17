@@ -29,7 +29,8 @@ namespace Nether.Analytics
 
         public async Task OutputMessageAsync(string pipelineName, int idx, Message msg)
         {
-            var serializedMessage = _serializer.Format(msg);
+            var serializedMessage = $"{_serializer.Format(msg)}{Environment.NewLine}";
+
             var filePath = GetFilePath(pipelineName, idx, msg);
 
             if (_serializer.IncludeHeaders)
@@ -78,7 +79,7 @@ namespace Nether.Analytics
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
-                        string header = _serializer.Header;
+                        string header = $"{_serializer.Header}{Environment.NewLine}";
 
                         await AppendMessageToFileAsync(header, filePath);
                     }

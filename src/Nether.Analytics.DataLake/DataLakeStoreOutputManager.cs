@@ -6,6 +6,7 @@ using Microsoft.Azure.Management.DataLake.Store.Models;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
 using Microsoft.Rest.Azure.Authentication;
+using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,7 +47,10 @@ namespace Nether.Analytics.DataLake
 
         public async Task OutputMessageAsync(string pipelineName, int idx, Message msg)
         {
-            var serializedMessage = _serializer.Format(msg);
+            // the output expects a new line each time we write something, so we can
+            // just append the new line at the end of the serialized output
+            var serializedMessage = $"{_serializer.Format(msg)}{Environment.NewLine}";
+
             var filePath = GetFilePath(pipelineName, idx, msg);
 
             if (_serializer.IncludeHeaders)
@@ -128,7 +132,8 @@ namespace Nether.Analytics.DataLake
                         //TODO: Fix the above described problem that can cause the Header Row to be written after another row
 
                         // Write headers to file
-                        string header = _serializer.Header;
+                        // TODO: Fix the coupling to the new line, but again, we expect this to be there
+                        string header = $"{_serializer.Header}{Environment.NewLine}";
 
                         using (var headerStream = new MemoryStream(Encoding.UTF8.GetBytes(header)))
                         {
