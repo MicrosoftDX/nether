@@ -9,7 +9,7 @@ namespace AnalyticsTestClient.Utils
     {
         public static void WriteConnectionString(string connectionString, int indent = 0)
         {
-            var lines = connectionString.Split(';');
+            var lines = (connectionString ?? string.Empty).Split(';');
 
             foreach (var line in lines)
             {
