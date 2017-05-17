@@ -10,7 +10,6 @@ namespace Nether.Analytics.MessageFormats
     {
         public string Type => "geo-location";
         public string Version => "1.0.0";
-        //public DateTime ClientUtcTime { get; set; }
         public string GameSession { get; set; }
         public double Lat { get; set; }
         public double Lon { get; set; }

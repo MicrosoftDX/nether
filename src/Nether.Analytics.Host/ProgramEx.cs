@@ -91,7 +91,7 @@ namespace Nether.Analytics.Host
 
             // Setting up "Geo Clustering Recipe"
 
-            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueueTimeUtc", "gameSessionId", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "rnd");
+            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueueTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "rnd");
 
             builder.Pipeline("clustering")
                 .HandlesMessageType("geo-location", "1.0.0")
@@ -109,7 +109,7 @@ namespace Nether.Analytics.Host
 
             // Setting up "Daily Active Users Recipe"
 
-            var dauSerializer = new CsvOutputFormatter("id", "type", "version", "enqueueTimeUtc", "gamerTag");
+            var dauSerializer = new CsvOutputFormatter("id", "type", "version", "gameSession", "enqueueTimeUtc", "gamerTag") { IncludeHeaderRow = false };
 
             builder.Pipeline("dau")
                 .HandlesMessageType("session-start", "1.0.0")
