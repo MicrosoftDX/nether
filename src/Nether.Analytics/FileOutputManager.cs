@@ -39,6 +39,10 @@ namespace Nether.Analytics
             }
             else
             {
+                if (!File.Exists(filePath))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                }
                 await AppendMessageToFileAsync(serializedMessage, filePath);
             }
         }
