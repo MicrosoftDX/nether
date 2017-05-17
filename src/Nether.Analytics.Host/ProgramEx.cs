@@ -141,7 +141,7 @@ namespace Nether.Analytics.Host
                             _configuration[NAH_Azure_SubscriptionId],
                             _configuration[NAH_Azure_DLSOutputManager_AccountName])
                         );
->>>>>>> upstream/master
+>>>>>>> upstream / master
 
             // Build all pipelines
             var router = builder.Build();
