@@ -21,7 +21,7 @@ __Daily Active Users (DAUs)__ is the number of unique users that start at least 
 | 21/05/2017   | 12,000         |
 | 22/05/2017   | 13,000         |
 
-![DAU over Time Graph](../../images/analytics/DAUReciepe/DAUovertime.PNG)
+![DAU over Time Graph](../../images/analytics/DAUReciepe/dauovertime.jpg)
 
 ## Pre-Requisites
 
@@ -123,13 +123,15 @@ Task.Run(async () =>
 ```
 
 ### 3 Setup Job Queries
+The purpose of the DAU.usql query is to calculate the daily active users of your game over time. A daily active user is a distinct count of any user, using your game within a single UTC time, day period (no matter how many times a single user visits the game that day). The single query DAU.usql described and linked below could be run:
+* Once a __day__ to compute a new DAU value (1 Date, 1 Count)
+* Or on a __weekly__ basis (7 Dates, 7 counts)
+* Or on a __monthly__ basis (28-31 Dates, 28-31 Counts)
 
-(TODO: Describe with a few sentences what purpose the job queries have (if any). Refer to the queries by linking to them in the source code and explain when they should be run.)
 
 | Query that should be run           | By what service                           |
 |------------------------------------|-------------------------------------------|
-| [Query1](LinkToQuery1)             | (TODO: ADLA / Stream Analytics / etc.)    |
-| [Query2](LinkToQuery2)             | (TODO: ADLA / Stream Analytics / etc.)    |
+| [DAU.usql](../../../src/Nether.Analytics.DataLake.Jobs/DAU.usql) | Azure Data Lake Analytics |
 
 #### 3.1 Setup and Schedule Query1
 
