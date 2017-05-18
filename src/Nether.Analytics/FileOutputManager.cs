@@ -83,7 +83,7 @@ namespace Nether.Analytics
                         await AppendMessageToFileAsync(header, filePath);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // it is possible that another thread is now creating the file and adding the header
                     // wait a while before continue to try and write the file
@@ -103,13 +103,13 @@ namespace Nether.Analytics
                     await AppendMessageToFileAsync(serializedMessage, filePath);
                     tryAgain = false;
                 }
-                catch (DirectoryNotFoundException e)
+                catch (DirectoryNotFoundException)
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    // it is possible that another thread is now creating the file and adding the header
+                    // it is possible that another thread is now creating the file 
                     // wait a while before continue to try and write the file
                     await Task.Delay(1000);
                 }
