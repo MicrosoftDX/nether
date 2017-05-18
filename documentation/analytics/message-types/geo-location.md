@@ -1,4 +1,4 @@
-# Score Event
+#Geo-Location Message
 
 [TODO] Discuss if the following fields are relevant/required at all:
 - geohashCenterLat

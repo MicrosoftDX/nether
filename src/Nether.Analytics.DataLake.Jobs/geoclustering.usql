@@ -1,0 +1,101 @@
+﻿DECLARE EXTERNAL @in = "/nether/clustering/geo-location/2017/05/16/{*}.csv";
+DECLARE EXTERNAL @out = "/nether/clustering/output/clusters_test.csv";
+DECLARE EXTERNAL @timeframe_unit = "minute";
+DECLARE EXTERNAL @timeframe_frequency = 15;
+
+
+// Read raw location events
+@locations_raw =
+    EXTRACT id string,
+            type string,
+            version string,
+            enqueueTime DateTime,
+            gameSessionId string,
+            lat float,
+            lon float,
+            geoHash double,
+            geoHashPrecision int,
+            geoHashCenterlat float,
+            geoHashCenterlon float,
+            rnd string
+    FROM @in
+         USING Extractors.Csv(encoding: Encoding.UTF8, skipFirstNRows: 1);
+
+
+// raw location data points and add column for time grouping
+@locations_tmp =
+    SELECT id,
+           type,
+           version,
+           enqueueTime,
+           lat,
+           lon,
+           geoHash,
+           geoHashPrecision,
+           rnd,
+           enqueueTime.Year AS year,
+           (@timeframe_unit == "year") ? 1 : enqueueTime.Month AS month,
+           (@timeframe_unit == "month" || @timeframe_unit == "year") ? 1 : enqueueTime.Day AS day,
+           (@timeframe_unit == "hour" || @timeframe_unit == "minute") ? enqueueTime.Hour : 0 AS hour,
+           (@timeframe_unit == "minute") ? (enqueueTime.Minute / @timeframe_frequency) * @timeframe_frequency : 0 AS minute
+    FROM @locations_raw;
+
+
+// raw count per geoHash per timeframe
+@locations_count =
+    SELECT new DateTime(year, month, day, hour, minute, 0) AS timeGrouping,
+           geoHash,
+           COUNT(*) AS numPts
+    FROM @locations_tmp
+    GROUP BY year, month, day, hour, minute, geoHash;
+
+
+// Create temporary table with median latitude and row number
+@median_latitude_coordinates_tmp = 
+    SELECT 
+        l.year,
+        l.month, 
+        l.day,
+        l.hour,
+        l.minute,
+        l.enqueueTime,
+        l.geoHash AS geoHash,
+        l.lat AS latitude,
+        l.lon AS longitude,
+        ROW_NUMBER() OVER (PARTITION BY l.year, l.month, l.day, l.hour, l.minute, l.geoHash ORDER BY l.lat ASC) AS rowNumber
+    FROM @locations_tmp AS l
+    JOIN
+        (SELECT 
+            geoHash,
+            PERCENTILE_DISC(0.5) WITHIN GROUP ( ORDER BY lat ASC ) OVER ( PARTITION BY year, month, day, minute, geoHash ) AS medianLatitude
+        FROM @locations_tmp) AS g 
+    ON l.geoHash == g.geoHash AND g.medianLatitude == l.lat;
+
+
+// Table that contains geoHash and its associated coordinates: median latitude and the minimum corresponding longitude
+@median_coordinates = 
+    SELECT
+        new DateTime(year, month, day, hour, minute, 0) AS timeGrouping,
+        geoHash,
+        latitude,
+        longitude
+    FROM @median_latitude_coordinates_tmp
+    WHERE rowNumber == 1;
+
+
+// Table with counts and coordinates per geoHash and per specified time frame
+@counts =
+    SELECT g.timeGrouping,
+           l.geoHash,
+           l.numPts,
+           g.latitude,
+           g.longitude
+    FROM @locations_count AS l
+         JOIN @median_coordinates AS g
+         ON l.geoHash == g.geoHash AND l.timeGrouping == g.timeGrouping;
+
+
+// output table with counts and coordinates per geoHash and per specified time frame
+OUTPUT @counts
+TO @out
+USING Outputters.Csv();
