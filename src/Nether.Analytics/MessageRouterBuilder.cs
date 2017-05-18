@@ -11,7 +11,7 @@ namespace Nether.Analytics
     {
         //private List<IMessageHandler> _messageHandlers = new List<IMessageHandler>();
         private List<MessagePipelineBuilder> _messagePipelineBuilders = new List<MessagePipelineBuilder>();
-        private MessagePipelineBuilder unhandledPipelineBuilder;
+        private MessagePipelineBuilder _unhandledPipelineBuilder;
 
         public MessageRouterBuilder()
         {
@@ -29,9 +29,9 @@ namespace Nether.Analytics
         {
             get
             {
-                if (unhandledPipelineBuilder == null)
-                    unhandledPipelineBuilder = new MessagePipelineBuilder("__DEFAULT__PIPELINE__");
-                return unhandledPipelineBuilder;
+                if (_unhandledPipelineBuilder == null)
+                    _unhandledPipelineBuilder = new MessagePipelineBuilder("__DEFAULT__PIPELINE__");
+                return _unhandledPipelineBuilder;
             }
         }
 
@@ -57,7 +57,7 @@ namespace Nether.Analytics
 
             var eventPipelines = _messagePipelineBuilders.Select(p => p.Build()).ToList();
 
-            var unhandledEventPipeline = unhandledPipelineBuilder?.Build();
+            var unhandledEventPipeline = _unhandledPipelineBuilder?.Build();
             return new MessageRouter(eventPipelines, unhandledEventPipeline);
         }
     }

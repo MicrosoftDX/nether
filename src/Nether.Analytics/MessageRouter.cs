@@ -46,11 +46,9 @@ namespace Nether.Analytics
                     await pipeline.ProcessMessageAsync(msg);
                 }
             }
-            else
+            else if (_unhandledEventPipeline != null)
             {
-                string err = $"No pipeline found for message type: {msg.MessageType}, version: {msg.Version}";
-                Console.WriteLine(err);
-
+                //default pipeline
                 await _unhandledEventPipeline?.ProcessMessageAsync(msg);
             }
         }
