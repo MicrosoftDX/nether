@@ -25,15 +25,17 @@ __Daily Active Users (DAUs)__ is the number of unique users that start at least 
 
 ## Pre-Requisites
 
-(TODO: Is there anything that must be done before this recipe can be followed? If so explain it here and why. All Nether Analytics Recipes expect you to have a working Nether Analytics solution up and running so there is no need to describe that here, so only include pre-requisites that are out of the ordinary.)
+The DAU recipe depends on the NetherAnalytics.sln file and assumes that you have the Azure services already. These analytical queries rely on an Azure Data Lake Analytics instance as well as a connected Azure Data Lake Store.
+
+Assumptions made for instructions below:
+* messages are sent from the client to Azure Event Hubs
+* messages are formatted using the standard Nether JSON Format
+* messages are sent to a Azure Data Lake Analytics Store
 
 ## Recipe Steps
 
-Follow the below steps to implement this recipe. Remember that your setup of Nether Analytics might contain custom configuration or already configured recipes so you might have to merge the below instructions with what already exists in your solution. More than one recipe might need the same telemetry and unless otherwise instructed you don’t need to send the same messages more than once.
+Follow the below steps to implement this __Daily Active Users (DAU)__ recipe. 
 
-Unless otherwise stated, all recipes expect the standard Nether Analytics setup where:
-* messages are sent from the client to Azure Event Hubs
-* messages are formatted using the standard Nether JSON Format
 
 ### 1 Telemetry Needed from the Game
 
@@ -41,15 +43,14 @@ Using the Nether REST API or the provided Client SDKs setup the game to send the
 
 | Message to send                    | At what time                              |
 |------------------------------------|-------------------------------------------|
-| [MessageName1](LinkToMsg1Doc)      | (TODO: Explain when to send the message)  |
-| [MessageName2](LinkToMsg2Doc)      | (TODO: Explain when to send the message)  |
+| [session-start](https://github.com/MicrosoftDX/nether/blob/master/src/Nether.Analytics.MessageFormats/SessionStart.cs)      | Send a ```session-start``` message every time a player starts a session in your game |
 
 
 ### 2 Configuration of Message Processor
 
-(TODO: Describe in a few sentences what the Message Processor has for role in this recipe. It might be to just direct the incoming messages to a correct storage location for further analysis later by the “Job Queries” described below, or some more complex logic that enrich or transform the incoming messages before routing the result to the right place. Only a few sentences needed to have a rough understanding on why the setup need to be done.)
+The telemetry mentioned above for the DAU query is a simple set and just directs the incoming messages to an Azure Data Lake Store for further analysis later by the DAU.usql job described below
 
-An implementation of a [working Message Processor]() can be found in source code for Nether.Analytics.Host and can be useful to have as a reference while following the below steps.
+An implementation of a [session-start](https://github.com/MicrosoftDX/nether/blob/master/src/Nether.Analytics.Host/ProgramEx.cs) message can be found in source code for Nether.Analytics.Host and can be useful to have as a reference while following the below steps.
 
 #### 2.1 Setup Listener
 
@@ -73,37 +74,43 @@ var listener = new EventHubsListener(listenerConfig);
 (TODO: Make sure the below code is accurate and up to date)
 ```cs
 // Setup Message Parser
-var parser = new EventHubJsonMessageParser();
+var parser = new EventHubListenerMessageJsonParser(new ConsoleCorruptMessageHandler());
 ```
 
 ### 2.3 Setup Output Managers
-
-(TODO: Make sure the below code is accurate and up to date)
 ```cs
 // Setup Output Managers
 var outputManager = new DataLakeStoreOutputManager(domain, webApp_clientId, clientSecret, subscriptionId, adlsAccountName);
 ```
 
 ### 2.4 Setup Message Router
-
-(TODO: Make sure the below code is accurate and up to date)
 ```cs
 // Build up the Router Pipeline
 var builder = new MessageRouterBuilder();
+var filePathAlgorithm = new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every5Minutes);
 
-builder.AddMessageHandler(new GamerInfoEnricher());
-builder.UnhandledEvent().OutputTo(eventHubOutputManager);
+// Setting up "Daily Active Users Recipe"
+var dauSerializer = new CsvOutputFormatter("id", "type", "version", "gameSession", "enqueueTimeUtc", "gamerTag");
 
-builder.Event("location|1.0.0")
-    .AddHandler(new NullMessageHandler())
-    .OutputTo(consoleOutputManager, dlsOutputManager);
+builder.Pipeline("dau")
+    .HandlesMessageType("session-start", "1.0.0")
+    .OutputTo(new ConsoleOutputManager(dauSerializer)
+        , new FileOutputManager(dauSerializer, filePathAlgorithm, @"C:\dev\USQLDataRoot")
+        , new DataLakeStoreOutputManager(
+            dauSerializer,
+            filePathAlgorithm,
+            serviceClientCretentials,
+            _configuration[NAH_Azure_SubscriptionId],
+            _configuration[NAH_Azure_DLSOutputManager_AccountName])
+        );
+        builder.DefaultPipeline
+            .AddHandler(new RandomIntMessageHandler())
+            .OutputTo(new ConsoleOutputManager(new CsvOutputFormatter()));
 
 var router = builder.Build();
 ```
 
 ### 2.5 Setup Message Processor
-
-(TODO: Make sure the below code is accurate and up to date)
 ```cs
 var messageProcessor = new MessageProcessor<EventHubJsonMessage>(listener, parser, router);
 
