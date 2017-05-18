@@ -71,7 +71,6 @@ var listener = new EventHubsListener(listenerConfig);
 
 ### 2.2 Setup Message Parser
 
-(TODO: Make sure the below code is accurate and up to date)
 ```cs
 // Setup Message Parser
 var parser = new EventHubListenerMessageJsonParser(new ConsoleCorruptMessageHandler());
