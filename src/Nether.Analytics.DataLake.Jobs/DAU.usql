@@ -3,12 +3,8 @@
 
 
 //Declare input/output destinations as variables
-DECLARE @in  string = "/nether/dau/session-start/{date:yyyy}/{date:mm}/{date:dd}/{*}.csv";
-<<<<<<< HEAD
-DECLARE @out string = "/nether/dau/results/dauresult.csv";
-=======
-DECLARE @out string = "/nether/dau/results/DAU.csv";
->>>>>>> added both script files to usqlproj
+DECLARE EXTERNAL @in  string = "/nether/dau/session-start/{date:yyyy}/{date:mm}/{date:dd}/{*}.csv";
+DECLARE EXTERNAL @out string = "/nether/dau/results/dauresult.csv";
  
 //Extract data to query from all CSV files in NetherTestData to compute DAU's
 //Schema needed: Unqiue user ID and Event Date in ISO format
