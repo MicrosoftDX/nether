@@ -40,9 +40,8 @@ namespace Nether.Analytics
             else
             {
                 await AppendMessageToFileWithoutHeaderAsync(serializedMessage, filePath);
-                              
             }
-        }        
+        }
 
         private string GetFilePath(string pipelineName, int idx, Message msg)
         {
@@ -57,7 +56,7 @@ namespace Nether.Analytics
             // If we don't need to take into consideration of the header row in the files
             // just use the following simple implementation for writing to the file
             using (StreamWriter stream = File.AppendText(filePath))
-            {                
+            {
                 await stream.WriteAsync(serializedMessage);
             }
         }
@@ -83,7 +82,7 @@ namespace Nether.Analytics
                         string header = $"{_serializer.Header}{Environment.NewLine}";
                         await AppendMessageToFileAsync(header, filePath);
                     }
-                }                              
+                }
                 catch (Exception e)
                 {
                     // it is possible that another thread is now creating the file and adding the header
@@ -105,8 +104,8 @@ namespace Nether.Analytics
                     tryAgain = false;
                 }
                 catch (DirectoryNotFoundException e)
-                {                    
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));                   
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                 }
                 catch (Exception e)
                 {
