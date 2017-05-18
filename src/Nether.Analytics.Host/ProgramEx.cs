@@ -91,11 +91,11 @@ namespace Nether.Analytics.Host
 
             // Setting up "Geo Clustering Recipe"
 
-            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueueTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "rnd");
+            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueueTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "rnd");
 
             builder.Pipeline("clustering")
                 .HandlesMessageType("geo-location", "1.0.0")
-                .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
+                .AddHandler(new GeoHashMessageHandler())
                 .AddHandler(new RandomIntMessageHandler())
                 .OutputTo(new ConsoleOutputManager(clusteringSerializer)
                         , new FileOutputManager(clusteringSerializer, filePathAlgorithm, @"C:\dev\USQLDataRoot")
