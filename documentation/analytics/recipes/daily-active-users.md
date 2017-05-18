@@ -135,12 +135,28 @@ The purpose of the DAU.usql query is to calculate the daily active users of your
 
 #### 3.1 Setup and Schedule Query1
 
-(TODO: Explain how someone should go ahead to setup the required query to be run at appropriate times)
+* Open the Nether.Analytics Solution
+* Locate Nether.Analytics.DataLake.Jobs
+* Right Click and Build the DAU.usql job
+![Build script](../../images/analytics/DAUReciepe/buildscript.JPG)
+* Check script compiles
+![Compile script](../../images/analytics/DAUReciepe/compile.JPG)
+* In the DAU.usql script, choose submit to the Azure Data Lake Service
+![Run script](../../images/analytics/DAUReciepe/submitquery.JPG)
+
 
 ### 4 Result Details
 
-(TODO: Briefly explain what result you should expect, when it should be there and where to look for it)
+Once the query runs successfully as shown below:
+![Success](../../images/analytics/DAUReciepe/run.JPG)
+
+Go to the results folder in your Azure Data Lake Store
+__PATH: adl://<datalakestorename>.azuredatalakestore.net/nether/dau/results/__
+
+Open and view the output file (dauresults.csv) and find counts of unique users per day given the data input. (example below)
+![Result](../../images/analytics/DAUReciepe/result.JPG)
+
 
 #### 4.1 Consume the result
 
-(TODO: Explain in detail what results that should be expected and how to consume the result. Explain file formats produced by using tables.)
+As the output is a CSV file within a results folder, you could consume this file using many services including Power BI or other analytics tools.
