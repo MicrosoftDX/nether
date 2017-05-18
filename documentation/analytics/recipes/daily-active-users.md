@@ -43,14 +43,14 @@ Using the Nether REST API or the provided Client SDKs setup the game to send the
 
 | Message to send                    | At what time                              |
 |------------------------------------|-------------------------------------------|
-| [session-start](https://github.com/MicrosoftDX/nether/blob/master/src/Nether.Analytics.MessageFormats/SessionStart.cs)      | Send a ```session-start``` message every time a player starts a session in your game |
+| [session-start](../../src/Nether.Analytics.MessageFormats/SessionStart.cs)      | Send a ```session-start``` message every time a player starts a session in your game |
 
 
 ### 2 Configuration of Message Processor
 
 The telemetry mentioned above for the DAU query is a simple set and just directs the incoming messages to an Azure Data Lake Store for further analysis later by the DAU.usql job described below
 
-An implementation of a [session-start](https://github.com/MicrosoftDX/nether/blob/master/src/Nether.Analytics.Host/ProgramEx.cs) message can be found in source code for Nether.Analytics.Host and can be useful to have as a reference while following the below steps.
+An implementation of a [session-start](../../src/Nether.Analytics.Host/ProgramEx.cs) message can be found in source code for Nether.Analytics.Host and can be useful to have as a reference while following the below steps.
 
 #### 2.1 Setup Listener
 
