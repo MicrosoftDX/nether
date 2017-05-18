@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Nether Client Sample</string>
+    
+    <string name="title_nether_deployment">NETHER DEPLOYMENT</string>
+    <string name="title_user_authentication">USER AUTHENTICATION</string>
+    <string name="title_nether_api">NETHER API</string>
+    <string name="title_post_score">Post score</string>
+    <string name="title_get_leaderboard">Get leaderboard</string>
+    
+    <string name="label_nether_base_url">Nether URL</string>
+    <string name="label_nether_client_id">Client ID</string>
+    <string name="label_nether_client_secret">Client secret</string>
+    <string name="label_user_id">User ID</string>
+    <string name="label_password">Password</string>
+    <string name="label_country">Country</string>
+    <string name="label_score">Score</string>
+    <string name="label_leaderboard_name">Leaderboard name</string>
+    
+    <string name="button_text_authenticate">Authenticate</string>
+    <string name="button_text_post_score">Post score</string>
+    <string name="button_text_get_leaderboard">Get leaderboard</string>
+</resources>
