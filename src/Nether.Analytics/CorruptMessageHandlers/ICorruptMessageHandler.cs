@@ -3,11 +3,10 @@
 
 using System.Threading.Tasks;
 
-namespace Nether.Analytics.Parsers
+namespace Nether.Analytics
 {
-    public interface IMessageParser<T>
+    public interface ICorruptMessageHandler
     {
-        Task<Message> ParseMessageAsync(T msg);
-        ICorruptMessageHandler CorruptMessageHandler { get; }
+        Task HandleAsync(string msg);
     }
 }

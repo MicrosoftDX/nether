@@ -82,7 +82,7 @@ namespace Nether.Analytics.Host
 
             // Setup Message Parser. By default we are using Nether JSON Messages
             // Setting up parser that knows how to parse those messages.
-            var parser = new EventHubListenerMessageJsonParser();
+            var parser = new EventHubListenerMessageJsonParser(new ConsoleCorruptMessageHandler());
 
             // User a builder to create routing infrastructure for messages and the pipelines
             var builder = new MessageRouterBuilder();
@@ -122,6 +122,10 @@ namespace Nether.Analytics.Host
                             _configuration[NAH_Azure_SubscriptionId],
                             _configuration[NAH_Azure_DLSOutputManager_AccountName])
                         );
+
+            builder.DefaultPipeline
+                .AddHandler(new RandomIntMessageHandler())
+                .OutputTo(new ConsoleOutputManager(new CsvOutputFormatter()));
 
             // Build all pipelines
             var router = builder.Build();
@@ -205,3 +209,7 @@ namespace Nether.Analytics.Host
         }
     }
 }
+
+
+
+
