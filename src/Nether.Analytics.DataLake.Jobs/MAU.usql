@@ -1,0 +1,34 @@
+﻿//PURPOSE: A USQL job to compute the Monthly Active Users (MAUs) of the game 
+// RECOMMENDED: run transactional eventdata monthly
+
+//Declare input/output destinations as variables
+DECLARE @in  string = "/nether/dau/session-start/{date:yyyy}/{date:mm}/{date:dd}/{*}.csv";
+DECLARE @out string = "/nether/mau/result/mauresults.csv";
+ 
+ //Extract data to query from all CSV files in NetherTestData to compute MAU's
+ //Schema needed: Unqiue user ID and Event Date in ISO format
+ 
+@result =
+    EXTRACT transactionID   string,
+            messageType string,
+            version string,
+            session string,
+            eventDate DateTime, 
+            uID string,
+            date    DateTime //virtual column    
+    FROM @in
+    USING Extractors.Csv(skipFirstNRows: 1);
+
+
+// Take data, extract the month from the eventDate and count the user IDs. Aggregate the query by Month
+@calculation =
+    SELECT
+        eventDate.Month AS month,
+        COUNT(DISTINCT(uID)) AS activeusers
+    FROM @result
+    GROUP BY eventDate.Month;
+
+// Output the aggregated MAU results to output file specified above
+OUTPUT @calculation
+    TO @out
+    USING Outputters.Csv();
