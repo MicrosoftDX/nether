@@ -4,7 +4,7 @@ __Daily Active Users (DAUs)__ is the number of unique users that start at least 
 
 ## End Result
 
- A DAU count is a snapshot of time, for example on '2017-05-17T00:00:00.0000000-07:00' a game has 10,000 DAU. [date, count]
+ A DAU count is a snapshot of time, for example on '2017-05-17T00:00:00.0000000-07:00' (UTC time format) a game has 10,000 DAU. [date, count]
 
 | Date         | Count          |
 | -------------|:--------------:|
