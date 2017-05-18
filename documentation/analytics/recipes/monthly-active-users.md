@@ -1,6 +1,8 @@
 # Monthly Active Users, MAU
 
-__Monthly Active Users (MAUs)__ is the number of unique users that start at least one session in your app within a calendar month. MAU is a high level metric about the usage of your game over time. 
+__Monthly Active Users (MAUs)__ is the number of unique users that start at least one session in your app within a calendar month. MAU is a high level metric about the usage of your game over time.
+
+_It is highly recommended to implement DAU and MAU as a pair, check out the DAU recipe [here](../daily-active-users.md)_ 
 
 ## End Result
 
