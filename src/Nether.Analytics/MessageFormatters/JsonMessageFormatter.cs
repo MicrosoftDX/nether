@@ -21,7 +21,7 @@ namespace Nether.Analytics
 
         public Message Parse(string input)
         {
-            throw new NotImplementedException();
+            return JsonConvert.DeserializeObject<Message>(input);
         }
     }
 }
