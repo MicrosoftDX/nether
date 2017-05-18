@@ -41,7 +41,7 @@ namespace Nether.Analytics.DataLake
             _dlaJobClient = new DataLakeAnalyticsJobManagementClient(serviceClientCredentials);
         }
 
-        public async Task<Guid> SubmitJobAsync(string jobName, string script, Dictionary<string, object> variables = null)
+        public async Task<Guid> SubmitJobAsync(string jobName, string script, Dictionary<string, object> variables = null, bool showScriptOnOutput = false)
         {
             if (variables != null)
             {
@@ -54,7 +54,8 @@ namespace Nether.Analytics.DataLake
                 script = sb.ToString();
             }
 
-            Console.WriteLine(script);
+            if (showScriptOnOutput)
+                Console.WriteLine(script);
 
             var jobId = Guid.NewGuid();
             var properties = new USqlJobProperties(script);
