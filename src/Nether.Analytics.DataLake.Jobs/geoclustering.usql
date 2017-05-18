@@ -1,4 +1,4 @@
-﻿DECLARE EXTERNAL @in = "/nether/clustering/geo-location/2017/05/16/{*}.csv";
+﻿DECLARE EXTERNAL @in = "/nether/clustering/geo-location/2017/05/{*}/{*}.csv";
 DECLARE EXTERNAL @out = "/nether/clustering/output/clusters_test.csv";
 DECLARE EXTERNAL @timeframe_unit = "minute";
 DECLARE EXTERNAL @timeframe_frequency = 15;
@@ -15,8 +15,6 @@ DECLARE EXTERNAL @timeframe_frequency = 15;
             lon float,
             geoHash double,
             geoHashPrecision int,
-            geoHashCenterlat float,
-            geoHashCenterlon float,
             rnd string
     FROM @in
          USING Extractors.Csv(encoding: Encoding.UTF8, skipFirstNRows: 1);
@@ -50,11 +48,11 @@ DECLARE EXTERNAL @timeframe_frequency = 15;
     GROUP BY year, month, day, hour, minute, geoHash;
 
 
-// Create temporary table with median latitude and row number
-@median_latitude_coordinates_tmp = 
-    SELECT 
+// Adding median latitude and row number
+@median_latitude_coordinates_tmp =
+    SELECT
         l.year,
-        l.month, 
+        l.month,
         l.day,
         l.hour,
         l.minute,
@@ -65,15 +63,15 @@ DECLARE EXTERNAL @timeframe_frequency = 15;
         ROW_NUMBER() OVER (PARTITION BY l.year, l.month, l.day, l.hour, l.minute, l.geoHash ORDER BY l.lat ASC) AS rowNumber
     FROM @locations_tmp AS l
     JOIN
-        (SELECT 
+        (SELECT
             geoHash,
             PERCENTILE_DISC(0.5) WITHIN GROUP ( ORDER BY lat ASC ) OVER ( PARTITION BY year, month, day, minute, geoHash ) AS medianLatitude
-        FROM @locations_tmp) AS g 
+        FROM @locations_tmp) AS g
     ON l.geoHash == g.geoHash AND g.medianLatitude == l.lat;
 
 
-// Table that contains geoHash and its associated coordinates: median latitude and the minimum corresponding longitude
-@median_coordinates = 
+// Result set that contains geoHash and its associated coordinates: median latitude and the minimum corresponding longitude
+@median_coordinates =
     SELECT
         new DateTime(year, month, day, hour, minute, 0) AS timeGrouping,
         geoHash,

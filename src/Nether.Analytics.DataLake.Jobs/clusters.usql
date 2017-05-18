@@ -1,4 +1,4 @@
-DECLARE EXTERNAL @in = "/nether/clustering/geo-location/2017/05/16/{*}.csv";
+DECLARE EXTERNAL @in = "/nether/clustering/geo-location/2017/05/{*}/{*}.csv";
 DECLARE EXTERNAL @out = "/nether/clustering/output/clusters.csv";
 
 @geoLocations =
@@ -11,8 +11,6 @@ DECLARE EXTERNAL @out = "/nether/clustering/output/clusters.csv";
             lon double,
             geoHash double,
             geoHashPrecision int,
-            geoHashCenterLat float,
-            geoHashCenterLon float,
             rnd int
     FROM @in
     USING Extractors.Csv(skipFirstNRows: 1);
@@ -26,13 +24,17 @@ DECLARE EXTERNAL @out = "/nether/clustering/output/clusters.csv";
 @clusters =
     SELECT geoHash, size
     FROM @locationsPerGeoHash
-    WHERE size > 2;
+    WHERE size > 1;
 
-@result =
-    SELECT g.geoHash, g.lat, g.lon, g.rnd, c.size
+@almostResult =
+    SELECT g.geoHash, g.lat, g.lon, c.size, g.rnd, ROW_NUMBER() OVER (PARTITION BY g.geoHash ORDER BY g.rnd ASC) AS row
     FROM @geoLocations AS g
          JOIN @clusters AS c
          ON g.geoHash == c.geoHash;
+
+@result = SELECT geoHash, lat, lon, size
+    FROM @almostResult
+    WHERE row == 1;
 
 OUTPUT @result
 TO @out
