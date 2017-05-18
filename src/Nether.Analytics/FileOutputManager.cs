@@ -39,7 +39,7 @@ namespace Nether.Analytics
             }
             else
             {
-                await AppendMessageToFileAsync(serializedMessage, filePath);
+                await AppendMessageToFileWithoutHeaderAsync(serializedMessage, filePath);
             }
         }
 
@@ -72,21 +72,44 @@ namespace Nether.Analytics
                     if (File.Exists(filePath))
                     {
                         await AppendMessageToFileAsync(serializedMessage, filePath);
-
                         tryAgain = false;
                     }
                     else
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
+                        // append the header to the file
                         string header = $"{_serializer.Header}{Environment.NewLine}";
-
                         await AppendMessageToFileAsync(header, filePath);
                     }
                 }
                 catch (Exception)
                 {
                     // it is possible that another thread is now creating the file and adding the header
+                    // wait a while before continue to try and write the file
+                    await Task.Delay(1000);
+                }
+            } while (tryAgain);
+        }
+
+        private async Task AppendMessageToFileWithoutHeaderAsync(string serializedMessage, string filePath)
+        {
+            var tryAgain = true;
+
+            do
+            {
+                try
+                {
+                    await AppendMessageToFileAsync(serializedMessage, filePath);
+                    tryAgain = false;
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                }
+                catch (Exception)
+                {
+                    // it is possible that another thread is now creating the file 
                     // wait a while before continue to try and write the file
                     await Task.Delay(1000);
                 }
