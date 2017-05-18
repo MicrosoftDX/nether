@@ -70,12 +70,22 @@ namespace AnalyticsTestClient
         {
             PropertyCache = new Dictionary<string, object>
             {
-                {"GameSessionId", Guid.NewGuid().ToString()},
-                {"EventCorrelationId", Guid.NewGuid().ToString()},
+                {"GameSession", GetUniqueShortId() },
+                {"EventCorrelationId", GetUniqueShortId()},
                 {"GamerTag", "gamer" },
                 {"DisplayName", "display" },
                 {"Value", 1 }
             };
+        }
+
+        private static string GetUniqueShortId()
+        {
+            var i = 1L;
+            foreach (byte b in Guid.NewGuid().ToByteArray())
+            {
+                i *= ((int)b + 1);
+            }
+            return string.Format("{0:x}", i - DateTime.Now.Ticks);
         }
     }
 }
