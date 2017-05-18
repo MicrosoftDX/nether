@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,11 +11,9 @@ namespace Nether.Analytics
     {
         public FileResultsReader()
         {
-            
         }
         public FileResultsReader(IMessageFormatter serializer, IFilePathAlgorithm filePathAlgorithm, string rootPath = @"C:\")
         {
-
         }
 
         public IEnumerable<Message> GetLatest(int max = 100)
