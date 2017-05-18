@@ -4,22 +4,22 @@ __Daily Active Users (DAUs)__ is the number of unique users that start at least 
 
 ## End Result
 
- A DAU count is a snapshot of time, for example on 17/05/2017 a game has 10,000 DAU. [date, count]
+ A DAU count is a snapshot of time, for example on '2017-05-17T00:00:00.0000000-07:00' a game has 10,000 DAU. [date, count]
 
 | Date         | Count          |
 | -------------|:--------------:|
-| 17/05/2017   | 10,000         |
+| 2017-05-17T00:00:00.0000000-07:00   | 10,000         |
  
  It is important to report DAU over time to see the progression of your game, for example the table below
 
 | Date         | Count          |
 | -------------|:--------------:|
-| 17/05/2017   | 10,000         |
-| 18/05/2017   | 11,000         |
-| 19/05/2017   | 10,500         |
-| 20/05/2017   | 11,000         |
-| 21/05/2017   | 12,000         |
-| 22/05/2017   | 13,000         |
+| 2017-05-17T00:00:00.0000000-07:00   | 10,000         |
+| 2017-05-18T00:00:00.0000000-07:00   | 11,000         |
+| 2017-05-19T00:00:00.0000000-07:00   | 10,500         |
+| 2017-05-20T00:00:00.0000000-07:00   | 11,000         |
+| 2017-05-21T00:00:00.0000000-07:00   | 12,000         |
+| 2017-05-22T00:00:00.0000000-07:00   | 13,000         |
 
 ![DAU over Time Graph](../../images/analytics/DAUReciepe/dauovertime.jpg)
 
@@ -135,25 +135,23 @@ The purpose of the DAU.usql query is to calculate the daily active users of your
 
 #### 3.1 Setup and Schedule Query1
 
-* Open the Nether.Analytics Solution
-* Locate Nether.Analytics.DataLake.Jobs
-* Right Click and Build the DAU.usql job
-![Build script](../../images/analytics/DAUReciepe/buildscript.JPG)
-* Check script compiles
-![Compile script](../../images/analytics/DAUReciepe/compile.JPG)
-* In the DAU.usql script, choose submit to the Azure Data Lake Service
-![Run script](../../images/analytics/DAUReciepe/submitquery.JPG)
+<Currently under development to be completely scripted>
 
 
 ### 4 Result Details
 
-Once the query runs successfully as shown below:
-![Success](../../images/analytics/DAUReciepe/run.JPG)
+<Under Development to Automate>
+
+__Extra information:__
+
+A successful query could be viewed in Visual Studio via the tools or the Azure Portal
+![Success VS](../../images/analytics/DAUReciepe/run.JPG)
+![Success Azure](../../images/analytics/DAUReciepe/azureview.JPG)
 
 Go to the results folder in your Azure Data Lake Store
 __PATH: adl://<datalakestorename>.azuredatalakestore.net/nether/dau/results/__
 
-Open and view the output file (dauresults.csv) and find counts of unique users per day given the data input. (example below)
+You can open and view the output file (dauresults.csv) and find counts of unique users per day given the data input. (example below)
 ![Result](../../images/analytics/DAUReciepe/result.JPG)
 
 
