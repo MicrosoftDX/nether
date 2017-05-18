@@ -23,6 +23,7 @@
   <ItemGroup>
     <Script Include="clusters.usql" />
     <Script Include="geoclustering.usql" />
+    <Script Include="DAU.usql" />
     <Script Include="locations-dailyCount-medianCoords.usql" />
     <Script Include="locations-monthlyCount-medianCoords.usql" />
     <Script Include="locations-yearlyCount-medianCoords.usql" />
