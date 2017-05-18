@@ -209,6 +209,3 @@ namespace Nether.Analytics.Host
         }
     }
 }
-
-
-

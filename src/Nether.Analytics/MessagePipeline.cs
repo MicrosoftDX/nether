@@ -33,8 +33,6 @@ namespace Nether.Analytics
                 var result = await handler.ProcessMessageAsync(msg, PipelineName, handlerIdx++);
                 if (result == MessageHandlerResults.FailStopProcessing)
                 {
-                    //add an error property to the message
-                    msg.Properties.Add(Constants.Error, Constants.ErrorInMessageProcessing);
                     //TODO: do something better here
                     return;
                 }
