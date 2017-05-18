@@ -1,4 +1,4 @@
-﻿DECLARE EXTERNAL @in = "/nether/clustering/geo-location/2017/05/16/{*}.csv";
+DECLARE EXTERNAL @in = "/nether/clustering/geo-location/2017/05/16/{*}.csv";
 DECLARE EXTERNAL @out = "/nether/clustering/output/clusters.csv";
 
 @geoLocations =
