@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Nether.Analytics
 {
-    public class CsvOutputFormatter : IMessageFormatter
+    public class CsvMessageFormatter : IMessageFormatter
     {
         public char Separator { get; set; } = ',';
         public string EmptyValue { get; set; } = "";
@@ -17,7 +17,7 @@ namespace Nether.Analytics
 
         public bool IncludeHeaders { get; set; } = true;
 
-        public CsvOutputFormatter(params string[] columns)
+        public CsvMessageFormatter(params string[] columns)
         {
             Columns = columns;
         }
@@ -60,6 +60,10 @@ namespace Nether.Analytics
             return builder.ToString();
         }
 
+        public Message Parse(string input)
+        {
+            throw new NotImplementedException();
+        }
 
         public string Header
         {

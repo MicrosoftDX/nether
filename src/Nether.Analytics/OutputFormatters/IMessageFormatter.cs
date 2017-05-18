@@ -12,5 +12,7 @@ namespace Nether.Analytics
         string Header { get; }
 
         bool IncludeHeaders { get; }
+
+        Message Parse(string input);
     }
 }
