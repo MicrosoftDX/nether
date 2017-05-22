@@ -1,5 +1,7 @@
 DECLARE EXTERNAL @in = "/nether/clustering/geo-location/2017/05/{*}/{*}.csv";
 DECLARE EXTERNAL @out = "/nether/clustering/output/clusters.csv";
+DECLARE EXTERNAL @timeframe_unit = "minute";
+DECLARE EXTERNAL @timeframe_frequency = 15;
 
 @geoLocations =
     EXTRACT id string,
@@ -15,26 +17,57 @@ DECLARE EXTERNAL @out = "/nether/clustering/output/clusters.csv";
     FROM @in
     USING Extractors.Csv(skipFirstNRows: 1);
 
+@geoLocations_tmp =
+    SELECT id,
+           type,
+           version,
+           enqueueTime,
+           lat,
+           lon,
+           geoHash,
+           geoHashPrecision,
+           rnd,
+           enqueueTime.Year AS year,
+           (@timeframe_unit == "year") ? 1 : enqueueTime.Month AS month,
+           (@timeframe_unit == "month" || @timeframe_unit == "year") ? 1 : enqueueTime.Day AS day,
+           (@timeframe_unit == "hour" || @timeframe_unit == "minute") ? enqueueTime.Hour : 0 AS hour,
+           (@timeframe_unit == "minute") ? (enqueueTime.Minute / @timeframe_frequency) * @timeframe_frequency : 0 AS minute
+    FROM @geoLocations;
+
+
 @locationsPerGeoHash =
-    SELECT geoHash,
+    SELECT new DateTime(year, month, day, hour, minute, 0) AS timeGrouping,
+           geoHash,
            COUNT(*) AS size
-    FROM @geoLocations
-    GROUP BY geoHash;
+    FROM @geoLocations_tmp
+    GROUP BY year, month, day, hour, minute, geoHash;
 
 @clusters =
-    SELECT geoHash, size
+    SELECT timeGrouping, geoHash, size
     FROM @locationsPerGeoHash
     WHERE size > 1;
 
 @almostResult =
-    SELECT g.geoHash, g.lat, g.lon, c.size, g.rnd, ROW_NUMBER() OVER (PARTITION BY g.geoHash ORDER BY g.rnd ASC) AS row
-    FROM @geoLocations AS g
+    SELECT new DateTime(g.year, g.month, g.day, g.hour, g.minute, 0) AS timeGrouping,
+           g.geoHash, 
+           g.lat, 
+           g.lon, 
+           c.size, 
+           g.rnd, 
+           ROW_NUMBER() OVER (PARTITION BY g.year, g.month, g.day, g.hour, g.minute, g.geoHash ORDER BY g.rnd ASC) AS row
+    FROM @geoLocations_tmp AS g
          JOIN @clusters AS c
          ON g.geoHash == c.geoHash;
 
-@result = SELECT geoHash, lat, lon, size
+@result = 
+    SELECT timeGrouping,
+           geoHash, 
+           lat, 
+           lon, 
+           size
     FROM @almostResult
     WHERE row == 1;
+
 
 OUTPUT @result
 TO @out
