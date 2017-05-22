@@ -25,7 +25,7 @@ namespace AnalyticsTestClient
 
             var messages = f.GetLatest();
 
-            foreach(var msg in messages)
+            foreach (var msg in messages)
             {
                 Console.WriteLine(msg.ToString());
             }

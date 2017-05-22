@@ -48,7 +48,7 @@ namespace Nether.Analytics
                 {
                     // some formatters support a header row, i.e. the CSV files, which means
                     // we need to skip the header
-                    if(skipFirstLine)
+                    if (skipFirstLine)
                     {
                         skipFirstLine = false;
                         continue;
