@@ -62,7 +62,20 @@ namespace Nether.Analytics
 
         public Message Parse(string input)
         {
-            throw new NotImplementedException();
+            // TODO: we should probably use a 3rd party parser! But for a POC, this will do.
+            var split = input.Split(Separator);
+            if(split.Length != this.Columns.Length)
+            {
+                throw new MissingFieldException($"The number of fields in the CSV ({split.Length}) does not correspond to the columns passed to the formatter ({this.Columns.Length}).");
+            }
+
+            var m = new Message();
+            for (int i=0; i < Columns.Length; i++)
+            {
+                m.Properties.Add(Columns[i], split[i]);
+            }
+
+            return m;
         }
 
         public string Header
