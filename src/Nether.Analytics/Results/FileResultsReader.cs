@@ -60,10 +60,12 @@ namespace Nether.Analytics
 
         private FileInfo GetLatest(DirectoryInfo directory)
         {
+            if (directory == null) return null;
+
             var latest = directory.GetDirectories().OrderByDescending(x => x.LastWriteTimeUtc).FirstOrDefault();
             if (latest == null)
             {
-                var lastFile = latest.GetFiles().OrderByDescending(x => x.LastWriteTimeUtc).FirstOrDefault();
+                var lastFile = directory.GetFiles().OrderByDescending(x => x.LastWriteTimeUtc).FirstOrDefault();
                 return lastFile;
             }
             else
