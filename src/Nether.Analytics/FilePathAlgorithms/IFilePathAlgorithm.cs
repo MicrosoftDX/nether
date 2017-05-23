@@ -20,12 +20,25 @@ namespace Nether.Analytics
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        IEnumerable<FilePathResult> GetFilePaths(string pipelineName, string messageType, DateTime start, DateTime end);
+        IEnumerable<FilePathResult> GetFilePaths(string pipelineName, string messageType, DateTime from, DateTime to);
+
+        /// <summary>
+        /// Gets the root path, augmented with the pipeline and messagetype parts.
+        /// </summary>
+        /// <param name="pipelineName"></param>
+        /// <param name="messageType"></param>
+        /// <returns></returns>
+        string GetRootPath(string pipelineName, string messageType);
     }
 
     public struct FilePathResult
     {
         public string[] Hierarchy;
         public string Name;
+
+        public override string ToString()
+        {
+            return System.IO.Path.Combine(string.Join(System.IO.Path.DirectorySeparatorChar.ToString(), Hierarchy), Name);
+        }
     }
 }

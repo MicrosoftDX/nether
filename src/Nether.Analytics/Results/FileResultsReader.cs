@@ -12,34 +12,64 @@ namespace Nether.Analytics
     {
         private string _rootPath;
         private IMessageFormatter _serializer;
+        private string _pipeline;
+        private IFilePathAlgorithm _filePathAlgorithm;
         private string _messageType;
 
         public FileResultsReader()
         {
         }
         public FileResultsReader(IMessageFormatter serializer, IFilePathAlgorithm filePathAlgorithm,
-            string rootPath, string messageType)
+            string rootPath, string pipeline, string messageType)
         {
             _serializer = serializer;
+            _filePathAlgorithm = filePathAlgorithm;
             _rootPath = rootPath;
+            _pipeline = pipeline;
             _messageType = messageType;
         }
 
         public IEnumerable<Message> GetLatest()
         {
+            // we should get the root based on the pipeline and type, so we need to call the algorithm
+            var rootPath = _filePathAlgorithm.GetRootPath(_pipeline, _messageType);
+
+            rootPath = Path.Combine(_rootPath, rootPath);
+
             // we're basing this implementation on the metadata of files
             // which means that we'll iterate from the root folder, and go from there 
             // on up, based on last time modified
-
-            var dir = new DirectoryInfo(_rootPath);
+            var dir = new DirectoryInfo(rootPath);
 
             if (!dir.Exists)
                 throw new InvalidOperationException($"The path supplied is invalid, as it does not exist: {_rootPath}");
-
+            
             var file = GetLatest(dir);
 
+            return ReadFile(file);
+        }
+
+        public IEnumerable<Message> Get(DateTime from, DateTime to)
+        {
+            var paths = _filePathAlgorithm.GetFilePaths(_pipeline, _messageType, from, to);
+            
+            foreach(var path in paths)
+            {
+                foreach(var msg in ReadFile(new FileInfo(Path.Combine(_rootPath, $"{path}.{_serializer.FileExtension}"))))
+                {
+                    yield return msg;
+                }
+            }
+        }
+
+        private IEnumerable<Message> ReadFile(FileInfo file)
+        {
             // whoops, no file, let's return an empty list
             if (file == null) yield break;
+
+            // if no file, don't panic
+            if (!file.Exists) yield break;
+
 
             // looks like we got the file, read it to the end
             // TODO: consider passing a stream to the serializer, in case the file is too big?

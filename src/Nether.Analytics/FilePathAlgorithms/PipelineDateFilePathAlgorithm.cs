@@ -22,13 +22,26 @@ namespace Nether.Analytics
             return GetFilePath(pipelineName, msg.MessageType, msg.EnqueueTimeUtc);
         }
 
-        public System.Collections.Generic.IEnumerable<FilePathResult> GetFilePaths(string pipelineName, string messageType, DateTime start, DateTime end)
+        public System.Collections.Generic.IEnumerable<FilePathResult> GetFilePaths(string pipelineName, string messageType, DateTime from, DateTime to)
         {
             do
             {
-                yield return GetFilePath(pipelineName, messageType, start);
-                start = start.AddMinutes((int)_newFileOption);
-            } while (start <= end);
+                yield return GetFilePath(pipelineName, messageType, from);
+                from = from.AddMinutes((int)_newFileOption);
+            } while (from <= to);
+        }
+
+        public string GetRootPath(string pipelineName, string messageType)
+        {
+            // _rootFolder/pipelineName/messageType/year/month/day
+            var hierarchy = new string[]
+            {
+                _rootFolder,
+                pipelineName,
+                messageType,
+            };
+
+            return String.Join(System.IO.Path.DirectorySeparatorChar.ToString(), hierarchy);
         }
 
         public FilePathResult GetFilePath(string pipelineName, string messageType, DateTime dateTime)
