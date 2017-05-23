@@ -17,7 +17,7 @@ namespace Nether.Analytics
         public FileResultsReader()
         {
         }
-        public FileResultsReader(IMessageFormatter serializer, IFilePathAlgorithm filePathAlgorithm, 
+        public FileResultsReader(IMessageFormatter serializer, IFilePathAlgorithm filePathAlgorithm,
             string rootPath, string messageType)
         {
             _serializer = serializer;

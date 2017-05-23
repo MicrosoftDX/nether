@@ -29,7 +29,7 @@ namespace AnalyticsTestClient
                 MenuItems.Add('1', new ConsoleMenuItem("DAU", () => GetLatestFromFileSystem(dauSerializer, "dau")));
                 MenuItems.Add('2', new ConsoleMenuItem("Clustering", () => GetLatestFromFileSystem(clusteringSerializer, "clustering")));
             }
-            
+
             public void GetLatestFromFileSystem(IMessageFormatter formatter, string pipeline)
             {
                 Console.Write("Root directory: ");
@@ -46,7 +46,5 @@ namespace AnalyticsTestClient
                 }
             }
         }
-
-        
     }
 }

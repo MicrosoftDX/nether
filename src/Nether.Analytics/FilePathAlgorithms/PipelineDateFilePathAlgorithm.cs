@@ -28,7 +28,6 @@ namespace Nether.Analytics
             {
                 yield return GetFilePath(pipelineName, messageType, start);
                 start = start.AddMinutes((int)_newFileOption);
-
             } while (start <= end);
         }
 
