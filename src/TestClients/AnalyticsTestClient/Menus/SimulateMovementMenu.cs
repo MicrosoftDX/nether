@@ -28,7 +28,7 @@ namespace AnalyticsTestClient
 
         private static RouterDb s_routerDb;
         private static Router s_router;
-        Random s_rnd = new Random();
+        private Random _rnd = new Random();
 
         public SimulateMovementMenu()
         {
@@ -199,12 +199,12 @@ namespace AnalyticsTestClient
                 try
                 {
                     startCoordinate = new Coordinate(
-                        (float)(minLat + Math.Abs(maxLat - minLat) * s_rnd.NextDouble()),
-                        (float)(minLon + Math.Abs(maxLon - minLon) * s_rnd.NextDouble()));
+                        (float)(minLat + Math.Abs(maxLat - minLat) * _rnd.NextDouble()),
+                        (float)(minLon + Math.Abs(maxLon - minLon) * _rnd.NextDouble()));
 
                     endCoordinate = new Coordinate(
-                        (float)(minLat + Math.Abs(maxLat - minLat) * s_rnd.NextDouble()),
-                        (float)(minLon + Math.Abs(maxLon - minLon) * s_rnd.NextDouble()));
+                        (float)(minLat + Math.Abs(maxLat - minLat) * _rnd.NextDouble()),
+                        (float)(minLon + Math.Abs(maxLon - minLon) * _rnd.NextDouble()));
 
                     route = s_router.Calculate(Vehicle.Pedestrian.Shortest(), startCoordinate, endCoordinate);
 
@@ -249,8 +249,6 @@ namespace AnalyticsTestClient
             if (verbose) Console.WriteLine($"Total Time:     {TimeSpan.FromSeconds(route.TotalTime)}");
             if (verbose) Console.WriteLine($"File:           {filePath}");
             if (verbose) Console.WriteLine();
-
-
         }
     }
 }

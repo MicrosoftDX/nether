@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 //TODO: A more advanced version of this should probably be available in Nether.Analytics and/or Nether.Analytics.EventHubs
+
 namespace AnalyticsTestClient
 {
     public class AnalyticsClient : IAnalyticsClient
@@ -31,7 +32,6 @@ namespace AnalyticsTestClient
 
         public async Task SendMsgAsync(INetherMessage msg, DateTime? dbgEnqueuedTimeUtc = null)
         {
-
             Console.Write("|");
 
             // Serialize object to JSON
@@ -104,5 +104,4 @@ namespace AnalyticsTestClient
             await _client.SendAsync(list);
         }
     }
-
 }

@@ -10,7 +10,7 @@ namespace Nether.Analytics.Host
 {
     public static class Config
     {
-        private static IConfigurationRoot _root;
+        private static IConfigurationRoot s_root;
 
 
         static Config()
@@ -18,9 +18,11 @@ namespace Nether.Analytics.Host
             SetupConfigurationProviders();
         }
 
-        public static IConfigurationRoot Root { get => _root; }
+        public static IConfigurationRoot Root
+        {
+            get => s_root; }
 
-        public const string AppSettingsFile = "appsettings.json";
+            public private const string AppSettingsFile = "appsettings.json";
         // Configuration parameters
         public const string NAH_EHLISTENER_CONNECTIONSTRING = "NAH_EHLISTENER_CONNECTIONSTRING";
         public const string NAH_EHLISTENER_EVENTHUBPATH = "NAH_EHLISTENER_EVENTHUBPATH";
@@ -52,7 +54,7 @@ namespace Nether.Analytics.Host
                 .AddJsonFile(AppSettingsFile, optional: true)
                 .AddEnvironmentVariables();
 
-            _root = configBuilder.Build();
+            s_root = configBuilder.Build();
         }
 
         public static bool Check()

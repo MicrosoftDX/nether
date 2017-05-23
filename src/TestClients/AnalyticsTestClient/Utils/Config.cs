@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 //TODO: Take a big grip on Configuration and fix it for all Nether. A copy of this file is available in Nether.Analytics.Host
+
 using Microsoft.Extensions.Configuration;
 using Nether.Analytics;
 using System;
@@ -12,7 +13,7 @@ namespace AnalyticsTestClient
 {
     public static class Config
     {
-        private static IConfigurationRoot _root;
+        private static IConfigurationRoot s_root;
 
 
         static Config()
@@ -20,9 +21,11 @@ namespace AnalyticsTestClient
             SetupConfigurationProviders();
         }
 
-        public static IConfigurationRoot Root { get => _root; }
+        public static IConfigurationRoot Root
+        {
+            get => s_root; }
 
-        public const string AppSettingsFile = "appsettings.json";
+            public private const string AppSettingsFile = "appsettings.json";
         // Configuration parameters
         public const string NAH_EHLISTENER_CONNECTIONSTRING = "NAH_EHLISTENER_CONNECTIONSTRING";
         public const string NAH_EHLISTENER_EVENTHUBPATH = "NAH_EHLISTENER_EVENTHUBPATH";
@@ -54,7 +57,7 @@ namespace AnalyticsTestClient
                 .AddJsonFile(AppSettingsFile, optional: true)
                 .AddEnvironmentVariables();
 
-            _root = configBuilder.Build();
+            s_root = configBuilder.Build();
         }
 
         public static bool Check()

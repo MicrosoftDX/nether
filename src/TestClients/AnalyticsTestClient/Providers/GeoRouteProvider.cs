@@ -9,7 +9,7 @@ namespace AnalyticsTestClient
     public class GeoRouteProvider : IGeoRouteProvider
     {
         private string _routesFolder;
-        private static string[] _files = null;
+        private static string[] s_files = null;
 
         public GeoRouteProvider(string routesFolder)
         {
@@ -20,12 +20,12 @@ namespace AnalyticsTestClient
         {
             get
             {
-                if (_files == null)
+                if (s_files == null)
                 {
-                    _files = Directory.GetFiles(_routesFolder, "*.json", SearchOption.AllDirectories);
+                    s_files = Directory.GetFiles(_routesFolder, "*.json", SearchOption.AllDirectories);
                 }
 
-                return _files;
+                return s_files;
             }
         }
 

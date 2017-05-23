@@ -101,7 +101,6 @@ namespace AnalyticsTestClient
 
         private void EditMessageProperties(INetherMessage gameEvent)
         {
-
             var props = gameEvent.GetType().GetProperties();
 
             foreach (var prop in props)

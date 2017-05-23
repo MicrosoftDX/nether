@@ -44,7 +44,5 @@ namespace AnalyticsTestClient
                 {"Value", 1 }
             };
         }
-
-
     }
 }

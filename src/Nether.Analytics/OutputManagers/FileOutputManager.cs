@@ -44,7 +44,6 @@ namespace Nether.Analytics
 
             try
             {
-
                 if (_serializer.IncludeHeaders)
                 {
                     await AppendMessageToFileWithHeaderAsync(serializedMessage, filePath);

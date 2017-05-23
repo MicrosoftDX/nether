@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -6,7 +9,7 @@ namespace AnalyticsTestClient
 {
     public class PlayerDistributionProvider
     {
-        double[,] _distributionTable = new double[7, 24];
+        private double[,] _distributionTable = new double[7, 24];
 
         public PlayerDistributionProvider(string playerDistributionFile)
         {

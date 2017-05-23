@@ -63,6 +63,5 @@ namespace AnalyticsTestClient
         {
             _gamerTagsInUse.TryRemove(gamerTag, out bool val);
         }
-
     }
 }

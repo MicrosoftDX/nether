@@ -36,7 +36,7 @@ namespace AnalyticsTestClient
         private IAnalyticsClient GetClient(bool warmup)
         {
             // Delay use of real client until warmup period is over
-            return warmup ? new NetherAnalyticsNullClient(): _client;
+            return warmup ? new NetherAnalyticsNullClient() : _client;
         }
 
         private async Task StartAsync(DateTime now, bool warmup)
