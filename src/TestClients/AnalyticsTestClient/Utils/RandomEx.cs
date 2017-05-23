@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AnalyticsTestClient.Utils
+namespace AnalyticsTestClient
 {
     public static class RandomEx
     {

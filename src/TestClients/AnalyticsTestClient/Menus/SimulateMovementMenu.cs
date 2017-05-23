@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using AnalyticsTestClient.Utils;
 using Itinero;
 using Itinero.Exceptions;
 using Itinero.IO.Osm;
 using Itinero.LocalGeo;
 using Itinero.Osm.Vehicles;
+using Nether.Analytics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,26 +42,26 @@ namespace AnalyticsTestClient
         {
             var n = DateTime.UtcNow;
             var thisMidnight = new DateTime(n.Year, n.Month, n.Day, 0, 0, 0, DateTimeKind.Utc);
-            var midnightAWeekAgo = thisMidnight - TimeSpan.FromDays(7);
+            var midnightAWeekAgo = thisMidnight - TimeSpan.FromDays(1);
 
             var fromDate = ConsoleEx.ReadLine("From (UTC)", midnightAWeekAgo);
             var toDate = ConsoleEx.ReadLine("To (UTC)", thisMidnight);
             var timeZoneDiff = ConsoleEx.ReadLine("Time Zone Diff (h)", 1);
             var warmupTime = ConsoleEx.ReadLine("Warmup Time (min)", 15);
-            var gamerTagFile1 = ConsoleEx.ReadLine("GamerTags File 1", "GamerTags1.txt");
-            var gamerTagFile2 = ConsoleEx.ReadLine("GamerTags File 2", "GamerTags2.txt");
-            var gamerTagFile3 = ConsoleEx.ReadLine("GamerTags File 3", "GamerTags3.txt");
-            var playerDistributionFile = ConsoleEx.ReadLine("Player Distribution File", "PlayerDistribution.tsv", s => File.Exists(s));
+            var gamerTagFile1 = ConsoleEx.ReadLine("GamerTags File 1", "DataFiles/GamerTags1.txt", s => File.Exists(s));
+            var gamerTagFile2 = ConsoleEx.ReadLine("GamerTags File 2", "DataFiles/GamerTags2.txt", s => File.Exists(s));
+            var gamerTagFile3 = ConsoleEx.ReadLine("GamerTags File 3", "DataFiles/GamerTags3.txt", s => File.Exists(s));
+            var playerDistributionFile = ConsoleEx.ReadLine("Player Distribution File", "DataFiles/PlayerDistribution.tsv", s => File.Exists(s));
             var routesFolder = ConsoleEx.ReadLine("GeoJson Routes Folder", DefaultRoutesFolder, s => Directory.Exists(s));
             var step = ConsoleEx.ReadLine("Increase Clock With (s)", 12);
 
-            var client = new AnalyticsClient();
+            var client = new BatchAnalyticsClient();
             var gamerTagProvider = new GamerTagProvider(gamerTagFile1, gamerTagFile2, gamerTagFile3);
             var gameSessionProvider = new GameSessionProvider();
             var geoRouteProvider = new GeoRouteProvider(routesFolder);
 
 
-            var playerDistribution = new PlayerDistribution(playerDistributionFile);
+            var playerDistribution = new PlayerDistributionProvider(playerDistributionFile);
             var now = fromDate.AddMinutes(-warmupTime);
             var bots = new List<NetherBot>();
             var botsNeeded = 0d;

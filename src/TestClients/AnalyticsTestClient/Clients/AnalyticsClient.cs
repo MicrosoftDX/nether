@@ -4,26 +4,26 @@
 using Microsoft.Azure.EventHubs;
 using Nether.Analytics.MessageFormats;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
+using System.Text;
+using System.Threading.Tasks;
 
+//TODO: A more advanced version of this should probably be available in Nether.Analytics and/or Nether.Analytics.EventHubs
 namespace AnalyticsTestClient
 {
-    public class XAnalyticsClient : IAnalyticsClient
+    public class AnalyticsClient : IAnalyticsClient
     {
         private EventHubClient _client;
 
-        public XAnalyticsClient()
+        public AnalyticsClient()
         {
-            var connectionStringBuilder = new EventHubsConnectionStringBuilder(ConfigCache.EventHubConnectionString)
+            var connectionStringBuilder = new EventHubsConnectionStringBuilder(Config.Root[Config.NAH_EHLISTENER_CONNECTIONSTRING])
             {
-                EntityPath = ConfigCache.EventHubName
+                EntityPath = Config.Root[Config.NAH_EHLISTENER_EVENTHUBPATH]
             };
 
             _client = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
@@ -51,18 +51,18 @@ namespace AnalyticsTestClient
         }
     }
 
-    public class AnalyticsClient : IAnalyticsClient
+    public class BatchAnalyticsClient : IAnalyticsClient
     {
         private const int MessageBatchSize = 1000;
 
         private EventHubClient _client;
         private ConcurrentQueue<EventData> _queue = new ConcurrentQueue<EventData>();
 
-        public AnalyticsClient()
+        public BatchAnalyticsClient()
         {
-            var connectionStringBuilder = new EventHubsConnectionStringBuilder(ConfigCache.EventHubConnectionString)
+            var connectionStringBuilder = new EventHubsConnectionStringBuilder(Config.Root[Config.NAH_EHLISTENER_CONNECTIONSTRING])
             {
-                EntityPath = ConfigCache.EventHubName
+                EntityPath = Config.Root[Config.NAH_EHLISTENER_EVENTHUBPATH]
             };
 
             _client = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());

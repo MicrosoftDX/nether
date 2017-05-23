@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata.Ecma335;
 
-namespace AnalyticsTestClient.Utils
+namespace AnalyticsTestClient
 {
     public abstract class ConsoleMenu
     {

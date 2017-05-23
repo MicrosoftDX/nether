@@ -4,11 +4,11 @@ using System.IO;
 
 namespace AnalyticsTestClient
 {
-    public class PlayerDistribution
+    public class PlayerDistributionProvider
     {
         double[,] _distributionTable = new double[7, 24];
 
-        public PlayerDistribution(string playerDistributionFile)
+        public PlayerDistributionProvider(string playerDistributionFile)
         {
             var s = File.ReadAllText(playerDistributionFile);
 

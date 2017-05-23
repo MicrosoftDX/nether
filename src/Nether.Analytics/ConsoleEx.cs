@@ -3,10 +3,23 @@
 
 using System;
 
-namespace AnalyticsTestClient.Utils
+namespace Nether.Analytics
 {
     public static class ConsoleEx
     {
+        public static void Write(ConsoleColor color, string value)
+        {
+            var currentColor = Console.ForegroundColor;
+            Console.ForegroundColor = color;
+            Console.Write(value);
+            Console.ForegroundColor = currentColor;
+        }
+
+        public static void WriteLine(ConsoleColor color, string value)
+        {
+            Write(color, value + Environment.NewLine);
+        }
+
         public static void WriteConnectionString(string connectionString, int indent = 0)
         {
             var lines = (connectionString ?? string.Empty).Split(';');
@@ -30,10 +43,11 @@ namespace AnalyticsTestClient.Utils
             return sharedAccessKey + maskedKey;
         }
 
-        public static string ReadLine(string description, string defaultValue)
+        public static string ReadLine(string description, string defaultValue = "")
         {
             Console.Write($"{description} [{defaultValue}] : ");
             var answer = Console.ReadLine();
+            answer = answer.Trim();
 
             return string.IsNullOrEmpty(answer) ? defaultValue : answer;
         }

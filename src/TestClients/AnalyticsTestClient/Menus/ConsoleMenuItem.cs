@@ -4,7 +4,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace AnalyticsTestClient.Utils
+namespace AnalyticsTestClient
 {
     public class ConsoleMenuItem
     {

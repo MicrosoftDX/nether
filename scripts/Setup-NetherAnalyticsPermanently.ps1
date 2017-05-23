@@ -9,3 +9,4 @@
 [Environment]::SetEnvironmentVariable("NAH_AZURE_SUBSCRIPTIONID", "3a856395-1...5d-527c857e5995", "User")
 [Environment]::SetEnvironmentVariable("NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME", "nether", "User")
 [Environment]::SetEnvironmentVariable("NAH_AZURE_DLA_ACCOUNTNAME", "nether", "User")
+[Environment]::SetEnvironmentVariable("NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER", "c:\tmp\USQLDataRoot", "User")

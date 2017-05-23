@@ -7,7 +7,6 @@ using System.Reflection;
 using Nether.Analytics.MessageFormats;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using AnalyticsTestClient.Utils;
 using System.Threading;
 
 namespace AnalyticsTestClient

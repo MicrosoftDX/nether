@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using AnalyticsTestClient.Utils;
 
 namespace AnalyticsTestClient
 {
@@ -12,12 +11,11 @@ namespace AnalyticsTestClient
         {
             Title = "Nether Analytics Test Client - Main Menu";
 
-            MenuItems.Add('1', new ConsoleMenuItem("Setup ...", () => { new SetupMenu().Show(); }));
-            MenuItems.Add('2', new ConsoleMenuItem("Send Typed Game Events ...", () => { new SendTypedGameEventMenu().Show(); }));
-            MenuItems.Add('3', new ConsoleMenuItem("Send Custom Game Event", SendCustomGameEvent));
-            MenuItems.Add('4', new ConsoleMenuItem("Re-send Last Sent Message", ResendLastSentMessage));
-            MenuItems.Add('5', new ConsoleMenuItem("Simulate moving game client...", () => { new SimulateMovementMenu().Show(); }));
-            MenuItems.Add('6', new ConsoleMenuItem("USQL Script ...", () => new USQLJobMenu().Show()));
+            MenuItems.Add('1', new ConsoleMenuItem("Send Typed Game Events ...", () => { new SendTypedGameEventMenu().Show(); }));
+            MenuItems.Add('2', new ConsoleMenuItem("Send Custom Game Event", SendCustomGameEvent));
+            MenuItems.Add('3', new ConsoleMenuItem("Re-send Last Sent Message", ResendLastSentMessage));
+            MenuItems.Add('4', new ConsoleMenuItem("Simulate moving game client...", () => { new SimulateMovementMenu().Show(); }));
+            MenuItems.Add('5', new ConsoleMenuItem("USQL Script ...", () => new USQLJobMenu().Show()));
         }
 
         private void SendCustomGameEvent()
