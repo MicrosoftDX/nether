@@ -26,17 +26,17 @@ namespace AnalyticsTestClient
                 var dauSerializer = new CsvMessageFormatter("id", "type", "version", "gameSession", "enqueueTimeUtc", "gamerTag");
 
 
-                MenuItems.Add('1', new ConsoleMenuItem("DAU Serializer", () => GetLatestFromFileSystem(dauSerializer)));
-                MenuItems.Add('2', new ConsoleMenuItem("Clustering Serliazier", () => GetLatestFromFileSystem(clusteringSerializer)));
+                MenuItems.Add('1', new ConsoleMenuItem("DAU", () => GetLatestFromFileSystem(dauSerializer, "dau")));
+                MenuItems.Add('2', new ConsoleMenuItem("Clustering", () => GetLatestFromFileSystem(clusteringSerializer, "clustering")));
             }
             
-            public void GetLatestFromFileSystem(IMessageFormatter formatter)
+            public void GetLatestFromFileSystem(IMessageFormatter formatter, string pipeline)
             {
                 Console.Write("Root directory: ");
 
                 var path = Console.ReadLine();
 
-                var f = new Nether.Analytics.FileResultsReader(formatter, null, path);
+                var f = new Nether.Analytics.FileResultsReader(formatter, null, path, pipeline);
 
                 var messages = f.GetLatest();
 

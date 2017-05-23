@@ -12,14 +12,17 @@ namespace Nether.Analytics
     {
         private string _rootPath;
         private IMessageFormatter _serializer;
+        private string _messageType;
 
         public FileResultsReader()
         {
         }
-        public FileResultsReader(IMessageFormatter serializer, IFilePathAlgorithm filePathAlgorithm, string rootPath = @"C:\")
+        public FileResultsReader(IMessageFormatter serializer, IFilePathAlgorithm filePathAlgorithm, 
+            string rootPath, string messageType)
         {
             _serializer = serializer;
             _rootPath = rootPath;
+            _messageType = messageType;
         }
 
         public IEnumerable<Message> GetLatest()

@@ -19,15 +19,30 @@ namespace Nether.Analytics
 
         public FilePathResult GetFilePath(string pipelineName, int idx, Message msg)
         {
+            return GetFilePath(pipelineName, msg.MessageType, msg.EnqueueTimeUtc);
+        }
+
+        public System.Collections.Generic.IEnumerable<FilePathResult> GetFilePaths(string pipelineName, string messageType, DateTime start, DateTime end)
+        {
+            do
+            {
+                yield return GetFilePath(pipelineName, messageType, start);
+                start = start.AddMinutes((int)_newFileOption);
+
+            } while (start <= end);
+        }
+
+        public FilePathResult GetFilePath(string pipelineName, string messageType, DateTime dateTime)
+        {
             // _rootFolder/pipelineName/messageType/year/month/day
             var hierarchy = new string[]
             {
                 _rootFolder,
                 pipelineName,
-                msg.MessageType,
-                msg.EnqueuedTimeUtc.Year.ToString("D4"),
-                msg.EnqueuedTimeUtc.Month.ToString("D2"),
-                msg.EnqueuedTimeUtc.Day.ToString("D2")
+                messageType,
+                dateTime.Year.ToString("D4"),
+                dateTime.Month.ToString("D2"),
+                dateTime.Day.ToString("D2")
             };
 
             string name;
