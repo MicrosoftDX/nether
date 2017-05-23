@@ -13,22 +13,40 @@ namespace AnalyticsTestClient
         {
             Title = "Nether Analytics Test Client - Results API Consumer";
 
-            MenuItems.Add('1', new ConsoleMenuItem("Get Latest Results (FS)", () => GetLatestFromFileSystem()));
+            MenuItems.Add('1', new ConsoleMenuItem("Get Latest Results (FS)", () => new ResultsFileSystemMenu().Show()));
         }
 
-        public void GetLatestFromFileSystem()
+        private class ResultsFileSystemMenu : ConsoleMenu
         {
-            var clusteringSerializer = new CsvMessageFormatter("id", "type", "version", "enqueueTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "rnd");
-            var dauSerializer = new CsvMessageFormatter("id", "type", "version", "gameSession", "enqueueTimeUtc", "gamerTag");
-
-            var f = new Nether.Analytics.FileResultsReader(clusteringSerializer, null, @"C:\Users\anvod\Documents\GitHub\nether-nonversioncontroller\USQLDataRoot\nether\clustering\geo-location");
-
-            var messages = f.GetLatest();
-
-            foreach (var msg in messages)
+            public ResultsFileSystemMenu()
             {
-                Console.WriteLine(msg.ToString());
+                Title = "Latest Results (FS)";
+
+                var clusteringSerializer = new CsvMessageFormatter("id", "type", "version", "enqueueTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "rnd");
+                var dauSerializer = new CsvMessageFormatter("id", "type", "version", "gameSession", "enqueueTimeUtc", "gamerTag");
+
+
+                MenuItems.Add('1', new ConsoleMenuItem("DAU Serializer", () => GetLatestFromFileSystem(dauSerializer)));
+                MenuItems.Add('2', new ConsoleMenuItem("Clustering Serliazier", () => GetLatestFromFileSystem(clusteringSerializer)));
+            }
+            
+            public void GetLatestFromFileSystem(IMessageFormatter formatter)
+            {
+                Console.Write("Root directory: ");
+
+                var path = Console.ReadLine();
+
+                var f = new Nether.Analytics.FileResultsReader(formatter, null, path);
+
+                var messages = f.GetLatest();
+
+                foreach (var msg in messages)
+                {
+                    Console.WriteLine(msg.ToString());
+                }
             }
         }
+
+        
     }
 }
