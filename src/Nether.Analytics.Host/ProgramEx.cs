@@ -82,20 +82,20 @@ namespace Nether.Analytics.Host
 
             // Setup Message Parser. By default we are using Nether JSON Messages
             // Setting up parser that knows how to parse those messages.
-            var parser = new EventHubListenerMessageJsonParser(new ConsoleCorruptMessageHandler());
+            var parser = new EventHubListenerMessageJsonParser(new ConsoleCorruptMessageHandler()) { AllowDbgEnqueuedTime = true };
 
             // User a builder to create routing infrastructure for messages and the pipelines
             var builder = new MessageRouterBuilder();
 
-            var filePathAlgorithm = new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every5Minutes);
+            var filePathAlgorithm = new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every3Hours);
 
             // Setting up "Geo Clustering Recipe"
 
-            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueueTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "rnd");
+            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "geoHashCenterDist", "rnd");
 
             builder.Pipeline("clustering")
                 .HandlesMessageType("geo-location", "1.0.0")
-                .AddHandler(new GeoHashMessageHandler())
+                .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
                 .AddHandler(new RandomIntMessageHandler())
                 .OutputTo(new ConsoleOutputManager(clusteringSerializer)
                         , new FileOutputManager(clusteringSerializer, filePathAlgorithm, @"C:\dev\USQLDataRoot")
@@ -109,8 +109,7 @@ namespace Nether.Analytics.Host
 
             // Setting up "Daily Active Users Recipe"
 
-            var dauSerializer = new CsvOutputFormatter("id", "type", "version", "gameSession", "enqueueTimeUtc", "gamerTag");
-
+            var dauSerializer = new CsvOutputFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "gamerTag");
             builder.Pipeline("dau")
                 .HandlesMessageType("session-start", "1.0.0")
                 .OutputTo(new ConsoleOutputManager(dauSerializer)
@@ -123,9 +122,22 @@ namespace Nether.Analytics.Host
                             _configuration[NAH_Azure_DLSOutputManager_AccountName])
                         );
 
+            var sessionSerializer = new CsvOutputFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession");
+            builder.Pipeline("sessions")
+                .HandlesMessageType("heartbeat", "1.0.0")
+                .OutputTo(new ConsoleOutputManager(sessionSerializer)
+                , new FileOutputManager(sessionSerializer, filePathAlgorithm, @"c:\dev\USQLDataRoot")
+                , new DataLakeStoreOutputManager(
+                    sessionSerializer,
+                    filePathAlgorithm,
+                    serviceClientCretentials,
+                    _configuration[NAH_Azure_SubscriptionId],
+                    _configuration[NAH_Azure_DLSOutputManager_AccountName])
+                );
+
             builder.DefaultPipeline
                 .AddHandler(new RandomIntMessageHandler())
-                .OutputTo(new ConsoleOutputManager(new CsvOutputFormatter()));
+                .OutputTo(new ConsoleOutputManager(new CsvOutputFormatter { IncludeHeaders = false }));
 
             // Build all pipelines
             var router = builder.Build();

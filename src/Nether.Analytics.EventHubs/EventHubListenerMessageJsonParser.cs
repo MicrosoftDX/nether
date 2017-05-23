@@ -17,6 +17,7 @@ namespace Nether.Analytics.Parsers
         }
 
         public ICorruptMessageHandler CorruptMessageHandler { get; private set; }
+        public bool AllowDbgEnqueuedTime { get; set; } = false;
 
         public async Task<Message> ParseMessageAsync(EventHubListenerMessage unparsedMsg)
         {
@@ -35,12 +36,16 @@ namespace Nether.Analytics.Parsers
 
             var gameEventType = (string)json["type"];
             var version = (string)json["version"];
+            var dbgEnqueuedTime = (string)json["dbgEnqueuedTimeUtc"];
 
             if (gameEventType == null || version == null)
             {
                 await CorruptMessageHandler.HandleAsync(data);
                 return null;
             }
+
+            // If dbgEnqueuedTime is allowed and that property is set, then use it instead of the DateTime given by EventHub
+            var enqueuedTime = (AllowDbgEnqueuedTime && dbgEnqueuedTime != null) ? DateTime.Parse(dbgEnqueuedTime) : unparsedMsg.EnqueuedTime;
 
             var id = unparsedMsg.PartitionId + "_" + unparsedMsg.SequenceNumber;
 
@@ -49,11 +54,12 @@ namespace Nether.Analytics.Parsers
                 Id = id,
                 MessageType = gameEventType,
                 Version = version,
-                EnqueueTimeUtc = unparsedMsg.EnqueuedTime
+                EnqueuedTimeUtc = enqueuedTime,
+                PartitionId = unparsedMsg.PartitionId
             };
 
             msg.Properties["id"] = id;
-            msg.Properties["enqueueTimeUtc"] = msg.EnqueueTimeUtc.ToString();
+            msg.Properties["enqueuedTimeUtc"] = msg.EnqueuedTimeUtc.ToString();
 
             foreach (var p in json)
             {

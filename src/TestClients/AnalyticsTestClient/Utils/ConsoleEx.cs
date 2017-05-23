@@ -29,5 +29,107 @@ namespace AnalyticsTestClient.Utils
             var maskedKey = $"{key.Substring(0, 5)}.....{key.Substring(key.Length - 5)}";
             return sharedAccessKey + maskedKey;
         }
+
+        public static string ReadLine(string description, string defaultValue)
+        {
+            Console.Write($"{description} [{defaultValue}] : ");
+            var answer = Console.ReadLine();
+
+            return string.IsNullOrEmpty(answer) ? defaultValue : answer;
+        }
+
+        public static string ReadLine(string description, string defaultValue, Func<string, bool> checkFunc, string errorMessage = "Parameter isn't valid")
+        {
+            while (true)
+            {
+                try
+                {
+                    Console.Write($"{description} [{defaultValue}] : ");
+                    var answer = Console.ReadLine();
+                    var returnValue = string.IsNullOrEmpty(answer) ? defaultValue : answer;
+
+                    if (checkFunc(returnValue))
+                        return returnValue;
+                    else
+                        Console.WriteLine(errorMessage);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Unknown error while checking parameter, please try again");
+                }
+            }
+        }
+
+        public static DateTime ReadLine(string description, DateTime defaultValue)
+        {
+            while (true)
+            {
+                try
+                {
+                    Console.Write($"{description} [{defaultValue}] : ");
+                    var answer = Console.ReadLine();
+
+                    return string.IsNullOrEmpty(answer) ? defaultValue : DateTime.Parse(answer);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Unable to parse answer as datetime, please try again");
+                }
+            }
+        }
+
+        public static float ReadLine(string description, float defaultValue)
+        {
+            while (true)
+            {
+                try
+                {
+                    Console.Write($"{description} [{defaultValue}] : ");
+                    var answer = Console.ReadLine();
+
+                    return string.IsNullOrEmpty(answer) ? defaultValue : float.Parse(answer);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Unable to parse answer as float, please try again");
+                }
+            }
+        }
+
+        public static double ReadLine(string description, double defaultValue)
+        {
+            while (true)
+            {
+                try
+                {
+                    Console.Write($"{description} [{defaultValue}] : ");
+                    var answer = Console.ReadLine();
+
+                    return string.IsNullOrEmpty(answer) ? defaultValue : double.Parse(answer);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Unable to parse answer as double, please try again");
+                }
+            }
+        }
+
+        public static int ReadLine(string description, int defaultValue)
+        {
+            while (true)
+            {
+                try
+                {
+                    Console.Write($"{description} [{defaultValue}] : ");
+                    var answer = Console.ReadLine();
+
+                    return string.IsNullOrEmpty(answer) ? defaultValue : int.Parse(answer);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Unable to parse answer as int, please try again");
+                }
+            }
+        }
     }
 }

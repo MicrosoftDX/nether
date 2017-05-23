@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Nether.Analytics;
+using AnalyticsTestClient.Utils;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,7 +15,7 @@ namespace AnalyticsTestClient
 
         public static void Main(string[] args)
         {
-            SetupCultureInfo();
+            CultureInfoEx.SetupNetherCultureInfo();
             Greet();
             Configure();
             SetupPropertyCache();
@@ -22,19 +24,6 @@ namespace AnalyticsTestClient
 
             Console.WriteLine("Closing connection");
             EventHubManager.CloseConnectionToEventHub().Wait();
-        }
-
-        private static void SetupCultureInfo()
-        {
-            // Create a unique culture for all threads inside the EventProcessor
-            // in order to make sure input and output of serialization and de-
-            // serialization all look according to expected.
-            // Nether uses a modified en-US culture
-            var netherCultureInfo = new CultureInfo("en-US");
-            netherCultureInfo.DateTimeFormat.ShortDatePattern = "yyyy-MM-dd";
-            netherCultureInfo.DateTimeFormat.LongTimePattern = "HH:mm:ss";
-
-            CultureInfo.DefaultThreadCurrentCulture = netherCultureInfo;
         }
 
         private static void Greet()
@@ -70,22 +59,14 @@ namespace AnalyticsTestClient
         {
             PropertyCache = new Dictionary<string, object>
             {
-                {"GameSession", GetUniqueShortId() },
-                {"EventCorrelationId", GetUniqueShortId()},
+                {"GameSession", RandomEx.GetUniqueShortId() },
+                {"EventCorrelationId", RandomEx.GetUniqueShortId()},
                 {"GamerTag", "gamer" },
                 {"DisplayName", "display" },
                 {"Value", 1 }
             };
         }
 
-        private static string GetUniqueShortId()
-        {
-            var i = 1L;
-            foreach (byte b in Guid.NewGuid().ToByteArray())
-            {
-                i *= ((int)b + 1);
-            }
-            return string.Format("{0:x}", i - DateTime.Now.Ticks);
-        }
+
     }
 }
