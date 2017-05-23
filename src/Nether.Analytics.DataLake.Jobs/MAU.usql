@@ -2,8 +2,8 @@
 // RECOMMENDED: run transactional eventdata monthly
 
 //Declare input/output destinations as variables
-DECLARE @in  string = "/nether/dau/session-start/{date:yyyy}/{date:mm}/{date:dd}/{*}.csv";
-DECLARE @out string = "/nether/mau/result/mauresults.csv";
+DECLARE EXTERNAL @in  string = "/nether/dau/session-start/{date:yyyy}/{date:mm}/{date:dd}/{*}.csv";
+DECLARE EXTERNAL @out string = "/nether/mau/result/mauresults.csv";
  
  //Extract data to query from all CSV files in NetherTestData to compute MAU's
  //Schema needed: Unqiue user ID and Event Date in ISO format
