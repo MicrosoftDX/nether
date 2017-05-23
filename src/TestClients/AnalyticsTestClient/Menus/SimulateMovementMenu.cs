@@ -42,7 +42,7 @@ namespace AnalyticsTestClient
         {
             var n = DateTime.UtcNow;
             var thisMidnight = new DateTime(n.Year, n.Month, n.Day, 0, 0, 0, DateTimeKind.Utc);
-            var midnightAWeekAgo = thisMidnight - TimeSpan.FromDays(1);
+            var midnightAWeekAgo = thisMidnight - TimeSpan.FromDays(14);
 
             var fromDate = ConsoleEx.ReadLine("From (UTC)", midnightAWeekAgo);
             var toDate = ConsoleEx.ReadLine("To (UTC)", thisMidnight);
