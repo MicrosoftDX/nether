@@ -22,7 +22,7 @@ namespace Nether.Analytics
             _rootPath = rootPath;
         }
 
-        public IEnumerable<Message> GetLatest(int max = 100)
+        public IEnumerable<Message> GetLatest()
         {
             // we're basing this implementation on the metadata of files
             // which means that we'll iterate from the root folder, and go from there 
@@ -41,6 +41,7 @@ namespace Nether.Analytics
             // looks like we got the file, read it to the end
             // TODO: consider passing a stream to the serializer, in case the file is too big?
             bool skipFirstLine = _serializer.IncludeHeaders;
+
             using (StreamReader sr = file.OpenText())
             {
                 string s = "";

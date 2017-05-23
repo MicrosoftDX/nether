@@ -13,8 +13,7 @@ namespace Nether.Analytics
         /// <summary>
         /// Retrieves the latest result set from the underlying source.
         /// </summary>
-        /// <param name="max">The maximum number of results to retrieve.</param>
         /// <returns>Returns an enumrable list of <see cref="Message"/>.</returns>
-        IEnumerable<Message> GetLatest(int max = 100);
+        IEnumerable<Message> GetLatest();
     }
 }
