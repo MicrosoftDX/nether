@@ -47,7 +47,7 @@ namespace AnalyticsTestClient
                 var path = Console.ReadLine();
 
                 var f = new Nether.Analytics.FileResultsReader(formatter, _filePathAlgorithm, path, pipeline, messageType);
-                foreach(var msg in f.Get(start.Value, end.Value))
+                foreach (var msg in f.Get(start.Value, end.Value))
                 {
                     Console.WriteLine(msg.ToString());
                 }
@@ -70,7 +70,7 @@ namespace AnalyticsTestClient
                 return date;
             }
         }
-       
+
 
         private class ResultsFileSystemMenu : ConsoleMenu
         {

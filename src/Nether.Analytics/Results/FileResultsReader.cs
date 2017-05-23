@@ -43,7 +43,7 @@ namespace Nether.Analytics
 
             if (!dir.Exists)
                 throw new InvalidOperationException($"The path supplied is invalid, as it does not exist: {_rootPath}");
-            
+
             var file = GetLatest(dir);
 
             return ReadFile(file);
@@ -52,10 +52,10 @@ namespace Nether.Analytics
         public IEnumerable<Message> Get(DateTime from, DateTime to)
         {
             var paths = _filePathAlgorithm.GetFilePaths(_pipeline, _messageType, from, to);
-            
-            foreach(var path in paths)
+
+            foreach (var path in paths)
             {
-                foreach(var msg in ReadFile(new FileInfo(Path.Combine(_rootPath, $"{path}.{_serializer.FileExtension}"))))
+                foreach (var msg in ReadFile(new FileInfo(Path.Combine(_rootPath, $"{path}.{_serializer.FileExtension}"))))
                 {
                     yield return msg;
                 }
