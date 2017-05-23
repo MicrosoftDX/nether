@@ -98,7 +98,7 @@ namespace Nether.Analytics.Host
                 .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
                 .AddHandler(new RandomIntMessageHandler())
                 .OutputTo(new ConsoleOutputManager(clusteringSerializer)
-                        , new FileOutputManager(clusteringSerializer, filePathAlgorithm, @"/USQLDataRoot")
+                        , new FileOutputManager(clusteringSerializer, filePathAlgorithm, @"../../../USQLDataRoot")
                         , new DataLakeStoreOutputManager(
                             clusteringSerializer,
                             filePathAlgorithm,
@@ -113,7 +113,7 @@ namespace Nether.Analytics.Host
             builder.Pipeline("dau")
                 .HandlesMessageType("session-start", "1.0.0")
                 .OutputTo(new ConsoleOutputManager(dauSerializer)
-                        , new FileOutputManager(dauSerializer, filePathAlgorithm, @"/USQLDataRoot")
+                        , new FileOutputManager(dauSerializer, filePathAlgorithm, @"../../../USQLDataRoot")
                         , new DataLakeStoreOutputManager(
                             dauSerializer,
                             filePathAlgorithm,
@@ -126,7 +126,7 @@ namespace Nether.Analytics.Host
             builder.Pipeline("sessions")
                 .HandlesMessageType("heartbeat", "1.0.0")
                 .OutputTo(new ConsoleOutputManager(sessionSerializer)
-                , new FileOutputManager(sessionSerializer, filePathAlgorithm, @"/USQLDataRoot")
+                , new FileOutputManager(sessionSerializer, filePathAlgorithm, @"../../../USQLDataRoot")
                 , new DataLakeStoreOutputManager(
                     sessionSerializer,
                     filePathAlgorithm,
