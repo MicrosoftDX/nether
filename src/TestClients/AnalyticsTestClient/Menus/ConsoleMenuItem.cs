@@ -2,8 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
+using System.Threading.Tasks;
 
-namespace AnalyticsTestClient.Utils
+namespace AnalyticsTestClient
 {
     public class ConsoleMenuItem
     {
@@ -15,6 +16,6 @@ namespace AnalyticsTestClient.Utils
 
         public string Text { get; }
 
-        public Action MenuAction { get; }
+        public Action MenuAction { get; } = null;
     }
 }

@@ -2,6 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 
+using System;
+
 namespace Nether.Analytics
 {
     public class PipelineDateFilePathAlgorithm : IFilePathAlgorithm
@@ -23,24 +25,28 @@ namespace Nether.Analytics
                 _rootFolder,
                 pipelineName,
                 msg.MessageType,
-                msg.EnqueueTimeUtc.Year.ToString("D4"),
-                msg.EnqueueTimeUtc.Month.ToString("D2"),
-                msg.EnqueueTimeUtc.Day.ToString("D2")
+                msg.EnqueuedTimeUtc.Year.ToString("D4"),
+                msg.EnqueuedTimeUtc.Month.ToString("D2"),
+                msg.EnqueuedTimeUtc.Day.ToString("D2")
             };
 
             string name;
 
-            if (_newFileOption == NewFileNameOptions.EveryDay)
-            {
-                name = "00_00";
-            }
-            else
-            {
-                var hour = msg.EnqueueTimeUtc.Hour.ToString("D2");
-                var minute = (msg.EnqueueTimeUtc.Minute - msg.EnqueueTimeUtc.Minute % (int)_newFileOption).ToString("D2");
 
-                name = $"{hour}_{minute}";
+            DateTime t = msg.EnqueuedTimeUtc;
+            t = t - TimeSpan.FromSeconds(t.Second);
+            t = t - TimeSpan.FromMinutes(t.Minute % (int)_newFileOption);
+
+            if (_newFileOption > NewFileNameOptions.EveryHour)
+            {
+                var h = ((int)_newFileOption) / 60;
+                t = t - TimeSpan.FromHours(t.Hour % h);
             }
+
+            var hour = t.Hour.ToString("D2");
+            var minute = t.Minute.ToString("D2");
+            var partition = msg.PartitionId.PadLeft(2, '0');
+            name = $"{hour}_{minute}_p{partition}";
 
             return new FilePathResult { Hierarchy = hierarchy, Name = name };
         }
@@ -54,6 +60,9 @@ namespace Nether.Analytics
         Every15Minutes = 15,
         Every30Minutes = 30,
         EveryHour = 60,
+        Every3Hours = 180,
+        Every6Hours = 360,
+        Every12Hours = 720,
         EveryDay = 1440
     }
 }

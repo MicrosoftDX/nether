@@ -8,6 +8,7 @@ using Microsoft.Azure.EventHubs;
 
 namespace AnalyticsTestClient
 {
+    //TODO: Consolidate the number of classes that all have responibility of communicating with EventHub
     public static class EventHubManager
     {
         private static EventHubClient s_client;
@@ -15,10 +16,9 @@ namespace AnalyticsTestClient
 
         static EventHubManager()
         {
-            Console.WriteLine($"Connecting to EventHub [{ConfigCache.EventHubName}]");
-            var connectionStringBuilder = new EventHubsConnectionStringBuilder(ConfigCache.EventHubConnectionString)
+            var connectionStringBuilder = new EventHubsConnectionStringBuilder(Config.Root[Config.NAH_EHLISTENER_CONNECTIONSTRING])
             {
-                EntityPath = ConfigCache.EventHubName
+                EntityPath = Config.Root[Config.NAH_EHLISTENER_EVENTHUBPATH]
             };
 
             s_client = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());

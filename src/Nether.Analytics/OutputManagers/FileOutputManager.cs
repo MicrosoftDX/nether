@@ -2,9 +2,11 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Nether.Analytics
@@ -14,6 +16,8 @@ namespace Nether.Analytics
         private IOutputFormatter _serializer;
         private IFilePathAlgorithm _filePathAlgorithm;
         private string _rootPath;
+
+        private static ConcurrentDictionary<string, SemaphoreSlim> s_semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         public FileOutputManager(IOutputFormatter serializer, IFilePathAlgorithm filePathAlgorithm, string rootPath = @"C:\")
         {
@@ -33,13 +37,25 @@ namespace Nether.Analytics
 
             var filePath = GetFilePath(pipelineName, idx, msg);
 
-            if (_serializer.IncludeHeaders)
+            var key = $"{pipelineName}_{msg.MessageType}_{msg.Version}_{msg.PartitionId}";
+
+            var semaphore = s_semaphores.GetOrAdd(key, new SemaphoreSlim(1, 1));
+            await semaphore.WaitAsync();
+
+            try
             {
-                await AppendMessageToFileWithHeaderAsync(serializedMessage, filePath);
+                if (_serializer.IncludeHeaders)
+                {
+                    await AppendMessageToFileWithHeaderAsync(serializedMessage, filePath);
+                }
+                else
+                {
+                    await AppendMessageToFileWithoutHeaderAsync(serializedMessage, filePath);
+                }
             }
-            else
+            finally
             {
-                await AppendMessageToFileWithoutHeaderAsync(serializedMessage, filePath);
+                semaphore.Release();
             }
         }
 
@@ -109,7 +125,7 @@ namespace Nether.Analytics
                 }
                 catch (Exception)
                 {
-                    // it is possible that another thread is now creating the file 
+                    // it is possible that another thread is now creating the file
                     // wait a while before continue to try and write the file
                     await Task.Delay(1000);
                 }

@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GeoCoordinate.NetStandard1" Version="1.0.1" />
+    <PackageReference Include="GeoJSON.NetCore" Version="1.0.0-rc20161208" />
+    <PackageReference Include="Itinero" Version="1.0.4" />
+    <PackageReference Include="Itinero.IO.Osm" Version="1.0.4" />
     <PackageReference Include="Microsoft.Azure.EventHubs" Version="1.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
@@ -15,8 +19,23 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Nether.Analytics.DataLake\Nether.Analytics.DataLake.csproj" />
     <ProjectReference Include="..\..\Nether.Analytics.MessageFormats\Nether.Analytics.MessageFormats.csproj" />
+    <ProjectReference Include="..\..\Nether.Analytics\Nether.Analytics.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="DataFiles\GamerTags3.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="DataFiles\GamerTags2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="DataFiles\GamerTags1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="DataFiles\PlayerDistribution.tsv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

@@ -7,28 +7,27 @@ using System.Reflection;
 using Nether.Analytics.MessageFormats;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using AnalyticsTestClient.Utils;
 using System.Threading;
 
 namespace AnalyticsTestClient
 {
     public class SendTypedGameEventMenu : ConsoleMenu
     {
-        private static Type[] s_gameEventTypes = null;
+        private static Type[] s_messageTypes = null;
 
         public SendTypedGameEventMenu()
         {
             Title = "Nether Analytics Test Client - Send Static Game Events";
 
-            var gameEventTypes = GetGameEventTypes();
+            var msgTypes = GetMessageTypes();
             var menuKey = 'a';
-            foreach (var gameEventType in gameEventTypes)
+            foreach (var msgType in msgTypes)
             {
-                var gameEvent = (INetherMessage)Activator.CreateInstance(gameEventType);
+                var msg = (INetherMessage)Activator.CreateInstance(msgType);
                 MenuItems.Add(menuKey++,
                     new ConsoleMenuItem(
-                        $"{gameEvent.Type}, {gameEvent.Version}",
-                        () => StaticGameEventSelected(gameEvent)));
+                        $"{msg.Type}, {msg.Version}",
+                        () => TypedMessageSelected(msg)));
             }
 
             MenuItems.Add('1', new ConsoleMenuItem("Loop and send random events", LoopAndSendRandom));
@@ -47,10 +46,8 @@ namespace AnalyticsTestClient
                     }
                 }
 
-                var typeToSend = GetGameEventTypes().TakeRandom();
+                var typeToSend = GetMessageTypes().TakeRandom();
                 var gameEvent = (INetherMessage)Activator.CreateInstance(typeToSend);
-
-                //gameEvent.ClientUtcTime = DateTime.UtcNow;
 
                 var props = gameEvent.GetType().GetProperties();
 
@@ -63,15 +60,13 @@ namespace AnalyticsTestClient
                     }
                 }
 
-                SendGameEvent(gameEvent);
-
-                //Thread.Sleep(1000);
+                SendMessage(gameEvent);
             }
         }
 
-        private static Type[] GetGameEventTypes()
+        private static Type[] GetMessageTypes()
         {
-            if (s_gameEventTypes == null)
+            if (s_messageTypes == null)
             {
                 var assembly = typeof(INetherMessage).GetTypeInfo().Assembly;
                 var types = assembly.GetTypes();
@@ -81,19 +76,19 @@ namespace AnalyticsTestClient
                     orderby t.Name
                     select t;
 
-                s_gameEventTypes = gameEventTypes.ToArray();
+                s_messageTypes = gameEventTypes.ToArray();
             }
 
-            return s_gameEventTypes;
+            return s_messageTypes;
         }
 
-        private void StaticGameEventSelected(INetherMessage gameEvent)
+        private void TypedMessageSelected(INetherMessage gameEvent)
         {
-            EditGameEventProperties(gameEvent);
-            SendGameEvent(gameEvent);
+            EditMessageProperties(gameEvent);
+            SendMessage(gameEvent);
         }
 
-        private static void SendGameEvent(INetherMessage gameEvent)
+        private static void SendMessage(INetherMessage gameEvent)
         {
             // Serialize object to JSON
             var msg = JsonConvert.SerializeObject(
@@ -101,14 +96,11 @@ namespace AnalyticsTestClient
                 Formatting.Indented,
                 new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
 
-            //var msg = JsonConvert.SerializeObject(gameEvent);
             EventHubManager.SendMessageToEventHub(msg).Wait();
         }
 
-        private void EditGameEventProperties(INetherMessage gameEvent)
+        private void EditMessageProperties(INetherMessage gameEvent)
         {
-            //gameEvent.ClientUtcTime = DateTime.UtcNow;
-
             var props = gameEvent.GetType().GetProperties();
 
             foreach (var prop in props)
@@ -122,7 +114,7 @@ namespace AnalyticsTestClient
 
                 if (propName == "Type" || propName == "Version")
                 {
-                    // Don't ask for input for these properties, just display their 
+                    // Don't ask for input for these properties, just display their
                     // values since they are static and can't be changed
                     Console.WriteLine($"{propName}: {propValue}");
                 }
@@ -134,19 +126,6 @@ namespace AnalyticsTestClient
                     Program.PropertyCache[propName] = o;
                 }
             }
-        }
-    }
-
-    public static class RandomExtensions
-    {
-        private static Random s_random = new Random();
-
-        public static S TakeRandom<S>(this S[] array)
-        {
-            if (array == null || array.Length == 0)
-                return default(S);
-
-            return array[s_random.Next(array.Length)];
         }
     }
 }
