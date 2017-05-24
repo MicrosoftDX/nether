@@ -168,21 +168,6 @@ namespace AnalyticsTestClient
                     }
                 }
             }
-
-            //Parallel.For(0, noRoutes, (i, s) =>
-            //{
-            //    Console.Write(".");
-            //    GenerateRandomRoute(i, minLat, maxLat, minLon, maxLon, maxDistance, maxTotalWalkingTime, outputPath, outputFilePrefix, false);
-
-            //    if (Console.KeyAvailable)
-            //    {
-            //        if (Console.ReadKey().Key == ConsoleKey.Escape)
-            //        {
-            //            s.Break();
-            //        }
-            //    }
-            //}
-            //);
         }
 
 
