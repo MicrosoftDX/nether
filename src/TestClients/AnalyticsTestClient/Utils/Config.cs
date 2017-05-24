@@ -26,7 +26,6 @@ namespace AnalyticsTestClient
             get => s_root;
         }
 
-
         // Configuration parameters
         public const string AppSettingsFile = "appsettings.json";
         public const string NAH_EHLISTENER_CONNECTIONSTRING = "NAH_EHLISTENER_CONNECTIONSTRING";
