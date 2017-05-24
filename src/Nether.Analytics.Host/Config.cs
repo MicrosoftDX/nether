@@ -14,17 +14,17 @@ namespace Nether.Analytics.Host
 
         public static IConfigurationRoot Root
         {
-            get => s_root;
-            }
+            get { return s_root; }
+        }
 
-            static Config()
+        static Config()
         {
-                SetupConfigurationProviders();
-            }
+            SetupConfigurationProviders();
+        }
 
-            // Configuration parameters
+        // Configuration parameters
 
-            public private const string AppSettingsFile = "appsettings.json";
+        public const string AppSettingsFile = "appsettings.json";
         public const string NAH_EHLISTENER_CONNECTIONSTRING = "NAH_EHLISTENER_CONNECTIONSTRING";
         public const string NAH_EHLISTENER_EVENTHUBPATH = "NAH_EHLISTENER_EVENTHUBPATH";
         public const string NAH_EHLISTENER_CONSUMERGROUP = "NAH_EHLISTENER_CONSUMERGROUP";

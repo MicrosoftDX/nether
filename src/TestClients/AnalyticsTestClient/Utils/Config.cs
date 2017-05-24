@@ -15,19 +15,19 @@ namespace AnalyticsTestClient
     {
         private static IConfigurationRoot s_root;
 
+        public static IConfigurationRoot Root
+        {
+            get { return s_root; }
+        }
 
         static Config()
         {
             SetupConfigurationProviders();
         }
 
-        public static IConfigurationRoot Root
-        {
-            get => s_root;
-            }
+        // Configuration parameters
 
-            // Configuration parameters
-            public private const string AppSettingsFile = "appsettings.json";
+        public const string AppSettingsFile = "appsettings.json";
         public const string NAH_EHLISTENER_CONNECTIONSTRING = "NAH_EHLISTENER_CONNECTIONSTRING";
         public const string NAH_EHLISTENER_EVENTHUBPATH = "NAH_EHLISTENER_EVENTHUBPATH";
         public const string NAH_EHLISTENER_CONSUMERGROUP = "NAH_EHLISTENER_CONSUMERGROUP";
