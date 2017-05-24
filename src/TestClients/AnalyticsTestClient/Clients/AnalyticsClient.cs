@@ -30,7 +30,7 @@ namespace AnalyticsTestClient
             _client = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
         }
 
-        public async Task SendMsgAsync(INetherMessage msg, DateTime? dbgEnqueuedTimeUtc = null)
+        public async Task SendMessageAsync(INetherMessage msg, DateTime? dbgEnqueuedTimeUtc = null)
         {
             Console.Write("|");
 
@@ -68,7 +68,7 @@ namespace AnalyticsTestClient
             _client = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
         }
 
-        public async Task SendMsgAsync(INetherMessage msg, DateTime? dbgEnqueuedTimeUtc = default(DateTime?))
+        public async Task SendMessageAsync(INetherMessage msg, DateTime? dbgEnqueuedTimeUtc = default(DateTime?))
         {
             Console.Write("|");
 

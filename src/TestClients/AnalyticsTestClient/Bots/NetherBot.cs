@@ -90,7 +90,7 @@ namespace AnalyticsTestClient
         {
             _lastHeartBeatMsgSent = now + TimeSpan.Zero.WithRandomDeviation(3);
 
-            if (_options.SessionStartMsg)
+            if (_options.SessionStartMessage)
             {
                 var msg = new SessionStart
                 {
@@ -98,13 +98,13 @@ namespace AnalyticsTestClient
                     GameSession = GameSession
                 };
 
-                await client.SendMsgAsync(msg, now);
+                await client.SendMessageAsync(msg, now);
             }
         }
 
         protected async virtual Task OnTickAsync(IAnalyticsClient client, DateTime now, TimeSpan timeAlive, TimeSpan sinceLastTick, long tickNo)
         {
-            if (_options.HeartBeatMsgInterval > TimeSpan.Zero && now - _lastHeartBeatMsgSent >= _options.HeartBeatMsgInterval.WithRandomDeviation())
+            if (_options.HeartBeatMessageInterval > TimeSpan.Zero && now - _lastHeartBeatMsgSent >= _options.HeartBeatMessageInterval.WithRandomDeviation())
             {
                 // Send HeartBeat msg if enough time has passed since
                 var msg = new HeartBeat
@@ -112,7 +112,7 @@ namespace AnalyticsTestClient
                     GameSession = GameSession
                 };
 
-                await client.SendMsgAsync(msg, now);
+                await client.SendMessageAsync(msg, now);
 
                 _lastHeartBeatMsgSent = now;
             }
@@ -127,14 +127,14 @@ namespace AnalyticsTestClient
 
         protected virtual bool CheckSessionEnded(DateTime now)
         {
-            return now - StartTime > _options.SessionLenght;
+            return now - StartTime > _options.SessionLength;
         }
     }
 
     public class NetherBotOptions
     {
-        public bool SessionStartMsg { get; set; } = true;
-        public TimeSpan HeartBeatMsgInterval { get; set; } = TimeSpan.FromMinutes(1);
-        public TimeSpan SessionLenght { get; set; } = RandomEx.TimeSpan(TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(20));
+        public bool SessionStartMessage { get; set; } = true;
+        public TimeSpan HeartBeatMessageInterval { get; set; } = TimeSpan.FromMinutes(1);
+        public TimeSpan SessionLength { get; set; } = RandomEx.TimeSpan(TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(20));
     }
 }

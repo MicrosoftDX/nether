@@ -10,6 +10,7 @@ using Nether.Analytics;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AnalyticsTestClient
@@ -146,7 +147,7 @@ namespace AnalyticsTestClient
                     while (!loadOsmDataTask.IsCompleted)
                     {
                         Console.Write(".");
-                        Task.Delay(1000).Wait();
+                        Thread.Sleep(1000);
                     }
                 }
                 Console.WriteLine();

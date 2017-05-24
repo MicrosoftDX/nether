@@ -9,6 +9,6 @@ namespace AnalyticsTestClient
 {
     public interface IAnalyticsClient
     {
-        Task SendMsgAsync(INetherMessage msg, DateTime? dbgEnqueuedTimeUtc = null);
+        Task SendMessageAsync(INetherMessage msg, DateTime? dbgEnqueuedTimeUtc = null);
     }
 }

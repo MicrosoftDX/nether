@@ -12,7 +12,7 @@ namespace AnalyticsTestClient
 {
     internal class NetherAnalyticsNullClient : IAnalyticsClient
     {
-        public Task SendMsgAsync(INetherMessage msg, DateTime? dbgEnqueuedTimeUtc = null)
+        public Task SendMessageAsync(INetherMessage msg, DateTime? dbgEnqueuedTimeUtc = null)
         {
             Console.Write("_");
             return Task.CompletedTask;

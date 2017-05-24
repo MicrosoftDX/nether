@@ -53,7 +53,7 @@ namespace AnalyticsTestClient
                     Lon = currentPosition.Longitude
                 };
 
-                await client.SendMsgAsync(msg, now);
+                await client.SendMessageAsync(msg, now);
 
                 _lastGeoLocationMsgSent = now;
             }
