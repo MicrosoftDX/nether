@@ -10,6 +10,7 @@
     <Name>Nether.Analytics.ADLA</Name>
     <RootNamespace>Nether.Analytics.ADLA</RootNamespace>
     <RuntimeVersion>default</RuntimeVersion>
+    <OutputStreamPath>tmp</OutputStreamPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
