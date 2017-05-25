@@ -83,8 +83,7 @@ FROM
 		FROM (
 			SELECT
 				UserId,
-				MAX(Score) AS Score,
-				MAX(CustomTag) AS CustomTag
+				MAX(Score) AS Score
 			FROM Scores
 			GROUP BY UserId
 		) AS T
