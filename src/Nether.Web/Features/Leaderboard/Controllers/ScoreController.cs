@@ -74,7 +74,7 @@ namespace Nether.Web.Features.Leaderboard
             }*/
 
 
-            var userId = User.GetId();          
+            var userId = User.GetId();
 
             // Save score and call analytics in parallel
             await Task.WhenAll(
@@ -129,7 +129,7 @@ namespace Nether.Web.Features.Leaderboard
         [HttpDelete("")]
         public async Task<IActionResult> DropMyScores()
         {
-            var userId = User.GetId();            
+            var userId = User.GetId();
             if (string.IsNullOrWhiteSpace(userId))
             {
                 _logger.LogError("user has no user ID");

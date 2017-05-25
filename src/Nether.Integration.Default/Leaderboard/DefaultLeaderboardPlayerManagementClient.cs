@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.Extensions.Logging;
 using Nether.Integration;
 using Newtonsoft.Json;
 using System;
@@ -23,7 +26,7 @@ namespace Nether.Integration.Leaderboard
             string clientSecret,
             ILogger<DefaultLeaderboardPlayerManagementClient> logger
             )
-            : base (
+            : base(
                   identityBaseUri,
                   apiBaseUri,
                   "nether_identity",

@@ -24,7 +24,7 @@ namespace Nether.Integration.Identity
             string clientSecret,
             ILogger<DefaultIdentityPlayerManagementClient> logger
             )
-            : base (
+            : base(
                   identityBaseUri,
                   apiBaseUri,
                   "nether_identity",

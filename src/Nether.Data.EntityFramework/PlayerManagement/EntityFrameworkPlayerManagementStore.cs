@@ -54,7 +54,7 @@ namespace Nether.Data.EntityFramework.PlayerManagement
                 .Where(p => userIds.Contains(p.UserId))
                 .ToListAsync();
             return playerEntities
-                ?.Select(p=> p.ToPlayer())
+                ?.Select(p => p.ToPlayer())
                 ?.ToArray();
         }
 

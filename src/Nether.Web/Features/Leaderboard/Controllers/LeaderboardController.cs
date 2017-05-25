@@ -143,19 +143,19 @@ namespace Nether.Web.Features.Leaderboard
             // local function to map to response types
             LeaderboardGetResponseModel.LeaderboardEntry Map(GameScore score, string currentUserId)
             {
-                if (score == null)
-                    return null;
+    if (score == null)
+        return null;
 
-                //find gamertag for userid
+    //find gamertag for userid
 
-                return new LeaderboardGetResponseModel.LeaderboardEntry
-                {
-                    Gamertag = gamertags.Single(g=>g.UserId == score.UserId).Gamertag,
-                    Score = score.Score,
-                    Rank = score.Rank,
-                    IsCurrentPlayer = currentUserId == score.UserId
-                };
-            }
+    return new LeaderboardGetResponseModel.LeaderboardEntry
+    {
+        Gamertag = gamertags.Single(g => g.UserId == score.UserId).Gamertag,
+        Score = score.Score,
+        Rank = score.Rank,
+        IsCurrentPlayer = currentUserId == score.UserId
+    };
+}
         }
     }
 }
