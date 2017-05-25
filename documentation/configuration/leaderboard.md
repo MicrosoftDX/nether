@@ -83,9 +83,11 @@ The leaderboard can fire analytics events automatically when new scores are post
 To disable the automatic integration with analytics, set the configuration as shown below:
 
 ```json
-    "Leaderboard": {
-        "AnalyticsIntegrationClient": {
-            "wellknown": "null"
+    {
+        "Leaderboard": {
+            "AnalyticsIntegrationClient": {
+                "wellknown": "null"
+            }
         }
     }
 ```
@@ -95,12 +97,14 @@ To disable the automatic integration with analytics, set the configuration as sh
 This implementation of the integration only works with event hub, but will perform better than the HTTP implementation in this scenario.
 
 ```json
-    "Leaderboard": {
-        "AnalyticsIntegrationClient": {
-            "wellknown": "eventhub",
-              "properties": {
-                "EventHubConnectionString": "<event hub connection string>"
-             }
+    {
+        "Leaderboard": {
+            "AnalyticsIntegrationClient": {
+                "wellknown": "eventhub",
+                "properties": {
+                    "EventHubConnectionString": "<event hub connection string>"
+                }
+            }
         }
     }
 ```
@@ -110,13 +114,42 @@ This implementation of the integration only works with event hub, but will perfo
 For a more generic implementation that pulls the connection information from the `/api/endpoint` API, you can configure the HTTP integration client:
 
 ```json
-    "Leaderboard": {
-        "AnalyticsIntegrationClient": {
-            "wellknown": "http",
-              "properties": {
-                "AnalyticsBaseUrl": "http://localhost:5000/api/" /* URL to the base of the API where the /endpoint API exists */
-             }
+    {
+        "Leaderboard": {
+            "AnalyticsIntegrationClient": {
+                "wellknown": "http",
+                "properties": {
+                    "AnalyticsBaseUrl": "http://localhost:5000/api/" /* URL to the base of the API where the /endpoint API exists */
+                }
+            }
         }
     }
 ```
+
+
+## Player Management Integration Configuration
+
+The leaderboard stores all data keyed on the User ID, so needs to interact with the Player Management service to look up gamertags
+
+### Default (Nether)
+
+To use the Nether Player Management implementation, configure the default integration client:
+
+
+```json
+    {
+        "Leaderboard": 
+        {
+            "PlayerManagementClient": {
+                "wellknown": "default",
+                "properties": {
+                    "IdentityBaseUrl": "http://localhost:5000/identity",
+                    "ApiBaseUrl": "http://localhost:5000/api"
+                }
+            },
+        }
+    }
+
+```
+
 

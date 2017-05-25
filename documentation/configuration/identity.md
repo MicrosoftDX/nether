@@ -109,6 +109,31 @@ AppId | string | The AppId for your Facebook app from https://developers.faceboo
 AppSecret | string | The AppSecret for your Facebook app from https://developers.facebook.com/apps
 
 
+## Player Management Integration Configuration
+
+The tokens issued by the Identity Service include the gamertag if the user is a player. To do this the Identity Service needs to interact with the Player Management service to look up gamertags.
+
+### Default (Nether)
+
+To use the Nether Player Management implementation, configure the default integration client:
+
+
+```json
+    {
+        "Identity": 
+        {
+            "PlayerManagementClient": {
+                "wellknown": "default",
+                "properties": {
+                    "IdentityBaseUrl": "http://localhost:5000/identity",
+                    "ApiBaseUrl": "http://localhost:5000/api"
+                }
+            },
+        }
+    }
+
+```
+
 ## Clients
 
 **TODO**
