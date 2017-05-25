@@ -11,7 +11,7 @@ using Nether.Web.Utilities;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System;
-using Nether.Web.Features.PlayerManagement.Models.PlayerManagementIdentity;
+using Nether.Web.Features.PlayerManagement.Models.PlayerManagementIntegration;
 using Nether.Common.ApplicationPerformanceMonitoring;
 
 //TODO: Add versioning support
@@ -41,9 +41,10 @@ namespace Nether.Web.Features.PlayerManagement
         }
 
         [HttpPost("playeridentity/gamertags")]
-        public async Task<ActionResult> GetGamertagFromPlayerId([FromBody] string[] playerIds)
+        [ReturnValidationFailureOnInvalidModelState]
+        public async Task<ActionResult> GetGamertagFromPlayerId([FromBody] GamertagsLookupRequestModel model)
         {
-            var players = await _store.GetPlayerDetailsByUserIdsAsync(playerIds);
+            var players = await _store.GetPlayerDetailsByUserIdsAsync(model.UserIds);
 
             var result = new
             {

@@ -122,7 +122,7 @@ namespace Nether.Web.Features.Leaderboard
             if (config.IncludeCurrentPlayer && userId != null)
             {
                 currentPlayer = (await _store.GetScoresAroundUserAsync(userId, 0)).FirstOrDefault();
-                if (!userIdsToLookUp.Contains(currentPlayer.UserId))
+                if (currentPlayer != null && !userIdsToLookUp.Contains(currentPlayer.UserId))
                 {
                     userIdsToLookUp.Add(currentPlayer.UserId);
                 }
