@@ -43,6 +43,22 @@ namespace Nether.Data.EntityFramework.PlayerManagement
             return player?.ToPlayer();
         }
 
+        public async Task<Player[]> GetPlayerDetailsByUserIdsAsync(string[] userIds)
+        {
+            if (userIds == null)
+            {
+                throw new ArgumentException($"{nameof(userIds)} is required");
+            }
+            // TODO - we should implement a limit on the size of the userIds array
+            var playerEntities = await _context.Players
+                .Where(p => userIds.Contains(p.UserId))
+                .ToListAsync();
+            return playerEntities
+                ?.Select(p=> p.ToPlayer())
+                ?.ToArray();
+        }
+
+
         public async Task<List<Player>> GetPlayersAsync()
         {
             return await _context.Players.Select(p => p.ToPlayer()).ToListAsync();

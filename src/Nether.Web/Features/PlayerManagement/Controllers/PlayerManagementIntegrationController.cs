@@ -19,25 +19,39 @@ using Nether.Common.ApplicationPerformanceMonitoring;
 namespace Nether.Web.Features.PlayerManagement
 {
     /// <summary>
-    /// Player management controller for Identity interactions
+    /// Player management controller for integration interactions with Identity, Leaderboard,...
     /// </summary>
     [ApiExplorerSettings(IgnoreApi = true)] // Suppress this from Swagger etc as it's designed to serve internal needs currently
     [Authorize(Policy = PolicyName.NetherIdentityClientId)] // only allow this to be called from the 'nether_identity' client
     [NetherService("PlayerManagement")]
-    public class PlayerManagementIdentityController : Controller
+    public class PlayerManagementIntegrationController : Controller
     {
         private readonly IPlayerManagementStore _store;
         private readonly IApplicationPerformanceMonitor _appMonitor;
         private readonly ILogger _logger;
 
-        public PlayerManagementIdentityController(
+        public PlayerManagementIntegrationController(
             IPlayerManagementStore store,
             IApplicationPerformanceMonitor appMonitor,
-            ILogger<PlayerManagementIdentityController> logger)
+            ILogger<PlayerManagementIntegrationController> logger)
         {
             _appMonitor = appMonitor;
             _store = store;
             _logger = logger;
+        }
+
+        [HttpPost("playeridentity/gamertags")]
+        public async Task<ActionResult> GetGamertagFromPlayerId([FromBody] string[] playerIds)
+        {
+            var players = await _store.GetPlayerDetailsByUserIdsAsync(playerIds);
+
+            var result = new
+            {
+                gamertags = players
+                                    ?.Select(p => new { userId = p.UserId, gamertag = p.Gamertag })
+                                    ?.ToArray()
+            };
+            return Ok(result);
         }
 
 

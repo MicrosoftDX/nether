@@ -43,7 +43,7 @@ namespace Nether.Data.InMemory.Leaderboard
         }
 
 
-        public override async Task<List<GameScore>> GetScoresAroundMeAsync(string userId, int radius)
+        public override async Task<List<GameScore>> GetScoresAroundUserAsync(string userId, int radius)
         {
             var scores = await GetRankedScoresAsync(); // Naive implementation
             var gamerIndex = scores.FindIndex(s => s.UserId == userId);

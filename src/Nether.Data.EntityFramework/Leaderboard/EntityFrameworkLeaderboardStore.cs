@@ -37,9 +37,9 @@ namespace Nether.Data.EntityFramework.Leaderboard
         }
 
 
-        public async Task<List<GameScore>> GetScoresAroundMeAsync(string userId, int radius)
+        public async Task<List<GameScore>> GetScoresAroundUserAsync(string userId, int radius)
         {
-            return await _context.GetScoresAroundMeAsync(userId, radius);
+            return await _context.GetScoresAroundUserAsync(userId, radius);
         }
 
         public async Task DeleteAllScoresAsync(string userId)

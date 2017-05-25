@@ -65,7 +65,7 @@ namespace Nether.Data.Sql.Leaderboard
                 }).ToListAsync();
         }
 
-        public override async Task<List<GameScore>> GetScoresAroundMeAsync(string userId, int radius)
+        public override async Task<List<GameScore>> GetScoresAroundUserAsync(string userId, int radius)
         {
             return await Ranks.FromSql(s_aroundMeSql, userId, radius)
                 .Select(s =>

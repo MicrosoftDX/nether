@@ -50,7 +50,7 @@ namespace Nether.Data.EntityFramework.Leaderboard
 
         public abstract Task<List<GameScore>> GetHighScoresAsync(int n);
 
-        public abstract Task<List<GameScore>> GetScoresAroundMeAsync(string userid, int radius);
+        public abstract Task<List<GameScore>> GetScoresAroundUserAsync(string userid, int radius);
 
 
         public virtual async Task SaveScoreAsync(GameScore score)
