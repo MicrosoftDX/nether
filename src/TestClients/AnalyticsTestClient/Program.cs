@@ -27,10 +27,11 @@ namespace AnalyticsTestClient
             Config.Check();
             SetupPropertyCache();
 
-            new MainMenu().Show();
+            var client = new BatchAnalyticsClient();
+
+            new MainMenu(client).Show();
 
             Console.WriteLine("Closing connection");
-            EventHubManager.CloseConnectionToEventHub().Wait();
         }
 
         private static void SetupPropertyCache()

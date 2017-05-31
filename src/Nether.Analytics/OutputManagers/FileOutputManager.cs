@@ -25,12 +25,7 @@ namespace Nether.Analytics
             _rootPath = rootPath;
         }
 
-        public Task FlushAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task OutputMessageAsync(string pipelineName, int idx, Message msg)
+        public async Task OutputMessageAsync(string partitionId, string pipelineName, int idx, Message msg)
         {
             var serializedMessage = $"{_serializer.Format(msg)}{Environment.NewLine}";
 
@@ -56,6 +51,11 @@ namespace Nether.Analytics
             {
                 semaphore.Release();
             }
+        }
+
+        public Task FlushAsync(string partitionId)
+        {
+            return Task.CompletedTask;
         }
 
         private string GetFilePath(string pipelineName, int idx, Message msg)

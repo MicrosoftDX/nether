@@ -50,14 +50,7 @@ namespace Nether.Analytics
             }
         }
 
-        public Task FlushAsync()
-        {
-            // this client does not "support" flushing, per-se, but we don't
-            // want to throw an exception, so we're just "ignoring" this
-            return Task.CompletedTask;
-        }
-
-        public Task OutputMessageAsync(string pipelineName, int idx, Message msg)
+        public Task OutputMessageAsync(string partitionId, string pipelineName, int idx, Message msg)
         {
             string payload = _serializer.Format(msg);
 
@@ -69,6 +62,13 @@ namespace Nether.Analytics
             var eventData = new EventData(Encoding.UTF8.GetBytes(payload));
 
             return Client.SendAsync(eventData);
+        }
+
+        public Task FlushAsync(string partitionId)
+        {
+            // this client does not "support" flushing, per-se, but we don't
+            // want to throw an exception, so we're just "ignoring" this
+            return Task.CompletedTask;
         }
     }
 }

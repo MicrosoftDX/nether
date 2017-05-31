@@ -10,12 +10,12 @@ namespace Nether.Analytics.Cosmos
     // Take a look at the implementation for DataLakeStoreOutputManager for inspiration and sync
     public class CosmosOutputManager : IOutputManager
     {
-        public Task FlushAsync()
+        public Task OutputMessageAsync(string partitionId, string pipelineName, int idx, Message msg)
         {
             throw new NotImplementedException();
         }
 
-        public Task OutputMessageAsync(string pipelineName, int idx, Message msg)
+        public Task FlushAsync(string partitionId)
         {
             throw new NotImplementedException();
         }

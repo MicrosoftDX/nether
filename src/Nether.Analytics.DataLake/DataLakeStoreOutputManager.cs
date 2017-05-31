@@ -7,9 +7,12 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
 using Microsoft.Rest.Azure.Authentication;
 using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Nether.Analytics;
+using System.Collections.Generic;
 
 namespace Nether.Analytics.DataLake
 {
@@ -22,6 +25,8 @@ namespace Nether.Analytics.DataLake
 
         private DataLakeStoreFileSystemManagementClient _dlsFileSystemClient;
         private ServiceClientCredentials _serviceClientCredentials;
+
+        private PartitionedOutputBuffers _buffers = new PartitionedOutputBuffers();
 
         public bool IsAuthenticated
         {
@@ -45,7 +50,7 @@ namespace Nether.Analytics.DataLake
         }
 
 
-        public async Task OutputMessageAsync(string pipelineName, int idx, Message msg)
+        public Task OutputMessageAsync(string partitionId, string pipelineName, int idx, Message msg)
         {
             // the output expects a new line each time we write something, so we can
             // just append the new line at the end of the serialized output
@@ -53,19 +58,24 @@ namespace Nether.Analytics.DataLake
 
             var filePath = GetFilePath(pipelineName, idx, msg);
 
-            if (_serializer.IncludeHeaders)
-            {
-                await AppendMessageToFileWithHeaderAsync(serializedMessage, filePath);
-            }
-            else
-            {
-                await AppendMessageToFileAsync(serializedMessage, filePath);
-            }
+            _buffers.Append(partitionId, filePath, serializedMessage);
+
+            return Task.CompletedTask;
         }
 
-        public Task FlushAsync()
+        public async Task FlushAsync(string partitionId)
         {
-            return Task.CompletedTask;
+            foreach (var buffer in _buffers.PopBuffers(partitionId))
+            {
+                if (_serializer.IncludeHeaders)
+                {
+                    await AppendMessageToFileWithHeaderAsync(buffer.Value, buffer.Key);
+                }
+                else
+                {
+                    await AppendMessageToFileAsync(buffer.Value, buffer.Key);
+                }
+            }
         }
 
         private string GetFilePath(string pipelineName, int idx, Message msg)
@@ -116,6 +126,7 @@ namespace Nether.Analytics.DataLake
 
                     try
                     {
+                        Console.WriteLine($"Creating new file {filePath}");
                         // Notice: Run the below two methods using synchronous versions in order to provide
                         // as much chance as possible for the two operations to be run just after eachother.
 

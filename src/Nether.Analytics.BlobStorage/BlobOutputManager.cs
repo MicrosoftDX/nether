@@ -17,12 +17,12 @@ namespace Nether.Analytics
             _outputblobStorageConnectionString = outputblobStorageConnectionString;
         }
 
-        public Task FlushAsync()
+        public Task OutputMessageAsync(string partitionId, string pipelineName, int idx, Message msg)
         {
             throw new NotImplementedException();
         }
 
-        public Task OutputMessageAsync(string pipelineName, int idx, Message msg)
+        public Task FlushAsync(string partitionId)
         {
             throw new NotImplementedException();
         }

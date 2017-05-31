@@ -3,14 +3,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Nether.Analytics
 {
     public class MessageRouter : IMessageRouter
     {
-        private MessagePipeline _unhandledEventPipeline;
         private Dictionary<string, List<MessagePipeline>> _routingDictionary = new Dictionary<string, List<MessagePipeline>>();
+        private MessagePipeline _unhandledEventPipeline;
 
         public MessageRouter(List<MessagePipeline> messagePipelines, MessagePipeline unhandledEventPipeline)
         {
@@ -33,7 +34,7 @@ namespace Nether.Analytics
             _unhandledEventPipeline = unhandledEventPipeline;
         }
 
-        public async Task RouteMessageAsync(Message msg)
+        public async Task RouteMessageAsync(string partitionId, Message msg)
         {
             //TODO: Fix Message Key to something more elegant
             var versionedMessageType = new VersionedMessageType { MessageType = msg.MessageType, Version = msg.Version };
@@ -43,13 +44,24 @@ namespace Nether.Analytics
                 //TODO: Run loop in parallel
                 foreach (var pipeline in pipelines)
                 {
-                    await pipeline.ProcessMessageAsync(msg);
+                    await pipeline.ProcessMessageAsync(partitionId, msg);
                 }
             }
             else if (_unhandledEventPipeline != null)
             {
                 //default pipeline
-                await _unhandledEventPipeline?.ProcessMessageAsync(msg);
+                await _unhandledEventPipeline?.ProcessMessageAsync(partitionId, msg);
+            }
+        }
+
+        public async Task FlushAsync(string partitionId)
+        {
+            foreach (var pipelines in _routingDictionary.Values)
+            {
+                foreach (var pipeline in pipelines)
+                {
+                    await pipeline.FlushAsync(partitionId);
+                }
             }
         }
     }

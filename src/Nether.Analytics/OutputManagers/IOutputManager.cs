@@ -8,7 +8,7 @@ namespace Nether.Analytics
 {
     public interface IOutputManager
     {
-        Task OutputMessageAsync(string pipelineName, int idx, Message msg);
-        Task FlushAsync();
+        Task OutputMessageAsync(string partitionId, string pipelineName, int idx, Message msg);
+        Task FlushAsync(string partitionId);
     }
 }

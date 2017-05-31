@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Microsoft.Azure.EventHubs.Processor;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest.Azure.Authentication;
 using Nether.Analytics.DataLake;
@@ -8,6 +9,7 @@ using Nether.Analytics.EventHubs;
 using Nether.Analytics.GeoLocation;
 using Nether.Analytics.Parsers;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Nether.Analytics.Host
@@ -36,6 +38,8 @@ namespace Nether.Analytics.Host
 
     public class ProgramEx
     {
+        private int _infoMax = 10;
+
         public async Task RunAsync()
         {
             // Check that all configurations are set before continuing
@@ -53,7 +57,7 @@ namespace Nether.Analytics.Host
                 new ClientCredential(Config.Root[Config.NAH_AAD_CLIENTID], Config.Root[Config.NAH_AAD_CLIENTSECRET]));
 
             // Setup Listener. This will be the same for all pipelines we are building.
-            var listenerConfig = new EventHubsListenerConfiguration
+            var listenerConfig = new EventProcessorHostOptions
             {
                 EventHubConnectionString = Config.Root[Config.NAH_EHLISTENER_CONNECTIONSTRING],
                 EventHubPath = Config.Root[Config.NAH_EHLISTENER_EVENTHUBPATH],
@@ -61,7 +65,7 @@ namespace Nether.Analytics.Host
                 StorageConnectionString = Config.Root[Config.NAH_EHLISTENER_STORAGECONNECTIONSTRING],
                 LeaseContainerName = Config.Root[Config.NAH_EHLISTENER_LEASECONTAINERNAME]
             };
-            var listener = new EventHubsListener(listenerConfig);
+            var listener = new EventHubsListener(listenerConfig, new EventProcessorOptions { MaxBatchSize = 500, PrefetchCount = 15000 });
 
             // Setup Message Parser. By default we are using Nether JSON Messages
             // Setting up parser that knows how to parse those messages.
@@ -80,7 +84,7 @@ namespace Nether.Analytics.Host
                 .HandlesMessageType("geo-location", "1.0.0")
                 .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
                 .AddHandler(new RandomIntMessageHandler())
-                .OutputTo(new ConsoleOutputManager(clusteringSerializer)
+                .OutputTo(new ConsoleOutputManager(clusteringSerializer, enabled: false)
                         , new FileOutputManager(clusteringSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER])
                         , new DataLakeStoreOutputManager(
                             clusteringSerializer,
@@ -95,7 +99,7 @@ namespace Nether.Analytics.Host
             var dauSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "gamerTag");
             builder.Pipeline("dau")
                 .HandlesMessageType("session-start", "1.0.0")
-                .OutputTo(new ConsoleOutputManager(dauSerializer)
+                .OutputTo(new ConsoleOutputManager(dauSerializer, enabled: false)
                         , new FileOutputManager(dauSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER])
                         , new DataLakeStoreOutputManager(
                             dauSerializer,
@@ -108,7 +112,7 @@ namespace Nether.Analytics.Host
             var sessionSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession");
             builder.Pipeline("sessions")
                 .HandlesMessageType("heartbeat", "1.0.0")
-                .OutputTo(new ConsoleOutputManager(sessionSerializer)
+                .OutputTo(new ConsoleOutputManager(sessionSerializer, enabled: false)
                 , new FileOutputManager(sessionSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER])
                 , new DataLakeStoreOutputManager(
                     sessionSerializer,
@@ -126,10 +130,34 @@ namespace Nether.Analytics.Host
             var router = builder.Build();
 
             // Attach the differeing parts of the message processor together
-            var messageProcessor = new MessageProcessor<EventHubListenerMessage>(listener, parser, router);
+            var messageProcessor = new MessageProcessor<EventHubListenerMessage>(listener, parser, router, OnMessageProcessorInfoAsync);
 
             // The following method will never exit
             await messageProcessor.ProcessAndBlockAsync();
+        }
+
+        private Task OnMessageProcessorInfoAsync(MessageProcessorInformation info)
+        {
+            while (info.MessagesPerSecond > _infoMax)
+            {
+                _infoMax *= 10;
+            }
+
+            Console.WriteLine(InfoBar("Msg/s", 10, info.MessagesPerSecond, _infoMax, 80) + " Tot: " + info.TotalMessages);
+
+            return Task.CompletedTask;
+        }
+
+        private string InfoBar(string label, int labelWidth, double value, int max, int length)
+        {
+            var percentageFilled = value / max;
+            var v = $"({value.ToString("N2")})";
+            var adjustedLength = length - labelWidth - 7 - v.Length; // remove start and end characters from bar length "Msg/s [#####        ] 9999"
+
+            var filledChars = (int)(percentageFilled * adjustedLength);
+            var unfilledChars = adjustedLength - filledChars;
+
+            return label.PadRight(labelWidth) + "[" + new string('=', filledChars) + v + new string(' ', unfilledChars) + "] " + max.ToString().PadLeft(4);
         }
     }
 }

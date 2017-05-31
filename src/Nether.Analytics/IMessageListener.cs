@@ -9,7 +9,7 @@ namespace Nether.Analytics
 {
     public interface IMessageListener<T>
     {
-        Task StartAsync(Func<IEnumerable<T>, Task> messageHandler);
+        Task StartAsync(Func<string, IEnumerable<T>, Task> messageHandler);
         Task StopAsync();
     }
 }

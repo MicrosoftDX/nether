@@ -9,6 +9,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -53,10 +54,14 @@ namespace AnalyticsTestClient
 
     public class BatchAnalyticsClient : IAnalyticsClient
     {
-        private const int MessageBatchSize = 1000;
+        private const int MaxMessagesInBatch = 1000;
+        private const int MaxTotalBatchSizeInBytes = 200 * 1024; // Theoretical limit is 256KB
+        private const int MaxMillisecondsBetweenBatches = 1000;
 
         private EventHubClient _client;
         private ConcurrentQueue<EventData> _queue = new ConcurrentQueue<EventData>();
+        private Stopwatch _timeSinceLastSent = new Stopwatch();
+        private int _batchSize = 0;
 
         public BatchAnalyticsClient()
         {
@@ -66,12 +71,11 @@ namespace AnalyticsTestClient
             };
 
             _client = EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
+            _timeSinceLastSent.Start();
         }
 
         public async Task SendMessageAsync(INetherMessage msg, DateTime? dbgEnqueuedTimeUtc = default(DateTime?))
         {
-            Console.Write("|");
-
             // Serialize object to JSON
             var json = JsonConvert.SerializeObject(
                                 msg,
@@ -85,23 +89,38 @@ namespace AnalyticsTestClient
                 json = o.ToString();
             }
 
-            var data = new EventData(Encoding.UTF8.GetBytes(json));
-            _queue.Enqueue(data);
-
-            if (_queue.Count >= MessageBatchSize)
-                await SendMessagesInQueueAsync();
+            await SendMessageAsync(json);
         }
 
-        public async Task SendMessagesInQueueAsync()
+        public async Task SendMessageAsync(string value)
         {
-            var list = new List<EventData>();
+            var bytes = Encoding.UTF8.GetBytes(value);
+            _batchSize += bytes.Length;
 
-            while (_queue.TryDequeue(out var data))
+            var data = new EventData(bytes);
+            _queue.Enqueue(data);
+            Console.Write("q");
+
+            if (_queue.Count >= MaxMessagesInBatch || _timeSinceLastSent.ElapsedMilliseconds > MaxMillisecondsBetweenBatches || _batchSize > MaxTotalBatchSizeInBytes)
+                await FlushMessagesInQueueAsync();
+        }
+
+        public async Task FlushMessagesInQueueAsync()
+        {
+            if (_queue.Count > 0)
             {
-                list.Add(data);
-            }
+                var list = new List<EventData>();
 
-            await _client.SendAsync(list);
+                while (_queue.TryDequeue(out var data))
+                {
+                    list.Add(data);
+                }
+
+                await _client.SendAsync(list);
+                Console.Write("F");
+                _timeSinceLastSent.Restart();
+                _batchSize = 0;
+            }
         }
     }
 }

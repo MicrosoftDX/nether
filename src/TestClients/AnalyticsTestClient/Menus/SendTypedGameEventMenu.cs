@@ -8,16 +8,20 @@ using Nether.Analytics.MessageFormats;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Threading;
+using Nether.Analytics;
 
 namespace AnalyticsTestClient
 {
     public class SendTypedGameEventMenu : ConsoleMenu
     {
         private static Type[] s_messageTypes = null;
+        private BatchAnalyticsClient _client = new BatchAnalyticsClient();
 
-        public SendTypedGameEventMenu()
+        public SendTypedGameEventMenu(BatchAnalyticsClient client)
         {
-            Title = "Nether Analytics Test Client - Send Static Game Events";
+            _client = client;
+
+            Title = "Nether Analytics Test Client - Send Static Game Messages";
 
             var msgTypes = GetMessageTypes();
             var menuKey = 'a';
@@ -30,12 +34,14 @@ namespace AnalyticsTestClient
                         () => TypedMessageSelected(msg)));
             }
 
-            MenuItems.Add('1', new ConsoleMenuItem("Loop and send random events", LoopAndSendRandom));
+            MenuItems.Add('1', new ConsoleMenuItem("Loop and send random messages", LoopAndSendRandom));
         }
 
         private void LoopAndSendRandom()
         {
-            while (true)
+            var j = ConsoleEx.ReadLine("Number of messages to send (0 for infinite or until ESC is pressed)", 0);
+
+            for (var i = 0; i < j || j == 0; i++)
             {
                 if (Console.KeyAvailable)
                 {
@@ -60,8 +66,10 @@ namespace AnalyticsTestClient
                     }
                 }
 
-                SendMessage(gameEvent);
+                _client.SendMessageAsync(gameEvent).Wait();
             }
+
+            _client.FlushMessagesInQueueAsync().Wait();
         }
 
         private static Type[] GetMessageTypes()
@@ -85,18 +93,8 @@ namespace AnalyticsTestClient
         private void TypedMessageSelected(INetherMessage gameEvent)
         {
             EditMessageProperties(gameEvent);
-            SendMessage(gameEvent);
-        }
-
-        private static void SendMessage(INetherMessage gameEvent)
-        {
-            // Serialize object to JSON
-            var msg = JsonConvert.SerializeObject(
-                gameEvent,
-                Formatting.Indented,
-                new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
-
-            EventHubManager.SendMessageToEventHub(msg).Wait();
+            _client.SendMessageAsync(gameEvent).Wait();
+            _client.FlushMessagesInQueueAsync().Wait();
         }
 
         private void EditMessageProperties(INetherMessage gameEvent)
