@@ -16,6 +16,7 @@ using System.Net;
 using Microsoft.Extensions.Logging;
 using Nether.Web.Features.Leaderboard.Models.Leaderboard;
 using Nether.Common.ApplicationPerformanceMonitoring;
+using Nether.Integration.Leaderboard;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -33,18 +34,21 @@ namespace Nether.Web.Features.Leaderboard
         private readonly IApplicationPerformanceMonitor _appMonitor;
 
         private readonly ILeaderboardProvider _leaderboardProvider;
+        private readonly ILeaderboardPlayerManagementClient _playerManagementClient;
 
         public LeaderboardController(
             ILeaderboardStore store,
             ILogger<LeaderboardController> logger,
             IApplicationPerformanceMonitor appMonitor,
-            ILeaderboardProvider leaderboardProvider
+            ILeaderboardProvider leaderboardProvider,
+            ILeaderboardPlayerManagementClient playerManagementClient
             )
         {
             _store = store;
             _logger = logger;
             _appMonitor = appMonitor;
             _leaderboardProvider = leaderboardProvider;
+            _playerManagementClient = playerManagementClient;
         }
 
         /// <summary>
@@ -83,7 +87,7 @@ namespace Nether.Web.Features.Leaderboard
         [HttpGet("{name}", Name = nameof(Get))]
         public async Task<IActionResult> Get(string name)
         {
-            var gamertag = User.GetGamerTag();
+            var userId = User.GetId();
 
             _appMonitor.LogEvent("Leaderboard", properties: new Dictionary<string, string> {
                 { "Name", name }
@@ -99,11 +103,11 @@ namespace Nether.Web.Features.Leaderboard
             switch (type)
             {
                 case LeaderboardType.AroundMe:
-                    if (gamertag == null)
+                    if (userId == null)
                     {
-                        return this.ValidationFailed(new ErrorDetail("gamertag", "Must be signed in as a player with a gamertag to retrive this leaderboard"));
+                        return this.ValidationFailed(new ErrorDetail("userId", "Must be signed in as a player with a userId to retrive this leaderboard"));
                     }
-                    scores = await _store.GetScoresAroundMeAsync(gamertag, config.Radius);
+                    scores = await _store.GetScoresAroundUserAsync(userId, config.Radius);
                     break;
                 case LeaderboardType.Top:
                     scores = await _store.GetTopHighScoresAsync(config.Top);
@@ -112,24 +116,46 @@ namespace Nether.Web.Features.Leaderboard
                     scores = await _store.GetAllHighScoresAsync();
                     break;
             }
+            var userIdsToLookUp = scores.Select(s => s.UserId).ToList();
 
             GameScore currentPlayer = null;
-            if (config.IncludeCurrentPlayer && gamertag != null)
+            if (config.IncludeCurrentPlayer && userId != null)
             {
-                currentPlayer = (await _store.GetScoresAroundMeAsync(gamertag, 0)).FirstOrDefault();
+                currentPlayer = (await _store.GetScoresAroundUserAsync(userId, 0)).FirstOrDefault();
+                if (currentPlayer != null && !userIdsToLookUp.Contains(currentPlayer.UserId))
+                {
+                    userIdsToLookUp.Add(currentPlayer.UserId);
+                }
             }
 
-            // Format response model
+            var gamertags = await _playerManagementClient.GetGamertagsForUserIdsAsync(userIdsToLookUp.ToArray());
+
             var resultModel = new LeaderboardGetResponseModel
             {
                 Entries = scores
-                            ?.Select(s => LeaderboardGetResponseModel.LeaderboardEntry.Map(s, gamertag))
+                            ?.Select(s => Map(s, userId))
                             ?.ToList(),
-                CurrentPlayer = LeaderboardGetResponseModel.LeaderboardEntry.Map(currentPlayer, null)
+                CurrentPlayer = Map(currentPlayer, null)
             };
 
-            // Return result
             return Ok(resultModel);
+
+            // local function to map to response types
+            LeaderboardGetResponseModel.LeaderboardEntry Map(GameScore score, string currentUserId)
+            {
+    if (score == null)
+        return null;
+
+    //find gamertag for userid
+
+    return new LeaderboardGetResponseModel.LeaderboardEntry
+    {
+        Gamertag = gamertags.Single(g => g.UserId == score.UserId).Gamertag,
+        Score = score.Score,
+        Rank = score.Rank,
+        IsCurrentPlayer = currentUserId == score.UserId
+    };
+}
         }
     }
 }

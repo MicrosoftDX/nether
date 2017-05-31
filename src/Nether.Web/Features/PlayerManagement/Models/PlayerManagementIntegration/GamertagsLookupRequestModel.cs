@@ -3,15 +3,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Nether.Data.Sql.Leaderboard
+namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagementIntegration
 {
-    public class QueriedGamerScore
+    public class GamertagsLookupRequestModel
     {
-        public int Score { get; set; }
-        public string UserId { get; set; }
-        public long Ranking { get; set; }
+        [Required]
+        public string[] UserIds { get; set; }
     }
 }

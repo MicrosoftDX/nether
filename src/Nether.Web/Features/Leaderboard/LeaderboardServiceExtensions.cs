@@ -37,6 +37,11 @@ namespace Nether.Web.Features.Leaderboard
                 {"eventhub", typeof(EventHubAnalyticsIntegrationClientDependencyConfiguration) },
             };
 
+        private static Dictionary<string, Type> s_wellKnownPlayerManagementClientTypes = new Dictionary<string, Type>
+            {
+                {"default", typeof(DefaultLeaderboardPlayerManagementClientDependencyConfiguration) },
+            };
+
         public static IServiceCollection AddLeaderboardServices(
             this IServiceCollection services,
             IConfiguration configuration,
@@ -59,6 +64,7 @@ namespace Nether.Web.Features.Leaderboard
             AddLeaderboardProvider(services, configuration);
 
             services.AddServiceFromConfiguration("Leaderboard:AnalyticsIntegrationClient", s_wellKnownAnalyticsIntegrationTypes, configuration, logger, hostingEnvironment);
+            services.AddServiceFromConfiguration("Leaderboard:PlayerManagementClient", s_wellKnownPlayerManagementClientTypes, configuration, logger, hostingEnvironment);
 
             return services;
         }

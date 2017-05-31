@@ -3,7 +3,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagementIdentity
+namespace Nether.Web.Features.PlayerManagement.Models.PlayerManagementIntegration
 {
     /// <summary>
     /// Player info request object

@@ -112,5 +112,10 @@ namespace Nether.Data.MongoDB.PlayerManagement
         {
             throw new NotImplementedException();
         }
+
+        public Task<Player[]> GetPlayerDetailsByUserIdsAsync(string[] ids)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

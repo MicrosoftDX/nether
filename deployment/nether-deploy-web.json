@@ -231,6 +231,10 @@
                     "Leaderboard:Store:properties:ConnectionString": "[variables('sqlConnString')]",
                     "Leaderboard:AnalyticsIntegrationClient:wellknown": "eventhub",
                     "Leaderboard:AnalyticsIntegrationClient:properties:EventHubConnectionString": "[parameters('eventhubSendPolicy').connectionString]",
+                    "Leaderboard:PlayerManagementClient:wellknown": "default",
+                    "Leaderboard:PlayerManagementClient:properties:IdentityBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/identity')]",
+                    "Leaderboard:PlayerManagementClient:properties:ApiBaseUrl": "[concat('https://', reference(variables('webSiteName')).hostNames[0], '/api')]",
+
 
                     /* PlayerManagement feature config overrides */
                     "PlayerManagement:Store:wellknown": "sql",
