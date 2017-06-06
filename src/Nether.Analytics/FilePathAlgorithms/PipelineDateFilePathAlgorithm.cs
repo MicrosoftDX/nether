@@ -59,7 +59,7 @@ namespace Nether.Analytics
 
             string name;
 
-            
+
             dateTime = dateTime - TimeSpan.FromSeconds(dateTime.Second);
             dateTime = dateTime - TimeSpan.FromMinutes(dateTime.Minute % (int)_newFileOption);
 
