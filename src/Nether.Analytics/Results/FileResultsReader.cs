@@ -55,9 +55,33 @@ namespace Nether.Analytics
 
             foreach (var path in paths)
             {
-                foreach (var msg in ReadFile(new FileInfo(Path.Combine(_rootPath, $"{path}.{_serializer.FileExtension}"))))
+                var fullPath = Path.Combine(_rootPath, $"{path}.{_serializer.FileExtension}");
+                string[] searchPaths = new string[] { fullPath };
+
+                if (fullPath.Contains("*"))
                 {
-                    yield return msg;
+                    // this is a search path, so let's do that
+                    // each file might have more than one partition
+                    var directoryName = Path.GetDirectoryName(fullPath);
+
+                    var di = new DirectoryInfo(directoryName);
+                    var searchPath = Path.GetFileName(fullPath);
+
+                    // the directory might actually not exist, in which case we can just skip it all
+                    if (!di.Exists) continue;
+
+                    var files = di.GetFiles(searchPath, SearchOption.TopDirectoryOnly);
+                    searchPaths = files.Select(x => x.FullName).ToArray();
+                }
+
+                // we need to look across multiple paths, because we might have 
+                // had this filled out with the search patterns
+                foreach (var actualPath in searchPaths)
+                {
+                    foreach (var msg in ReadFile(new FileInfo(actualPath)))
+                    {
+                        yield return msg;
+                    }
                 }
             }
         }

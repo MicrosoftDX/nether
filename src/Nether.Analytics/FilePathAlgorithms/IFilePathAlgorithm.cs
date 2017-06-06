@@ -10,7 +10,7 @@ namespace Nether.Analytics
     {
         FilePathResult GetFilePath(string pipelineName, int idx, Message msg);
 
-        FilePathResult GetFilePath(string pipelineName, string messageType, DateTime dateTime);
+        FilePathResult GetFilePath(string pipelineName, string messageType, DateTime dateTime, string partitionId);
 
         /// <summary>
         /// Returns a list of path results for a specific time span.

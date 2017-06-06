@@ -74,7 +74,7 @@ namespace Nether.Analytics.Host
 
             // Setting up "Geo Clustering Recipe"
 
-            var clusteringSerializer = new CsvOutputFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "geoHashCenterDist", "rnd");
+            var clusteringSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "geoHashCenterDist", "rnd");
 
             builder.Pipeline("clustering")
                 .HandlesMessageType("geo-location", "1.0.0")
@@ -92,7 +92,7 @@ namespace Nether.Analytics.Host
 
             // Setting up "Daily Active Users Recipe"
 
-            var dauSerializer = new CsvOutputFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "gamerTag");
+            var dauSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "gamerTag");
             builder.Pipeline("dau")
                 .HandlesMessageType("session-start", "1.0.0")
                 .OutputTo(new ConsoleOutputManager(dauSerializer)
@@ -105,7 +105,7 @@ namespace Nether.Analytics.Host
                             Config.Root[Config.NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME])
                         );
 
-            var sessionSerializer = new CsvOutputFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession");
+            var sessionSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession");
             builder.Pipeline("sessions")
                 .HandlesMessageType("heartbeat", "1.0.0")
                 .OutputTo(new ConsoleOutputManager(sessionSerializer)
@@ -120,7 +120,7 @@ namespace Nether.Analytics.Host
 
             builder.DefaultPipeline
                 .AddHandler(new RandomIntMessageHandler())
-                .OutputTo(new ConsoleOutputManager(new CsvOutputFormatter { IncludeHeaders = false }));
+                .OutputTo(new ConsoleOutputManager(new CsvMessageFormatter { IncludeHeaders = false }));
 
             // Build all pipelines
             var router = builder.Build();
