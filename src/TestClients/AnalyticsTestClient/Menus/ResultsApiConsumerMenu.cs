@@ -23,7 +23,7 @@ namespace AnalyticsTestClient
                 Title = "Latest Results (FS)";
 
                 var clusteringSerializer = new CsvMessageFormatter("id", "type", "version", "enqueueTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "rnd");
-                var dauSerializer = new CsvMessageFormatter("id", "type", "version", "gameSession", "enqueueTimeUtc", "gamerTag");
+                var dauSerializer = new CsvMessageFormatter("id", "type", "version", "enqueueTimeUtc", "gameSession", "gamerTag");
 
 
                 MenuItems.Add('1', new ConsoleMenuItem("DAU", () => GetResults(dauSerializer, "dau", "session-start")));
@@ -77,8 +77,8 @@ namespace AnalyticsTestClient
             {
                 Title = "Latest Results (FS)";
 
+                var dauSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "gamerTag");
                 var clusteringSerializer = new CsvMessageFormatter("id", "type", "version", "enqueueTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "rnd");
-                var dauSerializer = new CsvMessageFormatter("id", "type", "version", "gameSession", "enqueueTimeUtc", "gamerTag");
 
 
                 MenuItems.Add('1', new ConsoleMenuItem("DAU", () => GetLatestFromFileSystem(dauSerializer, "dau", "session-start")));
