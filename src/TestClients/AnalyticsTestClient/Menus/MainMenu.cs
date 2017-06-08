@@ -16,6 +16,7 @@ namespace AnalyticsTestClient
             MenuItems.Add('3', new ConsoleMenuItem("Re-send Last Sent Message", ResendLastSentMessage));
             MenuItems.Add('4', new ConsoleMenuItem("Simulate moving game client...", () => { new SimulateMovementMenu().Show(); }));
             MenuItems.Add('5', new ConsoleMenuItem("USQL Script ...", () => new USQLJobMenu().Show()));
+            MenuItems.Add('6', new ConsoleMenuItem("Results API Consumer ...", () => { new ResultsApiConsumerMenu().Show(); }));
         }
 
         private void SendCustomGameEvent()

@@ -11,7 +11,7 @@ namespace Nether.Analytics
     public class EventHubOutputManager : IOutputManager
     {
         private string _ehConnectionString;
-        private IOutputFormatter _serializer;
+        private IMessageFormatter _serializer;
         private EventHubClient _client;
 
         /// <summary>
@@ -19,11 +19,11 @@ namespace Nether.Analytics
         /// </summary>
         /// <param name="outputEventHubConnectionString">The connection string for the event hub output.</param>
         public EventHubOutputManager(string outputEventHubConnectionString)
-            : this(outputEventHubConnectionString, new JsonOutputFormatter())
+            : this(outputEventHubConnectionString, new JsonMessageFormatter())
         {
         }
 
-        public EventHubOutputManager(string outputEventHubConnectionString, IOutputFormatter serializer)
+        public EventHubOutputManager(string outputEventHubConnectionString, IMessageFormatter serializer)
         {
             _serializer = serializer;
             _ehConnectionString = outputEventHubConnectionString;

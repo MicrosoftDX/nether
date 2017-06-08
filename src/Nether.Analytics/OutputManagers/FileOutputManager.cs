@@ -13,13 +13,12 @@ namespace Nether.Analytics
 {
     public class FileOutputManager : IOutputManager
     {
-        private IOutputFormatter _serializer;
+        private IMessageFormatter _serializer;
         private IFilePathAlgorithm _filePathAlgorithm;
         private string _rootPath;
 
         private static ConcurrentDictionary<string, SemaphoreSlim> s_semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
-
-        public FileOutputManager(IOutputFormatter serializer, IFilePathAlgorithm filePathAlgorithm, string rootPath = @"C:\")
+        public FileOutputManager(IMessageFormatter serializer, IFilePathAlgorithm filePathAlgorithm, string rootPath = @"C:\")
         {
             _serializer = serializer;
             _filePathAlgorithm = filePathAlgorithm;

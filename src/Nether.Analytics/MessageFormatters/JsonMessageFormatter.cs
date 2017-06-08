@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Nether.Analytics
 {
-    public class JsonOutputFormatter : IOutputFormatter
+    public class JsonMessageFormatter : IMessageFormatter
     {
         public string FileExtension => "json";
 
@@ -17,6 +17,11 @@ namespace Nether.Analytics
         public string Format(Message msg)
         {
             return JsonConvert.SerializeObject(msg.Properties);
+        }
+
+        public Message Parse(string input)
+        {
+            return JsonConvert.DeserializeObject<Message>(input);
         }
     }
 }

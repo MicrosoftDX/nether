@@ -19,33 +19,63 @@ namespace Nether.Analytics
 
         public FilePathResult GetFilePath(string pipelineName, int idx, Message msg)
         {
+            return GetFilePath(pipelineName, msg.MessageType, msg.EnqueuedTimeUtc, msg.PartitionId);
+        }
+
+        public System.Collections.Generic.IEnumerable<FilePathResult> GetFilePaths(string pipelineName, string messageType, DateTime from, DateTime to)
+        {
+            do
+            {
+                yield return GetFilePath(pipelineName, messageType, from, null);
+                from = from.AddMinutes((int)_newFileOption);
+            } while (from <= to);
+        }
+
+        public string GetRootPath(string pipelineName, string messageType)
+        {
             // _rootFolder/pipelineName/messageType/year/month/day
             var hierarchy = new string[]
             {
                 _rootFolder,
                 pipelineName,
-                msg.MessageType,
-                msg.EnqueuedTimeUtc.Year.ToString("D4"),
-                msg.EnqueuedTimeUtc.Month.ToString("D2"),
-                msg.EnqueuedTimeUtc.Day.ToString("D2")
+                messageType,
+            };
+
+            return String.Join(System.IO.Path.DirectorySeparatorChar.ToString(), hierarchy);
+        }
+
+        public FilePathResult GetFilePath(string pipelineName, string messageType, DateTime dateTime, string partitionId)
+        {
+            // _rootFolder/pipelineName/messageType/year/month/day
+            var hierarchy = new string[]
+            {
+                _rootFolder,
+                pipelineName,
+                messageType,
+                dateTime.Year.ToString("D4"),
+                dateTime.Month.ToString("D2"),
+                dateTime.Day.ToString("D2")
             };
 
             string name;
 
 
-            DateTime t = msg.EnqueuedTimeUtc;
-            t = t - TimeSpan.FromSeconds(t.Second);
-            t = t - TimeSpan.FromMinutes(t.Minute % (int)_newFileOption);
+            dateTime = dateTime - TimeSpan.FromSeconds(dateTime.Second);
+            dateTime = dateTime - TimeSpan.FromMinutes(dateTime.Minute % (int)_newFileOption);
 
             if (_newFileOption > NewFileNameOptions.EveryHour)
             {
                 var h = ((int)_newFileOption) / 60;
-                t = t - TimeSpan.FromHours(t.Hour % h);
+                dateTime = dateTime - TimeSpan.FromHours(dateTime.Hour % h);
             }
 
-            var hour = t.Hour.ToString("D2");
-            var minute = t.Minute.ToString("D2");
-            var partition = msg.PartitionId.PadLeft(2, '0');
+            var hour = dateTime.Hour.ToString("D2");
+            var minute = dateTime.Minute.ToString("D2");
+
+            // In case the paritionId passed to us is null, or empty, we'll add the *
+            // and assume the caller can "query" the underlying file system to get the 
+            // multiple partitions
+            var partition = string.IsNullOrEmpty(partitionId) ? "*" : partitionId.PadLeft(2, '0');
             name = $"{hour}_{minute}_p{partition}";
 
             return new FilePathResult { Hierarchy = hierarchy, Name = name };

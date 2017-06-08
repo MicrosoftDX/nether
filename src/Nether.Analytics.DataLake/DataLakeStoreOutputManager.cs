@@ -15,7 +15,7 @@ namespace Nether.Analytics.DataLake
 {
     public class DataLakeStoreOutputManager : IOutputManager
     {
-        private IOutputFormatter _serializer;
+        private IMessageFormatter _serializer;
         private IFilePathAlgorithm _filePathAlgorithm;
         private string _subscriptionId;
         private string _dlsAccountName;
@@ -31,7 +31,7 @@ namespace Nether.Analytics.DataLake
             }
         }
 
-        public DataLakeStoreOutputManager(IOutputFormatter serializer, IFilePathAlgorithm filePathAlgorithm, ServiceClientCredentials serviceClientCredentials, string subscriptionId, string dlsAccountName)
+        public DataLakeStoreOutputManager(IMessageFormatter serializer, IFilePathAlgorithm filePathAlgorithm, ServiceClientCredentials serviceClientCredentials, string subscriptionId, string dlsAccountName)
         {
             _serializer = serializer;
             _filePathAlgorithm = filePathAlgorithm;
