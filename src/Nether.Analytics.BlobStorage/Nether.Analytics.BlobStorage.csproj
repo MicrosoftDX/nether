@@ -23,4 +23,8 @@
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-setversion" Version="1.0.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WindowsAzure.Storage" Version="8.1.4" />
+  </ItemGroup>
 </Project>

@@ -5,17 +5,17 @@ using System;
 using Xunit;
 using System.Linq;
 
-namespace Nether.Analytics.DataLake.UnitTests
+namespace Nether.Analytics.UnitTests
 {
     public class SchedulerDateTimeUtilitiesTests
     {
         [Fact]
         public void TestTimeStringParsing()
         {
-            DateTime dta = DateTimeUtilities.FromSpecialString("20170521-2132");
+            DateTime dta = DateTimeUtilities.FromYMDHMString("20170521-2132");
             Assert.Equal(new DateTime(2017, 5, 21, 21, 32, 00), dta);
 
-            string dtb = DateTimeUtilities.ToSpecialString(new DateTime(2017, 3, 12, 10, 23, 00));
+            string dtb = DateTimeUtilities.ToYMDHMSString(new DateTime(2017, 3, 12, 10, 23, 00));
             Assert.Equal("20170312-1023", dtb);
         }
 

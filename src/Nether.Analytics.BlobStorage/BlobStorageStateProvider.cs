@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics.DataLake
+namespace Nether.Analytics
 {
     public class BlobStorageStateProvider : IStateProvider
     {
@@ -59,7 +59,7 @@ namespace Nether.Analytics.DataLake
 
                 try
                 {
-                    DateTime dt = DateTimeUtilities.FromSpecialString(datetimestring);
+                    DateTime dt = DateTimeUtilities.FromYMDHMString(datetimestring);
                     return dt;
                 }
                 //if we fail to get a valid datetimestring for any reason
@@ -84,7 +84,7 @@ namespace Nether.Analytics.DataLake
         {
             if (_container == null) await InitializeAsync();
             CloudBlockBlob blockBlob = _container.GetBlockBlobReference(jobName);
-            string datestring = DateTimeUtilities.ToSpecialString(dt);
+            string datestring = DateTimeUtilities.ToYMDHMSString(dt);
             await blockBlob.UploadTextAsync(datestring, Encoding.UTF8, AccessCondition.GenerateLeaseCondition(leaseID), null, null);
         }
     }

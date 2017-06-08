@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace Nether.Analytics.DataLake
+namespace Nether.Analytics
 {
     public static class DateTimeUtilities
     {
@@ -14,7 +14,7 @@ namespace Nether.Analytics.DataLake
         /// </summary>
         /// <param name="from">DateTime in string format yyyyMMdd-HHmm</param>
         /// <returns>A new DateTime</returns>
-        public static DateTime FromSpecialString(string from)
+        public static DateTime FromYMDHMString(string from)
         {
             return DateTime.ParseExact(from, "yyyyMMdd-HHmm", CultureInfo.InvariantCulture);
         }
@@ -24,7 +24,7 @@ namespace Nether.Analytics.DataLake
         /// </summary>
         /// <param name="dt">Provided DateTime</param>
         /// <returns>A string in format yyyyMMdd-HHmm</returns>
-        public static string ToSpecialString(DateTime dt)
+        public static string ToYMDHMSString(DateTime dt)
         {
             return dt.ToString("yyyyMMdd-HHmm");
         }

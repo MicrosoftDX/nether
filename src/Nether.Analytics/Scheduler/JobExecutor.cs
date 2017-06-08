@@ -4,11 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Nether.Analytics.DataLake;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-namespace Nether.Analytics.DataLake
+namespace Nether.Analytics
 {
     public class JobExecutor
     {

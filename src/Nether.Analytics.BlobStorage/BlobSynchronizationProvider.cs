@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics.DataLake
+namespace Nether.Analytics
 {
     public class BlobSynchronizationProvider : ISynchronizationProvider
     {
@@ -68,11 +68,5 @@ namespace Nether.Analytics.DataLake
 
             await blockBlob.ReleaseLeaseAsync(AccessCondition.GenerateLeaseCondition(leaseID));
         }
-    }
-
-    public interface ISynchronizationProvider
-    {
-        Task<string> AcquireLeaseAsync(string jobName);
-        Task ReleaseLeaseAsync(string jobName, string leaseID);
     }
 }

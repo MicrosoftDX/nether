@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Nether.Analytics.DataLake
+namespace Nether.Analytics
 {
     public enum JobInterval
     {
