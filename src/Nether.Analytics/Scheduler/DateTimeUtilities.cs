@@ -12,8 +12,8 @@ namespace Nether.Analytics
         /// <summary>
         /// Parses a new DateTime from format yyyyMMdd-HHmm
         /// </summary>
-        /// <param name="from">DateTime in string format yyyyMMdd-HHmm</param>
-        /// <returns>A new DateTime</returns>
+        /// <param name="from">string in format yyyyMMdd-HHmm</param>
+        /// <returns>A new DateTime from the parsed string</returns>
         public static DateTime FromYMDHMString(string from)
         {
             return DateTime.ParseExact(from, "yyyyMMdd-HHmm", CultureInfo.InvariantCulture);
@@ -31,7 +31,7 @@ namespace Nether.Analytics
 
         /// <summary>
         /// Calculates time periods for a set timespan and interval
-        /// For instance, if timespan is 3 hours and interval is 30 minutes, it will return 3 * 60 / 30 = 6
+        /// Result is rounded to upper limit (via <see cref="Math.Ceiling(decimal)"/>)
         /// </summary>
         /// <param name="ts">TimeSpan</param>
         /// <param name="ji">Interval enumeration</param>
@@ -40,39 +40,44 @@ namespace Nether.Analytics
         {
             switch (ji)
             {
+                case JobInterval.Daily: //60 minutes * 24 hours = a full day
+                    return (int)Math.Ceiling(ts.TotalMinutes / (60 * 24));
                 case JobInterval.Hourly:
-                    return (int)(ts.TotalMinutes / 60);
+                    return (int)Math.Ceiling(ts.TotalMinutes / 60);
                 case JobInterval.Quarterly:
-                    return (int)(ts.TotalMinutes / 15);
+                    return (int)Math.Ceiling(ts.TotalMinutes / 15);
                 case JobInterval.HalfHour:
-                    return (int)(ts.TotalMinutes / 30);
+                    return (int)Math.Ceiling(ts.TotalMinutes / 30);
                 default:
                     throw new ArgumentException("Wrong JobInterval");
             }
         }
 
         /// <summary>
-        /// This is used to find the missed opportunities. If a job was last run for 18.30 for 
-        /// 30' interval and current time is 20.01, this returns a list of 19.00, 19.30, 20.00
+        /// Calculates the time intervals between two dateTime structs, depending on the <paramref name="interval"/> variable.
+        /// Reason for <paramref name="includeFirstDateTime"/> existence is whether we want to keep and return the first result in the list.
+        /// a) We want to keep it if we haven't run the job at this first interval (e.g. job never executed)
+        /// b) We do not want to keep it if the job was last executed at that time
         /// </summary>
-        /// <param name="currentTime"></param>
-        /// <param name="pastTime"></param>
-        /// <param name="interval"></param>
-        /// <returns></returns>
-        public static IEnumerable<DateTime> GetIntervalsBetween(DateTime currentTime,
-            DateTime pastTime, JobInterval interval)
+        /// <param name="presentTime">Current time (present)</param>
+        /// <param name="pastTime">First interval (past)</param>
+        /// <param name="includeFirstDateTime">True if we want to keep the first DateTime, false if not</param>
+        /// <param name="interval">Interval enumeration</param>
+        /// <returns>an enumerable collection of all datetime intervals</returns>
+        public static IEnumerable<DateTime> GetIntervalsBetween(DateTime presentTime,
+            DateTime pastTime, bool includeFirstDateTime, JobInterval interval)
         {
             pastTime = pastTime.RoundToPreviousInterval(interval);
 
             //get total TimeSpan
-            TimeSpan ts = currentTime - pastTime;
+            TimeSpan ts = presentTime - pastTime;
 
             int timeperiods = CalculateTimePeriods(ts, interval);
             int minutes = interval.ToMinutes();
             List<DateTime> list = new List<DateTime>();
-            //starting by one since we *always* want the first execution
-            //to be the first after the last one (we do not want to re-run the job, of course!)
-            for (int i = 1; i <= timeperiods; i++)
+            //do we want the first interval or not???
+            int startIndex = includeFirstDateTime ? 1 : 0;
+            for (int i = startIndex; i < timeperiods; i++)
             {
                 list.Add(pastTime.AddMinutes(minutes * i));
             }

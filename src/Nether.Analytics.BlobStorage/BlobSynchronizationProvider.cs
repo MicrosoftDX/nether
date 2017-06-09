@@ -4,8 +4,6 @@
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Nether.Analytics
@@ -16,10 +14,12 @@ namespace Nether.Analytics
         private CloudStorageAccount _storageAccount;
         private CloudBlobClient _blobClient;
         private CloudBlobContainer _container;
-        private readonly string _containerName = "schedulerstate";
+        private readonly string _containerName = Constants.SchedulerStateContainerName;
 
         public BlobSynchronizationProvider(string connectionString)
         {
+            if (string.IsNullOrEmpty(connectionString))
+                throw new ArgumentException($"{nameof(connectionString)} cannot be null");
             _storageConnectionString = connectionString;
         }
 
@@ -37,16 +37,16 @@ namespace Nether.Analytics
         }
 
         /// <summary>
-        /// Tries to acquire a lease on the specific blob (called jobName)
+        /// Tries to acquire a lease on the specific blob (called detailedJobName)
         /// </summary>
-        /// <param name="jobName">String, refers to the name of the blob</param>
+        /// <param name="detailedJobName">String, refers to the name of the blob</param>
         /// <returns>The leaseID</returns>
-        public async Task<string> AcquireLeaseAsync(string jobName)
+        public async Task<string> AcquireLeaseAsync(string detailedJobName)
         {
             if (_container == null) await InitializeAsync();
 
             //try to get a lease for this job
-            CloudBlockBlob blockBlob = _container.GetBlockBlobReference(jobName);
+            CloudBlockBlob blockBlob = _container.GetBlockBlobReference(detailedJobName);
 
             //if the blob does not exist, just create an empty one
             if (!await blockBlob.ExistsAsync())
@@ -56,7 +56,13 @@ namespace Nether.Analytics
             return await blockBlob.AcquireLeaseAsync(null);
         }
 
-        public async Task ReleaseLeaseAsync(string jobName, string leaseID)
+        /// <summary>
+        /// Release the lease on the specified blob (called detailedJobName)
+        /// </summary>
+        /// <param name="detailedJobName"></param>
+        /// <param name="leaseID"></param>
+        /// <returns></returns>
+        public async Task ReleaseLeaseAsync(string detailedJobName, string leaseID)
         {
             if (_container == null) await InitializeAsync();
 
@@ -64,7 +70,7 @@ namespace Nether.Analytics
                 throw new Exception("LeaseID should have a value");
 
             //try to release the lease for this job
-            CloudBlockBlob blockBlob = _container.GetBlockBlobReference(jobName);
+            CloudBlockBlob blockBlob = _container.GetBlockBlobReference(detailedJobName);
 
             await blockBlob.ReleaseLeaseAsync(AccessCondition.GenerateLeaseCondition(leaseID));
         }

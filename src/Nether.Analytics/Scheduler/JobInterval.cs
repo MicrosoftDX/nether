@@ -2,18 +2,20 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Nether.Analytics
 {
     public enum JobInterval
     {
+        Daily,
         Hourly,
         Quarterly,
         HalfHour
     }
 
+    /// <summary>
+    /// Extension methods for the <see cref="JobInterval"/> enumeration
+    /// </summary>
     public static class JobIntervalMethods
     {
         /// <summary>
@@ -25,6 +27,8 @@ namespace Nether.Analytics
         {
             switch (ji)
             {
+                case JobInterval.Daily:
+                    return 60 * 24;
                 case JobInterval.Hourly:
                     return 60;
                 case JobInterval.Quarterly:
