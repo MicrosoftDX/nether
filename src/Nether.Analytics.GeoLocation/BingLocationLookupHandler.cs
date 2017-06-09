@@ -29,7 +29,7 @@ namespace Nether.Analytics.GeoLocation
             _geoHashCacheProvider.Precision = geoHashPrecision;
         }
 
-        public async Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int idx)
+        public async Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int index)
         {
             //TODO: Replace all console logging of exceptions to generic log solution
 

@@ -10,7 +10,7 @@ namespace Nether.Analytics.PowerBI
     {
         //TODO: Implement a working solution for outputting to PowerBI.
         // Take a look at the implementation for DataLakeStoreOutputManager for inspiration and sync
-        public Task OutputMessageAsync(string partitionId, string pipelineName, int idx, Message msg)
+        public Task OutputMessageAsync(string partitionId, string pipelineName, int index, Message msg)
         {
             throw new NotImplementedException();
         }

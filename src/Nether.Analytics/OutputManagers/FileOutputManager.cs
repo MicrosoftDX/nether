@@ -25,11 +25,11 @@ namespace Nether.Analytics
             _rootPath = rootPath;
         }
 
-        public async Task OutputMessageAsync(string partitionId, string pipelineName, int idx, Message msg)
+        public async Task OutputMessageAsync(string partitionId, string pipelineName, int index, Message msg)
         {
             var serializedMessage = $"{_serializer.Format(msg)}{Environment.NewLine}";
 
-            var filePath = GetFilePath(partitionId, pipelineName, idx, msg);
+            var filePath = GetFilePath(partitionId, pipelineName, index, msg);
 
             var key = $"{pipelineName}_{msg.MessageType}_{msg.Version}_{partitionId}";
 
@@ -58,9 +58,9 @@ namespace Nether.Analytics
             return Task.CompletedTask;
         }
 
-        private string GetFilePath(string partitionId, string pipelineName, int idx, Message msg)
+        private string GetFilePath(string partitionId, string pipelineName, int index, Message msg)
         {
-            var fp = _filePathAlgorithm.GetFilePath(partitionId, pipelineName, idx, msg);
+            var fp = _filePathAlgorithm.GetFilePath(partitionId, pipelineName, index, msg);
             var fileName = $"{fp.Name}.{_serializer.FileExtension}";
 
             return Path.Combine(_rootPath, Path.Combine(fp.Hierarchy), fileName);

@@ -17,7 +17,7 @@ namespace Nether.Analytics
             _newFileOption = newFileOption;
         }
 
-        public FilePathResult GetFilePath(string partitionId, string pipelineName, int idx, Message msg)
+        public FilePathResult GetFilePath(string partitionId, string pipelineName, int index, Message msg)
         {
             return GetFilePath(pipelineName, msg.MessageType, msg.EnqueuedTimeUtc, partitionId);
         }

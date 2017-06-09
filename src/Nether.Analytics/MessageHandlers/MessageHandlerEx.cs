@@ -18,19 +18,19 @@ namespace Nether.Analytics
 
         public static MessagePipelineBuilder AddHandler(this MessagePipelineBuilder builder, Func<Message, string, Task<MessageHandlerResults>> asyncFunc)
         {
-            return builder.AddHandler(new GenericMessageHandler((msg, pipelineName, idx) => asyncFunc(msg, pipelineName)));
+            return builder.AddHandler(new GenericMessageHandler((msg, pipelineName, index) => asyncFunc(msg, pipelineName)));
         }
 
         public static MessagePipelineBuilder AddHandler(this MessagePipelineBuilder builder, Func<Message, Task<MessageHandlerResults>> asyncFunc)
         {
-            return builder.AddHandler(new GenericMessageHandler((msg, pipelineName, idx) => asyncFunc(msg)));
+            return builder.AddHandler(new GenericMessageHandler((msg, pipelineName, index) => asyncFunc(msg)));
         }
 
         public static MessagePipelineBuilder AddHandler(this MessagePipelineBuilder builder, Action<Message, string, int> action)
         {
-            return builder.AddHandler(new GenericMessageHandler((msg, pipelineName, idx) =>
+            return builder.AddHandler(new GenericMessageHandler((msg, pipelineName, index) =>
             {
-                action(msg, pipelineName, idx);
+                action(msg, pipelineName, index);
 
                 return Task.FromResult(MessageHandlerResults.Success);
             }));
@@ -38,12 +38,12 @@ namespace Nether.Analytics
 
         public static MessagePipelineBuilder AddHandler(this MessagePipelineBuilder builder, Action<Message, string> action)
         {
-            return AddHandler(builder, (msg, pipelineName, idx) => action(msg, pipelineName));
+            return AddHandler(builder, (msg, pipelineName, index) => action(msg, pipelineName));
         }
 
         public static MessagePipelineBuilder AddHandler(this MessagePipelineBuilder builder, Action<Message> action)
         {
-            return AddHandler(builder, (msg, pipelineName, idx) => action(msg));
+            return AddHandler(builder, (msg, pipelineName, index) => action(msg));
         }
     }
 }

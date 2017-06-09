@@ -17,7 +17,7 @@ namespace Nether.Analytics
             _enabled = enabled;
         }
 
-        public Task OutputMessageAsync(string partitionId, string pipelineName, int idx, Message msg)
+        public Task OutputMessageAsync(string partitionId, string pipelineName, int index, Message msg)
         {
             if (_enabled)
             {

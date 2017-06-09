@@ -50,7 +50,7 @@ namespace Nether.Analytics
             }
         }
 
-        public Task OutputMessageAsync(string partitionId, string pipelineName, int idx, Message msg)
+        public Task OutputMessageAsync(string partitionId, string pipelineName, int index, Message msg)
         {
             string payload = _serializer.Format(msg);
 
