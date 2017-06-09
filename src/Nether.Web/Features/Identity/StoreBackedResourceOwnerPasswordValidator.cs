@@ -79,6 +79,12 @@ namespace Nether.Web.Features.Identity
                 providedPassword: context.Password);
             if (!valid)
             {
+                // TODO: usually, we'd want to log the number of attempts to prevent attacks
+                _logger.LogError("User's password was not valid: '{0}'", userName);
+                _appMonitor.LogEvent("LoginFailed", "ResourceOwner: username and password did not match", new Dictionary<string, string> {
+                        { "EventSubType", "PasswordIncorrect" },
+                        { "LoginType", "password" }
+                    });
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
                 return;
             }
