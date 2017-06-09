@@ -117,7 +117,7 @@ namespace Nether.Analytics.DataLake
                 {
                     if (!appendEx.Message.Contains("NotFound"))
                     {
-                        // Unknown exception occurred wile appending content to existing file
+                        // Unknown exception occurred while appending content to existing file
                         throw;
                     }
 
@@ -137,7 +137,7 @@ namespace Nether.Analytics.DataLake
                         // Since the above operation would throw an exception if more than one thread
                         // tried to create the file, we can now be sure that the below operation will only
                         // be run by the thread that actually ended up creating the file. This doesn't
-                        // mean that we can't end up in a cituation where an additional thread sees the file
+                        // mean that we can't end up in a situation where an additional thread sees the file
                         // and starts writing before we've had a chance to append the header row on this file.
 
                         //TODO: Fix the above described problem that can cause the Header Row to be written after another row
