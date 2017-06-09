@@ -17,6 +17,8 @@ namespace AnalyticsTestClient
 {
     public class SimulateMovementMenu : ConsoleMenu
     {
+        private BatchAnalyticsClient _client;
+
         private const float MinLatStockholm = 59.2983105f;
         private const float MinLonStockholm = 18.0204576f;
         private const float MaxLatStockholm = 59.3476538f;
@@ -31,8 +33,10 @@ namespace AnalyticsTestClient
         private static Router s_router;
         private Random _rnd = new Random();
 
-        public SimulateMovementMenu()
+        public SimulateMovementMenu(BatchAnalyticsClient client)
         {
+            _client = client;
+
             Title = "Nether Analytics Test Client - Simulate moving game client";
 
             MenuItems.Add('1', new ConsoleMenuItem("Generate random walking routes to files", GenerateRoutes));
@@ -56,7 +60,6 @@ namespace AnalyticsTestClient
             var routesFolder = ConsoleEx.ReadLine("GeoJson Routes Folder", DefaultRoutesFolder, s => Directory.Exists(s));
             var step = ConsoleEx.ReadLine("Increase Clock With (s)", 12);
 
-            var client = new BatchAnalyticsClient();
             var gamerTagProvider = new GamerTagProvider(gamerTagFile1, gamerTagFile2, gamerTagFile3);
             var gameSessionProvider = new GameSessionProvider();
             var geoRouteProvider = new GeoRouteProvider(routesFolder);
@@ -88,7 +91,7 @@ namespace AnalyticsTestClient
                 // Add any new bots needed
                 for (int i = 0; i < botsToSpawnNow; i++)
                 {
-                    var bot = new GeoBot(client, gamerTagProvider, gameSessionProvider, geoRouteProvider);
+                    var bot = new GeoBot(_client, gamerTagProvider, gameSessionProvider, geoRouteProvider);
 
                     bots.Add(bot);
                 }
@@ -108,7 +111,7 @@ namespace AnalyticsTestClient
                 now += TimeSpan.FromSeconds(step);
             }
 
-            client.SendMessagesInQueueAsync().Wait();
+            _client.FlushMessagesInQueueAsync().Wait();
         }
 
         private void GenerateRoutes()

@@ -55,7 +55,6 @@ namespace Nether.Analytics.Parsers
                 MessageType = gameEventType,
                 Version = version,
                 EnqueuedTimeUtc = enqueuedTime,
-                PartitionId = unparsedMsg.PartitionId
             };
 
             msg.Properties["id"] = id;

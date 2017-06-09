@@ -25,18 +25,13 @@ namespace Nether.Analytics
             _rootPath = rootPath;
         }
 
-        public Task FlushAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task OutputMessageAsync(string pipelineName, int idx, Message msg)
+        public async Task OutputMessageAsync(string partitionId, string pipelineName, int index, Message msg)
         {
             var serializedMessage = $"{_serializer.Format(msg)}{Environment.NewLine}";
 
-            var filePath = GetFilePath(pipelineName, idx, msg);
+            var filePath = GetFilePath(partitionId, pipelineName, index, msg);
 
-            var key = $"{pipelineName}_{msg.MessageType}_{msg.Version}_{msg.PartitionId}";
+            var key = $"{pipelineName}_{msg.MessageType}_{msg.Version}_{partitionId}";
 
             var semaphore = s_semaphores.GetOrAdd(key, new SemaphoreSlim(1, 1));
             await semaphore.WaitAsync();
@@ -58,9 +53,14 @@ namespace Nether.Analytics
             }
         }
 
-        private string GetFilePath(string pipelineName, int idx, Message msg)
+        public Task FlushAsync(string partitionId)
         {
-            var fp = _filePathAlgorithm.GetFilePath(pipelineName, idx, msg);
+            return Task.CompletedTask;
+        }
+
+        private string GetFilePath(string partitionId, string pipelineName, int index, Message msg)
+        {
+            var fp = _filePathAlgorithm.GetFilePath(partitionId, pipelineName, index, msg);
             var fileName = $"{fp.Name}.{_serializer.FileExtension}";
 
             return Path.Combine(_rootPath, Path.Combine(fp.Hierarchy), fileName);

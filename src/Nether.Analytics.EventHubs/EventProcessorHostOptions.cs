@@ -3,7 +3,7 @@
 
 namespace Nether.Analytics.EventHubs
 {
-    public class EventHubsListenerConfiguration
+    public class EventProcessorHostOptions
     {
         /// <summary>
         /// Gets or sets the event hub path.

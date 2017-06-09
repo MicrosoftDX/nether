@@ -8,7 +8,7 @@ namespace Nether.Analytics
 {
     public interface IFilePathAlgorithm
     {
-        FilePathResult GetFilePath(string pipelineName, int idx, Message msg);
+        FilePathResult GetFilePath(string partitionId, string pipelineName, int index, Message msg);
 
         FilePathResult GetFilePath(string pipelineName, string messageType, DateTime dateTime, string partitionId);
 

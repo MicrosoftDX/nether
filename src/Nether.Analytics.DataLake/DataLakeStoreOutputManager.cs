@@ -7,9 +7,12 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
 using Microsoft.Rest.Azure.Authentication;
 using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Nether.Analytics;
+using System.Collections.Generic;
 
 namespace Nether.Analytics.DataLake
 {
@@ -22,6 +25,8 @@ namespace Nether.Analytics.DataLake
 
         private DataLakeStoreFileSystemManagementClient _dlsFileSystemClient;
         private ServiceClientCredentials _serviceClientCredentials;
+
+        private PartitionedOutputBuffers _buffers = new PartitionedOutputBuffers();
 
         public bool IsAuthenticated
         {
@@ -45,32 +50,37 @@ namespace Nether.Analytics.DataLake
         }
 
 
-        public async Task OutputMessageAsync(string pipelineName, int idx, Message msg)
+        public Task OutputMessageAsync(string partitionId, string pipelineName, int index, Message msg)
         {
             // the output expects a new line each time we write something, so we can
             // just append the new line at the end of the serialized output
             var serializedMessage = $"{_serializer.Format(msg)}{Environment.NewLine}";
 
-            var filePath = GetFilePath(pipelineName, idx, msg);
+            var filePath = GetFilePath(partitionId, pipelineName, index, msg);
 
-            if (_serializer.IncludeHeaders)
-            {
-                await AppendMessageToFileWithHeaderAsync(serializedMessage, filePath);
-            }
-            else
-            {
-                await AppendMessageToFileAsync(serializedMessage, filePath);
-            }
-        }
+            _buffers.Append(partitionId, filePath, serializedMessage);
 
-        public Task FlushAsync()
-        {
             return Task.CompletedTask;
         }
 
-        private string GetFilePath(string pipelineName, int idx, Message msg)
+        public async Task FlushAsync(string partitionId)
         {
-            var fp = _filePathAlgorithm.GetFilePath(pipelineName, idx, msg);
+            foreach (var buffer in _buffers.PopBuffers(partitionId))
+            {
+                if (_serializer.IncludeHeaders)
+                {
+                    await AppendMessageToFileWithHeaderAsync(buffer.Value, buffer.Key);
+                }
+                else
+                {
+                    await AppendMessageToFileAsync(buffer.Value, buffer.Key);
+                }
+            }
+        }
+
+        private string GetFilePath(string partitionId, string pipelineName, int index, Message msg)
+        {
+            var fp = _filePathAlgorithm.GetFilePath(partitionId, pipelineName, index, msg);
 
             var path = "/" + string.Join("/", fp.Hierarchy) + "/";
             var fileName = $"{fp.Name}.{_serializer.FileExtension}";
@@ -107,7 +117,7 @@ namespace Nether.Analytics.DataLake
                 {
                     if (!appendEx.Message.Contains("NotFound"))
                     {
-                        // Unknown exception occurred wile appending content to existing file
+                        // Unknown exception occurred while appending content to existing file
                         throw;
                     }
 
@@ -116,6 +126,7 @@ namespace Nether.Analytics.DataLake
 
                     try
                     {
+                        Console.WriteLine($"Creating new file {filePath}");
                         // Notice: Run the below two methods using synchronous versions in order to provide
                         // as much chance as possible for the two operations to be run just after eachother.
 
@@ -126,7 +137,7 @@ namespace Nether.Analytics.DataLake
                         // Since the above operation would throw an exception if more than one thread
                         // tried to create the file, we can now be sure that the below operation will only
                         // be run by the thread that actually ended up creating the file. This doesn't
-                        // mean that we can't end up in a cituation where an additional thread sees the file
+                        // mean that we can't end up in a situation where an additional thread sees the file
                         // and starts writing before we've had a chance to append the header row on this file.
 
                         //TODO: Fix the above described problem that can cause the Header Row to be written after another row

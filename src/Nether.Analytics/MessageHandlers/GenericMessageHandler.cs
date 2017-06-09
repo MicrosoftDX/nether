@@ -13,15 +13,15 @@ namespace Nether.Analytics
         /// <summary>
         /// Instantiates new Generic Message Handler
         /// </summary>
-        /// <param name="asyncFunc">Function (Message msg, string pipelineName, int idx) that handles messages</param>
+        /// <param name="asyncFunc">Function (Message msg, string pipelineName, int index) that handles messages</param>
         public GenericMessageHandler(Func<Message, string, int, Task<MessageHandlerResults>> asyncFunc)
         {
             _asyncFunc = asyncFunc;
         }
 
-        public async Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int idx)
+        public async Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int index)
         {
-            return await _asyncFunc(msg, pipelineName, idx);
+            return await _asyncFunc(msg, pipelineName, index);
         }
     }
 }

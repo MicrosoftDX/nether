@@ -15,7 +15,7 @@ namespace Nether.Analytics
         //    _outputManagers = outputManagers;
         //}
 
-        public Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int idx)
+        public Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int index)
         {
             // Don't do anything since this is a NullMessageHandler
 

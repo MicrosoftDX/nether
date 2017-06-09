@@ -18,7 +18,7 @@ namespace Nether.Analytics.GeoLocation
         public string GeoHashCenterLonProperty { get; set; } = "geoHashCenterLon";
         public string GeoHashCenterDistProperty { get; set; } = "geoHashCenterDist";
 
-        public Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int idx)
+        public Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int index)
         {
             //TODO: Handle incorrect messages that doesn't have the required properties
             var lat = double.Parse(msg.Properties[InputLatProperty]);

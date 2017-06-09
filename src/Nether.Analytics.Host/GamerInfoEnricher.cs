@@ -9,7 +9,7 @@ namespace Nether.Analytics.Host
 {
     public class GamerInfoEnricher : IMessageHandler
     {
-        public Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int idx)
+        public Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int index)
         {
             msg.Properties.Add("Greeting", $"Event was enriched in pipeline {pipelineName}");
 

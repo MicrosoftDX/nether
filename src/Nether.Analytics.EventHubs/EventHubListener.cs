@@ -14,42 +14,46 @@ namespace Nether.Analytics.EventHubs
     public class EventHubsListener : IEventProcessor, IMessageListener<EventHubListenerMessage>
     {
         private readonly EventProcessorHost _host;
-        private Func<IEnumerable<EventHubListenerMessage>, Task> _messageHandlerAsync;
+        private Func<string, IEnumerable<EventHubListenerMessage>, Task> _messageHandlerAsync;
+        private EventProcessorOptions _processorOptions;
 
-        public EventHubsListener(EventHubsListenerConfiguration config)
+        public EventHubsListener(EventProcessorHostOptions hostOptions, EventProcessorOptions processorOptions = null)
         {
             #region Assert arguments are provided
-            if (string.IsNullOrWhiteSpace(config.EventHubPath))
+            if (string.IsNullOrWhiteSpace(hostOptions.EventHubPath))
                 throw new ArgumentException("EventHubPath needs to be provided");
 
-            if (string.IsNullOrWhiteSpace(config.EventHubConnectionString))
+            if (string.IsNullOrWhiteSpace(hostOptions.EventHubConnectionString))
                 throw new ArgumentException("EventHubConnectionString needs to be provided");
 
-            if (string.IsNullOrWhiteSpace(config.StorageConnectionString))
+            if (string.IsNullOrWhiteSpace(hostOptions.StorageConnectionString))
                 throw new ArgumentException("StorageConnectionString needs to be provided");
 
-            if (string.IsNullOrWhiteSpace(config.LeaseContainerName))
+            if (string.IsNullOrWhiteSpace(hostOptions.LeaseContainerName))
                 throw new ArgumentException("LeaseContainerName needs to be provided");
 
             // If ConsumerGroupName is left null or empty, then use default ConsumerGroupName
-            var consumerGroupName = string.IsNullOrWhiteSpace(config.ConsumerGroupName) ?
-                PartitionReceiver.DefaultConsumerGroupName : config.ConsumerGroupName;
+            var consumerGroupName = string.IsNullOrWhiteSpace(hostOptions.ConsumerGroupName) ?
+                PartitionReceiver.DefaultConsumerGroupName : hostOptions.ConsumerGroupName;
             #endregion
 
             _host = new EventProcessorHost(
-                config.EventHubPath,
+                hostOptions.EventHubPath,
                 consumerGroupName,
-                config.EventHubConnectionString,
-                config.StorageConnectionString,
-                config.LeaseContainerName);
+                hostOptions.EventHubConnectionString,
+                hostOptions.StorageConnectionString,
+                hostOptions.LeaseContainerName);
+
+            _processorOptions = processorOptions ?? new EventProcessorOptions();
         }
 
-        public async Task StartAsync(Func<IEnumerable<EventHubListenerMessage>, Task> messageHandlerAsync)
+        public async Task StartAsync(Func<string, IEnumerable<EventHubListenerMessage>, Task> messageHandlerAsync)
         {
             _messageHandlerAsync = messageHandlerAsync;
             // Register this object as the processor of incomming EventHubMessages by using
             // a custom EventHubProcessorFactory
-            await _host.RegisterEventProcessorFactoryAsync(new EventHubProcessorFactory(this));
+
+            await _host.RegisterEventProcessorFactoryAsync(new EventHubProcessorFactory(this), _processorOptions);
         }
 
         public async Task StopAsync()
@@ -75,7 +79,7 @@ namespace Nether.Analytics.EventHubs
                 });
             }
 
-            await _messageHandlerAsync(eventHubListenerMessages);
+            await _messageHandlerAsync(context.PartitionId, eventHubListenerMessages);
 
             await context.CheckpointAsync();
         }

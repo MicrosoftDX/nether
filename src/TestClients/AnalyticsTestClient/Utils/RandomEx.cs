@@ -41,5 +41,10 @@ namespace AnalyticsTestClient
         {
             return System.TimeSpan.FromSeconds((to - from).TotalSeconds * s_random.NextDouble());
         }
+
+        public static int PlusMinus(this int i, int value)
+        {
+            return i + s_random.Next(-value, value);
+        }
     }
 }
