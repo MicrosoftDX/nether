@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nether.Analytics
@@ -50,10 +51,8 @@ namespace Nether.Analytics
 
         public async Task FlushAsync(string partitionId)
         {
-            foreach (var outputManager in _outputManagers)
-            {
-                await outputManager.FlushAsync(partitionId);
-            }
+            var tasks = _outputManagers.Select(m => m.FlushAsync(partitionId));
+            await Task.WhenAll(tasks);
         }
     }
 }
