@@ -37,9 +37,9 @@ namespace AnalyticsTestClient
 
                 if (start == null || end == null) return;
 
-                var filePathAlgorithm = new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every5Minutes);
+                var filePathAlgorithm = new DateFolderStructure(newFileOption: NewFileNameOptions.Every5Minutes);
 
-                IFilePathAlgorithm _filePathAlgorithm = new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every5Minutes);
+                IFolderStructure _filePathAlgorithm = new DateFolderStructure(newFileOption: NewFileNameOptions.Every5Minutes);
 
                 Console.Write("Root directory: ");
 
@@ -87,7 +87,7 @@ namespace AnalyticsTestClient
 
             public void GetLatestFromFileSystem(IMessageFormatter formatter, string pipeline, string messageType)
             {
-                IFilePathAlgorithm _filePathAlgorithm = new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every5Minutes);
+                IFolderStructure _filePathAlgorithm = new DateFolderStructure(newFileOption: NewFileNameOptions.Every5Minutes);
 
                 Console.Write("Root directory: ");
 

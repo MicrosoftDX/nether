@@ -74,7 +74,7 @@ namespace Nether.Analytics.Host
             // User a builder to create routing infrastructure for messages and the pipelines
             var builder = new MessageRouterBuilder();
 
-            var filePathAlgorithm = new PipelineDateFilePathAlgorithm(newFileOption: NewFileNameOptions.Every3Hours);
+            var filePathAlgorithm = new DateFolderStructure(newFileOption: NewFileNameOptions.Every3Hours);
 
             // Setting up "Geo Clustering Recipe"
 

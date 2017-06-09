@@ -7,14 +7,14 @@ using System.Collections.Generic;
 
 namespace Nether.Analytics
 {
-    public class PipelineDateFilePathAlgorithm : IFilePathAlgorithm
+    public class DateFolderStructure : IFolderStructure
     {
         private string _rootFolder;
         private bool _partitionByPipeline;
         private bool _partitionByMessageType;
         private NewFileNameOptions _newFileOption;
 
-        public PipelineDateFilePathAlgorithm(string rootFolder = "nether", bool partitionByPipeline = false, bool partitionByMessageType = true, NewFileNameOptions newFileOption = NewFileNameOptions.Every15Minutes)
+        public DateFolderStructure(string rootFolder = "nether", bool partitionByPipeline = false, bool partitionByMessageType = true, NewFileNameOptions newFileOption = NewFileNameOptions.Every15Minutes)
         {
             _rootFolder = rootFolder;
             _newFileOption = newFileOption;
@@ -22,15 +22,16 @@ namespace Nether.Analytics
             _partitionByMessageType = partitionByMessageType;
         }
 
-        public FilePathResult GetFilePath(string partitionId, string pipelineName, int index, Message msg)
+        public string[] GetFolders(string partitionId, string pipelineName, int index, Message msg, out string fileName)
         {
-            var hierarchy = new List<string>();
-            hierarchy.Add(_rootFolder);
-            if (_partitionByPipeline) hierarchy.Add(pipelineName);
-            if (_partitionByMessageType)hierarchy.Add(msg.MessageType);
-            hierarchy.Add(msg.EnqueuedTimeUtc.Year.ToString("D4"));
-            hierarchy.Add(msg.EnqueuedTimeUtc.Month.ToString("D2"));
-            hierarchy.Add(msg.EnqueuedTimeUtc.Day.ToString("D2"));
+            var folders = new List<string>();
+
+            folders.Add(_rootFolder);
+            if (_partitionByPipeline) folders.Add(pipelineName);
+            if (_partitionByMessageType)folders.Add(msg.MessageType);
+            folders.Add(msg.EnqueuedTimeUtc.Year.ToString("D4"));
+            folders.Add(msg.EnqueuedTimeUtc.Month.ToString("D2"));
+            folders.Add(msg.EnqueuedTimeUtc.Day.ToString("D2"));
 
             var dateTime = msg.EnqueuedTimeUtc;
 
@@ -50,9 +51,9 @@ namespace Nether.Analytics
             // and assume the caller can "query" the underlying file system to get the
             // multiple partitions
             var partition = string.IsNullOrEmpty(partitionId) ? "*" : partitionId.PadLeft(2, '0');
-            var name = $"{hour}_{minute}_p{partition}";
+            fileName = $"{hour}_{minute}_p{partition}";
 
-            return new FilePathResult { Hierarchy = hierarchy.ToArray(), Name = name };
+            return folders.ToArray();
         }
     }
 

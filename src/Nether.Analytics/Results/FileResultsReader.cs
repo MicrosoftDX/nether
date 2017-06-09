@@ -13,13 +13,13 @@ namespace Nether.Analytics
         private string _rootPath;
         private IMessageFormatter _serializer;
         private string _pipeline;
-        private IFilePathAlgorithm _filePathAlgorithm;
+        private IFolderStructure _filePathAlgorithm;
         private string _messageType;
 
         public FileResultsReader()
         {
         }
-        public FileResultsReader(IMessageFormatter serializer, IFilePathAlgorithm filePathAlgorithm,
+        public FileResultsReader(IMessageFormatter serializer, IFolderStructure filePathAlgorithm,
             string rootPath, string pipeline, string messageType)
         {
             _serializer = serializer;
