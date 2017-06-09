@@ -42,10 +42,10 @@ namespace Nether.Analytics
 
 
             //TODO: Run output managers in parallel
-            var outputManagerIdx = 0;
+            var outputManagerIndex = 0;
             foreach (var outputManager in _outputManagers)
             {
-                await outputManager.OutputMessageAsync(partitionId, PipelineName, outputManagerIdx++, msg);
+                await outputManager.OutputMessageAsync(partitionId, PipelineName, outputManagerIndex++, msg);
             }
         }
 

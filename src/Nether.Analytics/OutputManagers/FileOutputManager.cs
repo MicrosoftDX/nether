@@ -29,9 +29,9 @@ namespace Nether.Analytics
         {
             var serializedMessage = $"{_serializer.Format(msg)}{Environment.NewLine}";
 
-            var filePath = GetFilePath(pipelineName, idx, msg);
+            var filePath = GetFilePath(partitionId, pipelineName, idx, msg);
 
-            var key = $"{pipelineName}_{msg.MessageType}_{msg.Version}_{msg.PartitionId}";
+            var key = $"{pipelineName}_{msg.MessageType}_{msg.Version}_{partitionId}";
 
             var semaphore = s_semaphores.GetOrAdd(key, new SemaphoreSlim(1, 1));
             await semaphore.WaitAsync();
@@ -58,9 +58,9 @@ namespace Nether.Analytics
             return Task.CompletedTask;
         }
 
-        private string GetFilePath(string pipelineName, int idx, Message msg)
+        private string GetFilePath(string partitionId, string pipelineName, int idx, Message msg)
         {
-            var fp = _filePathAlgorithm.GetFilePath(pipelineName, idx, msg);
+            var fp = _filePathAlgorithm.GetFilePath(partitionId, pipelineName, idx, msg);
             var fileName = $"{fp.Name}.{_serializer.FileExtension}";
 
             return Path.Combine(_rootPath, Path.Combine(fp.Hierarchy), fileName);

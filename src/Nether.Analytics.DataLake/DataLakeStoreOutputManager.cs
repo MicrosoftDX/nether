@@ -56,7 +56,7 @@ namespace Nether.Analytics.DataLake
             // just append the new line at the end of the serialized output
             var serializedMessage = $"{_serializer.Format(msg)}{Environment.NewLine}";
 
-            var filePath = GetFilePath(pipelineName, idx, msg);
+            var filePath = GetFilePath(partitionId, pipelineName, idx, msg);
 
             _buffers.Append(partitionId, filePath, serializedMessage);
 
@@ -78,9 +78,9 @@ namespace Nether.Analytics.DataLake
             }
         }
 
-        private string GetFilePath(string pipelineName, int idx, Message msg)
+        private string GetFilePath(string partitionId, string pipelineName, int idx, Message msg)
         {
-            var fp = _filePathAlgorithm.GetFilePath(pipelineName, idx, msg);
+            var fp = _filePathAlgorithm.GetFilePath(partitionId, pipelineName, idx, msg);
 
             var path = "/" + string.Join("/", fp.Hierarchy) + "/";
             var fileName = $"{fp.Name}.{_serializer.FileExtension}";
