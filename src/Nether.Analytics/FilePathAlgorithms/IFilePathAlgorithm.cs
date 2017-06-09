@@ -9,26 +9,6 @@ namespace Nether.Analytics
     public interface IFilePathAlgorithm
     {
         FilePathResult GetFilePath(string partitionId, string pipelineName, int index, Message msg);
-
-        FilePathResult GetFilePath(string pipelineName, string messageType, DateTime dateTime, string partitionId);
-
-        /// <summary>
-        /// Returns a list of path results for a specific time span.
-        /// </summary>
-        /// <param name="pipelineName"></param>
-        /// <param name="messageType"></param>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <returns></returns>
-        IEnumerable<FilePathResult> GetFilePaths(string pipelineName, string messageType, DateTime from, DateTime to);
-
-        /// <summary>
-        /// Gets the root path, augmented with the pipeline and messagetype parts.
-        /// </summary>
-        /// <param name="pipelineName"></param>
-        /// <param name="messageType"></param>
-        /// <returns></returns>
-        string GetRootPath(string pipelineName, string messageType);
     }
 
     public struct FilePathResult

@@ -31,59 +31,63 @@ namespace Nether.Analytics
 
         public IEnumerable<Message> GetLatest()
         {
-            // we should get the root based on the pipeline and type, so we need to call the algorithm
-            var rootPath = _filePathAlgorithm.GetRootPath(_pipeline, _messageType);
+            throw new NotImplementedException("Will be re-implemented in PR comming soon");
 
-            rootPath = Path.Combine(_rootPath, rootPath);
+            //// we should get the root based on the pipeline and type, so we need to call the algorithm
+            //var rootPath = _filePathAlgorithm.GetRootPath(_pipeline, _messageType);
 
-            // we're basing this implementation on the metadata of files
-            // which means that we'll iterate from the root folder, and go from there 
-            // on up, based on last time modified
-            var dir = new DirectoryInfo(rootPath);
+            //rootPath = Path.Combine(_rootPath, rootPath);
 
-            if (!dir.Exists)
-                throw new InvalidOperationException($"The path supplied is invalid, as it does not exist: {_rootPath}");
+            //// we're basing this implementation on the metadata of files
+            //// which means that we'll iterate from the root folder, and go from there 
+            //// on up, based on last time modified
+            //var dir = new DirectoryInfo(rootPath);
 
-            var file = GetLatest(dir);
+            //if (!dir.Exists)
+            //    throw new InvalidOperationException($"The path supplied is invalid, as it does not exist: {_rootPath}");
 
-            return ReadFile(file);
+            //var file = GetLatest(dir);
+
+            //return ReadFile(file);
         }
 
         public IEnumerable<Message> Get(DateTime from, DateTime to)
         {
-            var paths = _filePathAlgorithm.GetFilePaths(_pipeline, _messageType, from, to);
+            throw new NotImplementedException("Will be re-implemented in PR comming soon");
 
-            foreach (var path in paths)
-            {
-                var fullPath = Path.Combine(_rootPath, $"{path}.{_serializer.FileExtension}");
-                string[] searchPaths = new string[] { fullPath };
+            //var paths = _filePathAlgorithm.GetFilePaths(_pipeline, _messageType, from, to);
 
-                if (fullPath.Contains("*"))
-                {
-                    // this is a search path, so let's do that
-                    // each file might have more than one partition
-                    var directoryName = Path.GetDirectoryName(fullPath);
+            //foreach (var path in paths)
+            //{
+            //    var fullPath = Path.Combine(_rootPath, $"{path}.{_serializer.FileExtension}");
+            //    string[] searchPaths = new string[] { fullPath };
 
-                    var di = new DirectoryInfo(directoryName);
-                    var searchPath = Path.GetFileName(fullPath);
+            //    if (fullPath.Contains("*"))
+            //    {
+            //        // this is a search path, so let's do that
+            //        // each file might have more than one partition
+            //        var directoryName = Path.GetDirectoryName(fullPath);
 
-                    // the directory might actually not exist, in which case we can just skip it all
-                    if (!di.Exists) continue;
+            //        var di = new DirectoryInfo(directoryName);
+            //        var searchPath = Path.GetFileName(fullPath);
 
-                    var files = di.GetFiles(searchPath, SearchOption.TopDirectoryOnly);
-                    searchPaths = files.Select(x => x.FullName).ToArray();
-                }
+            //        // the directory might actually not exist, in which case we can just skip it all
+            //        if (!di.Exists) continue;
 
-                // we need to look across multiple paths, because we might have 
-                // had this filled out with the search patterns
-                foreach (var actualPath in searchPaths)
-                {
-                    foreach (var msg in ReadFile(new FileInfo(actualPath)))
-                    {
-                        yield return msg;
-                    }
-                }
-            }
+            //        var files = di.GetFiles(searchPath, SearchOption.TopDirectoryOnly);
+            //        searchPaths = files.Select(x => x.FullName).ToArray();
+            //    }
+
+            //    // we need to look across multiple paths, because we might have 
+            //    // had this filled out with the search patterns
+            //    foreach (var actualPath in searchPaths)
+            //    {
+            //        foreach (var msg in ReadFile(new FileInfo(actualPath)))
+            //        {
+            //            yield return msg;
+            //        }
+            //    }
+            //}
         }
 
         private IEnumerable<Message> ReadFile(FileInfo file)
