@@ -81,7 +81,7 @@ namespace Nether.Analytics.Host
             var clusteringSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "geoHashCenterDist", "rnd");
 
             builder.Pipeline("clustering")
-                .HandlesMessageType("geo-location", "1.0.0")
+                .HandlesMessageType("geo-location", 1, 0)
                 .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
                 .AddHandler(new RandomIntMessageHandler())
                 .OutputTo(new ConsoleOutputManager(clusteringSerializer, enabled: false)
@@ -98,7 +98,7 @@ namespace Nether.Analytics.Host
 
             var dauSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "gamerTag");
             builder.Pipeline("dau")
-                .HandlesMessageType("session-start", "1.0.0")
+                .HandlesMessageType("session-start", 1, 0)
                 .OutputTo(new ConsoleOutputManager(dauSerializer, enabled: false)
                         , new FileOutputManager(dauSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER])
                         , new DataLakeStoreOutputManager(
@@ -111,7 +111,7 @@ namespace Nether.Analytics.Host
 
             var sessionSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession");
             builder.Pipeline("sessions")
-                .HandlesMessageType("heartbeat", "1.0.0")
+                .HandlesMessageType("heartbeat", 1, 0)
                 .OutputTo(new ConsoleOutputManager(sessionSerializer, enabled: false)
                 , new FileOutputManager(sessionSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER])
                 , new DataLakeStoreOutputManager(

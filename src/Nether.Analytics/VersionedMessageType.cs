@@ -3,13 +3,13 @@
 
 
 
-namespace Nether.Analytics
-{
-    public class VersionedMessageType : IVersionedMessageType
-    {
-        public string MessageType { get; set; }
-        public string Version { get; set; }
+//namespace Nether.Analytics
+//{
+//    public class VersionedMessageType : IVersionedMessageType
+//    {
+//        public string MessageType { get; set; }
+//        public string Version { get; set; }
 
-        public string Key => MessageType + "|" + Version;
-    }
-}
+//        public string Key => MessageType + "|" + Version;
+//    }
+//}

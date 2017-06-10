@@ -35,14 +35,25 @@ namespace Nether.Analytics.Parsers
             }
 
             var gameEventType = (string)json["type"];
-            var version = (string)json["version"];
-            var dbgEnqueuedTime = (string)json["dbgEnqueuedTimeUtc"];
-
-            if (gameEventType == null || version == null)
+            if (gameEventType == null)
             {
                 await CorruptMessageHandler.HandleAsync(data);
                 return null;
             }
+
+            MessageVersion version;
+            try
+            {
+                version = MessageVersion.Parse((string)json["version"]);
+            }
+            catch
+            {
+                await CorruptMessageHandler.HandleAsync(data);
+                return null;
+            }
+
+            var dbgEnqueuedTime = (string)json["dbgEnqueuedTimeUtc"];
+
 
             // If dbgEnqueuedTime is allowed and that property is set, then use it instead of the DateTime given by EventHub
             var enqueuedTime = (AllowDbgEnqueuedTime && dbgEnqueuedTime != null) ? DateTime.Parse(dbgEnqueuedTime) : unparsedMsg.EnqueuedTime;

@@ -19,7 +19,7 @@ namespace Nether.Analytics
             {
                 foreach (var messageType in pipeline.HandledMessageTypes)
                 {
-                    if (_routingDictionary.TryGetValue(messageType.Key, out var existingPipelinesForMessageType))
+                    if (_routingDictionary.TryGetValue(messageType, out var existingPipelinesForMessageType))
                     {
                         existingPipelinesForMessageType.Add(pipeline);
                     }
@@ -27,7 +27,7 @@ namespace Nether.Analytics
                     {
                         var newPipelinesForMessageType = new List<MessagePipeline>();
                         newPipelinesForMessageType.Add(pipeline);
-                        _routingDictionary.Add(messageType.Key, newPipelinesForMessageType);
+                        _routingDictionary.Add(messageType, newPipelinesForMessageType);
                     }
                 }
             }
@@ -36,10 +36,7 @@ namespace Nether.Analytics
 
         public async Task RouteMessageAsync(string partitionId, Message msg)
         {
-            //TODO: Fix Message Key to something more elegant
-            var versionedMessageType = new VersionedMessageType { MessageType = msg.MessageType, Version = msg.Version };
-
-            if (_routingDictionary.TryGetValue(versionedMessageType.Key, out var pipelines))
+            if (_routingDictionary.TryGetValue(msg.VersionedMessageType, out var pipelines))
             {
                 //TODO: Run loop in parallel
                 foreach (var pipeline in pipelines)

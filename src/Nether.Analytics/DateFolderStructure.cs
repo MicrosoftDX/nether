@@ -11,15 +11,15 @@ namespace Nether.Analytics
     {
         private string _rootFolder;
         private bool _partitionByPipeline;
-        private bool _partitionByMessageType;
+        private bool _partitionByMessageTypeAndVersion;
         private NewFileNameOptions _newFileOption;
 
-        public DateFolderStructure(string rootFolder = "nether", bool partitionByPipeline = false, bool partitionByMessageType = true, NewFileNameOptions newFileOption = NewFileNameOptions.Every15Minutes)
+        public DateFolderStructure(string rootFolder = "nether", bool partitionByPipeline = false, bool partitionByMessageTypeAndVersion = true, NewFileNameOptions newFileOption = NewFileNameOptions.Every15Minutes)
         {
             _rootFolder = rootFolder;
             _newFileOption = newFileOption;
             _partitionByPipeline = partitionByPipeline;
-            _partitionByMessageType = partitionByMessageType;
+            _partitionByMessageTypeAndVersion = partitionByMessageTypeAndVersion;
         }
 
         public string[] GetFolders(string partitionId, string pipelineName, int index, Message msg, out string fileName)
@@ -27,8 +27,15 @@ namespace Nether.Analytics
             var folders = new List<string>();
 
             folders.Add(_rootFolder);
-            if (_partitionByPipeline) folders.Add(pipelineName);
-            if (_partitionByMessageType)folders.Add(msg.MessageType);
+            if (_partitionByPipeline)
+            {
+                folders.Add(pipelineName);
+            }
+            if (_partitionByMessageTypeAndVersion)
+            {
+                folders.Add(msg.MessageType);
+                folders.Add(msg.Version.Compatible);
+            }
             folders.Add(msg.EnqueuedTimeUtc.Year.ToString("D4"));
             folders.Add(msg.EnqueuedTimeUtc.Month.ToString("D2"));
             folders.Add(msg.EnqueuedTimeUtc.Day.ToString("D2"));
