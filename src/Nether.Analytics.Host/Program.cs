@@ -80,7 +80,7 @@ namespace Nether.Analytics.Host
 
             var clusteringSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "geoHashCenterDist", "rnd");
 
-            builder.Pipeline("clustering")
+            builder.Pipeline("geoclusters")
                 .HandlesMessageType("geo-location", 1, 0)
                 .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
                 .AddHandler(new RandomIntMessageHandler())

@@ -14,7 +14,7 @@ namespace Nether.Analytics
         private bool _partitionByMessageTypeAndVersion;
         private NewFileNameOptions _newFileOption;
 
-        public DateFolderStructure(string rootFolder = "nether", bool partitionByPipeline = false, bool partitionByMessageTypeAndVersion = true, NewFileNameOptions newFileOption = NewFileNameOptions.Every15Minutes)
+        public DateFolderStructure(string rootFolder = "messages", bool partitionByPipeline = false, bool partitionByMessageTypeAndVersion = true, NewFileNameOptions newFileOption = NewFileNameOptions.Every15Minutes)
         {
             _rootFolder = rootFolder;
             _newFileOption = newFileOption;
