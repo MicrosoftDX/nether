@@ -39,7 +39,7 @@ namespace Nether.Analytics
                     Revision = int.Parse(parts[2])
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new ArgumentException("Unable to parse version string as series of three integers", ex);
             }
