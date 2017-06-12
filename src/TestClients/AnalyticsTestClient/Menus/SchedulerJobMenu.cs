@@ -32,31 +32,64 @@ namespace AnalyticsTestClient
         public SchedulerJobMenu()
         {
             Title = "Run Scheduler";
-            MenuItems.Add('1', new ConsoleMenuItem("Run simple job", RunSimpleJob));
-            MenuItems.Add('2', new ConsoleMenuItem("Remove job state", ResetSimpleJobState));
-            MenuItems.Add('3', new ConsoleMenuItem("Run job{1-3}", async () => { await StartJobSchedulerAsync(); }));
-            MenuItems.Add('4', new ConsoleMenuItem("Stop job scheduler", CancelJobScheduler));
+            MenuItems.Add('1', new ConsoleMenuItem("Run simple job every 5 seconds", RunSimpleJob));
+            MenuItems.Add('2', new ConsoleMenuItem("Run long job minute on the minute", RunLongJob));
+            MenuItems.Add('3', new ConsoleMenuItem("Remove job state", ResetSimpleJobState));
+            MenuItems.Add('4', new ConsoleMenuItem("Run job{1-3}", async () => { await StartJobSchedulerAsync(); }));
+            MenuItems.Add('5', new ConsoleMenuItem("Stop job scheduler", CancelJobScheduler));
         }
 
         private void RunSimpleJob()
         {
-            var startTime = ConsoleEx.ReadLine("Start Time", DateTime.Now - TimeSpan.FromDays(7));
+            var startTime = ConsoleEx.ReadLine("Start Time (UTC)", DateTime.UtcNow - TimeSpan.FromMinutes(1));
             var jobId = ConsoleEx.ReadLine("JobId", "simpleJob001");
 
             var storageConnectionstring = Config.Root[Config.NAH_EHLISTENER_STORAGECONNECTIONSTRING];
 
             var syncProvider = new BlobSynchronizationProvider(storageConnectionstring); // Responsible for Singleton Implementation
             var stateProvider = new BlobJobStateProvider(storageConnectionstring);  // Responsible for state
-            var jobExecutor = new JobExecutor(syncProvider);
-            var runDailyAtFiveAM = new RunOncePerDaySchedule(stateProvider, 5, 0, startTime);
+            var jobExecutor = new JobExecutor(syncProvider, stateProvider);
+            var every5Seconds = new IntervalSchedule(TimeSpan.FromSeconds(5));
 
             while (true)
             {
-                jobExecutor.RunAsSingletonAsync(jobId, runDailyAtFiveAM, (dt) =>
+                jobExecutor.RunAsSingletonAsync(jobId, every5Seconds, (dt) =>
                 {
-                    Console.WriteLine($"Job running at {dt}");
+                    Console.WriteLine($"Start Job for Time {dt}");
                     return Task.CompletedTask;
-                }).Wait();
+                }, startTime).Wait();
+
+                Console.Write(".");
+
+                Thread.Sleep(1000);
+
+                if (EscPressed())
+                    break;
+            }
+        }
+
+        private void RunLongJob()
+        {
+            var startTime = ConsoleEx.ReadLine("Start Time (UTC)", DateTime.UtcNow - TimeSpan.FromMinutes(1));
+            var jobId = ConsoleEx.ReadLine("JobId", "longJob001");
+
+            var storageConnectionstring = Config.Root[Config.NAH_EHLISTENER_STORAGECONNECTIONSTRING];
+
+            var syncProvider = new BlobSynchronizationProvider(storageConnectionstring); // Responsible for Singleton Implementation
+            var stateProvider = new BlobJobStateProvider(storageConnectionstring);  // Responsible for state
+            var jobExecutor = new JobExecutor(syncProvider, stateProvider);
+            var every5Seconds = new EveryMinuteOnTheMinuteSchedule();
+
+            while (true)
+            {
+                jobExecutor.RunAsSingletonAsync(jobId, every5Seconds, (dt) =>
+                {
+                    Console.WriteLine($"Start 15s Job for Time {dt}");
+                    Thread.Sleep(TimeSpan.FromSeconds(15));
+                    Console.WriteLine("Job done!");
+
+                    return Task.CompletedTask;
+                }, startTime).Wait();
 
                 Console.Write(".");
 
@@ -72,14 +105,12 @@ namespace AnalyticsTestClient
             var storageConnectionstring = Config.Root[Config.NAH_EHLISTENER_STORAGECONNECTIONSTRING];
 
             var stateProvider = new BlobJobStateProvider(storageConnectionstring);
-            var runDailyAtFiveAM = new RunOncePerDaySchedule(stateProvider, 5, 0);
 
             string jobId = ConsoleEx.ReadLine("JobId", "simpleJob001");
 
             try
             {
-                var detailedJobId = runDailyAtFiveAM.GetDetailedJobName(jobId);
-                stateProvider.DeleteEntryAsync(detailedJobId).Wait();
+                stateProvider.DeleteEntryAsync(jobId).Wait();
                 Console.WriteLine("Job state removed");
             }
             catch (Exception ex)
@@ -96,6 +127,7 @@ namespace AnalyticsTestClient
                 Console.WriteLine("Job scheduler is already running. No action performed");
                 return;
             }
+
             s_cancellationTokenSource = new CancellationTokenSource();
             s_cancellationToken = s_cancellationTokenSource.Token;
 
@@ -107,9 +139,9 @@ namespace AnalyticsTestClient
             var storageConnectionstring = Config.Root[Config.NAH_EHLISTENER_STORAGECONNECTIONSTRING];
 
             var stateProvider = new BlobJobStateProvider(storageConnectionstring);  // Responsible for state
-            var runDailyAtFiveAM = new RunOncePerDaySchedule(stateProvider, 5, 0, new DateTime(2017, 6, 10));
+            var runDailyAtFiveAM = new DailySchedule(05, 00, 00);
             var syncProvider = new BlobSynchronizationProvider(storageConnectionstring); // Responsible for Singleton Implementation
-            var jobExecutor = new JobExecutor(syncProvider);
+            var jobExecutor = new JobExecutor(syncProvider, stateProvider);
 
             await Task.Run(async () =>
             {

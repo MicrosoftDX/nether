@@ -4,6 +4,7 @@
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -54,16 +55,15 @@ namespace Nether.Analytics
             if (await blockBlob.ExistsAsync())
             {
                 //get the last execution time
-                string datetimestring = await blockBlob.DownloadTextAsync();
+                var str = await blockBlob.DownloadTextAsync();
 
                 //empty entry
-                if (string.IsNullOrEmpty(datetimestring.Trim()))
+                if (string.IsNullOrWhiteSpace(str))
                     return null;
 
                 try
                 {
-                    DateTime dt = DateTimeUtilities.FromYMDHMString(datetimestring);
-                    return dt;
+                    return DateTime.Parse(str, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
                 }
                 //if we fail to get a valid datetimestring for any reason
                 //e.g. the Lease provider just created the blob
@@ -87,8 +87,7 @@ namespace Nether.Analytics
         {
             if (_container == null) await InitializeAsync();
             var blob = _container.GetBlockBlobReference(jobId);
-            var datestring = DateTimeUtilities.ToYMDHMSString(lastExecutionTime);
-            await blob.UploadTextAsync(datestring, Encoding.UTF8, AccessCondition.GenerateLeaseCondition(leaseId), null, null);
+            await blob.UploadTextAsync(lastExecutionTime.ToString(), Encoding.UTF8, AccessCondition.GenerateLeaseCondition(leaseId), null, null);
         }
 
         /// <summary>
@@ -100,7 +99,17 @@ namespace Nether.Analytics
         {
             if (_container == null) await InitializeAsync();
             var blob = _container.GetBlockBlobReference(jobIdWithSchedule);
-            await blob.DeleteAsync();
+
+            try
+            {
+                await blob.DeleteAsync();
+            }
+            catch (StorageException)
+            {
+                // Try again after breaking any lease
+                await blob.BreakLeaseAsync(null);
+                await blob.DeleteAsync();
+            }
         }
     }
 }
