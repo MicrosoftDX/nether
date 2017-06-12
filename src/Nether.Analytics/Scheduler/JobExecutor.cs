@@ -25,16 +25,21 @@ namespace Nether.Analytics
             foreach (var dateTime in dateTimes)
             {
                 //try to get a lease
-                string leaseID = await _synchronizationProvider.AcquireLeaseAsync(detailedJobName);
+                var leaseId = await _synchronizationProvider.AcquireLeaseAsync(detailedJobName);
 
-                Console.WriteLine($"Attempting to run job {detailedJobName} for DateTime {dateTime.RoundToPreviousInterval(schedule.Interval)}");
-                await actionAsync(dateTime); //execute requested action
-                Console.WriteLine($"Finished running run job {detailedJobName} for DateTime {dateTime.RoundToPreviousInterval(schedule.Interval)}");
-                //notify the state provider that job has completed
-                await schedule.SetLastExecutionAsync(detailedJobName, dateTime, leaseID);
+                try
+                {
+                    //execute requested action
+                    await actionAsync(dateTime);
 
-                //notify sync provider that we do not longer need the lease/exclusive access
-                await _synchronizationProvider.ReleaseLeaseAsync(detailedJobName, leaseID);
+                    //notify the state provider that job has completed
+                    await schedule.SetLastExecutionAsync(detailedJobName, dateTime, leaseId);
+                }
+                finally
+                {
+                    //notify sync provider that we do not longer need the lease/exclusive access
+                    await _synchronizationProvider.ReleaseLeaseAsync(detailedJobName, leaseId);
+                }
             }
         }
     }

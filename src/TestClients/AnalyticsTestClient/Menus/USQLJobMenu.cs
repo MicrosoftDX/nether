@@ -48,8 +48,8 @@ namespace AnalyticsTestClient
 
             var jm = new DataLakeAnalyticsJobManager(serviceClientCredentials,
                Config.Root[Config.NAH_AZURE_SUBSCRIPTIONID], Config.Root[Config.NAH_AZURE_DLA_ACCOUNTNAME]);
-            var jobID = await jm.SubmitJobAsync(jobName, script, variables);
-            await jm.WaitForJobAsync(jobID);
+            var jobId = await jm.SubmitJobAsync(jobName, script, variables);
+            await jm.WaitForJobAsync(jobId);
         }
     }
 }

@@ -157,5 +157,15 @@ namespace AnalyticsTestClient
                 Console.WriteLine($"Unable to parse {s} as {o.GetType()}");
             }
         }
+
+        public bool EscPressed()
+        {
+            if (Console.KeyAvailable)
+            {
+                return Console.ReadKey().Key == ConsoleKey.Escape;
+            }
+
+            return false;
+        }
     }
 }

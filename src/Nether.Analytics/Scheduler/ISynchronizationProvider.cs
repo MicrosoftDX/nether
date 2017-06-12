@@ -11,6 +11,6 @@ namespace Nether.Analytics
     public interface ISynchronizationProvider
     {
         Task<string> AcquireLeaseAsync(string detailedJobName);
-        Task ReleaseLeaseAsync(string detailedJobName, string leaseID);
+        Task ReleaseLeaseAsync(string detailedJobName, string leaseId);
     }
 }

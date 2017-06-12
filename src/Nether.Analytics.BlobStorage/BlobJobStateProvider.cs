@@ -12,15 +12,15 @@ namespace Nether.Analytics
     /// <summary>
     /// Stores and retrieves details about last execution dateTime in the format yyyyMMdd-HHmm
     /// </summary>
-    public class BlobStorageStateProvider : IStateProvider
+    public class BlobJobStateProvider : IJobStateProvider
     {
         private string _storageConnectionString;
         private CloudStorageAccount _storageAccount;
         private CloudBlobClient _blobClient;
         private CloudBlobContainer _container;
-        private readonly string _containerName = Constants.SchedulerStateContainerName;
+        private readonly string _containerName = Constants.JobStateContainerName;
 
-        public BlobStorageStateProvider(string connectionString)
+        public BlobJobStateProvider(string connectionString)
         {
             if (string.IsNullOrEmpty(connectionString))
                 throw new ArgumentException($"{nameof(connectionString)} cannot be null");
@@ -42,12 +42,12 @@ namespace Nether.Analytics
         /// <summary>
         /// Gets the DateTime of the last executed job
         /// </summary>
-        /// <param name="blobName">Name of the job</param>
+        /// <param name="jobId">Name of the job</param>
         /// <returns>DateTime of the last executed job or null if no entry found</returns>
-        public async Task<DateTime?> GetLastExecutionDatetimeAsync(string blobName)
+        public async Task<DateTime?> GetLastExecutionDatetimeAsync(string jobId)
         {
             if (_container == null) await InitializeAsync();
-            CloudBlockBlob blockBlob = _container.GetBlockBlobReference(blobName);
+            CloudBlockBlob blockBlob = _container.GetBlockBlobReference(jobId);
 
             //blob will probably have already been created by sync provider
             //but we're playing it safe :)
@@ -79,32 +79,28 @@ namespace Nether.Analytics
         /// <summary>
         /// Sets the last execution time for the job
         /// </summary>
-        /// <param name="blobName">Name of the job</param>
-        /// <param name="dt">The last execution DateTime</param>
-        /// <param name="leaseID">The leaseID for exclusive access to the blob</param>
+        /// <param name="jobId">Name of the job</param>
+        /// <param name="lastExecutionTime">The last execution DateTime</param>
+        /// <param name="leaseId">The leaseId for exclusive access to the blob</param>
         /// <returns></returns>
-        public async Task SetLastExecutionDateTimeAsync(string blobName, DateTime dt, string leaseID)
+        public async Task SetLastExecutionDateTimeAsync(string jobId, DateTime lastExecutionTime, string leaseId)
         {
             if (_container == null) await InitializeAsync();
-            CloudBlockBlob blockBlob = _container.GetBlockBlobReference(blobName);
-            string datestring = DateTimeUtilities.ToYMDHMSString(dt);
-            await blockBlob.UploadTextAsync(datestring, Encoding.UTF8, AccessCondition.GenerateLeaseCondition(leaseID), null, null);
+            var blob = _container.GetBlockBlobReference(jobId);
+            var datestring = DateTimeUtilities.ToYMDHMSString(lastExecutionTime);
+            await blob.UploadTextAsync(datestring, Encoding.UTF8, AccessCondition.GenerateLeaseCondition(leaseId), null, null);
         }
 
         /// <summary>
-        /// With the correct code, it will delete the blobName. Code needed for "make sure you're doing the right thing!" reason
+        /// Resets job state
         /// </summary>
-        /// <param name="blobName">BlobName to be deleted</param>
-        /// <param name="code">Answer to the Ultimate Question of Life, the Universe, and Everything</param>
+        /// <param name="jobIdWithSchedule">BlobName to be deleted</param>
         /// <returns></returns>
-        public async Task DeleteEntryAsync(string blobName, int code)
+        public async Task DeleteEntryAsync(string jobIdWithSchedule)
         {
-            if ((((code << 3) / 3) / 2) >> 2 == 14)
-            {
-                if (_container == null) await InitializeAsync();
-                CloudBlockBlob blockBlob = _container.GetBlockBlobReference(blobName);
-                await blockBlob.DeleteAsync();
-            }
+            if (_container == null) await InitializeAsync();
+            var blob = _container.GetBlockBlobReference(jobIdWithSchedule);
+            await blob.DeleteAsync();
         }
     }
 }

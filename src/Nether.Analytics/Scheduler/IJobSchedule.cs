@@ -13,7 +13,7 @@ namespace Nether.Analytics
     public interface IJobSchedule
     {
         Task<IEnumerable<DateTime>> GetPendingExecutionsAsync(string detailedJobName);
-        Task SetLastExecutionAsync(string detailedJobName, DateTime dt, string leaseID);
+        Task SetLastExecutionAsync(string detailedJobName, DateTime dt, string leaseId);
         JobInterval Interval { get; }
         string GetDetailedJobName(string shortJobName);
     }

@@ -5,8 +5,6 @@ namespace Nether.Analytics
 {
     public static class Constants
     {
-        //same name is shared between sync and state implementations
-        //not sure whether it's the best solution
-        public static readonly string SchedulerStateContainerName = "schedulerstate";
+        public const string JobStateContainerName = "jobstates";
     }
 }

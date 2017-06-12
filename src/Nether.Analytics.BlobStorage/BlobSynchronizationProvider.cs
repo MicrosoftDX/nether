@@ -14,7 +14,7 @@ namespace Nether.Analytics
         private CloudStorageAccount _storageAccount;
         private CloudBlobClient _blobClient;
         private CloudBlobContainer _container;
-        private readonly string _containerName = Constants.SchedulerStateContainerName;
+        private readonly string _containerName = Constants.JobStateContainerName;
 
         public BlobSynchronizationProvider(string connectionString)
         {
@@ -40,7 +40,7 @@ namespace Nether.Analytics
         /// Tries to acquire a lease on the specific blob (called detailedJobName)
         /// </summary>
         /// <param name="detailedJobName">String, refers to the name of the blob</param>
-        /// <returns>The leaseID</returns>
+        /// <returns>The leaseId</returns>
         public async Task<string> AcquireLeaseAsync(string detailedJobName)
         {
             if (_container == null) await InitializeAsync();
@@ -60,19 +60,19 @@ namespace Nether.Analytics
         /// Release the lease on the specified blob (called detailedJobName)
         /// </summary>
         /// <param name="detailedJobName"></param>
-        /// <param name="leaseID"></param>
+        /// <param name="leaseId"></param>
         /// <returns></returns>
-        public async Task ReleaseLeaseAsync(string detailedJobName, string leaseID)
+        public async Task ReleaseLeaseAsync(string detailedJobName, string leaseId)
         {
             if (_container == null) await InitializeAsync();
 
-            if (string.IsNullOrEmpty(leaseID))
-                throw new Exception("LeaseID should have a value");
+            if (string.IsNullOrEmpty(leaseId))
+                throw new Exception("LeaseId should have a value");
 
             //try to release the lease for this job
             CloudBlockBlob blockBlob = _container.GetBlockBlobReference(detailedJobName);
 
-            await blockBlob.ReleaseLeaseAsync(AccessCondition.GenerateLeaseCondition(leaseID));
+            await blockBlob.ReleaseLeaseAsync(AccessCondition.GenerateLeaseCondition(leaseId));
         }
     }
 }

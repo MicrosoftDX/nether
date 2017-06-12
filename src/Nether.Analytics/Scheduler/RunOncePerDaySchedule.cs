@@ -18,7 +18,7 @@ namespace Nether.Analytics
         {
             get { return JobInterval.Daily; }
         }
-        private IStateProvider _stateProvider;
+        private IJobStateProvider _stateProvider;
         //_timeProvider is used via Reflection in a test. In case of refactoring, make sure you change it there, too
         private ITimeProvider _timeProvider;
 
@@ -38,7 +38,7 @@ namespace Nether.Analytics
         /// <param name="minutes">Minutes for the job to run</param>
         /// <param name="firstExecutionRequest">When to execute the job for the first time. If the job has ran before, this is ignored. Only the .Date portion of this DateTime parameter is taken into account</param>
         /// <param name="timeProvider">Optional time provider, useful for unit tests. Defaults to system UTC time</param>
-        public RunOncePerDaySchedule(IStateProvider stateProvider, int hours, int minutes,
+        public RunOncePerDaySchedule(IJobStateProvider stateProvider, int hours, int minutes,
             DateTime? firstExecutionRequest = null, ITimeProvider timeProvider = null)
         {
             _stateProvider = stateProvider ?? throw new ArgumentException($"{nameof(stateProvider)} cannot be null");
@@ -103,11 +103,11 @@ namespace Nether.Analytics
         /// </summary>
         /// <param name="detailedJobName">The "small" job name</param>
         /// <param name="dt">DateTime of the job</param>
-        /// <param name="leaseID">The leaseID from the state provider</param>
+        /// <param name="leaseId">The leaseId from the state provider</param>
         /// <returns></returns>
-        public async Task SetLastExecutionAsync(string detailedJobName, DateTime dt, string leaseID)
+        public async Task SetLastExecutionAsync(string detailedJobName, DateTime dt, string leaseId)
         {
-            await _stateProvider.SetLastExecutionDateTimeAsync(detailedJobName, dt, leaseID);
+            await _stateProvider.SetLastExecutionDateTimeAsync(detailedJobName, dt, leaseId);
         }
 
         /// <summary>

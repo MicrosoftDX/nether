@@ -9,10 +9,10 @@ namespace Nether.Analytics
     /// <summary>
     /// Interface for state providers for the job scheduler
     /// </summary>
-    public interface IStateProvider
+    public interface IJobStateProvider
     {
-        Task<DateTime?> GetLastExecutionDatetimeAsync(string detailedJobName);
-        Task SetLastExecutionDateTimeAsync(string detailedJobName, DateTime dt, string leaseID);
-        Task DeleteEntryAsync(string blobName, int code);
+        Task<DateTime?> GetLastExecutionDatetimeAsync(string jobId);
+        Task SetLastExecutionDateTimeAsync(string jobId, DateTime lastExecutionTime, string leaseId);
+        Task DeleteEntryAsync(string jobIdWithSchedule);
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Nether.Analytics.UnitTests
 {
-    public class JobNever : IStateProvider
+    public class JobNever : IJobStateProvider
     {
         private JobNever()
         {
@@ -19,7 +19,7 @@ namespace Nether.Analytics.UnitTests
             get { return new JobNever(); }
         }
 
-        public Task DeleteEntryAsync(string blobName, int code)
+        public Task DeleteEntryAsync(string blobName)
         {
             return Task.CompletedTask;
         }
@@ -29,25 +29,25 @@ namespace Nether.Analytics.UnitTests
             return await Task.FromResult<DateTime?>(null);
         }
 
-        public Task SetLastExecutionDateTimeAsync(string jobName, DateTime dt, string leaseID)
+        public Task SetLastExecutionDateTimeAsync(string jobName, DateTime dt, string leaseId)
         {
             return Task.CompletedTask;
         }
     }
 
-    public class JobLastExecuted : IStateProvider
+    public class JobLastExecuted : IJobStateProvider
     {
         public async Task<DateTime?> GetLastExecutionDatetimeAsync(string jobName)
         {
             return await Task.FromResult(_lastExecuted);
         }
 
-        public Task SetLastExecutionDateTimeAsync(string jobName, DateTime dt, string leaseID)
+        public Task SetLastExecutionDateTimeAsync(string jobName, DateTime dt, string leaseId)
         {
             return Task.CompletedTask;
         }
 
-        public Task DeleteEntryAsync(string blobName, int code)
+        public Task DeleteEntryAsync(string blobName)
         {
             return Task.CompletedTask;
         }
