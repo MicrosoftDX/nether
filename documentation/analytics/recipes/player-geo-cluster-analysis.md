@@ -162,14 +162,14 @@ Task.Run(async () =>
 
 | Query that should be run           | By what service                           |
 |------------------------------------|-------------------------------------------|
-| [geoclustering.usql](../../../src/Nether.Analytics.DataLakeJobs/geoclustering.usql)             | Using ADLA (Azure Data Lake Analytics)    |
+| [GeoClusters.usql](../../../src/Nether.Analytics.DataLakeJobs/GeoClusters.usql)             | Using ADLA (Azure Data Lake Analytics)    |
 
 
 ```cs
 
 ```
 
-#### 3.1 Setup and Schedule geoclustering.usql
+#### 3.1 Setup and Schedule GeoClusters.usql
 
 (TODO: Explain how someone should go ahead to setup the required query to be run at appropriate times)
 The ADLA-job can be run in a batch mode. In other words, you can run it once a day but specify that you want to see the hotspots in chunks of a 15-minute timespan.
