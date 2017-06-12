@@ -19,7 +19,7 @@ namespace Nether.Analytics.DataLake
     public class DataLakeStoreOutputManager : IOutputManager
     {
         private IMessageFormatter _serializer;
-        private IFilePathAlgorithm _filePathAlgorithm;
+        private IFolderStructure _folderStructure;
         private string _subscriptionId;
         private string _dlsAccountName;
 
@@ -36,10 +36,10 @@ namespace Nether.Analytics.DataLake
             }
         }
 
-        public DataLakeStoreOutputManager(IMessageFormatter serializer, IFilePathAlgorithm filePathAlgorithm, ServiceClientCredentials serviceClientCredentials, string subscriptionId, string dlsAccountName)
+        public DataLakeStoreOutputManager(IMessageFormatter serializer, IFolderStructure folderStructure, ServiceClientCredentials serviceClientCredentials, string subscriptionId, string dlsAccountName)
         {
             _serializer = serializer;
-            _filePathAlgorithm = filePathAlgorithm;
+            _folderStructure = folderStructure;
 
             _serviceClientCredentials = serviceClientCredentials;
 
@@ -80,12 +80,12 @@ namespace Nether.Analytics.DataLake
 
         private string GetFilePath(string partitionId, string pipelineName, int index, Message msg)
         {
-            var fp = _filePathAlgorithm.GetFilePath(partitionId, pipelineName, index, msg);
+            var folders = _folderStructure.GetFolders(partitionId, pipelineName, index, msg, out var fileName);
 
-            var path = "/" + string.Join("/", fp.Hierarchy) + "/";
-            var fileName = $"{fp.Name}.{_serializer.FileExtension}";
+            var path = "/" + string.Join("/", folders) + "/";
+            var fileNameWitExtension = $"{fileName}.{_serializer.FileExtension}";
 
-            return path + fileName;
+            return path + fileNameWitExtension;
         }
 
         private async Task AppendMessageToFileAsync(string serializedMessage, string filePath)

@@ -9,7 +9,7 @@ namespace Nether.Analytics
     public class MessagePipelineBuilder
     {
         private string _pipelineName;
-        private List<VersionedMessageType> _messageTypesToHandle = new List<VersionedMessageType>();
+        private List<string> _messageTypesToHandle = new List<string>();
         private List<IMessageHandler> _handlers = new List<IMessageHandler>();
         private IOutputManager[] _outputManagers;
 
@@ -18,9 +18,9 @@ namespace Nether.Analytics
             _pipelineName = pipelineName;
         }
 
-        public MessagePipelineBuilder HandlesMessageType(string messageType, string version)
+        public MessagePipelineBuilder HandlesMessageType(string messageType, int majorVersion, int minorVersion)
         {
-            _messageTypesToHandle.Add(new VersionedMessageType { MessageType = messageType, Version = version });
+            _messageTypesToHandle.Add(Message.GetVersionedMessageType(messageType, new MessageVersion { Major = majorVersion, Minor = minorVersion }));
 
             return this;
         }

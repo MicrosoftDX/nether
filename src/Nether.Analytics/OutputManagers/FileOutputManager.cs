@@ -14,14 +14,14 @@ namespace Nether.Analytics
     public class FileOutputManager : IOutputManager
     {
         private IMessageFormatter _serializer;
-        private IFilePathAlgorithm _filePathAlgorithm;
+        private IFolderStructure _folderStructure;
         private string _rootPath;
 
         private static ConcurrentDictionary<string, SemaphoreSlim> s_semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
-        public FileOutputManager(IMessageFormatter serializer, IFilePathAlgorithm filePathAlgorithm, string rootPath = @"C:\")
+        public FileOutputManager(IMessageFormatter serializer, IFolderStructure folderStructure, string rootPath = @"C:\")
         {
             _serializer = serializer;
-            _filePathAlgorithm = filePathAlgorithm;
+            _folderStructure = folderStructure;
             _rootPath = rootPath;
         }
 
@@ -60,10 +60,10 @@ namespace Nether.Analytics
 
         private string GetFilePath(string partitionId, string pipelineName, int index, Message msg)
         {
-            var fp = _filePathAlgorithm.GetFilePath(partitionId, pipelineName, index, msg);
-            var fileName = $"{fp.Name}.{_serializer.FileExtension}";
+            var folders = _folderStructure.GetFolders(partitionId, pipelineName, index, msg, out var fileName);
+            var fileNameWithExtension = $"{fileName}.{_serializer.FileExtension}";
 
-            return Path.Combine(_rootPath, Path.Combine(fp.Hierarchy), fileName);
+            return Path.Combine(_rootPath, Path.Combine(folders), fileNameWithExtension);
         }
 
         private async Task AppendMessageToFileAsync(string serializedMessage, string filePath)

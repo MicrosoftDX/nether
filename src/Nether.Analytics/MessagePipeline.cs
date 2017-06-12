@@ -14,10 +14,10 @@ namespace Nether.Analytics
         private IOutputManager[] _outputManagers;
 
         public string PipelineName { get; private set; }
-        public VersionedMessageType[] HandledMessageTypes { get; private set; }
+        public string[] HandledMessageTypes { get; private set; }
 
         public MessagePipeline(string pipelineName,
-            VersionedMessageType[] handledMessageTypes,
+            string[] handledMessageTypes,
             IMessageHandler[] gameEventHandlers,
             IOutputManager[] outputManagers)
         {

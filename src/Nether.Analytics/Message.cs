@@ -11,9 +11,11 @@ namespace Nether.Analytics
     {
         public string Id { get; set; }
         public string MessageType { get; set; }
-        public string Version { get; set; }
+        public MessageVersion Version { get; set; }
         public DateTime EnqueuedTimeUtc { get; set; }
         public Dictionary<string, string> Properties { get; } = new Dictionary<string, string>();
+
+        public string VersionedMessageType => GetVersionedMessageType(MessageType, Version);
 
         public override string ToString()
         {
@@ -31,6 +33,11 @@ namespace Nether.Analytics
             }
 
             return str.ToString();
+        }
+
+        public static string GetVersionedMessageType(string messageType, MessageVersion version)
+        {
+            return messageType + "_" + version.Compatible;
         }
     }
 }

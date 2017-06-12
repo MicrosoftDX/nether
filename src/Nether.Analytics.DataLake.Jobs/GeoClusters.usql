@@ -1,5 +1,5 @@
-DECLARE EXTERNAL @in = "/nether/clustering/geo-location/2017/05/{*}/{*}.csv";
-DECLARE EXTERNAL @out = "/nether/clustering/output/clusters.csv";
+DECLARE EXTERNAL @in = "/messages/geo-location/1.0.x/2017/05/{*}/{*}.csv";
+DECLARE EXTERNAL @out = "/result/geoclusters.csv";
 DECLARE EXTERNAL @timeframe_unit = "minute";
 DECLARE EXTERNAL @timeframe_frequency = 15;
 
@@ -13,6 +13,9 @@ DECLARE EXTERNAL @timeframe_frequency = 15;
             lon double,
             geoHash double,
             geoHashPrecision int,
+            geoHashCenterLat double,
+            geoHashCenterLon double,
+            geoHashCenterDist int,
             rnd int
     FROM @in
     USING Extractors.Csv(skipFirstNRows: 1);
@@ -49,21 +52,21 @@ DECLARE EXTERNAL @timeframe_frequency = 15;
 
 @almostResult =
     SELECT new DateTime(g.year, g.month, g.day, g.hour, g.minute, 0) AS timeGrouping,
-           g.geoHash, 
-           g.lat, 
-           g.lon, 
-           c.size, 
-           g.rnd, 
+           g.geoHash,
+           g.lat,
+           g.lon,
+           c.size,
+           g.rnd,
            ROW_NUMBER() OVER (PARTITION BY g.year, g.month, g.day, g.hour, g.minute, g.geoHash ORDER BY g.rnd ASC) AS row
     FROM @geoLocations_tmp AS g
          JOIN @clusters AS c
          ON g.geoHash == c.geoHash;
 
-@result = 
+@result =
     SELECT timeGrouping,
-           geoHash, 
-           lat, 
-           lon, 
+           geoHash,
+           lat,
+           lon,
            size
     FROM @almostResult
     WHERE row == 1;
