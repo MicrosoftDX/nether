@@ -3,14 +3,10 @@
 
 using Microsoft.Azure.Management.DataLake.Analytics;
 using Microsoft.Azure.Management.DataLake.Analytics.Models;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
-using Microsoft.Rest.Azure.Authentication;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Nether.Analytics.DataLake
@@ -41,7 +37,7 @@ namespace Nether.Analytics.DataLake
             _dlaJobClient = new DataLakeAnalyticsJobManagementClient(serviceClientCredentials);
         }
 
-        public async Task<Guid> SubmitJobAsync(string jobName, string script, Dictionary<string, object> variables = null)
+        public async Task<Guid> SubmitJobAsync(string jobName, string script, Dictionary<string, object> variables = null, bool showScriptOnOutput = false)
         {
             if (variables != null)
             {
@@ -54,7 +50,8 @@ namespace Nether.Analytics.DataLake
                 script = sb.ToString();
             }
 
-            Console.WriteLine(script);
+            if (showScriptOnOutput)
+                Console.WriteLine(script);
 
             var jobId = Guid.NewGuid();
             var properties = new USqlJobProperties(script);
@@ -71,7 +68,7 @@ namespace Nether.Analytics.DataLake
             while (jobInfo.State != JobState.Ended)
             {
                 jobInfo = _dlaJobClient.Job.Get(_dlaAccountName, jobId);
-                Console.WriteLine($"Job with ID:{jobId} currently has state {jobInfo.State}");
+                Console.WriteLine($"Job with Id:{jobId} currently has state {jobInfo.State}");
                 await Task.Delay(pollingTimeout);
             }
             return jobInfo;

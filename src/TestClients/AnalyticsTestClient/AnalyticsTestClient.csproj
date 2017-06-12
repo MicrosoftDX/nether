@@ -17,6 +17,7 @@
     <PackageReference Include="NGeoHash.DotNetCore" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Nether.Analytics.BlobStorage\Nether.Analytics.BlobStorage.csproj" />
     <ProjectReference Include="..\..\Nether.Analytics.DataLake\Nether.Analytics.DataLake.csproj" />
     <ProjectReference Include="..\..\Nether.Analytics.MessageFormats\Nether.Analytics.MessageFormats.csproj" />
     <ProjectReference Include="..\..\Nether.Analytics\Nether.Analytics.csproj" />

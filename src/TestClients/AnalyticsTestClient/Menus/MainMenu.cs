@@ -20,6 +20,7 @@ namespace AnalyticsTestClient
             MenuItems.Add('3', new ConsoleMenuItem("Simulate moving game client ...", () => { new SimulateMovementMenu(_client).Show(); }));
             MenuItems.Add('4', new ConsoleMenuItem("USQL Script ...", () => new USQLJobMenu().Show()));
             MenuItems.Add('5', new ConsoleMenuItem("Results API Consumer ...", () => { new ResultsApiConsumerMenu().Show(); }));
+            MenuItems.Add('6', new ConsoleMenuItem("Scheduler ...", () => { new SchedulerJobMenu().Show(); }));
         }
 
         private void SendCustomGameEvent()
