@@ -17,7 +17,7 @@ namespace Nether.Analytics
         private readonly string _containerName = Constants.JobStateContainerName;
         private TimeSpan _leaseTime;
 
-        public BlobSynchronizationProvider(string connectionString) : this (connectionString, TimeSpan.FromSeconds(15))
+        public BlobSynchronizationProvider(string connectionString) : this(connectionString, TimeSpan.FromSeconds(15))
         { }
 
         public BlobSynchronizationProvider(string connectionString, TimeSpan leaseTime)
