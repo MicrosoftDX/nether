@@ -1,52 +1,40 @@
-# Player Geo Cluster Analysis
+# User Retention
 
-You will want to follow this recipe if you want to figure out where (in terms of geography) most players are playing your game. In other words, you will obtain a csv file containing the count of players per geohash.
+This recipe provides information on one of the most important metrics for a successful free-to-play game.
+The user retention gives an indication on the level of engagement and the proportion of users returning to your game.
 
 ## End Result
 
-You will answer the following questions: How many players have played your game per geohash in a specified time frame (i.e. on given day, in given month or year) and what are the coordinates representative for your geohash.
+You will answer the following question: The percentage of users who showed up again X days after installing the game. X is typically 1, 7, 30 and 90.
 
-The coordinates associated with a given geohash can vary from median or random.
-For instance, take the following 5 coordinates within a geohash (square):
+Day 1 Retention
 
-               +-----------------------------------------------+
-               |                                               |
-               |                                               |
-               |   x1                                          |
-               |                                               |
-               |                                               |
-               |                                               |
-               |                          x2                   |
-               |                                               |
-               |                                               |
-               |                                               |
-               |                                               |
-            ^  |                                               |
-            |  |                                               |
-            |  |                                        x3     |
-            |  |                                               |
-            |  |                                               |
-            |  |           x4             x5                   |
-            +  |                                               |
-     Longitude |                                               |
-               +-----------------------------------------------+
-            Latitude+------>
+| Date | Day 1 Retention |
+|---------|----------|
+| 2017-05-16T00:00:00.0000000 |	0.739 |
+| 2017-05-17T00:00:00.0000000 |	0.53 |
+| 2017-05-18T00:00:00.0000000 |	0.325 |
+
+The retention is mostly interesting to display its trend over time. For instance, the table above indicates that the level of user retention drops with progressing day. The above table shows that 73.9% of users who installed the game on May 15th played the game again on May 16th. However, only 53% of the people who installed the game on May 16th returned to the game on the following day.
+
+Day 7 Retention
+
+| Date | Day 7 Retention |
+|---------|----------|
+| 2017-05-16T00:00:00.0000000 |	0.739 |
+| 2017-05-17T00:00:00.0000000 |	0.53 |
+| 2017-05-18T00:00:00.0000000 |	0.325 |
 
 
-- median: pick median latitude (horizontal axis) and then the associated minimum longitude of a data point within a geohash. In this case, x5 is a data point with the median latitude given the 5 data points within the geohash. This results
-- random: pick any point within geohash (partially implemented in clustering.usql)
+## Pre-requisites
 
-## Pre-Requisites
+Technologies:
+* Azure Data Lake Analytics (ADLA) account and an associated Azure Data Lake Store (ADLS) account
+* Generated messages, e.g. start and stop
+    * Event Hub
+    * AD application
 
-- Azure Data Lake Analytics (ADLA) account and an associated Azure Data Lake Store (ADLS)
-- Location event data stored in the beforementioned ADLS
-
-Parameters:
-- ``in``: folder location of all events, e.g. /nether/clustering/geo-location/2017/05/16/{*}.csv
-- ``out``: file path where the output file is going to be stored, e.g. /nether/clustering/geo-location/2017/05/16/{*}.csv
-- ``timeframe_unit``: unit of timeframe to aggregate the clustering over, i.e. year, month, day, hour or minute
-- ``timeframe_frequency``: by default set to 1, unless the unit is minute, then 15. In other words, if you want to see the clusters per geohash over time periods of 15 minutes, then set unit="minute" and frequency=15
-
+## Recipe Steps
 
 ## Recipe Steps
 
