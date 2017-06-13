@@ -8,7 +8,7 @@ The user retention gives an indication on the level of engagement and the propor
 You will answer the following question: The percentage of users who showed up again X days after installing/playing the game. X is typically 1, 7, 30 and 90. There are multiple ways to calculate the user retention ([User Retention: Yes, But Which One?](http://www.applift.com/blog/user-retention)); we will make use of the **classic retention** to calculate the user retention: Which proportion of users come back to the game on Day+X. For instance, for day 7 retention (i.e. X=7) we are interested in the proportion of people who come back precisely on day 7. It does not matter if they have played the game again on day 3 or any other day inbetween and how often before day 7:
 
 ![Classic Retention with X=28](../../images/analytics/retention/ClassicRetention.png)
-_Classic Retention with X=28, Credits: [User Retention: Yes, But Which One?](http://www.applift.com/blog/user-retention)_
+_Classic Retention with X=7_
 
 Moreover, the user retention is being calculated every day in a rolling window manner.
 The retention is mostly interesting to display its trend over time. For instance, the table on Day 1 retention indicates that the level of user retention drops with progressing day. 
@@ -109,8 +109,66 @@ TODO
 
 Format:
 
-| Timestamp | Day1Retention |
-| 2017-05-16T00:00:00.0000000 |	0.849 |
+**Day 1 Retention: day1retention.csv**
+
+| Timestamp | Day 1 Retention |
+|---------|----------|
+| 2017-05-16T00:00:00.0000000 |	0.739 |
+| 2017-05-17T00:00:00.0000000 |	0.53 |
+| 2017-05-18T00:00:00.0000000 |	0.325 |
+
+
+**Day 7 Retention: day7retention.csv**
+
+| Timestamp | Day 7 Retention |
+|---------|----------|
+| 2017-05-16T00:00:00.0000000 |	0.98 |
+| 2017-05-17T00:00:00.0000000 |	0.95 |
+| 2017-05-18T00:00:00.0000000 |	0.98 |
+| 2017-05-19T00:00:00.0000000 |	0.58 |
+| 2017-05-20T00:00:00.0000000 |	0.56 |
+| 2017-05-21T00:00:00.0000000 |	0.64 |
+| 2017-05-22T00:00:00.0000000 |	0.6  |
+| 2017-05-23T00:00:00.0000000 |	0.43 |
+| 2017-05-24T00:00:00.0000000 |	0.43 |
+| 2017-05-25T00:00:00.0000000 |	0.51 |
+| 2017-05-26T00:00:00.0000000 |	0.37 |
+
+
+**Day 30 Retention: day30retention.csv**
+
+| Timestamp | Day 30 Retention |
+|---------|----------|
+| 2017-05-16T00:00:00.0000000 |	0.98 |
+| 2017-05-17T00:00:00.0000000 |	0.95 |
+| 2017-05-18T00:00:00.0000000 |	0.98 |
+| 2017-05-19T00:00:00.0000000 |	0.58 |
+| 2017-05-20T00:00:00.0000000 |	0.56 |
+| 2017-05-21T00:00:00.0000000 |	0.64 |
+| 2017-05-22T00:00:00.0000000 |	0.6  |
+| 2017-05-23T00:00:00.0000000 |	0.43 |
+| 2017-05-24T00:00:00.0000000 |	0.43 |
+| 2017-05-25T00:00:00.0000000 |	0.51 |
+| 2017-05-26T00:00:00.0000000 |	0.37 |
+
+
+**Day 90 Retention: day90retention.csv**
+
+| Timestamp | Day 90 Retention |
+|---------|----------|
+| 2017-05-16T00:00:00.0000000 |	0.98 |
+| 2017-05-17T00:00:00.0000000 |	0.95 |
+| 2017-05-18T00:00:00.0000000 |	0.98 |
+| 2017-05-19T00:00:00.0000000 |	0.58 |
+| 2017-05-20T00:00:00.0000000 |	0.56 |
+| 2017-05-21T00:00:00.0000000 |	0.64 |
+| 2017-05-22T00:00:00.0000000 |	0.6  |
+| 2017-05-23T00:00:00.0000000 |	0.43 |
+| 2017-05-24T00:00:00.0000000 |	0.43 |
+| 2017-05-25T00:00:00.0000000 |	0.51 |
+| 2017-05-26T00:00:00.0000000 |	0.37 |
+
+
 
 
 #### 4.1 Consume the result

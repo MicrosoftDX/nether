@@ -9,6 +9,7 @@ You will answer the following questions: How many players have played your game 
 The coordinates associated with a given geohash can vary from median or random.
 For instance, take the following 5 coordinates within a geohash (square):
 
+```
                +-----------------------------------------------+
                |                                               |
                |                                               |
@@ -31,7 +32,7 @@ For instance, take the following 5 coordinates within a geohash (square):
      Longitude |                                               |
                +-----------------------------------------------+
             Latitude+------>
-
+```
 
 - median: pick median latitude (horizontal axis) and then the associated minimum longitude of a data point within a geohash. In this case, x5 is a data point with the median latitude given the 5 data points within the geohash. This results
 - random: pick any point within geohash (partially implemented in clustering.usql)
