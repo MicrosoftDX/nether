@@ -109,21 +109,21 @@ TODO
 
 Format:
 
-**20170516retention.csv**
+**retention_2017-05-16T000000.csv**
 
 | Timestamp | day1retention | day7retention | day30retention | day90retention |
 |---------|----------|----------|----------|----------|
 | 2017-05-16T00:00:00.0000000 |	0.739 | 0.98 | 0.74 | 0.32 |
 
 
-**20170517retention.csv**
+**retention_2017-05-17T000000.csv**
 
 | Timestamp | day1retention | day7retention | day30retention | day90retention |
 |---------|----------|----------|----------|----------|
 | 2017-05-17T00:00:00.0000000 |	0.53 | 0.95 | 0.72 | 0.52 |
 
 
-**20170518retention.csv**
+**retention_2017-05-18T000000.csv**
 
 | Timestamp | day1retention | day7retention | day30retention | day90retention |
 |---------|----------|----------|----------|----------|
