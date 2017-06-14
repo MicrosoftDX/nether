@@ -41,10 +41,10 @@ namespace Nether.Analytics.Parsers
                 return null;
             }
 
-            MessageVersion version;
+            string version;
             try
             {
-                version = MessageVersion.Parse((string)json["version"]);
+                version = (string)json["version"];
             }
             catch
             {
@@ -63,7 +63,7 @@ namespace Nether.Analytics.Parsers
             var msg = new Message
             {
                 Id = id,
-                MessageType = gameEventType,
+                Type = gameEventType,
                 Version = version,
                 EnqueuedTimeUtc = enqueuedTime,
             };
@@ -84,7 +84,7 @@ namespace Nether.Analytics.Parsers
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine($"Unable to parse property:{key} as string on {msg.MessageType}");
+                    Console.WriteLine($"Unable to parse property:{key} as string on {msg.Type}");
                     Console.WriteLine("WARNING: Continuing anyway!!! TODO: Fix this parsing problem!!!");
                 }
             }

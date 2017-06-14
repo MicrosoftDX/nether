@@ -1,23 +1,20 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Nether.Analytics;
+using Nether.Analytics.MessageFormats;
 using System;
 using System.Linq;
 using System.Reflection;
-using Nether.Analytics.MessageFormats;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.Threading;
-using Nether.Analytics;
 
 namespace AnalyticsTestClient
 {
     public class SendTypedGameEventMenu : ConsoleMenu
     {
         private static Type[] s_messageTypes = null;
-        private BatchAnalyticsClient _client = new BatchAnalyticsClient();
+        private IAnalyticsClient _client;
 
-        public SendTypedGameEventMenu(BatchAnalyticsClient client)
+        public SendTypedGameEventMenu(IAnalyticsClient client)
         {
             _client = client;
 
@@ -27,7 +24,7 @@ namespace AnalyticsTestClient
             var menuKey = 'a';
             foreach (var msgType in msgTypes)
             {
-                var msg = (INetherMessage)Activator.CreateInstance(msgType);
+                var msg = (ITypeVersionMessage)Activator.CreateInstance(msgType);
                 MenuItems.Add(menuKey++,
                     new ConsoleMenuItem(
                         $"{msg.Type}, {msg.Version}",
@@ -53,7 +50,7 @@ namespace AnalyticsTestClient
                 }
 
                 var typeToSend = GetMessageTypes().TakeRandom();
-                var gameEvent = (INetherMessage)Activator.CreateInstance(typeToSend);
+                var gameEvent = (ITypeVersionMessage)Activator.CreateInstance(typeToSend);
 
                 var props = gameEvent.GetType().GetProperties();
 
@@ -69,18 +66,18 @@ namespace AnalyticsTestClient
                 _client.SendMessageAsync(gameEvent).Wait();
             }
 
-            _client.FlushMessagesInQueueAsync().Wait();
+            _client.FlushAsync().Wait();
         }
 
         private static Type[] GetMessageTypes()
         {
             if (s_messageTypes == null)
             {
-                var assembly = typeof(INetherMessage).GetTypeInfo().Assembly;
+                var assembly = typeof(HeartBeat).GetTypeInfo().Assembly;
                 var types = assembly.GetTypes();
                 var gameEventTypes =
                     from t in types
-                    where typeof(INetherMessage).IsAssignableFrom(t) && t != typeof(INetherMessage)
+                    where typeof(ITypeVersionMessage).IsAssignableFrom(t) && t != typeof(ITypeVersionMessage)
                     orderby t.Name
                     select t;
 
@@ -90,14 +87,14 @@ namespace AnalyticsTestClient
             return s_messageTypes;
         }
 
-        private void TypedMessageSelected(INetherMessage gameEvent)
+        private void TypedMessageSelected(ITypeVersionMessage gameEvent)
         {
             EditMessageProperties(gameEvent);
             _client.SendMessageAsync(gameEvent).Wait();
-            _client.FlushMessagesInQueueAsync().Wait();
+            _client.FlushAsync().Wait();
         }
 
-        private void EditMessageProperties(INetherMessage gameEvent)
+        private void EditMessageProperties(ITypeVersionMessage gameEvent)
         {
             var props = gameEvent.GetType().GetProperties();
 

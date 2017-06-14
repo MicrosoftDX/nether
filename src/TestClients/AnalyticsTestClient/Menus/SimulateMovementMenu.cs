@@ -17,7 +17,7 @@ namespace AnalyticsTestClient
 {
     public class SimulateMovementMenu : ConsoleMenu
     {
-        private BatchAnalyticsClient _client;
+        private IAnalyticsClient _client;
 
         private const float MinLatStockholm = 59.2983105f;
         private const float MinLonStockholm = 18.0204576f;
@@ -33,7 +33,7 @@ namespace AnalyticsTestClient
         private static Router s_router;
         private Random _rnd = new Random();
 
-        public SimulateMovementMenu(BatchAnalyticsClient client)
+        public SimulateMovementMenu(IAnalyticsClient client)
         {
             _client = client;
 
@@ -46,11 +46,11 @@ namespace AnalyticsTestClient
         private void SimulateWalkers()
         {
             var n = DateTime.UtcNow;
-            var thisMidnight = new DateTime(n.Year, n.Month, n.Day, 0, 0, 0, DateTimeKind.Utc);
-            var midnightAWeekAgo = thisMidnight - TimeSpan.FromDays(14);
+            var to = new DateTime(n.Year, n.Month, n.Day, 0, 0, 0, DateTimeKind.Utc);
+            var from = to - TimeSpan.FromDays(1);
 
-            var fromDate = ConsoleEx.ReadLine("From (UTC)", midnightAWeekAgo);
-            var toDate = ConsoleEx.ReadLine("To (UTC)", thisMidnight);
+            var fromDate = ConsoleEx.ReadLine("From (UTC)", from);
+            var toDate = ConsoleEx.ReadLine("To (UTC)", to);
             var timeZoneDiff = ConsoleEx.ReadLine("Time Zone Diff (h)", 1);
             var warmupTime = ConsoleEx.ReadLine("Warmup Time (min)", 15);
             var gamerTagFile1 = ConsoleEx.ReadLine("GamerTags File 1", "DataFiles/GamerTags1.txt", s => File.Exists(s));
@@ -111,7 +111,7 @@ namespace AnalyticsTestClient
                 now += TimeSpan.FromSeconds(step);
             }
 
-            _client.FlushMessagesInQueueAsync().Wait();
+            _client.FlushAsync().Wait();
         }
 
         private void GenerateRoutes()

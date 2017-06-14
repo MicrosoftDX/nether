@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Nether.Analytics.BlobStorage\Nether.Analytics.BlobStorage.csproj" />
     <ProjectReference Include="..\..\Nether.Analytics.DataLake\Nether.Analytics.DataLake.csproj" />
+    <ProjectReference Include="..\..\Nether.Analytics.EventHubs\Nether.Analytics.EventHubs.csproj" />
     <ProjectReference Include="..\..\Nether.Analytics.MessageFormats\Nether.Analytics.MessageFormats.csproj" />
     <ProjectReference Include="..\..\Nether.Analytics\Nether.Analytics.csproj" />
   </ItemGroup>

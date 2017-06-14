@@ -1,15 +1,16 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Nether.Analytics;
 using System;
 
 namespace AnalyticsTestClient
 {
     public class MainMenu : ConsoleMenu
     {
-        private BatchAnalyticsClient _client;
+        private IAnalyticsClient _client;
 
-        public MainMenu(BatchAnalyticsClient client)
+        public MainMenu(IAnalyticsClient client)
         {
             _client = client;
 

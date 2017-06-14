@@ -10,19 +10,19 @@ namespace Nether.Analytics
     public class Message
     {
         public string Id { get; set; }
-        public string MessageType { get; set; }
-        public MessageVersion Version { get; set; }
+        public string Type { get; set; }
+        public string Version { get; set; }
         public DateTime EnqueuedTimeUtc { get; set; }
         public Dictionary<string, string> Properties { get; } = new Dictionary<string, string>();
 
-        public string VersionedMessageType => GetVersionedMessageType(MessageType, Version);
+        public string VersionedMessageType => GetVersionedMessageType(Type, Version);
 
         public override string ToString()
         {
             var str = new StringBuilder();
 
             str.AppendLine($"Id:             {Id}");
-            str.AppendLine($"MessageType:    {MessageType}");
+            str.AppendLine($"MessageType:    {Type}");
             str.AppendLine($"Version:        {Version}");
             str.AppendLine($"EnqueueTimeUtc: {EnqueuedTimeUtc}");
             str.AppendLine($"Properties:");
@@ -35,9 +35,9 @@ namespace Nether.Analytics
             return str.ToString();
         }
 
-        public static string GetVersionedMessageType(string messageType, MessageVersion version)
+        public static string GetVersionedMessageType(string messageType, string version)
         {
-            return messageType + "_" + version.Compatible;
+            return messageType + "_" + MessageVersion.Parse(version).Compatible;
         }
     }
 }

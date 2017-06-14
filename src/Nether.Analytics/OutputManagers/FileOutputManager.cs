@@ -31,7 +31,7 @@ namespace Nether.Analytics
 
             var filePath = GetFilePath(partitionId, pipelineName, index, msg);
 
-            var key = $"{pipelineName}_{msg.MessageType}_{msg.Version}_{partitionId}";
+            var key = $"{pipelineName}_{msg.Type}_{msg.Version}_{partitionId}";
 
             var semaphore = s_semaphores.GetOrAdd(key, new SemaphoreSlim(1, 1));
             await semaphore.WaitAsync();

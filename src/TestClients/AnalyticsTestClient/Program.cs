@@ -2,9 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Nether.Analytics;
+using Nether.Analytics.EventHubs;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace AnalyticsTestClient
 {
@@ -27,7 +27,7 @@ namespace AnalyticsTestClient
             Config.Check();
             SetupPropertyCache();
 
-            var client = new BatchAnalyticsClient();
+            var client = new EventHubAnalyticsClient(Config.Root[Config.NAH_EHLISTENER_CONNECTIONSTRING], Config.Root[Config.NAH_EHLISTENER_EVENTHUBPATH]);
 
             new MainMenu(client).Show();
 
