@@ -33,8 +33,8 @@ namespace Nether.Analytics
             }
             if (_partitionByMessageTypeAndVersion)
             {
-                folders.Add(msg.MessageType);
-                folders.Add(msg.Version.Compatible);
+                folders.Add(msg.Type);
+                folders.Add(MessageVersion.Parse(msg.Version).Compatible);
             }
             folders.Add(msg.EnqueuedTimeUtc.Year.ToString("D4"));
             folders.Add(msg.EnqueuedTimeUtc.Month.ToString("D2"));

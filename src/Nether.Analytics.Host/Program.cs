@@ -9,7 +9,6 @@ using Nether.Analytics.EventHubs;
 using Nether.Analytics.GeoLocation;
 using Nether.Analytics.Parsers;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Nether.Analytics.Host
@@ -28,11 +27,7 @@ namespace Nether.Analytics.Host
             Console.WriteLine();
 
             var app = new ProgramEx();
-
-            Task.Run(async () =>
-            {
-                await app.RunAsync();
-            }).GetAwaiter().GetResult();
+            app.RunAsync().Wait();
         }
     }
 
@@ -65,7 +60,7 @@ namespace Nether.Analytics.Host
                 StorageConnectionString = Config.Root[Config.NAH_EHLISTENER_STORAGECONNECTIONSTRING],
                 LeaseContainerName = Config.Root[Config.NAH_EHLISTENER_LEASECONTAINERNAME]
             };
-            var listener = new EventHubsListener(listenerConfig, new EventProcessorOptions { MaxBatchSize = 500, PrefetchCount = 15000 });
+            var listener = new EventHubsListener(listenerConfig, new EventProcessorOptions { MaxBatchSize = 1000, PrefetchCount = 30000 });
 
             // Setup Message Parser. By default we are using Nether JSON Messages
             // Setting up parser that knows how to parse those messages.
@@ -84,14 +79,14 @@ namespace Nether.Analytics.Host
                 .HandlesMessageType("geo-location", 1, 0)
                 .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
                 .AddHandler(new RandomIntMessageHandler())
-                .OutputTo(new ConsoleOutputManager(clusteringSerializer, enabled: false)
-                        , new FileOutputManager(clusteringSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER])
-                        , new DataLakeStoreOutputManager(
-                            clusteringSerializer,
-                            filePathAlgorithm,
-                            serviceClientCretentials,
-                            Config.Root[Config.NAH_AZURE_SUBSCRIPTIONID],
-                            Config.Root[Config.NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME])
+                .OutputTo(
+                            new FileOutputManager(clusteringSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER]),
+                            new DataLakeStoreOutputManager(
+                                clusteringSerializer,
+                                filePathAlgorithm,
+                                serviceClientCretentials,
+                                Config.Root[Config.NAH_AZURE_SUBSCRIPTIONID],
+                                Config.Root[Config.NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME])
                         );
 
             // Setting up "Daily Active Users Recipe"
@@ -99,27 +94,27 @@ namespace Nether.Analytics.Host
             var dauSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "gamerTag");
             builder.Pipeline("dau")
                 .HandlesMessageType("session-start", 1, 0)
-                .OutputTo(new ConsoleOutputManager(dauSerializer, enabled: false)
-                        , new FileOutputManager(dauSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER])
-                        , new DataLakeStoreOutputManager(
-                            dauSerializer,
-                            filePathAlgorithm,
-                            serviceClientCretentials,
-                            Config.Root[Config.NAH_AZURE_SUBSCRIPTIONID],
-                            Config.Root[Config.NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME])
+                .OutputTo(
+                            new FileOutputManager(dauSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER]),
+                            new DataLakeStoreOutputManager(
+                                dauSerializer,
+                                filePathAlgorithm,
+                                serviceClientCretentials,
+                                Config.Root[Config.NAH_AZURE_SUBSCRIPTIONID],
+                                Config.Root[Config.NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME])
                         );
 
             var sessionSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession");
             builder.Pipeline("sessions")
                 .HandlesMessageType("heartbeat", 1, 0)
-                .OutputTo(new ConsoleOutputManager(sessionSerializer, enabled: false)
-                , new FileOutputManager(sessionSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER])
-                , new DataLakeStoreOutputManager(
-                    sessionSerializer,
-                    filePathAlgorithm,
-                    serviceClientCretentials,
-                    Config.Root[Config.NAH_AZURE_SUBSCRIPTIONID],
-                    Config.Root[Config.NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME])
+                .OutputTo(
+                            new FileOutputManager(sessionSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER]),
+                            new DataLakeStoreOutputManager(
+                                sessionSerializer,
+                                filePathAlgorithm,
+                                serviceClientCretentials,
+                                Config.Root[Config.NAH_AZURE_SUBSCRIPTIONID],
+                                Config.Root[Config.NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME])
                 );
 
             builder.DefaultPipeline

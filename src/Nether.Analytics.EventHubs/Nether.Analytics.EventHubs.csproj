@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Nether.Analytics.MessageFormats\Nether.Analytics.MessageFormats.csproj" />
     <ProjectReference Include="..\Nether.Analytics\Nether.Analytics.csproj" />
   </ItemGroup>
 

@@ -1,14 +1,15 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Nether.Analytics.MessageFormats;
 using System;
 using System.Threading.Tasks;
 
-namespace AnalyticsTestClient
+namespace Nether.Analytics
 {
     public interface IAnalyticsClient
     {
-        Task SendMessageAsync(INetherMessage msg, DateTime? dbgEnqueuedTimeUtc = null);
+        Task SendMessageAsync(ITypeVersionMessage msg, DateTime? dbgEnqueuedTimeUtc = null);
+        Task SendMessageAsync(string value);
+        Task FlushAsync();
     }
 }

@@ -4,6 +4,8 @@
 using Nether.Analytics.MessageFormats;
 using System;
 using System.Threading.Tasks;
+using Nether.Analytics.EventHubs;
+using Nether.Analytics;
 
 namespace AnalyticsTestClient
 {

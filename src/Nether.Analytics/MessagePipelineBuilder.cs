@@ -20,7 +20,7 @@ namespace Nether.Analytics
 
         public MessagePipelineBuilder HandlesMessageType(string messageType, int majorVersion, int minorVersion)
         {
-            _messageTypesToHandle.Add(Message.GetVersionedMessageType(messageType, new MessageVersion { Major = majorVersion, Minor = minorVersion }));
+            _messageTypesToHandle.Add(Message.GetVersionedMessageType(messageType, $"{majorVersion}.{minorVersion}.0"));
 
             return this;
         }

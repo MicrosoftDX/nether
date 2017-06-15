@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using GeoCoordinatePortable;
+using Nether.Analytics;
 using Nether.Analytics.MessageFormats;
 using System;
 using System.Threading.Tasks;
@@ -36,7 +36,7 @@ namespace AnalyticsTestClient
         private IAnalyticsClient GetClient(bool warmup)
         {
             // Delay use of real client until warmup period is over
-            return warmup ? new NetherAnalyticsNullClient() : _client;
+            return warmup ? new NullAnalyticsClient() : _client;
         }
 
         private async Task StartAsync(DateTime now, bool warmup)
