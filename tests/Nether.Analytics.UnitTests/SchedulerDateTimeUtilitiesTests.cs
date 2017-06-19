@@ -51,7 +51,6 @@ namespace Nether.Analytics.UnitTests
             //and after execution on Wednesday 21/6, next one should be 26/6
             Assert.Equal(_dt5.AddDays(12), dt);
         }
-
     }
 }
 
