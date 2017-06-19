@@ -28,7 +28,7 @@ namespace Nether.Analytics
         public DailySchedule(int hours, int minutes, int seconds) : this(new TimeSpan(hours, minutes, seconds))
         { }
 
-        public DateTime GetNextExcecutionTime(DateTime lastExecutionTime)
+        public DateTime GetNextExecutionTime(DateTime lastExecutionTime)
         {
             var nextTime = new DateTime(
                 lastExecutionTime.Year,

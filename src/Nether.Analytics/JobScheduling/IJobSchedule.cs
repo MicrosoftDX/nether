@@ -9,6 +9,6 @@ namespace Nether.Analytics
 {
     public interface IJobScheduleV2
     {
-        DateTime GetNextExcecutionTime(DateTime lastExecutionTime);
+        DateTime GetNextExecutionTime(DateTime lastExecutionTime);
     }
 }

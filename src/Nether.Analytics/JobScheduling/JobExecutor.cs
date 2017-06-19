@@ -35,7 +35,7 @@ namespace Nether.Analytics
                     var lastExecutionTime = await _jobStateProvider.GetLastExecutionDatetimeAsync(jobId) ?? (startTime ?? DateTime.UtcNow);
                     var executionTime = lastExecutionTime;
 
-                    while ((executionTime = schedule.GetNextExcecutionTime(executionTime)) <= DateTime.UtcNow)
+                    while ((executionTime = schedule.GetNextExecutionTime(executionTime)) <= DateTime.UtcNow)
                     {
                         await actionAsync(executionTime);
                         await _jobStateProvider.SetLastExecutionDateTimeAsync(jobId, executionTime, leaseId);

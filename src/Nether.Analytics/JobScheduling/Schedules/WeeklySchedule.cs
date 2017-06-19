@@ -16,12 +16,12 @@ namespace Nether.Analytics
             _atTime = atTime;
 
             if (daysOfWeek.Length == 0)
-                throw new ArgumentException("Schedule need to have at least one day of week to execute on");
+                throw new ArgumentException("Schedule needs to have at least one day of week to execute on");
 
             _daysOfWeek = new HashSet<DayOfWeek>(daysOfWeek);
         }
 
-        public DateTime GetNextExcecutionTime(DateTime lastExecutionTime)
+        public DateTime GetNextExecutionTime(DateTime lastExecutionTime)
         {
             var nextTime = new DateTime(
                 lastExecutionTime.Year,
@@ -30,10 +30,16 @@ namespace Nether.Analytics
 
             nextTime += _atTime;
 
-            while (nextTime <= lastExecutionTime && !_daysOfWeek.Contains(nextTime.DayOfWeek))
+            do
             {
+                //add another day
                 nextTime += TimeSpan.FromDays(1);
-            }
+            } while (!_daysOfWeek.Contains(nextTime.DayOfWeek));
+
+            //while (nextTime <= lastExecutionTime && !_daysOfWeek.Contains(nextTime.DayOfWeek))
+            //{
+            //    nextTime += TimeSpan.FromDays(1);
+            //}
 
             return nextTime;
         }
