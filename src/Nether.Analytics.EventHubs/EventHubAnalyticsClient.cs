@@ -21,7 +21,7 @@ namespace Nether.Analytics.EventHubs
         public int MaxMillisecondsBetweenBatches { get; set; } = 1000;
         public int MaxDegreeOfParallelism = Environment.ProcessorCount * 4;
         public int MaxQueueSize = 100000;
-        public Func<int, int, int> SendThrottelingDelayFunc { get; set; } = (queueSize, maxBuffer) => (queueSize - maxBuffer) * 10;
+        public Func<int, int, int> SendThrottlingDelayFunc { get; set; } = (queueSize, maxBuffer) => (queueSize - maxBuffer) * 10;
     }
 
     public class EventHubAnalyticsClient : IAnalyticsClient
@@ -104,9 +104,9 @@ namespace Nether.Analytics.EventHubs
                 // Throttle sending/queuing in order not to exhaust memory, by default that means
                 // "delay one millisecond for every message that's in the queue above what is max allowed".
                 // Meaning the more messages we get in the queue we delay more, making an efficient
-                // throtteling. No throtteling is done if we haven't filled the queue.
+                // throttling. No throttling is done if we haven't filled the queue.
                 Console.Write("?");
-                var millisecondsDelay = _options.SendThrottelingDelayFunc(queueCount, _options.MaxQueueSize);
+                var millisecondsDelay = _options.SendThrottlingDelayFunc(queueCount, _options.MaxQueueSize);
                 if (millisecondsDelay < 1)
                     millisecondsDelay = 1;
 
