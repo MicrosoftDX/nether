@@ -7,7 +7,7 @@ namespace Nether.Analytics
 {
     public class EveryMinuteOnTheMinuteSchedule : IJobScheduleV2
     {
-        public DateTime GetNextExcecutionTime(DateTime lastExecutionTime)
+        public DateTime GetNextExecutionTime(DateTime lastExecutionTime)
         {
             var nextTime = new DateTime(
                 lastExecutionTime.Year,

@@ -27,7 +27,7 @@ namespace Nether.Analytics
             _storageConnectionString = connectionString;
 
             if (TimeSpan.FromSeconds(15) > leaseTime || leaseTime > TimeSpan.FromSeconds(60))
-                throw new ArgumentException("leaseTime need to be between 15 and 60 seconds", "leaseTime");
+                throw new ArgumentException("leaseTime need to be between 15 and 60 seconds", nameof(leaseTime));
 
             _leaseTime = leaseTime;
         }
@@ -74,7 +74,7 @@ namespace Nether.Analytics
         }
 
         /// <summary>
-        /// Release the lease on the specified blob (called detailedJobName)
+        /// Release the lease on the specified blob 
         /// </summary>
         /// <param name="jobId"></param>
         /// <param name="leaseId"></param>

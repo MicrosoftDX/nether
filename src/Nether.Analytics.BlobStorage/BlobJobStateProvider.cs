@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Nether.Analytics
 {
     /// <summary>
-    /// Stores and retrieves details about last execution dateTime in the format yyyyMMdd-HHmm
+    /// Stores and retrieves details about last execution dateTime 
     /// </summary>
     public class BlobJobStateProvider : IJobStateProvider
     {

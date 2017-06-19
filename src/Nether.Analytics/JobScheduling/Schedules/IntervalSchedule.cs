@@ -14,7 +14,7 @@ namespace Nether.Analytics
             _interval = interval;
         }
 
-        public DateTime GetNextExcecutionTime(DateTime lastExecutionTime)
+        public DateTime GetNextExecutionTime(DateTime lastExecutionTime)
         {
             return lastExecutionTime + _interval;
         }
