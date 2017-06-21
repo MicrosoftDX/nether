@@ -6,4 +6,4 @@ To use the nether SDK include the nether script in your project. Reference the s
 <script src="/scripts/nether.js"></script>
 ```
 
-Check [here](../../documentation/SDKs/javascript) for latest documentation.
+Check [here](../../../documentation/SDKs/javascript) for latest documentation.
