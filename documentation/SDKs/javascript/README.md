@@ -29,7 +29,7 @@ To use the nether SDK include the nether script in your project. Reference the s
 <script src="/scripts/oidc-client.js"></script>
 ```
 
-*Note that if you restored from NPM your path may be "node_modules/nether-js-sdk/src/nether.js and node_modules/node_modules\oidc-client-node\lib/"*
+*Note that if you restored from NPM your path may be "node_modules/nether-js-sdk/src/nether.js and node_modules/node_modules/oidc-client-node/lib/"*
 
 ```javascript
 var config = {
