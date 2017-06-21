@@ -149,7 +149,7 @@ nether.analytics.levelFinished(1);
 The game session Id is logged as a parameter when a level finished event is created.
 
 #### Custom event
-You can use the ***nether.analytics.customEven(event)*** method to create custom events.
+You can use the ***nether.analytics.customEvent(event)*** method to create custom events.
 ##### Example usage
 ```javascript
 var event = {}
