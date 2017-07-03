@@ -266,3 +266,5 @@ paket-files/
 
 # Azure Resource Manager
 *.privateparams.json
+
+appsettings.json
