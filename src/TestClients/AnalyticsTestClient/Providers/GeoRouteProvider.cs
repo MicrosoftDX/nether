@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 
-namespace AnalyticsTestClient
+namespace Nether.Test.ConsoleClient
 {
     public class GeoRouteProvider : IGeoRouteProvider
     {

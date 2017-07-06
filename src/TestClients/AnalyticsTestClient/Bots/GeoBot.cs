@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Nether.Analytics.EventHubs;
 using Nether.Analytics;
 
-namespace AnalyticsTestClient
+namespace Nether.Test.ConsoleClient
 {
     public class GeoBot : NetherBot
     {

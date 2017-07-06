@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace AnalyticsTestClient
+namespace Nether.Test.ConsoleClient
 {
     public class PlayerDistributionProvider
     {

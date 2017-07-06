@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata.Ecma335;
 
-namespace AnalyticsTestClient
+namespace Nether.Test.ConsoleClient
 {
     public abstract class ConsoleMenu
     {

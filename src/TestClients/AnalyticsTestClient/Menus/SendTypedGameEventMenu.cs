@@ -7,7 +7,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace AnalyticsTestClient
+namespace Nether.Test.ConsoleClient
 {
     public class SendTypedGameEventMenu : ConsoleMenu
     {

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace AnalyticsTestClient
+namespace Nether.Test.ConsoleClient
 {
     public class USQLJobMenu : ConsoleMenu
     {

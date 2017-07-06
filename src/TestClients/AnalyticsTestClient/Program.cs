@@ -6,7 +6,7 @@ using Nether.Analytics.EventHubs;
 using System;
 using System.Collections.Generic;
 
-namespace AnalyticsTestClient
+namespace Nether.Test.ConsoleClient
 {
     public class Program
     {
@@ -20,7 +20,7 @@ namespace AnalyticsTestClient
             Console.WriteLine(@"|  \| |/ _ \ __| '_ \ / _ \ '__|");
             Console.WriteLine(@"| |\  |  __/ |_| | | |  __/ |   ");
             Console.WriteLine(@"|_| \_|\___|\__|_| |_|\___|_|   ");
-            Console.WriteLine(@"- Analytics Test Client -");
+            Console.WriteLine(@"- Nether.Test.ConsoleClient -");
             Console.WriteLine();
 
             CultureInfoEx.SetupNetherCultureInfo();

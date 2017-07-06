@@ -4,7 +4,7 @@
 using Nether.Analytics;
 using System;
 
-namespace AnalyticsTestClient
+namespace Nether.Test.ConsoleClient
 {
     internal class ResultsApiConsumerMenu : ConsoleMenu
     {

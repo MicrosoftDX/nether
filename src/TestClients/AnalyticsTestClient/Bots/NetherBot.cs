@@ -6,7 +6,7 @@ using Nether.Analytics.MessageFormats;
 using System;
 using System.Threading.Tasks;
 
-namespace AnalyticsTestClient
+namespace Nether.Test.ConsoleClient
 {
     public class NetherBot
     {

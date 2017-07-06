@@ -3,7 +3,7 @@
 
 using System;
 
-namespace AnalyticsTestClient
+namespace Nether.Test.ConsoleClient
 {
     public static class RandomEx
     {

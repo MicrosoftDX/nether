@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AnalyticsTestClient
+namespace Nether.Test.ConsoleClient
 {
     public class GeoRoute
     {

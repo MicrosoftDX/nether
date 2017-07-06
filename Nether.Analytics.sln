@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.4
+VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics", "src\Nether.Analytics\Nether.Analytics.csproj", "{91FC225B-140C-4E94-9803-526A90A8F66E}"
 EndProject
@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.Host", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.MessageFormats", "src\Nether.Analytics.MessageFormats\Nether.Analytics.MessageFormats.csproj", "{BD02F767-7426-47B4-A4F1-D791090931B2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnalyticsTestClient", "src\TestClients\AnalyticsTestClient\AnalyticsTestClient.csproj", "{1D727394-9645-472F-B4FF-4EABE29CB461}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Test.ConsoleClient", "src\TestClients\AnalyticsTestClient\Nether.Test.ConsoleClient.csproj", "{1D727394-9645-472F-B4FF-4EABE29CB461}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.GeoLocation", "src\Nether.Analytics.GeoLocation\Nether.Analytics.GeoLocation.csproj", "{B350640B-7ED6-4EBA-B9E1-327C88D882DC}"
 EndProject

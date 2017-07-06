@@ -11,7 +11,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AnalyticsTestClient
+namespace Nether.Test.ConsoleClient
 {
     public class SchedulerJobMenu : ConsoleMenu
     {
