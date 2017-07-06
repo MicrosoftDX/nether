@@ -12,11 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nether.Analytics.BlobStorage\Nether.BlobStorage.csproj" />
-    <ProjectReference Include="..\Nether.Analytics.DataLake\Nether.DataLake.csproj" />
-    <ProjectReference Include="..\Nether.Analytics.EventHubs\Nether.EventHubs.csproj" />
-    <ProjectReference Include="..\Nether.Analytics.GeoLocation\Nether.GeoLocation.csproj" />
-    <ProjectReference Include="..\Nether.Analytics\Nether.Ingest.csproj" />
+    <ProjectReference Include="..\Nether.BlobStorage\Nether.BlobStorage.csproj" />
+    <ProjectReference Include="..\Nether.DataLake\Nether.DataLake.csproj" />
+    <ProjectReference Include="..\Nether.EventHubs\Nether.EventHubs.csproj" />
+    <ProjectReference Include="..\Nether.GeoLocation\Nether.GeoLocation.csproj" />
+    <ProjectReference Include="..\Nether.Ingest\Nether.Ingest.csproj" />
   </ItemGroup>
 
 </Project>

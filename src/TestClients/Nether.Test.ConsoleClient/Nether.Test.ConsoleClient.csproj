@@ -19,11 +19,11 @@
     <PackageReference Include="NGeoHash.DotNetCore" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Nether.Analytics.BlobStorage\Nether.BlobStorage.csproj" />
-    <ProjectReference Include="..\..\Nether.Analytics.DataLake\Nether.DataLake.csproj" />
-    <ProjectReference Include="..\..\Nether.Analytics.EventHubs\Nether.EventHubs.csproj" />
-    <ProjectReference Include="..\..\Nether.Analytics.MessageFormats\Nether.Ingest.MessageFormats.csproj" />
-    <ProjectReference Include="..\..\Nether.Analytics\Nether.Ingest.csproj" />
+    <ProjectReference Include="..\..\Nether.BlobStorage\Nether.BlobStorage.csproj" />
+    <ProjectReference Include="..\..\Nether.DataLake\Nether.DataLake.csproj" />
+    <ProjectReference Include="..\..\Nether.EventHubs\Nether.EventHubs.csproj" />
+    <ProjectReference Include="..\..\Nether.MessageFormats\Nether.Ingest.MessageFormats.csproj" />
+    <ProjectReference Include="..\..\Nether.Ingest\Nether.Ingest.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

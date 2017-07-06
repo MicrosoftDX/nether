@@ -17,15 +17,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GeoCoordinate.NetStandard1" Version="1.0.1" />
-    <PackageReference Include="NGeoHash" Version="1.0.0" />
-    <PackageReference Include="System.Net.Http" Version="4.3.2" />
+    <PackageReference Include="Microsoft.Azure.EventHubs.Processor" Version="1.0.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nether.Ingest.MessageFormats\Nether.Ingest.MessageFormats.csproj" />
+    <ProjectReference Include="..\Nether.Ingest\Nether.Ingest.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-setversion" Version="1.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Nether.Analytics\Nether.Ingest.csproj" />
   </ItemGroup>
 
 </Project>

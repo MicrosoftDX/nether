@@ -21,10 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="WindowsAzure.Storage" Version="8.1.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Nether.Analytics\Nether.Ingest.csproj" />
+    <ProjectReference Include="..\Nether.Ingest\Nether.Ingest.csproj" />
   </ItemGroup>
 </Project>

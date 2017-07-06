@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Nether.Analytics\Nether.Ingest.csproj" />
+    <ProjectReference Include="..\..\src\Nether.Ingest\Nether.Ingest.csproj" />
   </ItemGroup>
 
 </Project>
