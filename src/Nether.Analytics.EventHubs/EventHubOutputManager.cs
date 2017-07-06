@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.EventHubs;
 using System.Text;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     public class EventHubOutputManager : IOutputManager
     {

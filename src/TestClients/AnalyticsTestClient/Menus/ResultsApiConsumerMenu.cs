@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Nether.Analytics;
+using Nether.Ingest;
 using System;
 
 namespace Nether.Test.ConsoleClient
@@ -45,7 +45,7 @@ namespace Nether.Test.ConsoleClient
 
                 var path = Console.ReadLine();
 
-                var f = new Nether.Analytics.FileResultsReader(formatter, _filePathAlgorithm, path, pipeline, messageType);
+                var f = new FileResultsReader(formatter, _filePathAlgorithm, path, pipeline, messageType);
                 foreach (var msg in f.Get(start.Value, end.Value))
                 {
                     Console.WriteLine(msg.ToString());
@@ -93,7 +93,7 @@ namespace Nether.Test.ConsoleClient
 
                 var path = Console.ReadLine();
 
-                var f = new Nether.Analytics.FileResultsReader(formatter, _filePathAlgorithm, path, pipeline, messageType);
+                var f = new FileResultsReader(formatter, _filePathAlgorithm, path, pipeline, messageType);
 
                 var messages = f.GetLatest();
 

@@ -8,7 +8,7 @@
 //using System.Text;
 //using System.Reflection;
 
-//namespace Nether.Analytics.UnitTests
+//namespace Nether.Ingest.UnitTests
 //{
 //    public static class Utilities
 //    {

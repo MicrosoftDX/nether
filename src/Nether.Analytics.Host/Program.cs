@@ -4,14 +4,14 @@
 using Microsoft.Azure.EventHubs.Processor;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest.Azure.Authentication;
-using Nether.Analytics.DataLake;
-using Nether.Analytics.EventHubs;
-using Nether.Analytics.GeoLocation;
-using Nether.Analytics.Parsers;
+using Nether.DataLake;
+using Nether.EventHubs;
+using Nether.GeoLocation;
+using Nether.Ingest;
 using System;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics.Host
+namespace Nether.Demo.IngestFull
 {
     internal class Program
     {

@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     public enum MessageHandlerResults
     {

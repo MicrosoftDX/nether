@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     public class MessageRouter : IMessageRouter
     {

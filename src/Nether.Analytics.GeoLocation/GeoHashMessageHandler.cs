@@ -2,10 +2,11 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using GeoCoordinatePortable;
+using Nether.Ingest;
 using NGeoHash;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics.GeoLocation
+namespace Nether.GeoLocation
 {
     public class GeoHashMessageHandler : IMessageHandler
     {

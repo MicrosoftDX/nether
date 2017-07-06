@@ -11,10 +11,10 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Nether.Analytics;
+using Nether.Ingest;
 using System.Collections.Generic;
 
-namespace Nether.Analytics.DataLake
+namespace Nether.DataLake
 {
     public class DataLakeStoreOutputManager : IOutputManager
     {

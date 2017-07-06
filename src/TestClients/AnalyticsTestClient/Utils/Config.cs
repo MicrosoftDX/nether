@@ -4,7 +4,7 @@
 //TODO: Take a big grip on Configuration and fix it for all Nether. A copy of this file is available in Nether.Analytics.Host
 
 using Microsoft.Extensions.Configuration;
-using Nether.Analytics;
+using Nether.Ingest;
 using System;
 using System.Collections.Generic;
 using System.IO;

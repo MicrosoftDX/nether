@@ -6,7 +6,7 @@ using Itinero.Exceptions;
 using Itinero.IO.Osm;
 using Itinero.LocalGeo;
 using Itinero.Osm.Vehicles;
-using Nether.Analytics;
+using Nether.Ingest;
 using System;
 using System.Collections.Generic;
 using System.IO;

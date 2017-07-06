@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     /// <summary>
     /// Generic MessageHandler for quick none asynchronous generation of property values

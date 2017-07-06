@@ -4,7 +4,7 @@
 using System;
 using Xunit;
 
-namespace Nether.Analytics.UnitTests
+namespace Nether.Ingest.UnitTests
 {
     public class SchedulerDateTimeUtilitiesTests
     {

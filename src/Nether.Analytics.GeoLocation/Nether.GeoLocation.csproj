@@ -17,10 +17,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nether.Analytics\Nether.Analytics.csproj" />
+    <PackageReference Include="GeoCoordinate.NetStandard1" Version="1.0.1" />
+    <PackageReference Include="NGeoHash" Version="1.0.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.2" />
   </ItemGroup>
-
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-setversion" Version="1.0.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nether.Analytics\Nether.Ingest.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     public class WeeklySchedule : IJobScheduleV2
     {

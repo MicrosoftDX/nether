@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Nether.Ingest;
 using System;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics.PowerBI
+namespace Nether.PowerBI
 {
     public class PowerBIOutputManager : IOutputManager
     {

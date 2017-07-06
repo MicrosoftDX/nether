@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Nether.Analytics.EventHubs
+namespace Nether.EventHubs
 {
     public class EventHubListenerMessage
     {

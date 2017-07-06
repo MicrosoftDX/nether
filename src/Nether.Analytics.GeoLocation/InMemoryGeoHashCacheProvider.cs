@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics.GeoLocation
+namespace Nether.GeoLocation
 {
     public class InMemoryGeoHashCacheProvider : IGeoHashCacheProvider
     {

@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     public class MessageProcessorInformation
     {

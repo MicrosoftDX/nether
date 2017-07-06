@@ -1,13 +1,14 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Nether.Analytics.EventHubs;
+using Nether.Ingest;
+using Nether.Ingest.Parsers;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics.Parsers
+namespace Nether.EventHubs
 {
     public class EventHubListenerMessageJsonParser : IMessageParser<EventHubListenerMessage>
     {

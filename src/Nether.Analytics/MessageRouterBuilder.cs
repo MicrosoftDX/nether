@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     public class MessageRouterBuilder
     {

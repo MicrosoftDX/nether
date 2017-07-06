@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Nether.Analytics.Parsers;
+using Nether.Ingest.Parsers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +9,7 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     public class MessageProcessor<T>
     {

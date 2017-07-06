@@ -3,12 +3,13 @@
 
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Nether.Ingest;
 using System;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics
+namespace Nether.BlobStorage
 {
     /// <summary>
     /// Stores and retrieves details about last execution dateTime 

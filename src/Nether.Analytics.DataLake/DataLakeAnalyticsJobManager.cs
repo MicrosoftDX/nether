@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics.DataLake
+namespace Nether.DataLake
 {
     public class DataLakeAnalyticsJobManager
     {

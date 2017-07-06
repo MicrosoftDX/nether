@@ -2,11 +2,12 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.Extensions.Configuration;
+using Nether.Ingest;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Nether.Analytics.Host
+namespace Nether.Demo.IngestFull
 {
     public static class Config
     {

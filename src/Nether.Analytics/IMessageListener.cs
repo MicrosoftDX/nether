@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     public interface IMessageListener<T>
     {

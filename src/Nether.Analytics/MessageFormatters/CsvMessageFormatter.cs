@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Text;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     public class CsvMessageFormatter : IMessageFormatter
     {

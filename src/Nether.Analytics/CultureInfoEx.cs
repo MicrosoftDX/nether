@@ -3,7 +3,7 @@
 
 using System.Globalization;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     public static class CultureInfoEx
     {

@@ -4,7 +4,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     /// <summary>
     /// Interface for state providers for the job scheduler

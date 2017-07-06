@@ -17,10 +17,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nether.Analytics\Nether.Analytics.csproj" />
+    <DotNetCliToolReference Include="dotnet-setversion" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-setversion" Version="1.0.0" />
+    <PackageReference Include="WindowsAzure.Storage" Version="8.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nether.Analytics\Nether.Ingest.csproj" />
   </ItemGroup>
 </Project>

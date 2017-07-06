@@ -17,11 +17,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-setversion" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Azure.EventHubs.Processor" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nether.Analytics\Nether.Analytics.csproj" />
+    <ProjectReference Include="..\Nether.Analytics.MessageFormats\Nether.Ingest.MessageFormats.csproj" />
+    <ProjectReference Include="..\Nether.Analytics\Nether.Ingest.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-setversion" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

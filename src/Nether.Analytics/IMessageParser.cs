@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 
-namespace Nether.Analytics.Parsers
+namespace Nether.Ingest.Parsers
 {
     public interface IMessageParser<T>
     {

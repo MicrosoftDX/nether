@@ -3,33 +3,37 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics", "src\Nether.Analytics\Nether.Analytics.csproj", "{91FC225B-140C-4E94-9803-526A90A8F66E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Ingest", "src\Nether.Analytics\Nether.Ingest.csproj", "{91FC225B-140C-4E94-9803-526A90A8F66E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.EventHubs", "src\Nether.Analytics.EventHubs\Nether.Analytics.EventHubs.csproj", "{97E1751C-7801-48CD-A10E-360835F50B42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.EventHubs", "src\Nether.Analytics.EventHubs\Nether.EventHubs.csproj", "{97E1751C-7801-48CD-A10E-360835F50B42}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.BlobStorage", "src\Nether.Analytics.BlobStorage\Nether.Analytics.BlobStorage.csproj", "{DBB73E90-E2A3-4C1E-9E18-FBED4FF6F2F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.BlobStorage", "src\Nether.Analytics.BlobStorage\Nether.BlobStorage.csproj", "{DBB73E90-E2A3-4C1E-9E18-FBED4FF6F2F8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.DataLake", "src\Nether.Analytics.DataLake\Nether.Analytics.DataLake.csproj", "{3D91B9E7-02E2-43F8-A9F8-10D9912E20C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.DataLake", "src\Nether.Analytics.DataLake\Nether.DataLake.csproj", "{3D91B9E7-02E2-43F8-A9F8-10D9912E20C9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.Host", "src\Nether.Analytics.Host\Nether.Analytics.Host.csproj", "{D766D132-CA72-4B91-8E52-0536592AB843}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Demo.IngestFull", "src\Nether.Analytics.Host\Nether.Demo.IngestFull.csproj", "{D766D132-CA72-4B91-8E52-0536592AB843}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.MessageFormats", "src\Nether.Analytics.MessageFormats\Nether.Analytics.MessageFormats.csproj", "{BD02F767-7426-47B4-A4F1-D791090931B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Ingest.MessageFormats", "src\Nether.Analytics.MessageFormats\Nether.Ingest.MessageFormats.csproj", "{BD02F767-7426-47B4-A4F1-D791090931B2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Test.ConsoleClient", "src\TestClients\AnalyticsTestClient\Nether.Test.ConsoleClient.csproj", "{1D727394-9645-472F-B4FF-4EABE29CB461}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.GeoLocation", "src\Nether.Analytics.GeoLocation\Nether.Analytics.GeoLocation.csproj", "{B350640B-7ED6-4EBA-B9E1-327C88D882DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.GeoLocation", "src\Nether.Analytics.GeoLocation\Nether.GeoLocation.csproj", "{B350640B-7ED6-4EBA-B9E1-327C88D882DC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.DataLake.UnitTests", "tests\Nether.Analytics.DataLake.UnitTests\Nether.Analytics.DataLake.UnitTests.csproj", "{977E45B6-81DA-4915-A388-B495E2CCBC1F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.DataLake.UnitTests", "tests\Nether.Analytics.DataLake.UnitTests\Nether.DataLake.UnitTests.csproj", "{977E45B6-81DA-4915-A388-B495E2CCBC1F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B636CA26-4412-4202-AA24-EF028D8FE4DB}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unit Tests", "Unit Tests", "{B636CA26-4412-4202-AA24-EF028D8FE4DB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.Cosmos", "src\Nether.Analytics.Cosmos\Nether.Analytics.Cosmos.csproj", "{CB54F5E1-BFB6-49FC-92E2-B9CC5FDF4262}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Cosmos", "src\Nether.Analytics.Cosmos\Nether.Cosmos.csproj", "{CB54F5E1-BFB6-49FC-92E2-B9CC5FDF4262}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.PowerBI", "src\Nether.Analytics.PowerBI\Nether.Analytics.PowerBI.csproj", "{F12F811E-959F-44A8-9A5E-6D52BBDCDCBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.PowerBI", "src\Nether.Analytics.PowerBI\Nether.PowerBI.csproj", "{F12F811E-959F-44A8-9A5E-6D52BBDCDCBF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Analytics.UnitTests", "tests\Nether.Analytics.UnitTests\Nether.Analytics.UnitTests.csproj", "{3993AA0E-EE21-4A4A-9A9E-FC827AEBD1D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Ingest.UnitTests", "tests\Nether.Analytics.UnitTests\Nether.Ingest.UnitTests.csproj", "{3993AA0E-EE21-4A4A-9A9E-FC827AEBD1D4}"
 EndProject
-Project("{182E2583-ECAD-465B-BB50-91101D7C24CE}") = "Nether.Analytics.DataLake.Jobs", "src\Nether.Analytics.DataLake.Jobs\Nether.Analytics.DataLake.Jobs.usqlproj", "{B684B7D9-A09C-4767-8D79-6C2C401556A9}"
+Project("{182E2583-ECAD-465B-BB50-91101D7C24CE}") = "Nether.DataLake.Jobs", "src\Nether.Analytics.DataLake.Jobs\Nether.DataLake.Jobs.usqlproj", "{B684B7D9-A09C-4767-8D79-6C2C401556A9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Clients", "Test Clients", "{5E9BBC78-DCEC-47EF-9C9E-039D556E9690}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{CC2EA4E2-3913-4731-800D-31154FF92E2F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -202,6 +206,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{D766D132-CA72-4B91-8E52-0536592AB843} = {CC2EA4E2-3913-4731-800D-31154FF92E2F}
+		{1D727394-9645-472F-B4FF-4EABE29CB461} = {5E9BBC78-DCEC-47EF-9C9E-039D556E9690}
 		{977E45B6-81DA-4915-A388-B495E2CCBC1F} = {B636CA26-4412-4202-AA24-EF028D8FE4DB}
 		{3993AA0E-EE21-4A4A-9A9E-FC827AEBD1D4} = {B636CA26-4412-4202-AA24-EF028D8FE4DB}
 	EndGlobalSection

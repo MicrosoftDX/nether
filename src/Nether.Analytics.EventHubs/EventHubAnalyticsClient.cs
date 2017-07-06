@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.Azure.EventHubs;
+using Nether.Ingest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -13,7 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics.EventHubs
+namespace Nether.EventHubs
 {
     public class EventHubAnalyticsClientOptions
     {

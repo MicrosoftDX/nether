@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Nether.Ingest;
 using System;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics.Cosmos
+namespace Nether.Cosmos
 {
     //TODO: Implement a working solution for outputting to Cosmos DB.
     // Take a look at the implementation for DataLakeStoreOutputManager for inspiration and sync

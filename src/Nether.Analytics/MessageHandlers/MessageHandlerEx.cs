@@ -4,7 +4,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     /// <summary>
     /// Message Handler Extention Methods that helps using and creating Message Handlers

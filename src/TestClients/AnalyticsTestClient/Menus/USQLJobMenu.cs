@@ -3,8 +3,8 @@
 
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest.Azure.Authentication;
-using Nether.Analytics;
-using Nether.Analytics.DataLake;
+using Nether.DataLake;
+using Nether.Ingest;
 using System;
 using System.Collections.Generic;
 using System.IO;

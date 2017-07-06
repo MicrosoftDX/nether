@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Nether.DataLake;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Nether.Analytics.DataLake.UnitTests
+namespace Nether.Ingest.DataLake.UnitTests
 {
     public class UsqlHelperTests
     {

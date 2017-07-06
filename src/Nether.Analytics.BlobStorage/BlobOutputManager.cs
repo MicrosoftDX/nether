@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Nether.Ingest;
 using System;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics
+namespace Nether.BlobStorage
 {
     //TODO: Implement a working solution for outputting to Azure Blob Storage.
     // Take a look at the implementation for DataLakeStoreOutputManager for inspiration and sync

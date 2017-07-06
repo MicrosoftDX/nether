@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Nether.Analytics.DataLake
+namespace Nether.DataLake
 {
     public class UsqlHelper
     {

@@ -9,8 +9,9 @@ using System.Net.Http;
 using NGeoHash;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Nether.Ingest;
 
-namespace Nether.Analytics.GeoLocation
+namespace Nether.GeoLocation
 {
     public class BingLocationLookupHandler : IMessageHandler
     {

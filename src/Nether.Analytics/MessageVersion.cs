@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     public struct MessageVersion
     {

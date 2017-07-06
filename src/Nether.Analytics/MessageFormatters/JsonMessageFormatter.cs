@@ -4,7 +4,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     public class JsonMessageFormatter : IMessageFormatter
     {

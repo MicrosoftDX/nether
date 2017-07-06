@@ -6,10 +6,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.EventHubs.Processor;
+using Nether.Ingest;
 
-
-
-namespace Nether.Analytics.EventHubs
+namespace Nether.EventHubs
 {
     public class EventHubsListener : IEventProcessor, IMessageListener<EventHubListenerMessage>
     {

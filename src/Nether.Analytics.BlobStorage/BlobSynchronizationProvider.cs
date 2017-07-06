@@ -3,10 +3,11 @@
 
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Nether.Ingest;
 using System;
 using System.Threading.Tasks;
 
-namespace Nether.Analytics
+namespace Nether.BlobStorage
 {
     public class BlobSynchronizationProvider : ISynchronizationProvider
     {
@@ -74,7 +75,7 @@ namespace Nether.Analytics
         }
 
         /// <summary>
-        /// Release the lease on the specified blob 
+        /// Release the lease on the specified blob
         /// </summary>
         /// <param name="jobId"></param>
         /// <param name="leaseId"></param>

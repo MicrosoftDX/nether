@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Nether.Analytics
+namespace Nether.Ingest
 {
     /// <summary>
     /// Enables reading of results from arbitrary sources.
