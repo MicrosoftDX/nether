@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solution Items", "{C3F7DE95-BCD3-4340-AE80-4848443F2B39}"
 	ProjectSection(SolutionItems) = preProject
@@ -57,6 +57,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Data.EntityFramework", "src\Nether.Data.EntityFramework\Nether.Data.EntityFramework.csproj", "{44AF2745-059D-4040-BFC7-8478389B1479}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Data.InMemory", "src\Nether.Data.InMemory\Nether.Data.InMemory.csproj", "{E193CDEF-0298-4E87-8B4D-47B5CA1E019B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuestAccessTestClient", "src\TestClients\GuestAccessTestClient\GuestAccessTestClient.csproj", "{0F1268DB-C74E-43EB-895C-81542325D4A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -321,6 +323,24 @@ Global
 		{E193CDEF-0298-4E87-8B4D-47B5CA1E019B}.Release|x64.Build.0 = Release|Any CPU
 		{E193CDEF-0298-4E87-8B4D-47B5CA1E019B}.Release|x86.ActiveCfg = Release|Any CPU
 		{E193CDEF-0298-4E87-8B4D-47B5CA1E019B}.Release|x86.Build.0 = Release|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Debug|x64.Build.0 = Debug|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Debug|x86.Build.0 = Debug|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release - Full|Any CPU.ActiveCfg = Release|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release - Full|Any CPU.Build.0 = Release|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release - Full|x64.ActiveCfg = Release|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release - Full|x64.Build.0 = Release|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release - Full|x86.ActiveCfg = Release|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release - Full|x86.Build.0 = Release|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release|x64.ActiveCfg = Release|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release|x64.Build.0 = Release|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release|x86.ActiveCfg = Release|Any CPU
+		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -343,5 +363,6 @@ Global
 		{22F45C3A-F7D0-46D2-8392-E3ACE3D5FD10} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
 		{44AF2745-059D-4040-BFC7-8478389B1479} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
 		{E193CDEF-0298-4E87-8B4D-47B5CA1E019B} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
+		{0F1268DB-C74E-43EB-895C-81542325D4A4} = {71C19CC0-E81B-4271-8C2E-E749FB445EB3}
 	EndGlobalSection
 EndGlobal
