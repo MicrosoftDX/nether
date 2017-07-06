@@ -1,8 +1,8 @@
 src/Nether.Ingest
+src/Nether.Ingest.MessageFormats
 src/Nether.BlobStorage
 src/Nether.Cosmos
 src/Nether.DataLake
 src/Nether.EventHubs
 src/Nether.GeoLocation
-src/Nether.MessageFormats
 src/Nether.PowerBI
