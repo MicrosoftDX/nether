@@ -6,3 +6,4 @@ src/Nether.DataLake
 src/Nether.EventHubs
 src/Nether.GeoLocation
 src/Nether.PowerBI
+src/Nether.SQLDatabase

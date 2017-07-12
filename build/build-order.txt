@@ -13,6 +13,7 @@ src/Nether.EventHubs
 src/Nether.GeoLocation
 src/Nether.PowerBI
 src/Nether.Demo.IngestFull
+src/Nether.SQLDatabase
 
 src/TestClients/Nether.Test.ConsoleClient
 tests/Nether.Ingest.UnitTests
