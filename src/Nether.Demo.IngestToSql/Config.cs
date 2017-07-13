@@ -33,6 +33,7 @@ namespace Nether.Demo.IngestToSql
         public const string NAH_EHLISTENER_LEASECONTAINERNAME = "NAH_EHLISTENER_LEASECONTAINERNAME";
         public const string NAH_AZURE_SQLUTPUTMANAGER_CONNECTIONSTRING = "NAH_AZURE_SQLUTPUTMANAGER_CONNECTIONSTRING";
 
+
         private static void SetupConfigurationProviders()
         {
             var defaultConfigValues = new Dictionary<string, string>

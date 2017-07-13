@@ -12,12 +12,12 @@ namespace Nether.SQLDatabase
     public class SQLDatabaseOutputManager : IOutputManager
     {
         private string _sqlConnectionString;
-        private SqlConnection _sqlConnection;
+        //private SqlConnection _sqlConnection;
 
         public SQLDatabaseOutputManager(string sqlConnectionString)
         {
             _sqlConnectionString = sqlConnectionString;
-            _sqlConnection = new SqlConnection(_sqlConnectionString);
+            //   _sqlConnection = new SqlConnection(_sqlConnectionString);
         }
 
         Task IOutputManager.FlushAsync(string partitionId)
@@ -29,51 +29,106 @@ namespace Nether.SQLDatabase
         {
             if (msg != null)
             {
-                try
+                using (SqlConnection sqlConnection = new SqlConnection(_sqlConnectionString))
                 {
-                    StringBuilder insertStatement = new StringBuilder("INSERT INTO dbo.");
-                    insertStatement.Append(msg.Type);
-                    insertStatement.Append(" (Id,EnqueuedTimeUtc");
-                    foreach (string column in msg.Properties.Keys)
+                    try
                     {
-                        insertStatement.Append(",");
-                        insertStatement.Append(column);
-                    }
-                    insertStatement.Append(") VALUES (@id,@EnqueuedTimeUtc,");
+                        StringBuilder insertStatement = new StringBuilder("INSERT INTO dbo.[");
+                        insertStatement.Append(msg.Type);
+                        //insertStatement.Append(" (Id,EnqueuedTimeUtc");
+                        insertStatement.Append("] (");
+                        foreach (string column in msg.Properties.Keys)
+                        {
+                            insertStatement.Append(column);
+                            insertStatement.Append(",");
+                        }
+                        insertStatement.Remove(insertStatement.Length - 1, 1);
 
-                    foreach (string column in msg.Properties.Keys)
-                    {
-                        insertStatement.Append(",@");
-                        insertStatement.Append(column);
-                    }
-                    insertStatement.Append(")");
-
-                    using (SqlCommand sqlCommand = new SqlCommand(insertStatement.ToString(), _sqlConnection))
-                    {
-                        sqlCommand.Parameters.AddWithValue("@id", msg.Id);
-                        sqlCommand.Parameters.AddWithValue("@EnqueuedTimeUtc", msg.EnqueuedTimeUtc);
+                        //insertStatement.Append(") VALUES (@id,@EnqueuedTimeUtc,");
+                        insertStatement.Append(") VALUES (@");
 
                         foreach (string column in msg.Properties.Keys)
                         {
-                            sqlCommand.Parameters.AddWithValue("@" + column.ToString(), msg.Properties[column]);
+                            insertStatement.Append(column);
+                            insertStatement.Append(",@");
                         }
 
-                        _sqlConnection.Open();
-                        int result = sqlCommand.ExecuteNonQuery();
+                        insertStatement.Remove(insertStatement.Length - 2, 2);
+                        insertStatement.Append(")");
 
-                        // Check Error
-                        if (result < 0)
+
+
+                        using (SqlCommand sqlCommand = new SqlCommand(insertStatement.ToString(), sqlConnection))
                         {
-                            ; //TODO: implement the right approach to failed insert
+                            // sqlCommand.Parameters.AddWithValue("@id", msg.Id);
+                            // sqlCommand.Parameters.AddWithValue("@EnqueuedTimeUtc", msg.EnqueuedTimeUtc);
+
+                            foreach (string column in msg.Properties.Keys)
+                            {
+                                sqlCommand.Parameters.AddWithValue("@" + column.ToString(), msg.Properties[column]);
+                            }
+
+                            if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                                sqlConnection.Open();
+
+                            int result = sqlCommand.ExecuteNonQuery();
+
+                            if (result < 0)// Check Error
+                            {
+                                ; //TODO: implement the right approach to failed insert
+                            }
                         }
+
+
+
+
+
+                        return Task.CompletedTask;
                     }
+                    catch (Exception e)
+                    {
+                        //check that table is present in the database
 
+                        using (SqlCommand sqlCommand = new SqlCommand("select case when exists((select * from information_schema.tables where table_name = '@table_name')) then 1 else 0 end", sqlConnection))
+                        {
+                            sqlCommand.Parameters.AddWithValue("@table_name", msg.Type);
 
-                    return Task.CompletedTask;
-                }
-                catch (Exception e)
-                {
-                    ;
+                            if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                                sqlConnection.Open();
+
+                            if ((int)sqlCommand.ExecuteScalar() == 1)
+                            {
+                                ;//table exist
+                            }
+                            else
+                            {
+                                //table doesn't exist, create new
+                                StringBuilder createStatement = new StringBuilder("CREATE TABLE [dbo].[@table_name] ([@");
+
+                               // sqlCommand.Parameters.AddWithValue("@table_name", msg.Type);
+                                foreach (string column in msg.Properties.Keys)
+                                {
+                                    createStatement.Append(column);
+                                    createStatement.Append("] [nvarchar] (50) NULL");
+                                    createStatement.Append(",[@");
+
+                                    sqlCommand.Parameters.AddWithValue("@" + column.ToString(), msg.Properties[column]);
+                                }
+                                createStatement.Remove(createStatement.Length - 3, 3);
+                                createStatement.Append(")");
+
+                                sqlCommand.CommandText = createStatement.ToString();
+
+                                int result = sqlCommand.ExecuteNonQuery();
+
+                                if (result < 0)// Check Error
+                                {
+                                    ; //TODO: implement the right approach to failes create table
+                                }
+                            }
+                        }
+
+                    }
                 }
             };
             return Task.CompletedTask;
