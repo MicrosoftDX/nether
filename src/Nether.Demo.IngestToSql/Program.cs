@@ -13,6 +13,14 @@ namespace Nether.Demo.IngestToSql
 {
     internal class Program
     {
+        // Demo of Nether Ingest setup to
+        // - Input from EventHub
+        // - Using Custom JSON Message Format
+        //   - where "event_name" identifies the type of event rather than the default one "type"
+        //   - where no version number is contained in the messages, so using a static version number of 1.0.0
+        // - Only using the default pipeline, meaning that all messages goes through the same simple pipeline
+        // - Outputting to SQLDatabase
+
         private static void Main(string[] args)
         {
             Console.WriteLine();
@@ -58,7 +66,14 @@ namespace Nether.Demo.IngestToSql
 
             // Setup Message Parser. By default we are using Nether JSON Messages
             // Setting up parser that knows how to parse those messages.
-            var parser = new EventHubListenerMessageJsonParser(new ConsoleCorruptMessageHandler()) { AllowDbgEnqueuedTime = true };
+            var parser = new EventHubListenerMessageJsonParser
+            {
+                AllowDbgEnqueuedTime = true,
+                CorruptMessageAsyncFunc = OnCorruptMessageAsync,
+                MessageTypePropertyName = "event_name",
+                UseStaticMessageVersion = true,
+                StaticMessageVersion = "1.0.0"
+            };
 
             // User a builder to create routing infrastructure for messages and the pipelines
             var builder = new MessageRouterBuilder();
@@ -76,6 +91,13 @@ namespace Nether.Demo.IngestToSql
 
             // The following method will never exit
             await messageProcessor.ProcessAndBlockAsync();
+        }
+
+        private Task OnCorruptMessageAsync(string msg)
+        {
+            ConsoleEx.WriteLine(ConsoleColor.Red, "Unparsable message was received and discarded");
+            ConsoleEx.WriteLine(ConsoleColor.Gray, msg);
+            return Task.CompletedTask;
         }
 
         private Task OnMessageProcessorInfoAsync(MessageProcessorInformation info)

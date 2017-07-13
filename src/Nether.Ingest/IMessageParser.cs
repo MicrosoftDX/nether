@@ -8,6 +8,5 @@ namespace Nether.Ingest.Parsers
     public interface IMessageParser<T>
     {
         Task<Message> ParseMessageAsync(T msg);
-        ICorruptMessageHandler CorruptMessageHandler { get; }
     }
 }

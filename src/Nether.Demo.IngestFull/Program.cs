@@ -64,7 +64,7 @@ namespace Nether.Demo.IngestFull
 
             // Setup Message Parser. By default we are using Nether JSON Messages
             // Setting up parser that knows how to parse those messages.
-            var parser = new EventHubListenerMessageJsonParser(new ConsoleCorruptMessageHandler()) { AllowDbgEnqueuedTime = true };
+            var parser = new EventHubListenerMessageJsonParser { AllowDbgEnqueuedTime = true, CorruptMessageAsyncFunc = OnCorruptMessageAsync };
 
             // User a builder to create routing infrastructure for messages and the pipelines
             var builder = new MessageRouterBuilder();
@@ -129,6 +129,13 @@ namespace Nether.Demo.IngestFull
 
             // The following method will never exit
             await messageProcessor.ProcessAndBlockAsync();
+        }
+
+        private Task OnCorruptMessageAsync(string msg)
+        {
+            ConsoleEx.WriteLine(ConsoleColor.Red, "Unparsable message was received and discarded");
+            ConsoleEx.WriteLine(ConsoleColor.Gray, msg);
+            return Task.CompletedTask;
         }
 
         private Task OnMessageProcessorInfoAsync(MessageProcessorInformation info)
