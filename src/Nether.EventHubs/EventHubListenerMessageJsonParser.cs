@@ -45,7 +45,11 @@ namespace Nether.EventHubs
             // Game Event Version
             string version;
 
-            if (UseStaticMessageVersion && string.IsNullOrWhiteSpace(StaticMessageVersion))
+            if (UseStaticMessageVersion && !string.IsNullOrWhiteSpace(StaticMessageVersion))
+            {
+                version = StaticMessageVersion;
+            }
+            else
             {
                 try
                 {
@@ -56,10 +60,6 @@ namespace Nether.EventHubs
                     await CorruptMessageAsyncFunc?.Invoke(data);
                     return null;
                 }
-            }
-            else
-            {
-                version = StaticMessageVersion;
             }
 
             var dbgEnqueuedTime = (string)json["dbgEnqueuedTimeUtc"];

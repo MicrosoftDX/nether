@@ -70,9 +70,9 @@ namespace Nether.Demo.IngestToSql
             {
                 AllowDbgEnqueuedTime = true,
                 CorruptMessageAsyncFunc = OnCorruptMessageAsync,
-                MessageTypePropertyName = "event_name",
-                UseStaticMessageVersion = true,
-                StaticMessageVersion = "1.0.0"
+                //MessageTypePropertyName = "event_name",
+                //UseStaticMessageVersion = true,
+                //StaticMessageVersion = "1.0.0"
             };
 
             // User a builder to create routing infrastructure for messages and the pipelines
