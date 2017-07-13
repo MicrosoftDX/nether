@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Nether.SQLDatabase
 {
-    class SQLDatabaseOutputManager : IOutputManager
+    public class SQLDatabaseOutputManager : IOutputManager
     {
         private string _sqlConnectionString;
         private SqlConnection _sqlConnection;

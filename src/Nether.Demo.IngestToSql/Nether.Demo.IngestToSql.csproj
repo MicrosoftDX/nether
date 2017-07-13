@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Nether.EventHubs\Nether.EventHubs.csproj" />
     <ProjectReference Include="..\Nether.Ingest\Nether.Ingest.csproj" />
+    <ProjectReference Include="..\Nether.SQLDatabase\Nether.SQLDatabase.csproj" />
   </ItemGroup>
 
 </Project>
