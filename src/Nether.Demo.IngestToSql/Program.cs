@@ -63,7 +63,7 @@ namespace Nether.Demo.IngestToSql
             // User a builder to create routing infrastructure for messages and the pipelines
             var builder = new MessageRouterBuilder();
 
-            var sqlOutputManager = new SQLDatabaseOutputManager("");
+            var sqlOutputManager = new SQLDatabaseOutputManager(Config.Root[Config.NAH_AZURE_SQLUTPUTMANAGER_CONNECTIONSTRING]);
 
             builder.DefaultPipeline
                 .OutputTo(sqlOutputManager);
