@@ -5,6 +5,7 @@
 using Microsoft.Azure.EventHubs.Processor;
 using Nether.EventHubs;
 using Nether.Ingest;
+using Nether.SQLDatabase;
 using System;
 using System.Threading.Tasks;
 
