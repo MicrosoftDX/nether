@@ -1,17 +1,14 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+//using Microsoft.Azure.EventHubs.Processor;
 using Microsoft.Azure.EventHubs.Processor;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.Rest.Azure.Authentication;
-using Nether.DataLake;
 using Nether.EventHubs;
-using Nether.GeoLocation;
 using Nether.Ingest;
 using System;
 using System.Threading.Tasks;
 
-namespace Nether.Demo.IngestFull
+namespace Nether.Demo.IngestToSql
 {
     internal class Program
     {
@@ -23,7 +20,7 @@ namespace Nether.Demo.IngestFull
             Console.WriteLine(@"  |  \| |/ _ \ __| '_ \ / _ \ '__|");
             Console.WriteLine(@"  | |\  |  __/ |_| | | |  __/ |   ");
             Console.WriteLine(@"  |_| \_|\___|\__|_| |_|\___|_|   ");
-            Console.WriteLine(@"  Demo Ingest Full ");
+            Console.WriteLine(@"  Demo Ingest To Sql ");
             Console.WriteLine();
 
             var app = new ProgramEx();
@@ -47,10 +44,6 @@ namespace Nether.Demo.IngestFull
                 return;
             }
 
-            // Authenticate against Azure AD once and re-use for all needed purposes
-            var serviceClientCretentials = await ApplicationTokenProvider.LoginSilentAsync(Config.Root[Config.NAH_AAD_Domain],
-                new ClientCredential(Config.Root[Config.NAH_AAD_CLIENTID], Config.Root[Config.NAH_AAD_CLIENTSECRET]));
-
             // Setup Listener. This will be the same for all pipelines we are building.
             var listenerConfig = new EventProcessorHostOptions
             {
@@ -69,57 +62,10 @@ namespace Nether.Demo.IngestFull
             // User a builder to create routing infrastructure for messages and the pipelines
             var builder = new MessageRouterBuilder();
 
-            var filePathAlgorithm = new DateFolderStructure(newFileOption: NewFileNameOptions.Every3Hours);
-
-            // Setting up "Geo Clustering Recipe"
-
-            var clusteringSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "geoHashCenterDist", "rnd");
-
-            builder.Pipeline("geoclusters")
-                .HandlesMessageType("geo-location", 1, 0)
-                .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
-                .AddHandler(new RandomIntMessageHandler())
-                .OutputTo(
-                            new FileOutputManager(clusteringSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER]),
-                            new DataLakeStoreOutputManager(
-                                clusteringSerializer,
-                                filePathAlgorithm,
-                                serviceClientCretentials,
-                                Config.Root[Config.NAH_AZURE_SUBSCRIPTIONID],
-                                Config.Root[Config.NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME])
-                        );
-
-            // Setting up "Daily Active Users Recipe"
-
-            var dauSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "gamerTag");
-            builder.Pipeline("dau")
-                .HandlesMessageType("session-start", 1, 0)
-                .OutputTo(
-                            new FileOutputManager(dauSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER]),
-                            new DataLakeStoreOutputManager(
-                                dauSerializer,
-                                filePathAlgorithm,
-                                serviceClientCretentials,
-                                Config.Root[Config.NAH_AZURE_SUBSCRIPTIONID],
-                                Config.Root[Config.NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME])
-                        );
-
-            var sessionSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession");
-            builder.Pipeline("sessions")
-                .HandlesMessageType("heartbeat", 1, 0)
-                .OutputTo(
-                            new FileOutputManager(sessionSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER]),
-                            new DataLakeStoreOutputManager(
-                                sessionSerializer,
-                                filePathAlgorithm,
-                                serviceClientCretentials,
-                                Config.Root[Config.NAH_AZURE_SUBSCRIPTIONID],
-                                Config.Root[Config.NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME])
-                );
+            IOutputManager sqlOutputManager = null; // new SqlOutputManager();
 
             builder.DefaultPipeline
-                .AddHandler(new RandomIntMessageHandler())
-                .OutputTo(new ConsoleOutputManager(new CsvMessageFormatter { IncludeHeaders = false }));
+                .OutputTo(sqlOutputManager);
 
             // Build all pipelines
             var router = builder.Build();

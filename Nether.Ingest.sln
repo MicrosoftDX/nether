@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.3
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Ingest", "src\Nether.Ingest\Nether.Ingest.csproj", "{91FC225B-140C-4E94-9803-526A90A8F66E}"
 EndProject
@@ -35,7 +35,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Clients", "Test Client
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo Setups", "Demo Setups", "{CC2EA4E2-3913-4731-800D-31154FF92E2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nether.SQLDatabase", "src\Nether.SQLDatabase\Nether.SQLDatabase.csproj", "{025A0D68-D0BE-4529-AFBA-27500EC99782}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.SQLDatabase", "src\Nether.SQLDatabase\Nether.SQLDatabase.csproj", "{025A0D68-D0BE-4529-AFBA-27500EC99782}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Demo.IngestToSql", "src\Nether.Demo.IngestToSql\Nether.Demo.IngestToSql.csproj", "{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -215,6 +217,18 @@ Global
 		{025A0D68-D0BE-4529-AFBA-27500EC99782}.Release|x64.Build.0 = Release|Any CPU
 		{025A0D68-D0BE-4529-AFBA-27500EC99782}.Release|x86.ActiveCfg = Release|Any CPU
 		{025A0D68-D0BE-4529-AFBA-27500EC99782}.Release|x86.Build.0 = Release|Any CPU
+		{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8}.Debug|x64.Build.0 = Debug|Any CPU
+		{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8}.Debug|x86.Build.0 = Debug|Any CPU
+		{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8}.Release|x64.ActiveCfg = Release|Any CPU
+		{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8}.Release|x64.Build.0 = Release|Any CPU
+		{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8}.Release|x86.ActiveCfg = Release|Any CPU
+		{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -224,5 +238,6 @@ Global
 		{1D727394-9645-472F-B4FF-4EABE29CB461} = {5E9BBC78-DCEC-47EF-9C9E-039D556E9690}
 		{977E45B6-81DA-4915-A388-B495E2CCBC1F} = {B636CA26-4412-4202-AA24-EF028D8FE4DB}
 		{3993AA0E-EE21-4A4A-9A9E-FC827AEBD1D4} = {B636CA26-4412-4202-AA24-EF028D8FE4DB}
+		{6FF1B2C2-2EF4-4631-8524-6B08D2D333D8} = {CC2EA4E2-3913-4731-800D-31154FF92E2F}
 	EndGlobalSection
 EndGlobal
