@@ -17,4 +17,11 @@
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-setversion" Version="1.0.0" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.3.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nether.Ingest\Nether.Ingest.csproj" />
+  </ItemGroup>
 </Project>
