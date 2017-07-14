@@ -8,7 +8,9 @@ using Nether.EventHubs;
 using Nether.Ingest;
 using Nether.SQLDatabase;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Data;
 
 namespace Nether.Demo.IngestToSql
 {
@@ -79,7 +81,13 @@ namespace Nether.Demo.IngestToSql
             // User a builder to create routing infrastructure for messages and the pipelines
             var builder = new MessageRouterBuilder();
 
-            var sqlOutputManager = new SQLDatabaseOutputManager(Config.Root[Config.NAH_AZURE_SQLUTPUTMANAGER_CONNECTIONSTRING]);
+            Dictionary<string, Tuple<SqlDbType, int>> columntoDatatypeMapping = new Dictionary<string, Tuple<SqlDbType, int>>()
+            {
+                {"event_time", Tuple.Create<SqlDbType, int>(SqlDbType.DateTime, 0 )},
+                {"install_time", Tuple.Create<SqlDbType, int>(SqlDbType.DateTime, 0 )},
+            };
+
+             var sqlOutputManager = new SQLDatabaseOutputManager(Config.Root[Config.NAH_AZURE_SQLUTPUTMANAGER_CONNECTIONSTRING],columntoDatatypeMapping, true);
 
             builder.DefaultPipeline
                 .AddHandler(new UnixTimeToDateTimeMessageHandler("install_time", "event_time"))

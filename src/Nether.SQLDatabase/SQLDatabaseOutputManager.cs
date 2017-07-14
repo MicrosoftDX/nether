@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Nether.Ingest;
 using System.Data.SqlClient;
 using Newtonsoft.Json;
-
+using System.Data;
 
 namespace Nether.SQLDatabase
 {
@@ -16,16 +16,26 @@ namespace Nether.SQLDatabase
     {
         private string _sqlConnectionString;
         //private SqlConnection _sqlConnection;
+        public bool _autoCreateTables = false;
+        public Dictionary<string, Tuple<SqlDbType, int>> _columnMapping;
 
-        public SQLDatabaseOutputManager(string sqlConnectionString)
+
+        public SQLDatabaseOutputManager(string sqlConnectionString, bool autoCreateTables = false)
         {
             _sqlConnectionString = sqlConnectionString;
-            //   _sqlConnection = new SqlConnection(_sqlConnectionString);
+            _autoCreateTables = autoCreateTables;
+        }
+
+        public SQLDatabaseOutputManager(string sqlConnectionString, Dictionary<string, Tuple<SqlDbType, int>> columnMapping, bool autoCreateTables = true)
+        {
+            _sqlConnectionString = sqlConnectionString;
+            _autoCreateTables = autoCreateTables;
+            _columnMapping = columnMapping;
         }
 
         Task IOutputManager.FlushAsync(string partitionId)
         {
-            return Task.CompletedTask; //Flushing mechanism for SQL Database is not supported in current implementation
+            return Task.CompletedTask; //Flushing mechanism for SQL Database is not supported in the current implementation
         }
 
         Task IOutputManager.OutputMessageAsync(string partitionId, string pipelineName, int index, Message msg)
@@ -45,12 +55,17 @@ namespace Nether.SQLDatabase
 
                         if (CheckIfTableExist(msg, sqlConnection))
                         {
-                            throw new Exception("table is present but couldn't insert new rows; ");
+                            throw new Exception("Table is present in the database but couldn't insert new rows. Please check that columns in the existing table are identical to the message data including data types of columns");
                         }
                         else
                         {
-                            CreateTableInDatabase(msg, sqlConnection);
-                            InsertIntoSQLDatabase(msg, sqlConnection);
+                            if (_autoCreateTables)
+                            {
+                                CreateTableInDatabase(msg, sqlConnection);
+                                InsertIntoSQLDatabase(msg, sqlConnection);
+                            }
+                            else
+                                throw new Exception("Table is not present in the database and auto create is disabled. Please either enable auto create tables parameter in class constructor or manually create table in database with column data types identical to source message");
                         }
                     }
                 }
@@ -58,7 +73,7 @@ namespace Nether.SQLDatabase
             return Task.CompletedTask;
         }
 
-        private static bool CheckIfTableExist(Message msg, SqlConnection sqlConnection)
+        private bool CheckIfTableExist(Message msg, SqlConnection sqlConnection)
         {
             using (SqlCommand sqlCommand = new SqlCommand("select case when exists((select * from information_schema.tables where table_name = @table_name)) then 1 else 0 end", sqlConnection))
             {
@@ -78,15 +93,29 @@ namespace Nether.SQLDatabase
             }
         }
 
-        private static void CreateTableInDatabase(Message msg, SqlConnection sqlConnection)
+        private void CreateTableInDatabase(Message msg, SqlConnection sqlConnection)
         {
             //TODO - SQL Injection threat!!! convert to stored procedure before production
-            StringBuilder createStatement = new StringBuilder("CREATE TABLE [dbo].[" + msg.Type + "] ([");
+            StringBuilder createStatement = new StringBuilder($"CREATE TABLE [dbo].[{msg.Type}] ([");
 
             foreach (string column in msg.Properties.Keys)
             {
                 createStatement.Append(column);
-                createStatement.Append("] [nvarchar] (50) NULL");
+                if (_columnMapping != null)
+                {
+                    if (_columnMapping.ContainsKey(column))
+                    {
+                        createStatement.Append($"] [{GetSqlServerTypeName(_columnMapping[column].Item1, _columnMapping[column].Item2)}] NULL");
+                        //switch (_columnMapping[column])
+                        //{
+                        //    case SqlDbType.
+                        //}                        
+                    }
+                    else
+                        createStatement.Append("] [nvarchar] (50) NULL");
+                }
+                else
+                    createStatement.Append("] [nvarchar] (50) NULL");
                 createStatement.Append(",[");
             }
             createStatement.Remove(createStatement.Length - 2, 2);
@@ -107,7 +136,7 @@ namespace Nether.SQLDatabase
 
                 if (!CheckIfTableExist(msg, sqlConnection))
                 {
-                    throw new Exception("Failed to create table in database");
+                    throw new Exception("Failed to create table in database.");
                 }
             }
         }
@@ -159,6 +188,15 @@ namespace Nether.SQLDatabase
                     ; //TODO: implement the right approach to failed insert
                 }
             }
+        }
+        public static string GetSqlServerTypeName(SqlDbType dbType, int size)
+        {
+            if (size > 0)
+                return string.Format(Enum.GetName(typeof(SqlDbType), dbType) + " ({0})", size);
+
+            else
+                return Enum.GetName(typeof(SqlDbType), dbType);
+
         }
     }
 }
