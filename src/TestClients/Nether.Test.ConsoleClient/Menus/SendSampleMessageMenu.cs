@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using Nether.Ingest;
 using System.IO;
 using Newtonsoft.Json.Linq;
@@ -49,7 +52,7 @@ namespace Nether.Test.ConsoleClient
             var templateObj = JObject.Parse(fileContent);
             var obj = new JObject();
 
-            
+
             foreach (var property in templateObj)
             {
                 var propertyType = property.Value.Type.ToString();
@@ -86,7 +89,5 @@ namespace Nether.Test.ConsoleClient
             _searchPattern = ConsoleEx.ReadLine("Search Pattern", _searchPattern);
             LoadMenuItems();
         }
-
-
     }
 }
