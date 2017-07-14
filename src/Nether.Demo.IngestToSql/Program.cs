@@ -81,6 +81,7 @@ namespace Nether.Demo.IngestToSql
             var sqlOutputManager = new SQLDatabaseOutputManager(Config.Root[Config.NAH_AZURE_SQLUTPUTMANAGER_CONNECTIONSTRING]);
 
             builder.DefaultPipeline
+                .AddHandler(new UnixTimeToDateTimeMessageHandler("install_time", "event_time"))
                 .OutputTo(sqlOutputManager);
 
             // Build all pipelines
