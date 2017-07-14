@@ -141,7 +141,7 @@ namespace Nether.SQLDatabase
             }
         }
 
-        private static void InsertIntoSQLDatabase(Message msg, SqlConnection sqlConnection)
+        private void InsertIntoSQLDatabase(Message msg, SqlConnection sqlConnection)
         {
             StringBuilder insertStatement = new StringBuilder("INSERT INTO dbo.[");
             insertStatement.Append(msg.Type);
@@ -175,7 +175,20 @@ namespace Nether.SQLDatabase
 
                 foreach (string column in msg.Properties.Keys)
                 {
-                    sqlCommand.Parameters.AddWithValue("@" + column.ToString(), msg.Properties[column]);
+                    if (_columnMapping != null)
+                    {
+                        if (_columnMapping.ContainsKey(column))
+                        {
+                            sqlCommand.Parameters.Add($"@{column.ToString()}", _columnMapping[column].Item1);
+                            sqlCommand.Parameters[$"@{column.ToString()}"].Value = msg.Properties[column];
+                            ;//parse string to the right SQL Data type
+                        }
+                        else
+                            sqlCommand.Parameters.AddWithValue("@" + column.ToString(), msg.Properties[column]);
+                    }
+                    else
+                        sqlCommand.Parameters.AddWithValue("@" + column.ToString(), msg.Properties[column]);
+
                 }
 
                 if (sqlConnection.State == System.Data.ConnectionState.Closed)
