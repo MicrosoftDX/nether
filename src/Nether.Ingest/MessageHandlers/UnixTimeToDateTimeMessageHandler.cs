@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nether.Ingest
@@ -18,14 +19,15 @@ namespace Nether.Ingest
 
         public Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int index)
         {
-            foreach (var msgProp in msg.Properties)
+
+            foreach (var key in msg.Properties.Keys.ToArray())
             {
-                if (_propertiesToChange.Contains(msgProp.Key))
+                if (_propertiesToChange.Contains(key))
                 {
-                    long seconds = long.Parse(msgProp.Value);
+                    long seconds = long.Parse(msg.Properties[key]);
                     var offset = DateTimeOffset.FromUnixTimeSeconds(seconds);
 
-                    msg.Properties[msgProp.Key] = offset.UtcDateTime.ToString();
+                    msg.Properties[key] = offset.UtcDateTime.ToString();
                 }
             }
 
