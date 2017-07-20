@@ -9,6 +9,7 @@ using Nether.Ingest;
 using System.Data.SqlClient;
 using Newtonsoft.Json;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace Nether.SQLDatabase
 {
@@ -94,11 +95,16 @@ namespace Nether.SQLDatabase
 
         private void CreateTableInDatabase(Message msg, SqlConnection sqlConnection)
         {
-            //TODO - SQL Injection threat!!! convert to stored procedure before production
+            // SQL Injection protection
+            if (!IsValidNoSQLInjectionRisk(msg.Type)) throw new Exception("Invalid type/table name. Only alphanumeric characters without spaces allowed as well as \"_\" and \"-\" symbols after the first alphanumeric character. ");
+
             StringBuilder createStatement = new StringBuilder($"CREATE TABLE [dbo].[{msg.Type}] ([");
 
             foreach (string column in msg.Properties.Keys)
             {
+                // SQL Injection protection
+                if (!IsValidNoSQLInjectionRisk(column)) throw new Exception("Invalid type/table name. Only alphanumeric characters without spaces allowed as well as \"_\" and \"-\" symbols after the first alphanumeric character. ");
+
                 createStatement.Append(column);
                 if (_columnMapping != null)
                 {
@@ -133,15 +139,23 @@ namespace Nether.SQLDatabase
                     throw new Exception("Failed to create table in database.");
                 }
             }
+             
+            //TODO: implement creating stored procedure
         }
 
         private void InsertIntoSQLDatabase(Message msg, SqlConnection sqlConnection)
         {
+            // SQL Injection protection
+            if (!IsValidNoSQLInjectionRisk(msg.Type)) throw new Exception("Invalid type/table name. Only alphanumeric characters without spaces allowed as well as \"_\" and \"-\" symbols after the first alphanumeric character. ");
+
             StringBuilder insertStatement = new StringBuilder("INSERT INTO dbo.[");
             insertStatement.Append(msg.Type);       
             insertStatement.Append("] (");
             foreach (string column in msg.Properties.Keys)
             {
+                // SQL Injection protection
+                if (!IsValidNoSQLInjectionRisk(column)) throw new Exception("Invalid type/table name. Only alphanumeric characters without spaces allowed as well as \"_\" and \"-\" symbols after the first alphanumeric character. ");
+
                 insertStatement.Append(column);
                 insertStatement.Append(",");
             }
@@ -173,10 +187,10 @@ namespace Nether.SQLDatabase
                             sqlCommand.Parameters[$"@{column.ToString()}"].Value = msg.Properties[column];                            
                         }
                         else
-                            sqlCommand.Parameters.AddWithValue("@" + column.ToString(), msg.Properties[column]);
+                            sqlCommand.Parameters.AddWithValue($"@{column.ToString()}", msg.Properties[column]);
                     }
                     else
-                        sqlCommand.Parameters.AddWithValue("@" + column.ToString(), msg.Properties[column]);
+                        sqlCommand.Parameters.AddWithValue($"@{column.ToString()}", msg.Properties[column]);
 
                 }
 
@@ -187,7 +201,7 @@ namespace Nether.SQLDatabase
 
                 if (result < 0)
                 {
-                    throw new Exception("Insert operation failed. Either existing table has different fields, either the table is missing from database - enable autocreate or create table manually");
+                    throw new Exception("Insert operation failed. Either existing table has different fields or the table is missing from database - enable autocreate or create table manually");
                 }
             }
         }
@@ -199,6 +213,15 @@ namespace Nether.SQLDatabase
             else
                 return Enum.GetName(typeof(SqlDbType), dbType);
 
+        }
+
+        //check for SQL Injection attacks or invalid input. 
+        //The only allowed values for table name/type are alphanumeric characters plus "-" and "_" symbols after the first aplhanumeric character, no spaces allowed. 
+        //Written accoring recomendation of dynamic SQL protection from SQL Injection - https://msdn.microsoft.com/en-us/library/ms161953(SQL.105).aspx
+        public static bool IsValidNoSQLInjectionRisk(string inputString)
+        {
+            Regex r = new Regex("^[a-zA-Z0-9][a-zA-Z0-9_-]*$");
+            return r.IsMatch(inputString);
         }
     }
 }
