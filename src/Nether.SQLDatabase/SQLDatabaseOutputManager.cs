@@ -15,17 +15,16 @@ namespace Nether.SQLDatabase
     public class SQLDatabaseOutputManager : IOutputManager
     {
         private string _sqlConnectionString;
-        //private SqlConnection _sqlConnection;
         public bool _autoCreateTables = false;
-        public Dictionary<string, Tuple<SqlDbType, int>> _columnMapping;
-
-
+        public Dictionary<string, Tuple<SqlDbType, int>> _columnMapping; //mapping specific json field names to target datatypes
+        
         public SQLDatabaseOutputManager(string sqlConnectionString, bool autoCreateTables = false)
         {
             _sqlConnectionString = sqlConnectionString;
             _autoCreateTables = autoCreateTables;
         }
 
+        //In column mapping discionary every mapping is presented in a way: field, SQL Database type to map, dimension (i.e. number of characters for varchar)
         public SQLDatabaseOutputManager(string sqlConnectionString, Dictionary<string, Tuple<SqlDbType, int>> columnMapping, bool autoCreateTables = true)
         {
             _sqlConnectionString = sqlConnectionString;
@@ -49,9 +48,9 @@ namespace Nether.SQLDatabase
                         InsertIntoSQLDatabase(msg, sqlConnection);
                         return Task.CompletedTask;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        //check that table is present in the database
+                        //check whether the table is present in the database
 
                         if (CheckIfTableExist(msg, sqlConnection))
                         {
@@ -123,11 +122,6 @@ namespace Nether.SQLDatabase
 
             using (SqlCommand sqlCommand = new SqlCommand(createStatement.ToString(), sqlConnection))
             {
-                // sqlCommand.Parameters.AddWithValue("@table_name", msg.Type);
-                //foreach (string column in msg.Properties.Keys)
-                //{
-                //    sqlCommand.Parameters.AddWithValue("@" + column.ToString(), msg.Properties[column]);
-                //}
 
                 if (sqlConnection.State == System.Data.ConnectionState.Closed)
                     sqlConnection.Open();
@@ -144,8 +138,7 @@ namespace Nether.SQLDatabase
         private void InsertIntoSQLDatabase(Message msg, SqlConnection sqlConnection)
         {
             StringBuilder insertStatement = new StringBuilder("INSERT INTO dbo.[");
-            insertStatement.Append(msg.Type);
-            //insertStatement.Append(" (Id,EnqueuedTimeUtc");
+            insertStatement.Append(msg.Type);       
             insertStatement.Append("] (");
             foreach (string column in msg.Properties.Keys)
             {
@@ -153,8 +146,7 @@ namespace Nether.SQLDatabase
                 insertStatement.Append(",");
             }
             insertStatement.Remove(insertStatement.Length - 1, 1);
-
-            //insertStatement.Append(") VALUES (@id,@EnqueuedTimeUtc,");
+                      
             insertStatement.Append(") VALUES (@");
 
             foreach (string column in msg.Properties.Keys)
@@ -170,8 +162,6 @@ namespace Nether.SQLDatabase
 
             using (SqlCommand sqlCommand = new SqlCommand(insertStatement.ToString(), sqlConnection))
             {
-                // sqlCommand.Parameters.AddWithValue("@id", msg.Id);
-                // sqlCommand.Parameters.AddWithValue("@EnqueuedTimeUtc", msg.EnqueuedTimeUtc);
 
                 foreach (string column in msg.Properties.Keys)
                 {
@@ -180,8 +170,7 @@ namespace Nether.SQLDatabase
                         if (_columnMapping.ContainsKey(column))
                         {
                             sqlCommand.Parameters.Add($"@{column.ToString()}", _columnMapping[column].Item1);
-                            sqlCommand.Parameters[$"@{column.ToString()}"].Value = msg.Properties[column];
-                            ;//parse string to the right SQL Data type
+                            sqlCommand.Parameters[$"@{column.ToString()}"].Value = msg.Properties[column];                            
                         }
                         else
                             sqlCommand.Parameters.AddWithValue("@" + column.ToString(), msg.Properties[column]);
@@ -196,16 +185,16 @@ namespace Nether.SQLDatabase
 
                 int result = sqlCommand.ExecuteNonQuery();
 
-                if (result < 0)// Check Error
+                if (result < 0)
                 {
-                    ; //TODO: implement the right approach to failed insert
+                    throw new Exception("Insert operation failed. Either existing table has different fields, either the table is missing from database - enable autocreate or create table manually");
                 }
             }
         }
         public static string GetSqlServerTypeName(SqlDbType dbType, int size)
         {
             if (size > 0)
-                return string.Format(Enum.GetName(typeof(SqlDbType), dbType) + " ({0})", size);
+                return $"{Enum.GetName(typeof(SqlDbType), dbType)} ({size})";
 
             else
                 return Enum.GetName(typeof(SqlDbType), dbType);
