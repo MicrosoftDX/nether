@@ -15,21 +15,22 @@ namespace Nether.SQLDatabase
 {
     public class SQLDatabaseOutputManager : IOutputManager
     {
+        //TODO: Write documentation snippet on how to use SQL Database Output Manager
         private string _sqlConnectionString;
-        public bool _autoCreateTables = false;
+        public bool _autoCreateTablesAndStoredProcedures = false;
         public Dictionary<string, Tuple<SqlDbType, int>> _columnMapping; //mapping specific json field names to target datatypes
-        
-        public SQLDatabaseOutputManager(string sqlConnectionString, bool autoCreateTables = false)
+
+        public SQLDatabaseOutputManager(string sqlConnectionString, bool autoCreateTablesAndStoredProcedures = false)
         {
             _sqlConnectionString = sqlConnectionString;
-            _autoCreateTables = autoCreateTables;
+            _autoCreateTablesAndStoredProcedures = autoCreateTablesAndStoredProcedures;
         }
 
         //In column mapping discionary every mapping is presented in a way: field, SQL Database type to map, dimension (i.e. number of characters for varchar)
-        public SQLDatabaseOutputManager(string sqlConnectionString, Dictionary<string, Tuple<SqlDbType, int>> columnMapping, bool autoCreateTables = true)
+        public SQLDatabaseOutputManager(string sqlConnectionString, Dictionary<string, Tuple<SqlDbType, int>> columnMapping, bool autoCreateTablesAndStoredProcedures = true)
         {
             _sqlConnectionString = sqlConnectionString;
-            _autoCreateTables = autoCreateTables;
+            _autoCreateTablesAndStoredProcedures = autoCreateTablesAndStoredProcedures;
             _columnMapping = columnMapping;
         }
 
@@ -55,17 +56,25 @@ namespace Nether.SQLDatabase
 
                         if (CheckIfTableExist(msg, sqlConnection))
                         {
-                            throw new Exception("Table is present in the database but couldn't insert new rows. Please check that columns in the existing table are identical to the message data including data types of columns");
+                            if (CheckIfSPExist(msg, sqlConnection))
+                                throw new Exception("Both Table and stored procedure are present in the database but couldn't insert new rows. Please check that columns in the existing table and stored procedure are identical to the message data including data types of columns");
+                            else
+                            {
+                                if (_autoCreateTablesAndStoredProcedures)
+                                    CreateStoredProcedureInDatabase(msg, sqlConnection);
+                                else
+                                    throw new Exception("Table is present in the database but stored procedure for insert is missing. Please either create stored procedure for insert operation or enable auto create parameter in class constructor");
+                            }
                         }
                         else
                         {
-                            if (_autoCreateTables)
+                            if (_autoCreateTablesAndStoredProcedures)
                             {
-                                CreateTableInDatabase(msg, sqlConnection);
+                                CreateTableAndSPInDatabase(msg, sqlConnection);
                                 InsertIntoSQLDatabase(msg, sqlConnection);
                             }
                             else
-                                throw new Exception("Table is not present in the database and auto create is disabled. Please either enable auto create tables parameter in class constructor or manually create table in database with column data types identical to source message");
+                                throw new Exception("Table is not present in the database and auto create is disabled. Please either enable auto create tables and stored procedures parameter in class constructor or manually create table in database with column data types identical to source message");
                         }
                     }
                 }
@@ -93,40 +102,50 @@ namespace Nether.SQLDatabase
             }
         }
 
-        private void CreateTableInDatabase(Message msg, SqlConnection sqlConnection)
+        private void CreateTableAndSPInDatabase(Message msg, SqlConnection sqlConnection)
         {
             // SQL Injection protection
-            if (!IsValidNoSQLInjectionRisk(msg.Type)) throw new Exception("Invalid type/table name. Only alphanumeric characters without spaces allowed as well as \"_\" and \"-\" symbols after the first alphanumeric character. ");
+            IsValidNoSQLInjectionRisk(msg.Type);
 
-            StringBuilder createStatement = new StringBuilder($"CREATE TABLE [dbo].[{msg.Type}] ([");
+            StringBuilder createTableStatement = new StringBuilder($"CREATE TABLE [dbo].[{msg.Type}] ([");
+            StringBuilder createInsertSPStatement = new StringBuilder($"CREATE PROCEDURE [dbo].[sp_InsertInto{msg.Type}] ");
 
             foreach (string column in msg.Properties.Keys)
             {
                 // SQL Injection protection
-                if (!IsValidNoSQLInjectionRisk(column)) throw new Exception("Invalid type/table name. Only alphanumeric characters without spaces allowed as well as \"_\" and \"-\" symbols after the first alphanumeric character. ");
+                IsValidNoSQLInjectionRisk(column);
 
-                createStatement.Append(column);
+                createTableStatement.Append(column);
+                createInsertSPStatement.Append($"@{column}");
+
                 if (_columnMapping != null)
                 {
                     if (_columnMapping.ContainsKey(column))
                     {
-                        createStatement.Append($"] [{GetSqlServerTypeName(_columnMapping[column].Item1, _columnMapping[column].Item2)}] NULL");
-                        //switch (_columnMapping[column])
-                        //{
-                        //    case SqlDbType.
-                        //}                        
+                        createTableStatement.Append($"] [{GetSqlServerTypeName(_columnMapping[column].Item1, _columnMapping[column].Item2)}] NULL");
+                        createInsertSPStatement.Append($" {GetSqlServerTypeName(_columnMapping[column].Item1, _columnMapping[column].Item2)} NULL");
                     }
                     else
-                        createStatement.Append("] [nvarchar] (50) NULL");
+                    {
+                        createTableStatement.Append("] [nvarchar] (50) NULL");
+                        createInsertSPStatement.Append(" nvarchar(50) NULL");
+                    }
                 }
                 else
-                    createStatement.Append("] [nvarchar] (50) NULL");
-                createStatement.Append(",[");
+                {
+                    createTableStatement.Append("] [nvarchar] (50) NULL");
+                    createInsertSPStatement.Append(" nvarchar(50) NULL");
+                }
+                createTableStatement.Append(",[");
+                createInsertSPStatement.Append(",");
             }
-            createStatement.Remove(createStatement.Length - 2, 2);
-            createStatement.Append(")");
+            createTableStatement.Remove(createTableStatement.Length - 2, 2);
+            createInsertSPStatement.Remove(createInsertSPStatement.Length - 1, 1);
 
-            using (SqlCommand sqlCommand = new SqlCommand(createStatement.ToString(), sqlConnection))
+            createTableStatement.Append(")");
+            createInsertSPStatement.Append($" AS {ConstructParametrizedInsertStatement(msg)}");
+
+            using (SqlCommand sqlCommand = new SqlCommand(createTableStatement.ToString(), sqlConnection))
             {
 
                 if (sqlConnection.State == System.Data.ConnectionState.Closed)
@@ -136,43 +155,142 @@ namespace Nether.SQLDatabase
 
                 if (!CheckIfTableExist(msg, sqlConnection))
                 {
-                    throw new Exception("Failed to create table in database.");
+                    throw new Exception("Failed to create table in the database.");
+                }
+
+                sqlCommand.CommandText = createInsertSPStatement.ToString();
+
+                if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                    sqlConnection.Open();
+
+                result = sqlCommand.ExecuteNonQuery();
+                if (!CheckIfSPExist(msg, sqlConnection))
+                {
+                    throw new Exception("Failed to create stored procedure in the database.");
                 }
             }
-             
-            //TODO: implement creating stored procedure
+
+
+        }
+
+        private void CreateStoredProcedureInDatabase(Message msg, SqlConnection sqlConnection)
+        {
+            // SQL Injection protection
+            IsValidNoSQLInjectionRisk(msg.Type);
+
+            StringBuilder createInsertSPStatement = new StringBuilder($"CREATE PROCEDURE [dbo].[sp_InsertInto{msg.Type}] ");
+
+            foreach (string column in msg.Properties.Keys)
+            {
+                // SQL Injection protection
+                IsValidNoSQLInjectionRisk(column);
+
+                createInsertSPStatement.Append($"@{column}");
+
+                if (_columnMapping != null)
+                {
+                    if (_columnMapping.ContainsKey(column))
+                    {
+                        createInsertSPStatement.Append($" {GetSqlServerTypeName(_columnMapping[column].Item1, _columnMapping[column].Item2)} NULL");
+                    }
+                    else
+                    {
+                        createInsertSPStatement.Append(" nvarchar(50) NULL");
+                    }
+                }
+                else
+                {
+                    createInsertSPStatement.Append(" nvarchar(50) NULL");
+                }
+                createInsertSPStatement.Append(",");
+            }
+            createInsertSPStatement.Remove(createInsertSPStatement.Length - 1, 1);
+
+            createInsertSPStatement.Append($" AS {ConstructParametrizedInsertStatement(msg)}");
+
+            using (SqlCommand sqlCommand = new SqlCommand(createInsertSPStatement.ToString(), sqlConnection))
+            {
+
+                if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                    sqlConnection.Open();
+
+                sqlCommand.ExecuteNonQuery();
+                if (!CheckIfSPExist(msg, sqlConnection))
+                {
+                    throw new Exception("Failed to create stored procedure in the database.");
+                }
+            }
+
+
+        }
+
+        private bool CheckIfSPExist(Message msg, SqlConnection sqlConnection)
+        {
+            using (SqlCommand sqlCommand = new SqlCommand("select case when exists((select * from sys.procedures where Name = @sp_name)) then 1 else 0 end", sqlConnection))
+            {
+                sqlCommand.Parameters.AddWithValue("@sp_name", $"sp_InsertInto{msg.Type}");
+
+                if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                    sqlConnection.Open();
+
+                if ((int)sqlCommand.ExecuteScalar() == 1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
 
         private void InsertIntoSQLDatabase(Message msg, SqlConnection sqlConnection)
         {
+            InsertUsingStoredProcedure(msg, sqlConnection);
+
+        }
+        private void InsertUsingStoredProcedure(Message msg, SqlConnection sqlConnection)
+        {
             // SQL Injection protection
-            if (!IsValidNoSQLInjectionRisk(msg.Type)) throw new Exception("Invalid type/table name. Only alphanumeric characters without spaces allowed as well as \"_\" and \"-\" symbols after the first alphanumeric character. ");
+            IsValidNoSQLInjectionRisk(msg.Type);
 
-            StringBuilder insertStatement = new StringBuilder("INSERT INTO dbo.[");
-            insertStatement.Append(msg.Type);       
-            insertStatement.Append("] (");
-            foreach (string column in msg.Properties.Keys)
+            using (SqlCommand sqlCommand = new SqlCommand($"sp_InsertInto{msg.Type}", sqlConnection))
             {
-                // SQL Injection protection
-                if (!IsValidNoSQLInjectionRisk(column)) throw new Exception("Invalid type/table name. Only alphanumeric characters without spaces allowed as well as \"_\" and \"-\" symbols after the first alphanumeric character. ");
+                sqlCommand.CommandType = CommandType.StoredProcedure;
 
-                insertStatement.Append(column);
-                insertStatement.Append(",");
+                foreach (string column in msg.Properties.Keys)
+                {
+                    if (_columnMapping != null)
+                    {
+                        if (_columnMapping.ContainsKey(column))
+                        {
+                            sqlCommand.Parameters.Add($"@{column.ToString()}", _columnMapping[column].Item1);
+                            sqlCommand.Parameters[$"@{column.ToString()}"].Value = msg.Properties[column];
+                        }
+                        else
+                            sqlCommand.Parameters.AddWithValue($"@{column.ToString()}", msg.Properties[column]);
+                    }
+                    else
+                        sqlCommand.Parameters.AddWithValue($"@{column.ToString()}", msg.Properties[column]);
+
+                }
+
+                if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                    sqlConnection.Open();
+
+                int result = sqlCommand.ExecuteNonQuery();
+
+                if (result < 0)
+                {
+                    throw new Exception("Calling stored procedue for insert operation failed. Either existing stored procedure has different fields or the stored procedure itself is missing from the database - please enable autocreate or create stored procedure and table manually");
+                }
             }
-            insertStatement.Remove(insertStatement.Length - 1, 1);
-                      
-            insertStatement.Append(") VALUES (@");
 
-            foreach (string column in msg.Properties.Keys)
-            {
-                insertStatement.Append(column);
-                insertStatement.Append(",@");
-            }
+        }
 
-            insertStatement.Remove(insertStatement.Length - 2, 2);
-            insertStatement.Append(")");
-
-
+        private void InsertUsingParameterizedQuery(Message msg, SqlConnection sqlConnection)
+        {
+            StringBuilder insertStatement = ConstructParametrizedInsertStatement(msg);
 
             using (SqlCommand sqlCommand = new SqlCommand(insertStatement.ToString(), sqlConnection))
             {
@@ -184,7 +302,7 @@ namespace Nether.SQLDatabase
                         if (_columnMapping.ContainsKey(column))
                         {
                             sqlCommand.Parameters.Add($"@{column.ToString()}", _columnMapping[column].Item1);
-                            sqlCommand.Parameters[$"@{column.ToString()}"].Value = msg.Properties[column];                            
+                            sqlCommand.Parameters[$"@{column.ToString()}"].Value = msg.Properties[column];
                         }
                         else
                             sqlCommand.Parameters.AddWithValue($"@{column.ToString()}", msg.Properties[column]);
@@ -205,6 +323,38 @@ namespace Nether.SQLDatabase
                 }
             }
         }
+
+        private static StringBuilder ConstructParametrizedInsertStatement(Message msg)
+        {
+            // SQL Injection protection
+            IsValidNoSQLInjectionRisk(msg.Type);
+
+            StringBuilder insertStatement = new StringBuilder("INSERT INTO dbo.[");
+            insertStatement.Append(msg.Type);
+            insertStatement.Append("] (");
+            foreach (string column in msg.Properties.Keys)
+            {
+                // SQL Injection protection
+                IsValidNoSQLInjectionRisk(column);
+
+                insertStatement.Append(column);
+                insertStatement.Append(",");
+            }
+            insertStatement.Remove(insertStatement.Length - 1, 1);
+
+            insertStatement.Append(") VALUES (@");
+
+            foreach (string column in msg.Properties.Keys)
+            {
+                insertStatement.Append(column);
+                insertStatement.Append(",@");
+            }
+
+            insertStatement.Remove(insertStatement.Length - 2, 2);
+            insertStatement.Append(")");
+            return insertStatement;
+        }
+
         public static string GetSqlServerTypeName(SqlDbType dbType, int size)
         {
             if (size > 0)
@@ -218,10 +368,11 @@ namespace Nether.SQLDatabase
         //check for SQL Injection attacks or invalid input. 
         //The only allowed values for table name/type are alphanumeric characters plus "-" and "_" symbols after the first aplhanumeric character, no spaces allowed. 
         //Written accoring recomendation of dynamic SQL protection from SQL Injection - https://msdn.microsoft.com/en-us/library/ms161953(SQL.105).aspx
-        public static bool IsValidNoSQLInjectionRisk(string inputString)
+        public static void IsValidNoSQLInjectionRisk(string inputString)
         {
             Regex r = new Regex("^[a-zA-Z0-9][a-zA-Z0-9_-]*$");
-            return r.IsMatch(inputString);
+            if (!r.IsMatch(inputString))
+                throw new Exception("Invalid type/table name. Only alphanumeric characters without spaces allowed as well as \"_\" and \"-\" symbols after the first alphanumeric character. ");
         }
     }
 }
