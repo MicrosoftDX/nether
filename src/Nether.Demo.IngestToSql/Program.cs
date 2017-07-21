@@ -87,7 +87,7 @@ namespace Nether.Demo.IngestToSql
                 {"install_time", Tuple.Create<SqlDbType, int>(SqlDbType.DateTime, 0 )},
             };
 
-             var sqlOutputManager = new SQLDatabaseOutputManager(Config.Root[Config.NAH_AZURE_SQLUTPUTMANAGER_CONNECTIONSTRING],columntoDatatypeMapping, true);
+            var sqlOutputManager = new SQLDatabaseOutputManager(Config.Root[Config.NAH_AZURE_SQLUTPUTMANAGER_CONNECTIONSTRING], columntoDatatypeMapping, true);
 
             builder.DefaultPipeline
                 .AddHandler(new UnixTimeToDateTimeMessageHandler("install_time", "event_time"))

@@ -12,7 +12,6 @@ using System.Text.RegularExpressions;
 
 namespace Nether.SQLDatabase
 {
-
     /// <summary>
     /// SQLDatabaseOutputManager allows to output messages to Azure SQL Database. For testing purposes you can enable autoCreateTablesAndStoredProcedures
     /// parameter in the constructor, it will generate dynamic SQL to auto-create table and stored procedure for insert operations in the database.
@@ -162,7 +161,6 @@ namespace Nether.SQLDatabase
 
             using (SqlCommand sqlCommand = new SqlCommand(createTableStatement.ToString(), sqlConnection))
             {
-
                 if (sqlConnection.State == ConnectionState.Closed)
                     sqlConnection.Open();
 
@@ -190,8 +188,6 @@ namespace Nether.SQLDatabase
                     throw new Exception("Failed to create stored procedure in the database.");
                 }
             }
-
-
         }
 
         private void CreateStoredProcedureInDatabase(Message msg, SqlConnection sqlConnection)
@@ -231,7 +227,6 @@ namespace Nether.SQLDatabase
 
             using (SqlCommand sqlCommand = new SqlCommand(createInsertSPStatement.ToString(), sqlConnection))
             {
-
                 if (sqlConnection.State == ConnectionState.Closed)
                     sqlConnection.Open();
 
@@ -241,8 +236,6 @@ namespace Nether.SQLDatabase
                     throw new Exception("Failed to create stored procedure in the database.");
                 }
             }
-
-
         }
 
         private bool CheckIfSPExist(Message msg, SqlConnection sqlConnection)
@@ -289,7 +282,6 @@ namespace Nether.SQLDatabase
                     }
                     else
                         sqlCommand.Parameters.AddWithValue($"@{column.ToString()}", msg.Properties[column]);
-
                 }
 
                 if (sqlConnection.State == ConnectionState.Closed)
@@ -302,7 +294,6 @@ namespace Nether.SQLDatabase
                     throw new Exception("Calling stored procedue for insert operation failed. Either existing stored procedure has different fields or the stored procedure itself is missing from the database - please enable autocreate or create stored procedure and table manually");
                 }
             }
-
         }
 
         private void InsertUsingParameterizedQuery(Message msg, SqlConnection sqlConnection)
@@ -311,7 +302,6 @@ namespace Nether.SQLDatabase
 
             using (SqlCommand sqlCommand = new SqlCommand(insertStatement.ToString(), sqlConnection))
             {
-
                 foreach (string column in msg.Properties.Keys)
                 {
                     if (_columnMapping != null)
@@ -326,7 +316,6 @@ namespace Nether.SQLDatabase
                     }
                     else
                         sqlCommand.Parameters.AddWithValue($"@{column.ToString()}", msg.Properties[column]);
-
                 }
 
                 if (sqlConnection.State == ConnectionState.Closed)
@@ -379,7 +368,6 @@ namespace Nether.SQLDatabase
 
             else
                 return Enum.GetName(typeof(SqlDbType), dbType);
-
         }
 
 

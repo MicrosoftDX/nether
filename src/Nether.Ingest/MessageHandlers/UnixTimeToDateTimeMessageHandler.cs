@@ -19,7 +19,6 @@ namespace Nether.Ingest
 
         public Task<MessageHandlerResults> ProcessMessageAsync(Message msg, string pipelineName, int index)
         {
-
             foreach (var key in msg.Properties.Keys.ToArray())
             {
                 if (_propertiesToChange.Contains(key))
