@@ -7,16 +7,21 @@ using System.Text;
 using System.Threading.Tasks;
 using Nether.Ingest;
 using System.Data.SqlClient;
-using Newtonsoft.Json;
 using System.Data;
 using System.Text.RegularExpressions;
 
 namespace Nether.SQLDatabase
 {
-    /*SQLDatabaseOutputManager allows to output messages to Azure SQL Database. For testing purposes you can enable autoCreateTablesAndStoredProcedures parameter in the constructor, it will generate dynamic SQL to auto-create table and stored procedure for insert operations in the database. Auto-create uses input data validation to protect from SQL Injection (only alphanumeric characters as well as '-' and '_' are allowed for table/type and field/column names). Please disable auto-create for production to avoid even minimal SQL Injection risk.
-      SQLDatabaseOutputManager uses Type parameter of the incoming message as destination table name as well as field names as column names to output all the data.
-      By default all the types are strings (nvarchar(50) in the database) you can override this behavoir for any field by providing columnMapping Dictionary in the format of 'field/column name', SqlDbType, dimension. You need to only provide field for which you'd like to have different datatype than string.
-      */
+
+    /// <summary>
+    /// SQLDatabaseOutputManager allows to output messages to Azure SQL Database. For testing purposes you can enable autoCreateTablesAndStoredProcedures
+    /// parameter in the constructor, it will generate dynamic SQL to auto-create table and stored procedure for insert operations in the database.
+    /// Auto-create uses input data validation to protect from SQL Injection (only alphanumeric characters as well as '-' and '_' are allowed 
+    /// for table/type and field/column names). Please disable auto-create for production to avoid even minimal SQL Injection risk. 
+    /// SQLDatabaseOutputManager uses Type parameter of the incoming message as destination table name as well as field names as column names to output all the data.
+    /// By default all the types are strings(nvarchar(50) in the database) you can override this behavoir for any field by providing columnMapping Dictionary
+    /// in the format of 'field/column name', SqlDbType, dimension.You need to only provide field for which you'd like to have different datatype than string.
+    /// </summary>
     public class SQLDatabaseOutputManager : IOutputManager
     {
         //TODO: Write documentation snippet on how to use SQL Database Output Manager
@@ -30,7 +35,10 @@ namespace Nether.SQLDatabase
             _autoCreateTablesAndStoredProcedures = autoCreateTablesAndStoredProcedures;
         }
 
-        //In column mapping discionary every mapping is presented in a way: field, SQL Database type to map, dimension (i.e. number of characters for varchar)
+
+        /// <summary>
+        /// In column mapping discionary every mapping is presented in a way: field, SQL Database type to map, dimension (i.e. number of characters for varchar)
+        /// </summary>
         public SQLDatabaseOutputManager(string sqlConnectionString, Dictionary<string, Tuple<SqlDbType, int>> columnMapping, bool autoCreateTablesAndStoredProcedures = true)
         {
             _sqlConnectionString = sqlConnectionString;
@@ -51,7 +59,7 @@ namespace Nether.SQLDatabase
                 {
                     try
                     {
-                        InsertIntoSQLDatabase(msg, sqlConnection);
+                        InsertUsingStoredProcedure(msg, sqlConnection);
                         return Task.CompletedTask;
                     }
                     catch (Exception)
@@ -67,7 +75,7 @@ namespace Nether.SQLDatabase
                                 if (_autoCreateTablesAndStoredProcedures)
                                 {
                                     CreateStoredProcedureInDatabase(msg, sqlConnection);
-                                    InsertIntoSQLDatabase(msg, sqlConnection);
+                                    InsertUsingStoredProcedure(msg, sqlConnection);
                                 }
                                 else
                                     throw new Exception("Table is present in the database but stored procedure for insert is missing. Please either create stored procedure for insert operation or enable auto create parameter in class constructor");
@@ -78,7 +86,7 @@ namespace Nether.SQLDatabase
                             if (_autoCreateTablesAndStoredProcedures)
                             {
                                 CreateTableAndSPInDatabase(msg, sqlConnection);
-                                InsertIntoSQLDatabase(msg, sqlConnection);
+                                InsertUsingStoredProcedure(msg, sqlConnection);
                             }
                             else
                                 throw new Exception("Table is not present in the database and auto create is disabled. Please either enable auto create tables and stored procedures parameter in class constructor or manually create table in database with column data types identical to source message");
@@ -95,7 +103,7 @@ namespace Nether.SQLDatabase
             {
                 sqlCommand.Parameters.AddWithValue("@table_name", msg.Type);
 
-                if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                if (sqlConnection.State == ConnectionState.Closed)
                     sqlConnection.Open();
 
                 if ((int)sqlCommand.ExecuteScalar() == 1)
@@ -112,7 +120,7 @@ namespace Nether.SQLDatabase
         private void CreateTableAndSPInDatabase(Message msg, SqlConnection sqlConnection)
         {
             // SQL Injection protection
-            IsValidNoSQLInjectionRisk(msg.Type);
+            CheckValidNoSQLInjectionRisk(msg.Type);
 
             StringBuilder createTableStatement = new StringBuilder($"CREATE TABLE [dbo].[{msg.Type}] ([");
             StringBuilder createInsertSPStatement = new StringBuilder($"CREATE PROCEDURE [dbo].[sp_InsertInto{msg.Type}] ");
@@ -120,7 +128,7 @@ namespace Nether.SQLDatabase
             foreach (string column in msg.Properties.Keys)
             {
                 // SQL Injection protection
-                IsValidNoSQLInjectionRisk(column);
+                CheckValidNoSQLInjectionRisk(column);
 
                 createTableStatement.Append(column);
                 createInsertSPStatement.Append($"@{column}");
@@ -155,7 +163,7 @@ namespace Nether.SQLDatabase
             using (SqlCommand sqlCommand = new SqlCommand(createTableStatement.ToString(), sqlConnection))
             {
 
-                if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                if (sqlConnection.State == ConnectionState.Closed)
                     sqlConnection.Open();
 
                 int result = sqlCommand.ExecuteNonQuery();
@@ -167,7 +175,7 @@ namespace Nether.SQLDatabase
 
                 sqlCommand.CommandText = createInsertSPStatement.ToString();
 
-                if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                if (sqlConnection.State == ConnectionState.Closed)
                     sqlConnection.Open();
                 try
                 {
@@ -189,14 +197,14 @@ namespace Nether.SQLDatabase
         private void CreateStoredProcedureInDatabase(Message msg, SqlConnection sqlConnection)
         {
             // SQL Injection protection
-            IsValidNoSQLInjectionRisk(msg.Type);
+            CheckValidNoSQLInjectionRisk(msg.Type);
 
             StringBuilder createInsertSPStatement = new StringBuilder($"CREATE PROCEDURE [dbo].[sp_InsertInto{msg.Type}] ");
 
             foreach (string column in msg.Properties.Keys)
             {
                 // SQL Injection protection
-                IsValidNoSQLInjectionRisk(column);
+                CheckValidNoSQLInjectionRisk(column);
 
                 createInsertSPStatement.Append($"@{column}");
 
@@ -224,7 +232,7 @@ namespace Nether.SQLDatabase
             using (SqlCommand sqlCommand = new SqlCommand(createInsertSPStatement.ToString(), sqlConnection))
             {
 
-                if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                if (sqlConnection.State == ConnectionState.Closed)
                     sqlConnection.Open();
 
                 sqlCommand.ExecuteNonQuery();
@@ -243,7 +251,7 @@ namespace Nether.SQLDatabase
             {
                 sqlCommand.Parameters.AddWithValue("@sp_name", $"sp_InsertInto{msg.Type}");
 
-                if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                if (sqlConnection.State == ConnectionState.Closed)
                     sqlConnection.Open();
 
                 if ((int)sqlCommand.ExecuteScalar() == 1)
@@ -257,15 +265,11 @@ namespace Nether.SQLDatabase
             }
         }
 
-        private void InsertIntoSQLDatabase(Message msg, SqlConnection sqlConnection)
-        {
-            InsertUsingStoredProcedure(msg, sqlConnection);
 
-        }
         private void InsertUsingStoredProcedure(Message msg, SqlConnection sqlConnection)
         {
             // SQL Injection protection
-            IsValidNoSQLInjectionRisk(msg.Type);
+            CheckValidNoSQLInjectionRisk(msg.Type);
 
             using (SqlCommand sqlCommand = new SqlCommand($"sp_InsertInto{msg.Type}", sqlConnection))
             {
@@ -288,7 +292,7 @@ namespace Nether.SQLDatabase
 
                 }
 
-                if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                if (sqlConnection.State == ConnectionState.Closed)
                     sqlConnection.Open();
 
                 int result = sqlCommand.ExecuteNonQuery();
@@ -325,7 +329,7 @@ namespace Nether.SQLDatabase
 
                 }
 
-                if (sqlConnection.State == System.Data.ConnectionState.Closed)
+                if (sqlConnection.State == ConnectionState.Closed)
                     sqlConnection.Open();
 
                 int result = sqlCommand.ExecuteNonQuery();
@@ -340,7 +344,7 @@ namespace Nether.SQLDatabase
         private static StringBuilder ConstructParametrizedInsertStatement(Message msg)
         {
             // SQL Injection protection
-            IsValidNoSQLInjectionRisk(msg.Type);
+            CheckValidNoSQLInjectionRisk(msg.Type);
 
             StringBuilder insertStatement = new StringBuilder("INSERT INTO dbo.[");
             insertStatement.Append(msg.Type);
@@ -348,7 +352,7 @@ namespace Nether.SQLDatabase
             foreach (string column in msg.Properties.Keys)
             {
                 // SQL Injection protection
-                IsValidNoSQLInjectionRisk(column);
+                CheckValidNoSQLInjectionRisk(column);
 
                 insertStatement.Append(column);
                 insertStatement.Append(",");
@@ -378,10 +382,14 @@ namespace Nether.SQLDatabase
 
         }
 
-        //check for SQL Injection attacks or invalid input. 
-        //The only allowed values for table name/type are alphanumeric characters plus "-" and "_" symbols after the first aplhanumeric character, no spaces allowed. 
-        //Written accoring recomendation of dynamic SQL protection from SQL Injection - https://msdn.microsoft.com/en-us/library/ms161953(SQL.105).aspx
-        public static void IsValidNoSQLInjectionRisk(string inputString)
+
+        /// <summary>
+        /// check for SQL Injection attacks or invalid input. 
+        /// The only allowed values for table name/type are alphanumeric characters plus "-" and "_" symbols after the first aplhanumeric character, no spaces allowed. 
+        /// Written accoring recomendation of dynamic SQL protection from SQL Injection - https://msdn.microsoft.com/en-us/library/ms161953(SQL.105).aspx
+        /// </summary>
+        /// <param name="inputString"></param>
+        public static void CheckValidNoSQLInjectionRisk(string inputString)
         {
             Regex r = new Regex("^[a-zA-Z0-9][a-zA-Z0-9_-]*$");
             if (!r.IsMatch(inputString))
