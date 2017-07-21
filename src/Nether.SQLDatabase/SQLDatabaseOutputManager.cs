@@ -13,6 +13,10 @@ using System.Text.RegularExpressions;
 
 namespace Nether.SQLDatabase
 {
+    /*SQLDatabaseOutputManager allows to output messages to Azure SQL Database. For testing purposes you can enable autoCreateTablesAndStoredProcedures parameter in the constructor, it will generate dynamic SQL to auto-create table and stored procedure for insert operations in the database. Auto-create uses input data validation to protect from SQL Injection (only alphanumeric characters as well as '-' and '_' are allowed for table/type and field/column names). Please disable auto-create for production to avoid even minimal SQL Injection risk.
+      SQLDatabaseOutputManager uses Type parameter of the incoming message as destination table name as well as field names as column names to output all the data.
+      By default all the types are strings (nvarchar(50) in the database) you can override this behavoir for any field by providing columnMapping Dictionary in the format of 'field/column name', SqlDbType, dimension. You need to only provide field for which you'd like to have different datatype than string.
+      */
     public class SQLDatabaseOutputManager : IOutputManager
     {
         //TODO: Write documentation snippet on how to use SQL Database Output Manager
@@ -61,7 +65,10 @@ namespace Nether.SQLDatabase
                             else
                             {
                                 if (_autoCreateTablesAndStoredProcedures)
+                                {
                                     CreateStoredProcedureInDatabase(msg, sqlConnection);
+                                    InsertIntoSQLDatabase(msg, sqlConnection);
+                                }
                                 else
                                     throw new Exception("Table is present in the database but stored procedure for insert is missing. Please either create stored procedure for insert operation or enable auto create parameter in class constructor");
                             }
@@ -162,8 +169,14 @@ namespace Nether.SQLDatabase
 
                 if (sqlConnection.State == System.Data.ConnectionState.Closed)
                     sqlConnection.Open();
-
-                result = sqlCommand.ExecuteNonQuery();
+                try
+                {
+                    result = sqlCommand.ExecuteNonQuery();
+                }
+                catch (Exception)
+                {
+                    if (CheckIfSPExist(msg, sqlConnection)) return;
+                }
                 if (!CheckIfSPExist(msg, sqlConnection))
                 {
                     throw new Exception("Failed to create stored procedure in the database.");
