@@ -34,7 +34,7 @@ namespace IdentityServerTestClient
         {
             var clientId = _clientIdOption.GetValue("client-id", requireNotNull: true, promptIfNull: true);
             var clientSecret = _clientSecretOption.GetValue("client-secret", requireNotNull: true, promptIfNull: true, sensitive: true);
-            var facebookUserToken = _facebookTokenOption.GetValue("facebook-token", requireNotNull: true, promptIfNull: true, additionalPromptText:" (see https://developers.facebook.com/tools/accesstoken)");
+            var facebookUserToken = _facebookTokenOption.GetValue("facebook-token", requireNotNull: true, promptIfNull: true, additionalPromptText: " (see https://developers.facebook.com/tools/accesstoken)");
 
             string rootUrl = Application.IdentityRootUrl;
             var disco = await DiscoveryClient.GetAsync(rootUrl);
@@ -65,7 +65,13 @@ namespace IdentityServerTestClient
             Console.WriteLine(tokenResponse.Json);
             Console.WriteLine("\n\n");
 
+            Console.WriteLine("Calling echo API:");
             await EchoClaimsAsync(tokenResponse.AccessToken);
+            Console.WriteLine("\n\n");
+
+            Console.WriteLine("Checking role:");
+            await ShowPlayerInfoAsync(tokenResponse.AccessToken);
+            Console.WriteLine("\n\n");
 
             return 0;
         }

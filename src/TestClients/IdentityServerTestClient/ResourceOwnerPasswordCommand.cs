@@ -69,7 +69,13 @@ namespace IdentityServerTestClient
             Console.WriteLine(tokenResponse.Json);
             Console.WriteLine("\n\n");
 
+            Console.WriteLine("Calling echo API:");
             await EchoClaimsAsync(tokenResponse.AccessToken);
+            Console.WriteLine("\n\n");
+
+            Console.WriteLine("Checking role:");
+            await ShowPlayerInfoAsync(tokenResponse.AccessToken);
+            Console.WriteLine("\n\n");
 
             return 0;
 
