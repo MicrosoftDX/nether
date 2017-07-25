@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="IdentityModel" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.3" />
+    <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
     <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.1.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.1.0" />
   </ItemGroup>

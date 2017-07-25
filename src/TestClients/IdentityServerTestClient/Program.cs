@@ -12,6 +12,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.IdentityModel.Tokens.Jwt;
 using IdentityModel;
+using Microsoft.Extensions.CommandLineUtils;
 
 namespace IdentityServerTestClient
 {
@@ -19,7 +20,22 @@ namespace IdentityServerTestClient
     {
         public static void Main(string[] args)
         {
-            MainAsync().Wait();
+            try
+            {
+                var app = new IdentityClientApplication();
+                app.Command("client-creds", "Test client credential flow", new ClientCredentialsCommand(app));
+
+                app.StandardHelpOption();
+                app.ShowHelpOnExecute();
+                app.Execute(args);
+            }
+            catch (CommandParsingException cpe)
+            {
+                Console.WriteLine($"Error parsing: {cpe.Message}");
+            }
+            return;
+
+            //MainAsync().Wait();
         }
         public static async Task MainAsync()
         {
