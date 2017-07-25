@@ -26,6 +26,11 @@ namespace IdentityServerTestClient
             {
                 return await ExecuteAsync();
             }
+            catch(CommandArgumentException cae)
+            {
+                Console.WriteLine(cae.Message);
+                return -1;
+            }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());

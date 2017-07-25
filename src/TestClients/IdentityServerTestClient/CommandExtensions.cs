@@ -24,5 +24,63 @@ namespace IdentityServerTestClient
                 command.Register(config);
             });
         }
+
+
+        public static string GetValue(this CommandOption option, string optionName, bool requireNotNull = false, bool promptIfNull = false, bool sensitive = false)
+        {
+            string value = option.Value();
+            if (requireNotNull && string.IsNullOrEmpty(value))
+            {
+                if (promptIfNull)
+                {
+                    if (optionName == null)
+                    {
+                        throw new Exception("promptIfNull specified but promptName not set");
+                    }
+                    Console.WriteLine($"Please enter {optionName}:");
+
+                    if (sensitive)
+                    {
+                        value = ReadSensitiveValue();
+                    }
+                    else
+                    {
+                        value = Console.ReadLine();
+                    }
+
+                }
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new CommandArgumentException($"{optionName} not specified - exiting");
+                }
+            }
+            return value;
+        }
+
+
+        public static string ReadSensitiveValue()
+        {
+            var buf = new StringBuilder();
+
+            while (true)
+            {
+                var keyInfo = Console.ReadKey(intercept: true);
+                switch (keyInfo.Key)
+                {
+                    case ConsoleKey.Enter:
+                        return buf.ToString();
+                    case ConsoleKey.Backspace:
+                        buf.Remove(buf.Length - 1, 1);
+                        break;
+                    default:
+                        if (char.IsControl(keyInfo.KeyChar))
+                        {
+                            return null;
+                        }
+                        buf.Append(keyInfo.KeyChar);
+                        break;
+                }
+            }
+        }
     }
 }

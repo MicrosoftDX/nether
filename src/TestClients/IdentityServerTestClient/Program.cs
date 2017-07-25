@@ -34,9 +34,6 @@ namespace IdentityServerTestClient
             {
                 Console.WriteLine($"Error parsing: {cpe.Message}");
             }
-            return;
-
-            //MainAsync().Wait();
         }
         public static async Task MainAsync()
         {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.CommandLineUtils;
 using System.Threading.Tasks;
 using IdentityModel.Client;
@@ -35,30 +34,10 @@ namespace IdentityServerTestClient
 
         protected override async Task<int> ExecuteAsync()
         {
-            var clientId = _clientIdOption.Value();
-            if (string.IsNullOrEmpty(clientId))
-            {
-                Console.WriteLine("client-id is required");
-                return -1;
-            }
-            var clientSecret = _clientSecretOption.Value();
-            if (string.IsNullOrEmpty(clientSecret))
-            {
-                Console.WriteLine("client-secret is required");
-                return -1;
-            }
-            var username = _usernameOption.Value();
-            if (string.IsNullOrEmpty(username))
-            {
-                Console.WriteLine("username is required");
-                return -1;
-            }
-            var password = _passwordOption.Value();
-            if (string.IsNullOrEmpty(password))
-            {
-                Console.WriteLine("password is required");
-                return -1;
-            }
+            var clientId = _clientIdOption.GetValue("client-id", requireNotNull:true, promptIfNull:true);
+            var clientSecret = _clientSecretOption.GetValue("client-secret", requireNotNull:true, promptIfNull:true, sensitive:true);
+            var username = _usernameOption.GetValue("username", requireNotNull:true, promptIfNull:true);
+            var password = _passwordOption.GetValue("password", requireNotNull: true, promptIfNull:true, sensitive:true);
 
 
             string rootUrl = Application.IdentityRootUrl;
@@ -86,6 +65,7 @@ namespace IdentityServerTestClient
                 return -1;
             }
 
+            Console.WriteLine("Token response:");
             Console.WriteLine(tokenResponse.Json);
             Console.WriteLine("\n\n");
 
@@ -94,5 +74,8 @@ namespace IdentityServerTestClient
             return 0;
 
         }
+
+
+
     }
 }

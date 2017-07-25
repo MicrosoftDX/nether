@@ -27,18 +27,8 @@ namespace IdentityServerTestClient
         }
         protected override async Task<int> ExecuteAsync()
         {
-            var clientId = _clientIdOption.Value();
-            if (string.IsNullOrEmpty(clientId))
-            {
-                Console.WriteLine("client-id is required");
-                return -1;
-            }
-            var clientSecret = _clientSecretOption.Value();
-            if (string.IsNullOrEmpty(clientSecret))
-            {
-                Console.WriteLine("client-secret is required");
-                return -1;
-            }
+            var clientId = _clientIdOption.GetValue("client-id", requireNotNull: true, promptIfNull: true);
+            var clientSecret = _clientSecretOption.GetValue("client-secret", requireNotNull: true, promptIfNull: true, sensitive: true);
 
             string rootUrl = Application.IdentityRootUrl;
             var disco = await DiscoveryClient.GetAsync(rootUrl);
@@ -58,6 +48,7 @@ namespace IdentityServerTestClient
                 Console.WriteLine(tokenResponse.Error);
             }
 
+            Console.WriteLine("Token response:");
             Console.WriteLine(tokenResponse.Json);
             Console.WriteLine("\n\n");
 
