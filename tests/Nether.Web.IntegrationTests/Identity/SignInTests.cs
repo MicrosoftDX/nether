@@ -195,7 +195,89 @@ namespace Nether.Web.IntegrationTests.Identity
         }
 
         [Fact]
-        public async Task As_a_guest_I_can_authenticate_and_post_a_score()
+        public async Task As_a_guest_I_can_authenticate_and_not_post_a_score_without_a_gamertag()
+        {
+            var client = await SignInAsGuestAsync(Guid.NewGuid().ToString("N"));
+
+            // POST /api/scores
+            var score = new { score = 100 };
+            var scoreResponse = await client.PostAsJsonAsync("api/scores", score);
+            await scoreResponse.AssertStatusCodeAsync(HttpStatusCode.BadRequest);
+
+            dynamic content = await scoreResponse.Content.ReadAsAsync<dynamic>();
+
+            // Should have an error object:
+            //{
+            //    "error": {
+            //        "code": "ValidationFailed",
+            //        "message": "Request validation failed",
+            //        "details": [
+            //            {
+            //            "target": "gamertag",
+            //            "message": "The user doesn't have a gamertag"
+            //            }
+            //        ]
+            //    }
+            //}
+            Assert.NotNull((object)content.error);
+            Assert.Equal("ValidationFailed", (string)content.error.code);
+            Assert.Equal("gamertag", (string)content.error.details[0].target);
+            Assert.Equal("The user doesn't have a gamertag", (string)content.error.details[0].message);
+        }
+
+        [Fact]
+        public async Task As_a_guest_I_can_authenticate_and_post_a_score_with_a_gamertag()
+        {
+            string guestId = Guid.NewGuid().ToString("N");
+            var client = await SignInAsGuestAsync(guestId);
+
+            // PUT /api/players
+            var player = new { gamertag = $"gamertag-{guestId}", country = "UK", customTag = "IntegrationTestGuestUser" };
+            var playerResponse = await client.PutAsJsonAsync("api/player", player);
+            await playerResponse.AssertSuccessStatusCodeAsync();
+
+            // we need to do this so that we can get the new token *with* the gamertag
+            client = await SignInAsGuestAsync(guestId);
+
+            // POST /api/scores
+            var score = new { score = 100 };
+            var scoreResponse = await client.PostAsJsonAsync("api/scores", score);
+            await scoreResponse.AssertStatusCodeAsync(HttpStatusCode.OK);          
+        }
+
+        [Fact]
+        public async Task As_a_returning_guest_user_I_can_retrieve_my_previous_score()
+        {
+            var guestId = Guid.NewGuid().ToString("N");
+            var client = await SignInAsGuestAsync(guestId);
+
+            // PUT /api/players
+            var player = new { gamertag = $"gamertag-{guestId}", country = "UK", customTag = "IntegrationTestGuestUser" };
+            var playerResponse = await client.PutAsJsonAsync("api/player", player);
+            await playerResponse.AssertSuccessStatusCodeAsync();
+
+            // we need to do this so that we can get the new token *with* the gamertag
+            client = await SignInAsGuestAsync(guestId);
+
+            // POST /api/scores
+            var scoreValue = new Random().Next(100, 999);
+            var score = new { score = scoreValue };
+            var scoreResponse = await client.PostAsJsonAsync("api/scores", score);
+            await scoreResponse.AssertStatusCodeAsync(HttpStatusCode.OK);
+
+            // force a new client
+            client = await SignInAsGuestAsync(guestId);
+
+            // GET /api/leadeboards/Default
+            var leaderboardResponse = await client.GetAsync("api/leaderboards/Default");
+
+            dynamic content = await leaderboardResponse.Content.ReadAsAsync<dynamic>();
+            Assert.NotNull(content.currentPlayer);
+
+            Assert.Equal(scoreValue, (int)content.currentPlayer.score);
+        }
+
+        private async Task<HttpClient> SignInAsGuestAsync(string guestId)
         {
             var client = new HttpClient
             {
@@ -203,7 +285,7 @@ namespace Nether.Web.IntegrationTests.Identity
             };
 
             // Sign in as a guest
-            var accessTokenResult = await GetGuestAccesstoken(client, Guid.NewGuid().ToString("N"));
+            var accessTokenResult = await GetGuestAccesstoken(client, guestId);
 
             if (accessTokenResult.Error != null)
             {
@@ -212,20 +294,10 @@ namespace Nether.Web.IntegrationTests.Identity
 
             Assert.NotNull(accessTokenResult.AccessToken);
 
-            // inspect the token to check that the gamertag IS NOT set
-            var token = new JwtSecurityToken(accessTokenResult.AccessToken);
-            var claim = token.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.NickName);
-            Assert.Null(claim);
-
             // Set the Bearer token on subsequent requests
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessTokenResult.AccessToken);
-
-            // POST /api/scores
-            var score = new { score = 100 };
-            var scoreRespnse = await client.PostAsJsonAsync("api/scores", score);
-            await scoreRespnse.AssertStatusCodeAsync(HttpStatusCode.OK);
+            return client;
         }
-
 
         private async Task<AccessTokenResult> GetAccessToken(HttpClient client, string username, string password)
         {
