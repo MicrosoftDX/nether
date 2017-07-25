@@ -25,8 +25,10 @@ namespace IdentityServerTestClient
                 var app = new IdentityClientApplication();
                 app.Command("client-creds", "Test client credential flow", new ClientCredentialsCommand(app));
                 app.Command("resource-owner", "Test resource owner (username + password) flow", new ResourceOwnerPasswordCommand(app));
-                app.Command("facebook-token", "Test facebook user access token flow", new FacebookUserTokenCommand(app));
-                app.Command("guest", "Test guest flow", new GuestAuthCommand(app));
+                app.Command("facebook-token", "Test facebook user access token flow (IdentityModel.Client implementation)", new FacebookUserTokenCommand(app));
+                app.Command("facebook-token-raw", "Test facebook user access token flow (raw HttpClient implementation)", new FacebookUserTokenCommand(app));
+                app.Command("guest", "Test guest flow (IdentityModel.Client implementation)", new GuestAuthCommand(app));
+                app.Command("guest-raw", "Test guest flow (raw HttpClient implementation)", new GuestAuthRawCommand(app));
 
                 app.StandardHelpOption();
                 app.ShowHelpOnExecute();

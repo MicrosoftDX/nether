@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.CommandLineUtils;
 using System.Threading.Tasks;
-using IdentityModel.Client;
+using System.Net.Http;
 
 namespace IdentityServerTestClient
 {
     /// <summary>
-    /// A command to test/demonstrate the custom facebook user access token flow (using IdentityModel.Client)
+    /// A command to test/demonstrate the custom facebook user access token flow (useing raw HttpClient calls)
     /// </summary>
-    class FacebookUserTokenCommand : CommandBase
+    class FacebookUserTokenRawCommand : CommandBase
     {
         private CommandOption _clientIdOption;
         private CommandOption _clientSecretOption;
         private CommandOption _facebookTokenOption;
 
-        public FacebookUserTokenCommand(IdentityClientApplication application)
+        public FacebookUserTokenRawCommand(IdentityClientApplication application)
             : base(application)
         {
 
@@ -40,40 +40,38 @@ namespace IdentityServerTestClient
             var facebookUserToken = _facebookTokenOption.GetValue("facebook-token", requireNotNull: true, promptIfNull: true, additionalPromptText: " (see https://developers.facebook.com/tools/accesstoken)");
 
             string rootUrl = Application.IdentityRootUrl;
-            var disco = await DiscoveryClient.GetAsync(rootUrl);
 
-            if (string.IsNullOrEmpty(disco.TokenEndpoint))
+            var client = new HttpClient();
+            var requestBody = new FormUrlEncodedContent(
+                   new Dictionary<string, string>
+                   {
+                        { "token", facebookUserToken },
+                        { "grant_type", "fb-usertoken" },
+                        { "client_id",  clientId },
+                        { "client_secret", clientSecret },
+                        { "scope", "nether-all" }
+                   }
+               );
+            var response = await client.PostAsync($"{rootUrl}connect/token", requestBody);
+            dynamic responseBody = await response.Content.ReadAsAsync<dynamic>();
+
+            if (responseBody.error != null)
             {
-                Console.WriteLine($"Unable to discover token endpoint from '{rootUrl}' - is the server online?");
-                return -1;
-            }
-
-            if (string.IsNullOrEmpty(disco.TokenEndpoint))
-            {
-                Console.WriteLine($"Unable to discover token endpoint from '{rootUrl}' - is the server online?");
-                return -1;
-            }
-
-            var tokenClient = new TokenClient(disco.TokenEndpoint, clientId, clientSecret);
-            var tokenResponse = await tokenClient.RequestCustomGrantAsync("fb-usertoken", "nether-all", new { token = facebookUserToken });
-
-
-            if (tokenResponse.IsError)
-            {
-                Console.WriteLine(tokenResponse.Error);
+                Console.WriteLine((string)responseBody.Error);
                 return -1;
             }
 
             Console.WriteLine("Token response:");
-            Console.WriteLine(tokenResponse.Json);
+            Console.WriteLine(responseBody.ToString());
             Console.WriteLine("\n\n");
+            string access_token = responseBody.access_token;
 
             Console.WriteLine("Calling echo API:");
-            await EchoClaimsAsync(tokenResponse.AccessToken);
+            await EchoClaimsAsync(access_token);
             Console.WriteLine("\n\n");
 
             Console.WriteLine("Checking role:");
-            await ShowPlayerInfoAsync(tokenResponse.AccessToken);
+            await ShowPlayerInfoAsync(access_token);
             Console.WriteLine("\n\n");
 
             return 0;

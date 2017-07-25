@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using Microsoft.Extensions.CommandLineUtils;
 using System.Threading.Tasks;
 using IdentityModel.Client;
+using System.Net.Http;
 
 namespace IdentityServerTestClient
 {
     /// <summary>
-    /// A command to test/demonstrate the custom guest authentication flow (using IdentityModel.Client)
+    /// A command to test/demonstrate the custom guest authentication flow (using raw HttpClient calls)
     /// </summary>
-    class GuestAuthCommand : CommandBase
+    class GuestAuthRawCommand : CommandBase
     {
         private CommandOption _clientIdOption;
         private CommandOption _clientSecretOption;
         private CommandOption _guestIdentifierOption;
 
-        public GuestAuthCommand(IdentityClientApplication application)
+        public GuestAuthRawCommand(IdentityClientApplication application)
             : base(application)
         {
 
@@ -41,47 +42,41 @@ namespace IdentityServerTestClient
 
 
             string rootUrl = Application.IdentityRootUrl;
-            var disco = await DiscoveryClient.GetAsync(rootUrl);
+            
+            var client = new HttpClient();
+            var requestBody = new FormUrlEncodedContent(
+                   new Dictionary<string, string>
+                   {
+                        { "guest_identifier", guestIdentifier },
+                        { "grant_type", "guest-access" },
+                        { "client_id",  clientId },
+                        { "client_secret", clientSecret },
+                        { "scope", "nether-all" }
+                   }
+               );
+            var response = await client.PostAsync($"{rootUrl}connect/token", requestBody);
+            dynamic responseBody = await response.Content.ReadAsAsync<dynamic>();
 
-            if (string.IsNullOrEmpty(disco.TokenEndpoint))
+            if (responseBody.error != null)
             {
-                Console.WriteLine($"Unable to discover token endpoint from '{rootUrl}' - is the server online?");
-                return -1;
-            }
-
-            if (string.IsNullOrEmpty(disco.TokenEndpoint))
-            {
-                Console.WriteLine($"Unable to discover token endpoint from '{rootUrl}' - is the server online?");
-                return -1;
-            }
-
-            var tokenClient = new TokenClient(disco.TokenEndpoint, clientId, clientSecret);
-            var tokenResponse = await tokenClient.RequestCustomGrantAsync("guest-access", "nether-all", new { guest_identifier = guestIdentifier });
-
-
-            if (tokenResponse.IsError)
-            {
-                Console.WriteLine(tokenResponse.Error);
+                Console.WriteLine((string)responseBody.Error);
                 return -1;
             }
 
             Console.WriteLine("Token response:");
-            Console.WriteLine(tokenResponse.Json);
+            Console.WriteLine(responseBody.ToString());
             Console.WriteLine("\n\n");
+            string access_token = responseBody.access_token;
 
             Console.WriteLine("Calling echo API:");
-            await EchoClaimsAsync(tokenResponse.AccessToken);
+            await EchoClaimsAsync(access_token);
             Console.WriteLine("\n\n");
 
             Console.WriteLine("Checking role:");
-            await ShowPlayerInfoAsync(tokenResponse.AccessToken);
+            await ShowPlayerInfoAsync(access_token);
             Console.WriteLine("\n\n");
 
             return 0;
-
         }
-
-
-
     }
 }

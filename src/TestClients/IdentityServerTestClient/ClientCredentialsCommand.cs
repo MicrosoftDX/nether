@@ -7,6 +7,9 @@ using Microsoft.Extensions.CommandLineUtils;
 
 namespace IdentityServerTestClient
 {
+    /// <summary>
+    /// A command to test/demonstrate the client credentials flow
+    /// </summary>
     class ClientCredentialsCommand : CommandBase
     {
         private CommandOption _clientIdOption;
