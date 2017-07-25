@@ -194,7 +194,37 @@ namespace Nether.Web.IntegrationTests.Identity
             Assert.Equal("Can't change gamertag", (string)content.error.details[0].message);
         }
 
+        [Fact]
+        public async Task As_a_guest_I_can_authenticate_and_post_a_score()
+        {
+            var client = new HttpClient
+            {
+                BaseAddress = new Uri(BaseUrl)
+            };
 
+            // Sign in as a guest
+            var accessTokenResult = await GetGuestAccesstoken(client, Guid.NewGuid().ToString("N"));
+
+            if (accessTokenResult.Error != null)
+            {
+                throw new Exception("Error in auth:" + accessTokenResult.Error);
+            }
+
+            Assert.NotNull(accessTokenResult.AccessToken);
+
+            // inspect the token to check that the gamertag IS NOT set
+            var token = new JwtSecurityToken(accessTokenResult.AccessToken);
+            var claim = token.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.NickName);
+            Assert.Null(claim);
+
+            // Set the Bearer token on subsequent requests
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessTokenResult.AccessToken);
+
+            // POST /api/scores
+            var score = new { score = 100 };
+            var scoreRespnse = await client.PostAsJsonAsync("api/scores", score);
+            await scoreRespnse.AssertStatusCodeAsync(HttpStatusCode.OK);
+        }
 
 
         private async Task<AccessTokenResult> GetAccessToken(HttpClient client, string username, string password)
@@ -215,6 +245,34 @@ namespace Nether.Web.IntegrationTests.Identity
                         { "scope", scope }
                   }
               );
+
+            return await MakeTokenRequestAsync(client, requestBody);
+        }
+
+        private async Task<AccessTokenResult> GetGuestAccesstoken(HttpClient client, string guestIdentifier)
+        {
+            const string client_id = "devclient";
+            const string client_secret = "devsecret";
+            const string scope = "openid profile nether-all";
+
+
+            var requestBody = new FormUrlEncodedContent(
+                  new Dictionary<string, string>
+                  {
+                        { "grant_type", "guest-access" },
+                        { "client_id",  client_id },
+                        { "client_secret", client_secret },
+                        { "guest_identifier", guestIdentifier },
+                        { "scope", scope }
+                  }
+              );
+
+            return await MakeTokenRequestAsync(client, requestBody);
+
+        }
+
+        private static async Task<AccessTokenResult> MakeTokenRequestAsync(HttpClient client, FormUrlEncodedContent requestBody)
+        {
             var response = await client.PostAsync("/identity/connect/token", requestBody);
             dynamic responseBody = await response.Content.ReadAsAsync<dynamic>();
 

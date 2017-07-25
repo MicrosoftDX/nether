@@ -46,7 +46,7 @@ namespace GuestAccessTestClient
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
 
-        public static async Task<AccessTokenResult> GetAccessTokenAsync(this HttpClient client, string guestAccessToken)
+        public static async Task<AccessTokenResult> GetAccessTokenAsync(this HttpClient client, string guestIdentifier)
         {
             const string client_id = "devclient";
             const string client_secret = "devsecret";
@@ -55,7 +55,7 @@ namespace GuestAccessTestClient
             var requestBody = new FormUrlEncodedContent(
                    new Dictionary<string, string>
                    {
-                        { "token", guestAccessToken },
+                        { "guest_identifier", guestIdentifier },
                         { "grant_type", "guest-access" },
                         { "client_id",  client_id },
                         { "client_secret", client_secret },

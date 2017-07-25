@@ -4,6 +4,7 @@
 using IdentityServer4.Validation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Nether.Common.ApplicationPerformanceMonitoring;
 using Nether.Data.Identity;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace Nether.Web.Features.Identity
         private IUserStore _userStore;
         private UserClaimsProvider _userClaimsProvider;
         private ILogger<GuestAccessTokenExtensionGrantValidator> _logger;
+        private IApplicationPerformanceMonitor _appMonitor;
 
         public string GrantType => "guest-access";
 
@@ -24,25 +26,35 @@ namespace Nether.Web.Features.Identity
             //IConfiguration configuration,
             IUserStore userStore,
             UserClaimsProvider userClaimsProvider,
+            IApplicationPerformanceMonitor appMonitor,
             ILogger<GuestAccessTokenExtensionGrantValidator> logger)
         {
             //_configuration = configuration;
             _userStore = userStore;
             _userClaimsProvider = userClaimsProvider;
             _logger = logger;
+            _appMonitor = appMonitor;
         }
-        public Task ValidateAsync(ExtensionGrantValidationContext context)
+        public async Task ValidateAsync(ExtensionGrantValidationContext context)
         {
-            var guestToken = context.Request.Raw["token"];
+            var guestIdentifier = context.Request.Raw["guest_identifier"];
 
-            _logger.LogInformation("GuestAccessToken: Signing in with guest access token '{0}'", guestToken);
+            _logger.LogInformation("GuestAccessToken: Signing in with guest access token '{0}'", guestIdentifier);
 
-            return Task.FromResult(0);
+            User user = await GetOrCreateGuestUserAsync(guestIdentifier);
+
+            var claims = await _userClaimsProvider.GetUserClaimsAsync(user);
+            context.Result = new GrantValidationResult(user.UserId, "nether-guest", claims);
+
+            _appMonitor.LogEvent("LoginSucceeded", properties: new Dictionary<string, string> {
+                        { "LoginType", "guest-access" }
+                    }); 
         }
 
-        private async Task<User> GetOrCreateUserAsync(string userId)
+        private async Task<User> GetOrCreateGuestUserAsync(string guestIdentifier)
         {
-            var user = await _userStore.GetUserByLoginAsync(LoginProvider.GuestAccess, userId);
+
+            var user = await _userStore.GetUserByLoginAsync(LoginProvider.GuestAccess, guestIdentifier);
             if (user == null)
             {
                 user = new User
@@ -54,14 +66,13 @@ namespace Nether.Web.Features.Identity
                             new Login
                             {
                                 ProviderType = LoginProvider.GuestAccess,
-                                ProviderId = userId
+                                ProviderId = guestIdentifier
                             }
                         }
                 };
 
                 // TODO: user with guest access should probably have some maximum lifetime, etc.
-                // TODO: Implement this
-                //await _userStore.SaveUserAsync(user);
+                await _userStore.SaveUserAsync(user);
             }
 
             return user;
