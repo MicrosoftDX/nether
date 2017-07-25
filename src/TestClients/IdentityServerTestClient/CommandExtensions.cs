@@ -26,7 +26,7 @@ namespace IdentityServerTestClient
         }
 
 
-        public static string GetValue(this CommandOption option, string optionName, bool requireNotNull = false, bool promptIfNull = false, bool sensitive = false)
+        public static string GetValue(this CommandOption option, string optionName, bool requireNotNull = false, bool promptIfNull = false, bool sensitive = false, string additionalPromptText = null)
         {
             string value = option.Value();
             if (requireNotNull && string.IsNullOrEmpty(value))
@@ -37,7 +37,7 @@ namespace IdentityServerTestClient
                     {
                         throw new Exception("promptIfNull specified but promptName not set");
                     }
-                    Console.WriteLine($"Please enter {optionName}:");
+                    Console.WriteLine($"Please enter {optionName}{additionalPromptText}:");
 
                     if (sensitive)
                     {
