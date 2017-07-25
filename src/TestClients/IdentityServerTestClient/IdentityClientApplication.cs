@@ -9,13 +9,15 @@ namespace IdentityServerTestClient
     {
         public GlobalArguments GlobalArguments { get; private set; }
 
-        public string IdentityRootUrl => GlobalArguments.RootUrl.Value() ?? "http://localhost:5000/identity";
+        public string RootUrl => GlobalArguments.RootUrl.Value() ?? "http://localhost:5000/";
+        public string IdentityRootUrl => RootUrl.EnsureTrailingSlash() + "identity/";
+        public string ApiRootUrl => RootUrl.EnsureTrailingSlash() + "api/";
 
         public IdentityClientApplication()
         {
             GlobalArguments = new GlobalArguments
             {
-                RootUrl = Option("--identity-root-url", "Root Url for the identity service", CommandOptionType.SingleValue)
+                RootUrl = Option("--root-url", "Root Url for nether", CommandOptionType.SingleValue)
             };
         }
 

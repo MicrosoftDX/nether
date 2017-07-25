@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace IdentityServerTestClient
@@ -31,5 +33,22 @@ namespace IdentityServerTestClient
             }
         }
         protected abstract Task<int> ExecuteAsync();
+
+
+        protected async Task EchoClaimsAsync(string accessToken)
+        {
+            // call api
+            var client = new HttpClient();
+            client.SetBearerToken(accessToken);
+
+            var response = await client.GetAsync($"{Application.ApiRootUrl}identity-test");
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine(response.StatusCode);
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(JObject.Parse(content));
+        }
     }
 }

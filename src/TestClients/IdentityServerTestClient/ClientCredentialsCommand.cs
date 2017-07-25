@@ -61,6 +61,8 @@ namespace IdentityServerTestClient
             {
                 Console.WriteLine(tokenResponse.Json);
                 Console.WriteLine("\n\n");
+
+                await EchoClaimsAsync(tokenResponse.AccessToken);
             }
 
             return 0;
