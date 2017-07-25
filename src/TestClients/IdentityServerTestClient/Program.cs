@@ -24,6 +24,7 @@ namespace IdentityServerTestClient
             {
                 var app = new IdentityClientApplication();
                 app.Command("client-creds", "Test client credential flow", new ClientCredentialsCommand(app));
+                app.Command("resource-owner", "Test resource owner (username + password) flow", new ResourceOwnerPasswordCommand(app));
 
                 app.StandardHelpOption();
                 app.ShowHelpOnExecute();
@@ -41,15 +42,6 @@ namespace IdentityServerTestClient
         {
             try
             {
-                //var clientTokenResponse = await TestClientCredentialsAsync("clientcredstest", "devsecret"); // this flow just identifies the client app
-                ////var clientTokenResponse = await TestClientCredentialsAsync("nether_identity", "secret"); // this flow just identifies the client app
-                //Console.WriteLine();
-                //Console.WriteLine("Dump claims:");
-                //await CallApiAsync(clientTokenResponse.AccessToken);
-                //return;
-
-                //var tokenResponse = await TestResourceOwnerPasswordAsync(); // this flow uses username + password
-
                 Console.WriteLine("Enter the Facebook User Token (see https://developers.facebook.com/tools/accesstoken):");
                 var facebookUserToken = Console.ReadLine();
 
@@ -129,48 +121,7 @@ namespace IdentityServerTestClient
 
             return tokenResponse;
         }
-        private static async Task<TokenResponse> TestResourceOwnerPasswordAsync()
-        {
-            var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
-
-            // request token
-            var tokenClient = new TokenClient(disco.TokenEndpoint, "resourceownertest", "devsecret");
-            var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync("devuser", "devuser", "nether-all");
-
-            if (tokenResponse.IsError)
-            {
-                Console.WriteLine(tokenResponse.Error);
-            }
-            else
-            {
-                Console.WriteLine(tokenResponse.Json);
-                Console.WriteLine("\n\n");
-            }
-
-            return tokenResponse;
-        }
-        private static async Task<TokenResponse> TestClientCredentialsAsync(string clientId, string clientSecret)
-        {
-            var disco = await DiscoveryClient.GetAsync("http://localhost:5000");
-
-            // request token
-            var tokenClient = new TokenClient(disco.TokenEndpoint, clientId, clientSecret);
-            var tokenResponse = await tokenClient.RequestClientCredentialsAsync("nether-all");
-
-            if (tokenResponse.IsError)
-            {
-                Console.WriteLine(tokenResponse.Error);
-            }
-            else
-            {
-                Console.WriteLine(tokenResponse.Json);
-                Console.WriteLine("\n\n");
-            }
-
-            return tokenResponse;
-        }
-
-        private static async Task CallApiAsync(string accessToken)
+             private static async Task CallApiAsync(string accessToken)
         {
             // call api
             var client = new HttpClient();
