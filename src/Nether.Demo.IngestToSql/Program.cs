@@ -73,7 +73,7 @@ namespace Nether.Demo.IngestToSql
             {
                 AllowDbgEnqueuedTime = true,
                 CorruptMessageAsyncFunc = OnCorruptMessageAsync,
-                MessageTypePropertyName = "event_name",
+                MessageTypePropertyName = "type",
                 UseStaticMessageVersion = true,
                 StaticMessageVersion = "1.0.0"
             };
@@ -85,6 +85,10 @@ namespace Nether.Demo.IngestToSql
             {
                 {"event_time", Tuple.Create<SqlDbType, int>(SqlDbType.DateTime, 0 )},
                 {"install_time", Tuple.Create<SqlDbType, int>(SqlDbType.DateTime, 0 )},
+                {"enqueuedTimeUtc", Tuple.Create<SqlDbType, int>(SqlDbType.DateTime, 0 )},
+                {"offline", Tuple.Create<SqlDbType, int>(SqlDbType.Int, 0 )},
+                {"resource_change", Tuple.Create<SqlDbType, int>(SqlDbType.Int, 0 )},
+                {"amount", Tuple.Create<SqlDbType, int>(SqlDbType.Int, 0 )}
             };
 
             var sqlOutputManager = new SQLDatabaseOutputManager(Config.Root[Config.NAH_AZURE_SQLUTPUTMANAGER_CONNECTIONSTRING], columntoDatatypeMapping, true);
