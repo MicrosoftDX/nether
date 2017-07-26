@@ -54,7 +54,7 @@ namespace Nether.Web.IntegrationTests
 
             // create user
             var response = await client.PutAsJsonAsync(
-                $"/api/identity/users/{username}",
+                $"/api/admin/users/{username}",
                 new
                 {
                     role = role,
@@ -66,7 +66,7 @@ namespace Nether.Web.IntegrationTests
 
             // create login
             response = await client.PutAsJsonAsync(
-                $"/api/identity/users/{username}/logins/password/{username}",
+                $"/api/admin/users/{username}/logins/password/{username}",
                 new
                 {
                     password
@@ -98,7 +98,7 @@ namespace Nether.Web.IntegrationTests
         {
             var client = await GetClientAsync(InitialAdminUserName, InitialAdminPassword).ConfigureAwait(false);
 
-            await client.DeleteAsync($"/api/identity/users/{username}").ConfigureAwait(false);
+            await client.DeleteAsync($"/api/admin/users/{username}").ConfigureAwait(false);
         }
         public void DeletePlayer(string gamertag)
         {

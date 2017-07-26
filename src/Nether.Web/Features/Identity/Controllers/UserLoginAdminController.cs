@@ -14,19 +14,19 @@ using System.Threading.Tasks;
 
 namespace Nether.Web.Features.Identity
 {
-    [Route("identity/users/{userId}/logins")]
+    [Route("admin/users/{userId}/logins")]
     [Authorize(Roles = RoleNames.Admin)]
     [NetherService("Identity")]
-    public class UserLoginController : ControllerBase
+    public class UserLoginAdminController : ControllerBase
     {
         private readonly IUserStore _userStore;
         private readonly IPasswordHasher _passwordHasher;
         private readonly ILogger _logger;
 
-        public UserLoginController(
+        public UserLoginAdminController(
             IUserStore userStore,
             IPasswordHasher passwordHasher,
-            ILogger<UserLoginController> logger
+            ILogger<UserLoginAdminController> logger
             )
         {
             _userStore = userStore;

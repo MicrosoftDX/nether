@@ -21,7 +21,7 @@ namespace Nether.Web.IntegrationTests.Identity
 
             // create user
             var response = await client.PostAsJsonAsync(
-                "/api/identity/users",
+                "/api/admin/users",
                 new
                 {
                     role = "Player",
@@ -59,7 +59,7 @@ namespace Nether.Web.IntegrationTests.Identity
             var login = logins[0];
             Assert.Equal("password", (string)login.providerType);
             Assert.Equal(username, (string)login.providerId);
-            Assert.Equal($"/api/identity/users/{user.userId}/logins/password/{username}", (string)login._link);
+            Assert.Equal($"/api/admin/users/{user.userId}/logins/password/{username}", (string)login._link);
 
 
             // login as that user

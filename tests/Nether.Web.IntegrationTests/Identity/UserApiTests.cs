@@ -18,14 +18,14 @@ namespace Nether.Web.IntegrationTests.Identity
         {
             var client = await AsPlayerAsync();
 
-            var response = await client.GetAsync("/api/identity/users");
+            var response = await client.GetAsync("/api/admin/users");
             await response.AssertStatusCodeAsync(HttpStatusCode.Forbidden);
         }
         [Fact]
         public async Task As_a_player_I_get_Forbidden_response_calling_GetUser()
         {
             var client = await AsPlayerAsync();
-            var response = await client.GetAsync("/api/identity/users/123");
+            var response = await client.GetAsync("/api/admin/users/123");
             await response.AssertStatusCodeAsync(HttpStatusCode.Forbidden);
         }
         // ... should we fill out the other requests to check permissions, or not?
@@ -35,7 +35,7 @@ namespace Nether.Web.IntegrationTests.Identity
         public async Task As_an_admin_I_can_list_users()
         {
             var client = await AsAdminAsync();
-            var response = await client.GetAsync("/api/identity/users");
+            var response = await client.GetAsync("/api/admin/users");
             await response.AssertStatusCodeAsync(HttpStatusCode.OK);
 
             dynamic responseContent = await response.Content.ReadAsAsync<dynamic>();
@@ -62,7 +62,7 @@ namespace Nether.Web.IntegrationTests.Identity
 
             // Add user
             var response = await client.PostAsJsonAsync(
-                "/api/identity/users",
+                "/api/admin/users",
                 new
                 {
                     role = "Admin",
@@ -72,7 +72,7 @@ namespace Nether.Web.IntegrationTests.Identity
             await response.AssertStatusCodeAsync(HttpStatusCode.Created);
 
             var userLocation = response.Headers.Location.LocalPath;
-            Assert.StartsWith("/api/identity/users/", userLocation);
+            Assert.StartsWith("/api/admin/users/", userLocation);
 
 
             // Get user
