@@ -9,7 +9,7 @@
 Authorisation: requires `admin` role
 
 ```
-    GET /api/identity/users/&lt;userId&gt;/logins
+    GET /api/admin/users/&lt;userId&gt;/logins
 ```
 
 Lists a summary of all logins for a user.
@@ -24,7 +24,7 @@ Lists a summary of all logins for a user.
         {
             "providerType" : "password",
             "providerId" : "netheruser",
-            "_link" : "http://.../api/identity/users/netheruser/logins/password/netheruser"
+            "_link" : "http://.../api/admin/users/netheruser/logins/password/netheruser"
         },
         {}
     ]
@@ -33,7 +33,7 @@ Lists a summary of all logins for a user.
 
 The `_link` property of a login summary provides the URL to make a `DELETE` request against to remove the login for the user.
 
-See [Get a user](users.md#get-a-user) for more information on `providerType` and `providerId`.
+See [Get a user](admin-users.md#get-a-user) for more information on `providerType` and `providerId`.
 
 
 ### Response: 404 NotFound
@@ -45,7 +45,7 @@ The user does not exist
 Authorisation: requires `admin` role
 
 ```
-    PUT /api/identity/users/&lt;userId&gt;/logins/&lt;providerType&gt;/&lt;providerId&gt;
+    PUT /api/admin/users/&lt;userId&gt;/logins/&lt;providerType&gt;/&lt;providerId&gt;
 ```
 
 Add a new login for a user, or update and existing login. This can be used to create or reset a user's password.
@@ -70,7 +70,7 @@ password | string | The password for the user
 #### Example request
 
 ```
-  PUT /api/identity/users/netheruser/logins/password/netheruserlogin
+  PUT /api/admin/users/netheruser/logins/password/netheruserlogin
 ```
 Body:
 ```json
@@ -90,7 +90,7 @@ Response contains a `Location` header with the URL for the newly created login. 
 Authorisation: requires `admin` role
 
 ```
-    DELETE /api/identity/users/&lt;userId&gt;/logins/&lt;providerType&gt;/&lt;providerId&gt;
+    DELETE /api/admin/users/&lt;userId&gt;/logins/&lt;providerType&gt;/&lt;providerId&gt;
 ```
 
 ### Response: 204 NoContent

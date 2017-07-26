@@ -11,7 +11,7 @@
 Authorisation: requires `admin` role
 
 ```
-    GET /api/identity/users
+    GET /api/admin/users
 ```
 
 Lists summary information for all users.
@@ -25,7 +25,7 @@ Lists summary information for all users.
         {
             "userId" : "netheruser",
             "role" : "Player",
-            "_link" : "http://.../api/identity/users/netheruser"
+            "_link" : "http://.../api/admin/users/netheruser"
         },
         {}
     ]
@@ -42,7 +42,7 @@ The `_link` property of a user summary provides the URL to make a `GET` request 
 Authorisation: requires `admin` role
 
 ```
-    GET /api/identity/users
+    GET /api/admin/users
 ```
 
 Gets details of the user and their logins.
@@ -59,7 +59,7 @@ Gets details of the user and their logins.
       {
         "providerType": "password",
         "providerId": "netheruser",
-        "_link" : "http://.../api/identity/users/netheruser/logins/password/netheruser"
+        "_link" : "http://.../api/admin/users/netheruser/logins/password/netheruser"
       }
     ]
   }
@@ -82,7 +82,7 @@ The user does not exist
 Authorisation: requires `admin` role
 
 ```
-    POST /api/identity/users
+    POST /api/admin/users
 ```
 
 Creates a new user and assigns them a user id.
@@ -104,8 +104,6 @@ active | boolean | **Required**. Specifies whether the user is active (i.e. shou
 }
 ```
 
-**TODO - need to sort out API to add logins (and document it)** Currently the API will accept a logins property, but we should add APIs to add logins
-
 ### Response: 201 Created
 
 Response contains a `Location` header with the URL for the newly created user. Issuing a `GET` against the header value provides the user details.
@@ -118,7 +116,7 @@ Response contains a `Location` header with the URL for the newly created user. I
 Authorisation: requires `admin` role
 
 ```
-    PUT /api/identity/users/&lt;userId&gt;
+    PUT /api/admin/users/&lt;userId&gt;
 ```
 
 Updates an existing user.
@@ -172,7 +170,7 @@ The user does not exist
 Authorisation: requires `admin` role
 
 ```
-    DELETE /api/identity/users/&lt;userId&gt;
+    DELETE /api/admin/users/&lt;userId&gt;
 ```
 
 ### Response: 204 NoContent
