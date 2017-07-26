@@ -350,7 +350,7 @@ namespace Nether.Web.IntegrationTests.Identity
 
             if (responseBody.error != null)
             {
-                return new AccessTokenResult { Error = responseBody.Error };
+                return new AccessTokenResult { Error = responseBody.error };
             }
             return new AccessTokenResult
             {
