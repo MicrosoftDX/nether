@@ -24,6 +24,13 @@ export Identity__Clients__customgranttest__AllowedGrantTypes="fb-usertoken"
 export Identity__Clients__customgranttest__ClientSecrets="devsecret"
 export Identity__Clients__customgranttest__AllowedScopes="nether-all"
 
+# ensure guest-access is allowed for 'devclient' client
+export Identity__Clients__devclient__AllowedGrantTypes="password, hybrid, fb-usertoken, guest-access"
+
+# enable guest authn
+export Identity__SignInMethods__GuestAccess__Enabled="true"
+
+
 pushd .
 cd src/Nether.Web
 dotnet watch run
