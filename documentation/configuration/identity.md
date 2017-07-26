@@ -87,6 +87,7 @@ Currently supported methods:
 
 To use this sign-in method you need to create a Facebook App at https://developers.facebook.com/apps/. There is a walkthrough of [creating a Facebook application](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/facebook-logins). When setting the `Valid OAuth Redirect URIs` set this to `http://localhost:5000/identity/signin-facebook` (or the URL for your published site)
 
+The options for Facebook authentication can be configured under the `Identity:SignInMethods:Facebook` settings:
 
 ```json
   "Identity" : {
@@ -108,6 +109,21 @@ EnableAccessToken | bool | True to enable the custom token grant flow (e.g. for 
 AppId | string | The AppId for your Facebook app from https://developers.facebook.com/apps
 AppSecret | string | The AppSecret for your Facebook app from https://developers.facebook.com/apps
 
+### Guest authentication
+
+Guest authentication is disabled by default as it is a relatively weak authentication mechanism.
+
+To enable, set the `Identity:SignInMethods:GuestAccess:Enabled` to `true`
+
+```json
+  "Identity" : {
+    "SignInMethods": {
+        "GuestAccess": {
+            "Enabled":  false
+        }
+    }
+  }
+```
 
 ## Player Management Integration Configuration
 
