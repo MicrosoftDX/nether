@@ -9,7 +9,7 @@ using IdentityModel;
 using System.Net.Http.Headers;
 using System.Net;
 
-namespace IdentityServerTestClient
+namespace IdentityTestClient
 {
     public abstract class CommandBase
     {

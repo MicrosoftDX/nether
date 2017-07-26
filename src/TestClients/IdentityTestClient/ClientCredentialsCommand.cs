@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace IdentityServerTestClient
+namespace IdentityTestClient
 {
     /// <summary>
     /// A command to test/demonstrate the client credentials flow

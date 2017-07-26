@@ -4,16 +4,18 @@ using Microsoft.Extensions.CommandLineUtils;
 using System.Threading.Tasks;
 using IdentityModel.Client;
 
-namespace IdentityServerTestClient
+namespace IdentityTestClient
 {
-    class ResourceOwnerPasswordCommand : CommandBase
+    /// <summary>
+    /// A command to test/demonstrate the custom guest authentication flow (using IdentityModel.Client)
+    /// </summary>
+    class GuestAuthCommand : CommandBase
     {
         private CommandOption _clientIdOption;
         private CommandOption _clientSecretOption;
-        private CommandOption _usernameOption;
-        private CommandOption _passwordOption;
+        private CommandOption _guestIdentifierOption;
 
-        public ResourceOwnerPasswordCommand(IdentityClientApplication application)
+        public GuestAuthCommand(IdentityClientApplication application)
             : base(application)
         {
 
@@ -25,8 +27,7 @@ namespace IdentityServerTestClient
 
             _clientIdOption = config.Option("--client-id", "clientid", CommandOptionType.SingleValue);
             _clientSecretOption = config.Option("--client-secret", "clientsecret", CommandOptionType.SingleValue);
-            _usernameOption = config.Option("--username", "username", CommandOptionType.SingleValue);
-            _passwordOption = config.Option("--password", "user password", CommandOptionType.SingleValue);
+            _guestIdentifierOption = config.Option("--guest-id", "Guest identifier", CommandOptionType.SingleValue);
 
             config.StandardHelpOption();
         }
@@ -34,10 +35,9 @@ namespace IdentityServerTestClient
 
         protected override async Task<int> ExecuteAsync()
         {
-            var clientId = _clientIdOption.GetValue("client-id", requireNotNull:true, promptIfNull:true);
-            var clientSecret = _clientSecretOption.GetValue("client-secret", requireNotNull:true, promptIfNull:true, sensitive:true);
-            var username = _usernameOption.GetValue("username", requireNotNull:true, promptIfNull:true);
-            var password = _passwordOption.GetValue("password", requireNotNull: true, promptIfNull:true, sensitive:true);
+            var clientId = _clientIdOption.GetValue("client-id", requireNotNull: true, promptIfNull: true);
+            var clientSecret = _clientSecretOption.GetValue("client-secret", requireNotNull: true, promptIfNull: true, sensitive: true);
+            var guestIdentifier = _guestIdentifierOption.GetValue("guest identifier", requireNotNull: true, promptIfNull: true);
 
 
             string rootUrl = Application.IdentityRootUrl;
@@ -56,7 +56,7 @@ namespace IdentityServerTestClient
             }
 
             var tokenClient = new TokenClient(disco.TokenEndpoint, clientId, clientSecret);
-            var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(username, password, "nether-all");
+            var tokenResponse = await tokenClient.RequestCustomGrantAsync("guest-access", "nether-all", new { guest_identifier = guestIdentifier });
 
 
             if (tokenResponse.IsError)

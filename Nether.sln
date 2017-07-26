@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.13
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solution Items", "{C3F7DE95-BCD3-4340-AE80-4848443F2B39}"
 	ProjectSection(SolutionItems) = preProject
@@ -42,9 +42,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Integration", "src\N
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Integration.Default", "src\Nether.Integration.Default\Nether.Integration.Default.csproj", "{12AFEC7A-DAD5-4B75-AB4D-DA90C0FBB79A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FacebookUserTokenClient", "src\TestClients\FacebookUserTokenClient\FacebookUserTokenClient.csproj", "{FE4D1073-2FE6-41C0-8449-47D081BC25E4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServerTestClient", "src\TestClients\IdentityServerTestClient\IdentityServerTestClient.csproj", "{F9C18B96-9902-4FA3-9D19-99F8FA1252E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityTestClient", "src\TestClients\IdentityTestClient\IdentityTestClient.csproj", "{F9C18B96-9902-4FA3-9D19-99F8FA1252E2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeaderboardLoadTest", "src\PerformanceTests\LeaderboardLoadTest\LeaderboardLoadTest.csproj", "{93A6E0EC-DCD9-41EE-9DFA-565A0A3605E0}"
 EndProject
@@ -57,8 +55,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Data.EntityFramework", "src\Nether.Data.EntityFramework\Nether.Data.EntityFramework.csproj", "{44AF2745-059D-4040-BFC7-8478389B1479}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nether.Data.InMemory", "src\Nether.Data.InMemory\Nether.Data.InMemory.csproj", "{E193CDEF-0298-4E87-8B4D-47B5CA1E019B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuestAccessTestClient", "src\TestClients\GuestAccessTestClient\GuestAccessTestClient.csproj", "{0F1268DB-C74E-43EB-895C-81542325D4A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -181,24 +177,6 @@ Global
 		{12AFEC7A-DAD5-4B75-AB4D-DA90C0FBB79A}.Release|x64.Build.0 = Release|Any CPU
 		{12AFEC7A-DAD5-4B75-AB4D-DA90C0FBB79A}.Release|x86.ActiveCfg = Release|Any CPU
 		{12AFEC7A-DAD5-4B75-AB4D-DA90C0FBB79A}.Release|x86.Build.0 = Release|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Debug|x64.Build.0 = Debug|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Debug|x86.Build.0 = Debug|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Release - Full|Any CPU.ActiveCfg = Release|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Release - Full|Any CPU.Build.0 = Release|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Release - Full|x64.ActiveCfg = Release|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Release - Full|x64.Build.0 = Release|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Release - Full|x86.ActiveCfg = Release|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Release - Full|x86.Build.0 = Release|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Release|x64.ActiveCfg = Release|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Release|x64.Build.0 = Release|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Release|x86.ActiveCfg = Release|Any CPU
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4}.Release|x86.Build.0 = Release|Any CPU
 		{F9C18B96-9902-4FA3-9D19-99F8FA1252E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F9C18B96-9902-4FA3-9D19-99F8FA1252E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9C18B96-9902-4FA3-9D19-99F8FA1252E2}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -323,24 +301,6 @@ Global
 		{E193CDEF-0298-4E87-8B4D-47B5CA1E019B}.Release|x64.Build.0 = Release|Any CPU
 		{E193CDEF-0298-4E87-8B4D-47B5CA1E019B}.Release|x86.ActiveCfg = Release|Any CPU
 		{E193CDEF-0298-4E87-8B4D-47B5CA1E019B}.Release|x86.Build.0 = Release|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Debug|x64.Build.0 = Debug|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Debug|x86.Build.0 = Debug|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release - Full|Any CPU.ActiveCfg = Release|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release - Full|Any CPU.Build.0 = Release|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release - Full|x64.ActiveCfg = Release|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release - Full|x64.Build.0 = Release|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release - Full|x86.ActiveCfg = Release|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release - Full|x86.Build.0 = Release|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release|x64.ActiveCfg = Release|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release|x64.Build.0 = Release|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release|x86.ActiveCfg = Release|Any CPU
-		{0F1268DB-C74E-43EB-895C-81542325D4A4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -355,7 +315,6 @@ Global
 		{80DFD445-168A-4A0E-8D3C-AA29CDA05E7C} = {21460676-11E1-480F-B500-26499594BDC8}
 		{0FC59806-1E25-4A1F-8DFF-E0F114BF2EB1} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
 		{12AFEC7A-DAD5-4B75-AB4D-DA90C0FBB79A} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
-		{FE4D1073-2FE6-41C0-8449-47D081BC25E4} = {71C19CC0-E81B-4271-8C2E-E749FB445EB3}
 		{F9C18B96-9902-4FA3-9D19-99F8FA1252E2} = {71C19CC0-E81B-4271-8C2E-E749FB445EB3}
 		{93A6E0EC-DCD9-41EE-9DFA-565A0A3605E0} = {86942C3A-4907-4D51-BFC2-D551A85A335E}
 		{A477AE37-4030-47D7-AD10-C80890359791} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
@@ -363,6 +322,5 @@ Global
 		{22F45C3A-F7D0-46D2-8392-E3ACE3D5FD10} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
 		{44AF2745-059D-4040-BFC7-8478389B1479} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
 		{E193CDEF-0298-4E87-8B4D-47B5CA1E019B} = {EF399303-FFFD-4D40-9143-B3B40D15D316}
-		{0F1268DB-C74E-43EB-895C-81542325D4A4} = {71C19CC0-E81B-4271-8C2E-E749FB445EB3}
 	EndGlobalSection
 EndGlobal

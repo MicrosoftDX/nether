@@ -4,18 +4,16 @@ using Microsoft.Extensions.CommandLineUtils;
 using System.Threading.Tasks;
 using IdentityModel.Client;
 
-namespace IdentityServerTestClient
+namespace IdentityTestClient
 {
-    /// <summary>
-    /// A command to test/demonstrate the custom facebook user access token flow (using IdentityModel.Client)
-    /// </summary>
-    class FacebookUserTokenCommand : CommandBase
+    class ResourceOwnerPasswordCommand : CommandBase
     {
         private CommandOption _clientIdOption;
         private CommandOption _clientSecretOption;
-        private CommandOption _facebookTokenOption;
+        private CommandOption _usernameOption;
+        private CommandOption _passwordOption;
 
-        public FacebookUserTokenCommand(IdentityClientApplication application)
+        public ResourceOwnerPasswordCommand(IdentityClientApplication application)
             : base(application)
         {
 
@@ -27,7 +25,8 @@ namespace IdentityServerTestClient
 
             _clientIdOption = config.Option("--client-id", "clientid", CommandOptionType.SingleValue);
             _clientSecretOption = config.Option("--client-secret", "clientsecret", CommandOptionType.SingleValue);
-            _facebookTokenOption = config.Option("--facebook-token", "facebook user token - see https://developers.facebook.com/tools/accesstoken", CommandOptionType.SingleValue);
+            _usernameOption = config.Option("--username", "username", CommandOptionType.SingleValue);
+            _passwordOption = config.Option("--password", "user password", CommandOptionType.SingleValue);
 
             config.StandardHelpOption();
         }
@@ -35,9 +34,11 @@ namespace IdentityServerTestClient
 
         protected override async Task<int> ExecuteAsync()
         {
-            var clientId = _clientIdOption.GetValue("client-id", requireNotNull: true, promptIfNull: true);
-            var clientSecret = _clientSecretOption.GetValue("client-secret", requireNotNull: true, promptIfNull: true, sensitive: true);
-            var facebookUserToken = _facebookTokenOption.GetValue("facebook-token", requireNotNull: true, promptIfNull: true, additionalPromptText: " (see https://developers.facebook.com/tools/accesstoken)");
+            var clientId = _clientIdOption.GetValue("client-id", requireNotNull:true, promptIfNull:true);
+            var clientSecret = _clientSecretOption.GetValue("client-secret", requireNotNull:true, promptIfNull:true, sensitive:true);
+            var username = _usernameOption.GetValue("username", requireNotNull:true, promptIfNull:true);
+            var password = _passwordOption.GetValue("password", requireNotNull: true, promptIfNull:true, sensitive:true);
+
 
             string rootUrl = Application.IdentityRootUrl;
             var disco = await DiscoveryClient.GetAsync(rootUrl);
@@ -55,7 +56,7 @@ namespace IdentityServerTestClient
             }
 
             var tokenClient = new TokenClient(disco.TokenEndpoint, clientId, clientSecret);
-            var tokenResponse = await tokenClient.RequestCustomGrantAsync("fb-usertoken", "nether-all", new { token = facebookUserToken });
+            var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(username, password, "nether-all");
 
 
             if (tokenResponse.IsError)
@@ -77,6 +78,10 @@ namespace IdentityServerTestClient
             Console.WriteLine("\n\n");
 
             return 0;
+
         }
+
+
+
     }
 }

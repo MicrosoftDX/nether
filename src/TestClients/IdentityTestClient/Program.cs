@@ -14,7 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using IdentityModel;
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace IdentityServerTestClient
+namespace IdentityTestClient
 {
     public class Program
     {

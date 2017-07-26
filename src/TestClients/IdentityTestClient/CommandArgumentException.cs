@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace IdentityServerTestClient
+namespace IdentityTestClient
 {
     public class CommandArgumentException : Exception
     {

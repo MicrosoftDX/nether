@@ -4,7 +4,7 @@ using Microsoft.Extensions.CommandLineUtils;
 using System.Threading.Tasks;
 using System.Net.Http;
 
-namespace IdentityServerTestClient
+namespace IdentityTestClient
 {
     /// <summary>
     /// A command to test/demonstrate the custom facebook user access token flow (useing raw HttpClient calls)
