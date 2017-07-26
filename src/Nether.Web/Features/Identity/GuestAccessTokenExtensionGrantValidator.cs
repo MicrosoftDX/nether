@@ -48,12 +48,11 @@ namespace Nether.Web.Features.Identity
 
             _appMonitor.LogEvent("LoginSucceeded", properties: new Dictionary<string, string> {
                         { "LoginType", "guest-access" }
-                    }); 
+                    });
         }
 
         private async Task<User> GetOrCreateGuestUserAsync(string guestIdentifier)
         {
-
             var user = await _userStore.GetUserByLoginAsync(LoginProvider.GuestAccess, guestIdentifier);
             if (user == null)
             {

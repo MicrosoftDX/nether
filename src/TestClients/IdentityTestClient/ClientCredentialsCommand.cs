@@ -1,4 +1,7 @@
-﻿using IdentityModel.Client;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using IdentityModel.Client;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,14 +13,13 @@ namespace IdentityTestClient
     /// <summary>
     /// A command to test/demonstrate the client credentials flow
     /// </summary>
-    class ClientCredentialsCommand : CommandBase
+    internal class ClientCredentialsCommand : CommandBase
     {
         private CommandOption _clientIdOption;
         private CommandOption _clientSecretOption;
         public ClientCredentialsCommand(IdentityClientApplication application)
             : base(application)
         {
-
         }
         public override void Register(CommandLineApplication config)
         {

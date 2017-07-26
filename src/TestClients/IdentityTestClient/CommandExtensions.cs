@@ -1,11 +1,14 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.Extensions.CommandLineUtils;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace IdentityTestClient
 {
-    static class CommandExtensions
+    internal static class CommandExtensions
     {
         public static CommandOption StandardHelpOption(this CommandLineApplication app)
         {
@@ -47,7 +50,6 @@ namespace IdentityTestClient
                     {
                         value = Console.ReadLine();
                     }
-
                 }
                 if (string.IsNullOrEmpty(value))
                 {

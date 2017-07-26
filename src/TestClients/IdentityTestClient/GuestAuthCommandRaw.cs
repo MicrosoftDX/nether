@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.CommandLineUtils;
 using System.Threading.Tasks;
@@ -10,7 +13,7 @@ namespace IdentityTestClient
     /// <summary>
     /// A command to test/demonstrate the custom guest authentication flow (using raw HttpClient calls)
     /// </summary>
-    class GuestAuthRawCommand : CommandBase
+    internal class GuestAuthRawCommand : CommandBase
     {
         private CommandOption _clientIdOption;
         private CommandOption _clientSecretOption;
@@ -19,7 +22,6 @@ namespace IdentityTestClient
         public GuestAuthRawCommand(IdentityClientApplication application)
             : base(application)
         {
-
         }
 
         public override void Register(CommandLineApplication config)
@@ -42,7 +44,7 @@ namespace IdentityTestClient
 
 
             string rootUrl = Application.IdentityRootUrl;
-            
+
             var client = new HttpClient();
             var requestBody = new FormUrlEncodedContent(
                    new Dictionary<string, string>

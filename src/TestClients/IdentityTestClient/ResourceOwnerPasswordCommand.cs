@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.CommandLineUtils;
 using System.Threading.Tasks;
@@ -6,7 +9,7 @@ using IdentityModel.Client;
 
 namespace IdentityTestClient
 {
-    class ResourceOwnerPasswordCommand : CommandBase
+    internal class ResourceOwnerPasswordCommand : CommandBase
     {
         private CommandOption _clientIdOption;
         private CommandOption _clientSecretOption;
@@ -16,7 +19,6 @@ namespace IdentityTestClient
         public ResourceOwnerPasswordCommand(IdentityClientApplication application)
             : base(application)
         {
-
         }
 
         public override void Register(CommandLineApplication config)
@@ -34,10 +36,10 @@ namespace IdentityTestClient
 
         protected override async Task<int> ExecuteAsync()
         {
-            var clientId = _clientIdOption.GetValue("client-id", requireNotNull:true, promptIfNull:true);
-            var clientSecret = _clientSecretOption.GetValue("client-secret", requireNotNull:true, promptIfNull:true, sensitive:true);
-            var username = _usernameOption.GetValue("username", requireNotNull:true, promptIfNull:true);
-            var password = _passwordOption.GetValue("password", requireNotNull: true, promptIfNull:true, sensitive:true);
+            var clientId = _clientIdOption.GetValue("client-id", requireNotNull: true, promptIfNull: true);
+            var clientSecret = _clientSecretOption.GetValue("client-secret", requireNotNull: true, promptIfNull: true, sensitive: true);
+            var username = _usernameOption.GetValue("username", requireNotNull: true, promptIfNull: true);
+            var password = _passwordOption.GetValue("password", requireNotNull: true, promptIfNull: true, sensitive: true);
 
 
             string rootUrl = Application.IdentityRootUrl;
@@ -78,10 +80,6 @@ namespace IdentityTestClient
             Console.WriteLine("\n\n");
 
             return 0;
-
         }
-
-
-
     }
 }

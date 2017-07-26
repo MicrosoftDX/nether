@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.CommandLineUtils;
 using System.Threading.Tasks;
@@ -9,7 +12,7 @@ namespace IdentityTestClient
     /// <summary>
     /// A command to test/demonstrate the custom facebook user access token flow (using IdentityModel.Client)
     /// </summary>
-    class FacebookUserTokenCommand : CommandBase
+    internal class FacebookUserTokenCommand : CommandBase
     {
         private CommandOption _clientIdOption;
         private CommandOption _clientSecretOption;
@@ -18,7 +21,6 @@ namespace IdentityTestClient
         public FacebookUserTokenCommand(IdentityClientApplication application)
             : base(application)
         {
-
         }
 
         public override void Register(CommandLineApplication config)

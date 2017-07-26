@@ -242,7 +242,7 @@ namespace Nether.Web.IntegrationTests.Identity
             // POST /api/scores
             var score = new { score = 100 };
             var scoreResponse = await client.PostAsJsonAsync("api/scores", score);
-            await scoreResponse.AssertStatusCodeAsync(HttpStatusCode.OK);          
+            await scoreResponse.AssertStatusCodeAsync(HttpStatusCode.OK);
         }
 
         [Fact]
@@ -340,7 +340,6 @@ namespace Nether.Web.IntegrationTests.Identity
               );
 
             return await MakeTokenRequestAsync(client, requestBody);
-
         }
 
         private static async Task<AccessTokenResult> MakeTokenRequestAsync(HttpClient client, FormUrlEncodedContent requestBody)
