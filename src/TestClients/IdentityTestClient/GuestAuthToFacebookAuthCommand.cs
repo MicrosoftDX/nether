@@ -75,13 +75,6 @@ namespace IdentityTestClient
             Console.WriteLine(tokenResponse.Json);
             Console.WriteLine("\n\n");
 
-            //var requestBody = new FormUrlEncodedContent(
-            //     new Dictionary<string, string>
-            //     {
-            //            { "FacebookToken", facebookToken}
-            //     }
-            // );
-
             var payload = new
             {
                 FacebookToken = facebookToken
@@ -89,9 +82,6 @@ namespace IdentityTestClient
 
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);
-
-            //client.DefaultRequestHeaders.Accept.Clear();
-            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var response = await client.PostAsJsonAsync($"{Application.ApiRootUrl}user/logins/facebook", payload);
             Console.WriteLine(response);
