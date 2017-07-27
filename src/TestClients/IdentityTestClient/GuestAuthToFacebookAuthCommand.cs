@@ -7,6 +7,7 @@ using Microsoft.Extensions.CommandLineUtils;
 using System.Threading.Tasks;
 using IdentityModel.Client;
 using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace IdentityTestClient
 {
@@ -74,17 +75,26 @@ namespace IdentityTestClient
             Console.WriteLine(tokenResponse.Json);
             Console.WriteLine("\n\n");
 
-            var requestBody = new FormUrlEncodedContent(
-                 new Dictionary<string, string>
-                 {
-                        { "FacebookToken", facebookToken}
-                 }
-             );
+            //var requestBody = new FormUrlEncodedContent(
+            //     new Dictionary<string, string>
+            //     {
+            //            { "FacebookToken", facebookToken}
+            //     }
+            // );
+
+            var payload = new
+            {
+                FacebookToken = facebookToken
+            };
 
             var client = new HttpClient();
-            client.SetBearerToken(tokenResponse.AccessToken);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);
 
-            var response = await client.PostAsync($"{rootUrl}user/logins/facebook", requestBody);
+            //client.DefaultRequestHeaders.Accept.Clear();
+            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await client.PostAsJsonAsync($"{Application.ApiRootUrl}user/logins/facebook", payload);
+            Console.WriteLine(response);
             dynamic responseBody = await response.Content.ReadAsAsync<dynamic>();
 
             return 0;

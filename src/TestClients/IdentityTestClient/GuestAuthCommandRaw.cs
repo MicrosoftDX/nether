@@ -56,6 +56,7 @@ namespace IdentityTestClient
                         { "scope", "nether-all" }
                    }
                );
+            
             var response = await client.PostAsync($"{rootUrl}connect/token", requestBody);
             dynamic responseBody = await response.Content.ReadAsAsync<dynamic>();
 

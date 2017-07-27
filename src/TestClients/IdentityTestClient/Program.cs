@@ -29,6 +29,7 @@ namespace IdentityTestClient
                 app.Command("facebook-token-raw", "Test facebook user access token flow (raw HttpClient implementation)", new FacebookUserTokenCommand(app));
                 app.Command("guest", "Test guest flow (IdentityModel.Client implementation)", new GuestAuthCommand(app));
                 app.Command("guest-raw", "Test guest flow (raw HttpClient implementation)", new GuestAuthRawCommand(app));
+                app.Command("guest-to-facebook", "Test guest flow to Facebook promotion", new GuestAuthToFacebookAuthCommand(app));
 
                 app.StandardHelpOption();
                 app.ShowHelpOnExecute();

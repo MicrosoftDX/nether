@@ -58,8 +58,8 @@ namespace Nether.Web.Features.Identity
         /// <param name="providerId">The providerId to be deleted for the current user.</param>
         /// <param name="providerType">The provider type identifying the provider to be removed.</param>
         /// <returns></returns>
-        [HttpDelete("logins/{providerType}/{providerId}")]
-        public async Task<IActionResult> DeleteUserLogin(string providerType, string providerId)
+        [HttpDelete("logins/{providerType}/{providerId}", Name = nameof(DeleteUsersLogin))]
+        public async Task<IActionResult> DeleteUsersLogin(string providerType, string providerId)
         {
             var user = await _userStore.GetCurrentUserAsync(User);
 
@@ -92,7 +92,7 @@ namespace Nether.Web.Features.Identity
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserLoginRequestModel))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [HttpPost("logins/{providerType}")]
+        [HttpPost("logins/{providerType}", Name = nameof(PostUserLogin))]
         public async Task<IActionResult> PostUserLogin(
             [FromRoute] string providerType,
             [FromBody] UserLoginRequestModel userLoginModel)
@@ -100,8 +100,7 @@ namespace Nether.Web.Features.Identity
             var user = await _userStore.GetCurrentUserAsync(User);
 
             // Currently only support "facebook" provider
-            providerType = providerType.ToLowerInvariant();
-            if (providerType != LoginProvider.FacebookUserAccessToken)
+            if (!String.Equals(providerType, LoginProvider.FacebookUserAccessToken, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogInformation("PostUserLogin: Unsupported ProviderType '{0}'", providerType);
                 return this.ValidationFailed(new ErrorDetail("providerType", "Unsupported provider type"));
@@ -138,11 +137,13 @@ namespace Nether.Web.Features.Identity
             else
             {
                 // TODO: should we return a validation error here?
+                return NoContent();
             }
-            
+
             await _userStore.SaveUserAsync(user);
 
-            return CreatedAtRoute(nameof(DeleteUserLogin), new { providerType, providerId }, null);
+            //return CreatedAtRoute(nameof(DeleteUserLogin), new { providerType, providerId }, null);
+            return CreatedAtRoute(nameof(PostUserLogin), login);
         }
 
         private IConfiguration _configuration;
