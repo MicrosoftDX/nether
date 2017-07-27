@@ -31,5 +31,16 @@ namespace Nether.Web.Utilities
         {
             return user?.Identity.Name;
         }
+
+        /// <summary>
+        /// Gets the current user from the claims principal and claims store.
+        /// </summary>
+        /// <param name="userStore"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public static async Task<Nether.Data.Identity.User> GetCurrentUserAsync(this Data.Identity.IUserStore userStore, ClaimsPrincipal user)
+        {
+            return await userStore.GetUserByIdAsync(user.GetId());
+        }
     }
 }

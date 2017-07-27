@@ -11,15 +11,16 @@ using System.Net.Http;
 namespace IdentityTestClient
 {
     /// <summary>
-    /// A command to test/demonstrate the custom facebook user access token flow (using IdentityModel.Client)
+    /// A command to test/demonstrate the custom guest authentication flow (using IdentityModel.Client)
     /// </summary>
-    internal class FacebookUserTokenCommand : CommandBase
+    internal class GuestAuthToFacebookAuthCommand : CommandBase
     {
         private CommandOption _clientIdOption;
         private CommandOption _clientSecretOption;
+        private CommandOption _guestIdentifierOption;
         private CommandOption _facebookTokenOption;
 
-        public FacebookUserTokenCommand(IdentityClientApplication application)
+        public GuestAuthToFacebookAuthCommand(IdentityClientApplication application)
             : base(application)
         {
         }
@@ -30,7 +31,8 @@ namespace IdentityTestClient
 
             _clientIdOption = config.Option("--client-id", "clientid", CommandOptionType.SingleValue);
             _clientSecretOption = config.Option("--client-secret", "clientsecret", CommandOptionType.SingleValue);
-            _facebookTokenOption = config.Option("--facebook-token", "facebook user token - see https://developers.facebook.com/tools/accesstoken", CommandOptionType.SingleValue);
+            _guestIdentifierOption = config.Option("--guest-id", "Guest identifier", CommandOptionType.SingleValue);
+            _facebookTokenOption = config.Option("--facebook-token", "Facebook Token", CommandOptionType.SingleValue);
 
             config.StandardHelpOption();
         }
@@ -40,7 +42,8 @@ namespace IdentityTestClient
         {
             var clientId = _clientIdOption.GetValue("client-id", requireNotNull: true, promptIfNull: true);
             var clientSecret = _clientSecretOption.GetValue("client-secret", requireNotNull: true, promptIfNull: true, sensitive: true);
-            var facebookUserToken = _facebookTokenOption.GetValue("facebook-token", requireNotNull: true, promptIfNull: true, additionalPromptText: " (see https://developers.facebook.com/tools/accesstoken)");
+            var guestIdentifier = _guestIdentifierOption.GetValue("guest identifier", requireNotNull: true, promptIfNull: true);
+            var facebookToken = _facebookTokenOption.GetValue("facebook token", requireNotNull: true, promptIfNull: true);
 
             string rootUrl = Application.IdentityRootUrl;
             var disco = await DiscoveryClient.GetAsync(rootUrl);
@@ -58,7 +61,7 @@ namespace IdentityTestClient
             }
 
             var tokenClient = new TokenClient(disco.TokenEndpoint, clientId, clientSecret);
-            var tokenResponse = await tokenClient.RequestCustomGrantAsync("fb-usertoken", "nether-all", new { token = facebookUserToken });
+            var tokenResponse = await tokenClient.RequestCustomGrantAsync("guest-access", "nether-all", new { guest_identifier = guestIdentifier });
 
 
             if (tokenResponse.IsError)
@@ -71,13 +74,19 @@ namespace IdentityTestClient
             Console.WriteLine(tokenResponse.Json);
             Console.WriteLine("\n\n");
 
-            Console.WriteLine("Calling echo API:");
-            await EchoClaimsAsync(tokenResponse.AccessToken);
-            Console.WriteLine("\n\n");
+            var requestBody = new FormUrlEncodedContent(
+                 new Dictionary<string, string>
+                 {
+                        { "FacebookToken", facebookToken}
+                 }
+             );
 
-            Console.WriteLine("Checking role:");
-            await ShowPlayerInfoAsync(tokenResponse.AccessToken);
-            Console.WriteLine("\n\n");
+            var client = new HttpClient();
+            client.SetBearerToken(tokenResponse.AccessToken);
+
+            var response = await client.PostAsync($"{rootUrl}user/logins/facebook", requestBody);
+            dynamic responseBody = await response.Content.ReadAsAsync<dynamic>();
+
             return 0;
         }
     }

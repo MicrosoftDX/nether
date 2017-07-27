@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Nether.Web.Features.Identity.Models.User
+namespace Nether.Web.Features.Identity.Models.UserAdmin
 {
     public class UserResponseModel
     {

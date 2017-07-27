@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nether.Data.Identity;
-using Nether.Web.Features.Identity.Models.UserLogin;
+using Nether.Web.Features.Identity.Models.UserLoginAdmin;
 using Nether.Web.Utilities;
 using System.Collections.Generic;
 using System.Linq;

@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Nether.Web.Features.Identity.Models.User
+namespace Nether.Web.Features.Identity.Models.UserAdmin
 {
     public class UserListModel
     {

@@ -277,6 +277,21 @@ namespace Nether.Web.IntegrationTests.Identity
             Assert.Equal(scoreValue, (int)content.currentPlayer.score);
         }
 
+        [Fact]
+        public async Task As_a_guest_I_can_see_exactly_one_login()
+        {
+            var guestId = Guid.NewGuid().ToString("N");
+            var client = await SignInAsGuestAsync(guestId);
+
+            var response = await client.GetAsync("api/user/logins");
+            var content = await response.Content.ReadAsAsync<dynamic>();
+
+
+            Assert.NotNull(content.logins);
+            Assert.Equal(1, (int)(content.logins.Count));
+        }
+
+        
         private async Task<HttpClient> SignInAsGuestAsync(string guestId)
         {
             var client = new HttpClient

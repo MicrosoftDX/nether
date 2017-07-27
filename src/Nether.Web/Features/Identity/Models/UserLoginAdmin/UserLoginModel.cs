@@ -1,18 +1,16 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Nether.Web.Features.Identity.Models.User
+using Newtonsoft.Json;
+
+namespace Nether.Web.Features.Identity.Models.UserLoginAdmin
 {
-    public class UserSummaryModel
+    public class UserLoginModel
     {
-        public string UserId { get; set; }
-        public string Role { get; set; }
+        public string ProviderType { get; set; }
+        public string ProviderId { get; set; }
+        // Don't include ProviderData as that may be sensitive (e.g. password hash!)
         [JsonProperty(PropertyName = "_link")]
         public string _Link { get; set; }
     }
