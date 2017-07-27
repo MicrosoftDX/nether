@@ -59,7 +59,7 @@ namespace Nether.Web.Features.Identity
             return result;
         }
 
-        public FacebookTokenDebugResult ParseTokenDebugResult(dynamic body)
+        public static FacebookTokenDebugResult ParseTokenDebugResult(dynamic body)
         {
             FacebookTokenDebugResult result = new FacebookTokenDebugResult();
             if (((object)body.error) != null)
@@ -81,7 +81,7 @@ namespace Nether.Web.Features.Identity
             {
                 result.UserId = (string)body.data.user_id;
                 result.IsValid = (bool)body.data.is_valid;
-                if (body.data.Scopes != null)
+                if (body.data.scopes != null)
                 {
                     result.Scopes = ((JArray)body.data.scopes)
                                         .Select(i => i.Value<string>())
@@ -97,26 +97,24 @@ namespace Nether.Web.Features.Identity
         }
 
         private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private DateTime GetDateTimeFromUnixTime(int unixTime)
+        private static DateTime GetDateTimeFromUnixTime(int unixTime)
         {
             return UnixEpoch.AddSeconds(unixTime);
         }
-
-        public class FacebookTokenDebugResult
-        {
-            // See https://developers.facebook.com/docs/graph-api/reference/v2.10/debug_token for docs
-            public string UserId { get; set; }
-            public bool IsValid { get; set; }
-            public DateTime ExpiresAt { get; set; }
-            public string[] Scopes { get; set; }
-            public FacebookError Error { get; set; }
-        }
-        public class FacebookError
-        {
-            public int Code { get; set; }
-            public string Type { get; set; }
-            public string Message { get; set; }
-        }
-
+    }
+    public class FacebookTokenDebugResult
+    {
+        // See https://developers.facebook.com/docs/graph-api/reference/v2.10/debug_token for docs
+        public string UserId { get; set; }
+        public bool IsValid { get; set; }
+        public DateTime ExpiresAt { get; set; }
+        public string[] Scopes { get; set; }
+        public FacebookError Error { get; set; }
+    }
+    public class FacebookError
+    {
+        public int Code { get; set; }
+        public string Type { get; set; }
+        public string Message { get; set; }
     }
 }
