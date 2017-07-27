@@ -97,6 +97,7 @@ namespace Nether.Web.Features.Identity
             services.AddTransient<IProfileService, StoreBackedProfileService>();
             services.AddTransient<IResourceOwnerPasswordValidator, StoreBackedResourceOwnerPasswordValidator>();
             services.AddTransient<UserClaimsProvider>();
+            services.AddTransient<FacebookGraphService>();
         }
 
         private static void AddGrantValidatorIfConfigured<TValidator>(this IIdentityServerBuilder builder, string configurationOption, IConfiguration configuration)
