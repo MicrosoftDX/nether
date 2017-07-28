@@ -26,7 +26,7 @@ namespace Nether.Web.Features.Identity.Models.UserAdmin
                             {
                                 ProviderType = l.ProviderType,
                                 ProviderId = l.ProviderId,
-                                _Link = url.RouteUrl(nameof(UserLoginAdminController.DeleteUserLogin), new { userId = user.UserId, providerType = l.ProviderType, providerId = l.ProviderId }, null)
+                                _Link = url.RouteUrl(nameof(UserLoginAdminController.DeleteUserLogin), new { userId = user.UserId, providerType = l.ProviderType }, null)
                             }).ToList()
                 }
             };

@@ -24,7 +24,7 @@ Lists a summary of all logins for a user.
         {
             "providerType" : "password",
             "providerId" : "netheruser",
-            "_link" : "http://.../api/admin/users/netheruser/logins/password/netheruser"
+            "_link" : "http://.../api/admin/users/netheruser/logins/password"
         },
         {}
     ]
@@ -45,7 +45,7 @@ The user does not exist
 Authorisation: requires `admin` role
 
 ```
-    PUT /api/admin/users/&lt;userId&gt;/logins/&lt;providerType&gt;/&lt;providerId&gt;
+    PUT /api/admin/users/&lt;userId&gt;/logins/&lt;providerType&gt;
 ```
 
 Add a new login for a user, or update and existing login. This can be used to create or reset a user's password.
@@ -56,7 +56,6 @@ The API is designed to allow it to be used with multiple login providers, but cu
 Parameter | Type | Description
 ----------|------|------------
 providerType | string | **Required**. Currently only `password` is supported for this API
-providerId   | string | **Required**. The username to use for logging in (doesn't have to be the same as userId)
 
 ### Body Parameters
 The format of the request body depends on the provider type:
@@ -64,17 +63,19 @@ The format of the request body depends on the provider type:
 **Password provider**
 Parameter | Type | Description
 ----------|------|------------
+username | string | The username
 password | string | The password for the user
 
 
 #### Example request
 
 ```
-  PUT /api/admin/users/netheruser/logins/password/netheruserlogin
+  PUT /api/admin/users/netheruser/logins/password
 ```
 Body:
 ```json
 {
+  "username": "netheruserlogin",
   "password": "SssshItIsASecret!"
 }
 ```
@@ -90,7 +91,7 @@ Response contains a `Location` header with the URL for the newly created login. 
 Authorisation: requires `admin` role
 
 ```
-    DELETE /api/admin/users/&lt;userId&gt;/logins/&lt;providerType&gt;/&lt;providerId&gt;
+    DELETE /api/admin/users/&lt;userId&gt;/logins/&lt;providerType&gt;
 ```
 
 ### Response: 204 NoContent

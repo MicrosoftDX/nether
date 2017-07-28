@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Nether.Web.Features.Identity.Models.UserLogin
 {
@@ -12,5 +13,8 @@ namespace Nether.Web.Features.Identity.Models.UserLogin
     {
         public string ProviderType { get; set; }
         public string ProviderId { get; set; }
+
+        [JsonProperty(PropertyName = "_link")]
+        public string _Link { get; set; }
     }
 }

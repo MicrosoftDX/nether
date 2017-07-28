@@ -223,9 +223,10 @@ namespace NetherLoadTest
 
                 // create login
                 response = await adminClient.PutAsJsonAsync(
-                    $"/api/admin/users/{UserName}/logins/password/{UserName}", // reuse username as gamertag
+                    $"/api/admin/users/{UserName}/logins/password", // reuse username as gamertag
                     new
                     {
+                        UserName,
                         Password
                     });
 

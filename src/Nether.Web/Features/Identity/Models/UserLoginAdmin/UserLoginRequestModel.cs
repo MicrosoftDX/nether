@@ -8,6 +8,8 @@ namespace Nether.Web.Features.Identity.Models.UserLoginAdmin
     public class UserLoginRequestModel
     {
         [Required]
+        public string Username { get; set; }
+        [Required]
         public string Password { get; set; }
     }
 }

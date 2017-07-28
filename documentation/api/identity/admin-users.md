@@ -59,7 +59,7 @@ Gets details of the user and their logins.
       {
         "providerType": "password",
         "providerId": "netheruser",
-        "_link" : "http://.../api/admin/users/netheruser/logins/password/netheruser"
+        "_link" : "http://.../api/admin/users/netheruser/logins/password"
       }
     ]
   }

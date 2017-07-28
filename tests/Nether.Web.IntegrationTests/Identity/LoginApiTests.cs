@@ -36,9 +36,10 @@ namespace Nether.Web.IntegrationTests.Identity
             string username = Guid.NewGuid().ToString();
             const string password = "TestPassword";
             response = await client.PutAsJsonAsync(
-                $"{userLocation}/logins/password/{username}",
+                $"{userLocation}/logins/password",
                 new
                 {
+                    username,
                     password
                 });
 
@@ -46,6 +47,7 @@ namespace Nether.Web.IntegrationTests.Identity
 
             var loginLocation = response.Headers.Location.LocalPath;
             Assert.NotNull(loginLocation);
+            Assert.Equal(userLocation + "/logins/password", loginLocation);
 
             // Get the user again and verify the login is present in the returned data
             response = await client.GetAsync(userLocation);
@@ -59,7 +61,7 @@ namespace Nether.Web.IntegrationTests.Identity
             var login = logins[0];
             Assert.Equal("password", (string)login.providerType);
             Assert.Equal(username, (string)login.providerId);
-            Assert.Equal($"/api/admin/users/{user.userId}/logins/password/{username}", (string)login._link);
+            Assert.Equal($"/api/admin/users/{user.userId}/logins/password", (string)login._link);
 
 
             // login as that user

@@ -66,9 +66,10 @@ namespace Nether.Web.IntegrationTests
 
             // create login
             response = await client.PutAsJsonAsync(
-                $"/api/admin/users/{username}/logins/password/{username}",
+                $"/api/admin/users/{username}/logins/password",
                 new
                 {
+                    username,
                     password
                 });
             await response.AssertSuccessStatusCodeAsync();

@@ -36,7 +36,7 @@ namespace Nether.Web.Features.Identity
         }
 
         /// <summary>
-        /// Retrieves the information of the currently logged in user.
+        /// Retrieves logins the currently logged in user.
         /// </summary>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserLoginListModel))]
@@ -45,26 +45,43 @@ namespace Nether.Web.Features.Identity
         {
             var user = await _userStore.GetCurrentUserAsync(User);
 
-            var logins = user.Logins.Select(l => new Models.UserLogin.UserLoginModel
-            {
-                ProviderType = l.ProviderType,
-                ProviderId = l.ProviderId
-            });
+            var logins = user.Logins.Select(MapLogin);
+
             return Ok(new UserLoginListModel { Logins = logins });
+        }
+
+        /// <summary>
+        /// Retrieves login for the specified prodiver for the currently logged in user.
+        /// </summary>
+        /// <param name="providerType">The provider type identifying the provider to be retrieved.</param>
+        /// <returns></returns>
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserLoginModel))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [HttpGet("{providerType}")]
+        public async Task<IActionResult> GetLogin(string providerType)
+        {
+            var user = await _userStore.GetCurrentUserAsync(User);
+
+            var login = user.Logins.SingleOrDefault(l => l.ProviderType == providerType);
+            if (login == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(MapLogin(login));
         }
 
         /// <summary>
         /// Deletes the user's login with the specified login details.
         /// </summary>
-        /// <param name="providerId">The providerId to be deleted for the current user.</param>
         /// <param name="providerType">The provider type identifying the provider to be removed.</param>
         /// <returns></returns>
-        [HttpDelete("logins/{providerType}/{providerId}", Name = nameof(DeleteUsersLogin))]
-        public async Task<IActionResult> DeleteUsersLogin(string providerType, string providerId)
+        [HttpDelete("logins/{providerType}", Name = nameof(DeleteUsersLogin))]
+        public async Task<IActionResult> DeleteUsersLogin(string providerType)
         {
             var user = await _userStore.GetCurrentUserAsync(User);
 
-            var login = user.Logins.FirstOrDefault(l => l.ProviderType == providerType && l.ProviderId == providerId);
+            var login = user.Logins.SingleOrDefault(l => l.ProviderType == providerType);
             if (login == null)
             {
                 return NotFound();
@@ -114,7 +131,7 @@ namespace Nether.Web.Features.Identity
                 return this.ValidationFailed(new ErrorDetail("facebookToken", "Missing Facebook token."));
             }
 
-           // we need to verify the token first
+            // we need to verify the token first
             // since only Facebook is supported, we default to it, but in the future, this will likely move
             // to a provider-based pattern
             var result = await _facebookGraphService.TokenDebugAsync(userLoginModel.FacebookToken);
@@ -125,7 +142,7 @@ namespace Nether.Web.Features.Identity
             }
 
             var providerId = result.UserId;
-            var login = user.Logins.FirstOrDefault(l => l.ProviderType == providerType && l.ProviderId == providerId);
+            var login = user.Logins.SingleOrDefault(l => l.ProviderType == providerType);
             if (login == null)
             {
                 login = new Login
@@ -143,7 +160,18 @@ namespace Nether.Web.Features.Identity
             await _userStore.SaveUserAsync(user);
 
             //return CreatedAtRoute(nameof(DeleteUserLogin), new { providerType, providerId }, null);
-            return CreatedAtRoute(nameof(PostUserLogin), login);
+            return CreatedAtRoute(nameof(GetLogin), new { providerType }, login);
+        }
+
+
+        private UserLoginModel MapLogin(Data.Identity.Login login)
+        {
+            return new UserLoginModel
+            {
+                ProviderType = login.ProviderType,
+                ProviderId = login.ProviderId,
+                _Link = Url.RouteUrl(nameof(GetLogin), new { providerType = login.ProviderType })
+            };
         }
     }
 }
