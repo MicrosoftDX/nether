@@ -197,7 +197,5 @@ namespace Nether.Web.Features.Identity
                 }
             };
         }
-
-
     }
 }

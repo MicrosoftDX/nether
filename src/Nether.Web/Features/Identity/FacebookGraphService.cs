@@ -96,10 +96,10 @@ namespace Nether.Web.Features.Identity
             return result;
         }
 
-        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime s_unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private static DateTime GetDateTimeFromUnixTime(int unixTime)
         {
-            return UnixEpoch.AddSeconds(unixTime);
+            return s_unixEpoch.AddSeconds(unixTime);
         }
     }
     public class FacebookTokenDebugResult

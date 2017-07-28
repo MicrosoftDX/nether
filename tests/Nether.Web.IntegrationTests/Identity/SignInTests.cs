@@ -291,7 +291,7 @@ namespace Nether.Web.IntegrationTests.Identity
             Assert.Equal(1, (int)(content.logins.Count));
         }
 
-        
+
         private async Task<HttpClient> SignInAsGuestAsync(string guestId)
         {
             var client = new HttpClient
