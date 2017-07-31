@@ -24,14 +24,17 @@ namespace Nether.Web.Features.Identity
     {
         private readonly IUserStore _userStore;
         private readonly FacebookGraphService _facebookGraphService;
+        private readonly IPasswordHasher _passwordHasher;
         private readonly ILogger _logger;
 
         public UserController(IUserStore userStore,
             FacebookGraphService facebookGraphService,
+            IPasswordHasher passwordHasher,
             ILogger<UserController> logger)
         {
             _userStore = userStore;
             _facebookGraphService = facebookGraphService;
+            _passwordHasher = passwordHasher;
             _logger = logger;
         }
 
@@ -57,7 +60,7 @@ namespace Nether.Web.Features.Identity
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserLoginModel))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [HttpGet("{providerType}")]
+        [HttpGet("logins/{providerType}", Name = nameof(UserController) + "_" + nameof(GetLogin))]
         public async Task<IActionResult> GetLogin(string providerType)
         {
             var user = await _userStore.GetCurrentUserAsync(User);
@@ -76,7 +79,7 @@ namespace Nether.Web.Features.Identity
         /// </summary>
         /// <param name="providerType">The provider type identifying the provider to be removed.</param>
         /// <returns></returns>
-        [HttpDelete("logins/{providerType}", Name = nameof(DeleteUsersLogin))]
+        [HttpDelete("logins/{providerType}")]
         public async Task<IActionResult> DeleteUsersLogin(string providerType)
         {
             var user = await _userStore.GetCurrentUserAsync(User);
@@ -101,66 +104,142 @@ namespace Nether.Web.Features.Identity
             return NoContent();
         }
 
+        // TODO - in future I anticipate that this would be a single action
+        //          with URL /logins/{providerType}
+        //          and it would have a pluggable set of providers
+        //          For now (in the interests of progress) it is implemented as separate actions!
+
         /// <summary>
-        /// Update the user and logins for the user
+        /// Update facebook login for the user
         /// </summary>
-        /// <param name="providerType">The type of login provider</param>
         /// <param name="userLoginModel">Any additional parameters required by the provider</param>
         /// <returns></returns>
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserLoginRequestModel))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FacebookUserLoginRequestModel))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [HttpPost("logins/{providerType}", Name = nameof(PostUserLogin))]
-        public async Task<IActionResult> PostUserLogin(
-            [FromRoute] string providerType,
-            [FromBody] UserLoginRequestModel userLoginModel)
+        [HttpPost("logins/facebook")]
+        public async Task<IActionResult> PostFacebookUserLogin(
+            [FromBody] FacebookUserLoginRequestModel userLoginModel)
         {
+            const string providerType = "facebook";
+            var providerResult = await GetFacebookProviderLoginDetailsAsync(userLoginModel.FacebookToken);
+
+            return await UpdateProviderLogin(providerType, providerResult);
+        }
+
+        /// <summary>
+        /// Update username+password login for the user
+        /// </summary>
+        /// <param name="userLoginModel">Any additional parameters required by the provider</param>
+        /// <returns></returns>
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UsernamePasswordUserLoginRequestModel))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [HttpPost("logins/password")]
+        public async Task<IActionResult> PostUsernamePasswordLogin(
+            [FromBody] UsernamePasswordUserLoginRequestModel userLoginModel)
+        {
+            const string providerType = "password";
+            var providerResult = await GetUsernamePasswordProviderLoginDetailsAsync(userLoginModel.Username, userLoginModel.Password);
+
+            return await UpdateProviderLogin(providerType, providerResult);
+        }
+
+        private async Task<IActionResult> UpdateProviderLogin(string providerType, ProviderLoginDetails providerResult)
+        {
+            if (providerResult.ErrorDetail != null)
+            {
+                return this.ValidationFailed(providerResult.ErrorDetail);
+            }
+
             var user = await _userStore.GetCurrentUserAsync(User);
-
-            // Currently only support "facebook" provider
-            if (!String.Equals(providerType, LoginProvider.FacebookUserAccessToken, StringComparison.OrdinalIgnoreCase))
-            {
-                _logger.LogInformation("PostUserLogin: Unsupported ProviderType '{0}'", providerType);
-                return this.ValidationFailed(new ErrorDetail("providerType", "Unsupported provider type"));
-            }
-
-            // Validate the provided data
-            if (string.IsNullOrEmpty(userLoginModel.FacebookToken))
-            {
-                _logger.LogInformation("PostUserLogin: Missing Facebook token.");
-                return this.ValidationFailed(new ErrorDetail("facebookToken", "Missing Facebook token."));
-            }
-
-            // we need to verify the token first
-            // since only Facebook is supported, we default to it, but in the future, this will likely move
-            // to a provider-based pattern
-            var result = await _facebookGraphService.TokenDebugAsync(userLoginModel.FacebookToken);
-            if (!result.IsValid || string.IsNullOrEmpty(result.UserId))
-            {
-                _logger.LogTrace("Facebook token validation failed: {0}", result.Error.Message);
-                return this.ValidationFailed(new ErrorDetail("facebookToken", "Facebook token is either invalid or could not be validated."));
-            }
-
-            var providerId = result.UserId;
             var login = user.Logins.SingleOrDefault(l => l.ProviderType == providerType);
             if (login == null)
             {
                 login = new Login
                 {
                     ProviderType = providerType,
-                    ProviderId = providerId,
+                    ProviderId = providerResult.ProviderId,
+                    ProviderData = providerResult.ProviderData
                 };
                 user.Logins.Add(login);
             }
             else
             {
-                login.ProviderId = providerId;
+                login.ProviderId = providerResult.ProviderId;
+                login.ProviderData = providerResult.ProviderData;
             }
 
             await _userStore.SaveUserAsync(user);
 
-            //return CreatedAtRoute(nameof(DeleteUserLogin), new { providerType, providerId }, null);
-            return CreatedAtRoute(nameof(GetLogin), new { providerType }, login);
+            return CreatedAtRoute(nameof(UserController) + "_" + nameof(GetLogin), new { providerType }, login);
+        }
+
+        // TODO - consider creating services that group the login provider specific implementations together
+        // e.g. a service that can be injected into various places that handles all the facebook specific implementations across different controllers etc 
+        private async Task<ProviderLoginDetails> GetFacebookProviderLoginDetailsAsync(string facebookToken)
+        {
+            // Validate the provided data
+            if (string.IsNullOrEmpty(facebookToken))
+            {
+                _logger.LogInformation("Missing Facebook token.");
+                return new ProviderLoginDetails
+                {
+                    ErrorDetail = new ErrorDetail("facebookToken", "Missing Facebook token.")
+                };
+            }
+
+            // we need to verify the token first
+            // since only Facebook is supported, we default to it, but in the future, this will likely move
+            // to a provider-based pattern
+            var result = await _facebookGraphService.TokenDebugAsync(facebookToken);
+            if (!result.IsValid || string.IsNullOrEmpty(result.UserId))
+            {
+                _logger.LogTrace("Facebook token validation failed: {0}", result.Error.Message);
+                return new ProviderLoginDetails
+                {
+                    ErrorDetail = new ErrorDetail("facebookToken", "Facebook token is either invalid or could not be validated.")
+                };
+            }
+            return new ProviderLoginDetails
+            {
+                ProviderId = result.UserId,
+                ProviderData = null
+            };
+        }
+        private Task<ProviderLoginDetails> GetUsernamePasswordProviderLoginDetailsAsync(string username, string password)
+        {
+            // Validate the provided data
+            if (string.IsNullOrEmpty(username))
+            {
+                _logger.LogInformation("Missing username.");
+                return Task.FromResult(new ProviderLoginDetails
+                {
+                    ErrorDetail = new ErrorDetail("password", "Missing username.")
+                });
+            }
+            if (string.IsNullOrEmpty(password))
+            {
+                _logger.LogInformation("Missing password");
+                return Task.FromResult(new ProviderLoginDetails
+                {
+                    ErrorDetail = new ErrorDetail("password", "Missing password.")
+                });
+            }
+
+            var providerData = _passwordHasher.HashPassword(password);
+
+            return Task.FromResult(new ProviderLoginDetails
+            {
+                ProviderId = username,
+                ProviderData = providerData
+            });
+        }
+        private class ProviderLoginDetails
+        {
+            public ErrorDetail ErrorDetail { get; set; }
+            public string ProviderId { get; set; }
+            public string ProviderData { get; set; }
         }
 
 
@@ -170,7 +249,7 @@ namespace Nether.Web.Features.Identity
             {
                 ProviderType = login.ProviderType,
                 ProviderId = login.ProviderId,
-                _Link = Url.RouteUrl(nameof(GetLogin), new { providerType = login.ProviderType })
+                _Link = Url.RouteUrl(nameof(UserController) + "_" + nameof(GetLogin), new { providerType = login.ProviderType })
             };
         }
     }

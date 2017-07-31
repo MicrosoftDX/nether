@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Nether.Web.IntegrationTests.Identity
 {
-    public class UserApiTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
+    public class AdminUserApiTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
     {
         [Fact]
         public async Task As_a_player_I_get_Forbidden_response_calling_GetUsers()
@@ -128,11 +128,11 @@ namespace Nether.Web.IntegrationTests.Identity
 
         private async Task<HttpClient> AsPlayerAsync()
         {
-            return await GetClientAsync(username: "testuser");
+            return await SignInAsync(username: "testuser");
         }
         private async Task<HttpClient> AsAdminAsync()
         {
-            return await GetClientAsync(username: "devadmin");
+            return await SignInAsync(username: "devadmin");
         }
     }
 }

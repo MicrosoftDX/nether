@@ -14,14 +14,14 @@ namespace IdentityTestClient
     /// <summary>
     /// A command to test/demonstrate the custom guest authentication flow (using IdentityModel.Client)
     /// </summary>
-    internal class GuestAuthToFacebookAuthCommand : CommandBase
+    internal class GuestAuthToFacebookCommand : CommandBase
     {
         private CommandOption _clientIdOption;
         private CommandOption _clientSecretOption;
         private CommandOption _guestIdentifierOption;
         private CommandOption _facebookTokenOption;
 
-        public GuestAuthToFacebookAuthCommand(IdentityClientApplication application)
+        public GuestAuthToFacebookCommand(IdentityClientApplication application)
             : base(application)
         {
         }

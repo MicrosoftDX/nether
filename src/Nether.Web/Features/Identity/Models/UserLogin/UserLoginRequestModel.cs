@@ -3,17 +3,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nether.Web.Features.Identity.Models.UserLogin
 {
-    public class UserLoginRequestModel
+    public class FacebookUserLoginRequestModel
     {
-        //public string Username { get; set; }
-
-        //public string Password { get; set; }
-
+        [Required]
         public string FacebookToken { get; set; }
+    }
+    public class UsernamePasswordUserLoginRequestModel
+    {
+        [Required]
+        public string Username { get; set; }
+        [Required]
+        public string Password { get; set; }
     }
 }

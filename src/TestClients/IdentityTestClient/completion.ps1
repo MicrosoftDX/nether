@@ -52,6 +52,19 @@ function IdentityTestClientCompletion {
                 nct -Argument '--username' 'username'
                 nct -Argument '--password' 'password'
             }
+            nct guest-to-facebook "guest flow to facebook" {
+                nct -Argument '--client-id' 'client id'
+                nct -Argument '--client-secret' 'client secret'
+                nct -Argument '--guest-id' 'guest identifier'
+                nct -Argument '--facebook-token' 'facebook user access token'
+            }
+            nct guest-to-resource-owner "guest flow to resource owner (username + password)" {
+                nct -Argument '--client-id' 'client id'
+                nct -Argument '--client-secret' 'client secret'
+                nct -Argument '--guest-id' 'guest identifier'
+                nct -Argument '--username' 'username'
+                nct -Argument '--password' 'password'
+            }
         }
 
         Set-CompletionPrivateData -Key IdentityClientTestExeCompletionCommandTree -Value $commandTree

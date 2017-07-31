@@ -125,6 +125,23 @@ To enable, set the `Identity:SignInMethods:GuestAccess:Enabled` to `true`
   }
 ```
 
+
+### Username + password authentication
+
+By default, sign-up via username + password is disallowed. To enable this (e.g. to allow guest users to create a username + password), set the `Identity:SignInMethods:UsernamePassword:AllowUserSignUp` to `true`
+
+```json
+  "Identity" : {
+    "SignInMethods": {
+        "UsernamePassword": {
+            "AllowUserSignUp":  false
+        }
+    }
+  }
+```
+
+
+
 ## Player Management Integration Configuration
 
 The tokens issued by the Identity Service include the gamertag if the user is a player. To do this the Identity Service needs to interact with the Player Management service to look up gamertags.

@@ -25,7 +25,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Get_leaderboard_call_succeeds()
         {
-            var client = await GetClientAsync();
+            var client = await SignInAsync();
             HttpResponseMessage response = await client.GetAsync(LeaderboardBasePath + "/Default");
             await response.AssertStatusCodeAsync(HttpStatusCode.OK);
         }
@@ -33,14 +33,14 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Post_leaderboard_call_succeeds()
         {
-            var client = await GetClientAsync();
+            var client = await SignInAsync();
             await PostScoreAsync(client, 1);
         }
 
         [Fact]
         public async Task Posting_new_score_updates_default_leaderboard()
         {
-            var client = await GetClientAsync(username: "testuser");
+            var client = await SignInAsync(username: "testuser");
 
             LeaderboardGetResponse leaderboardBefore = await GetLeaderboardAsync(client);
 
@@ -86,13 +86,13 @@ namespace Nether.Web.IntegrationTests.Leaderboard
                 };
             foreach (var score in scores)
             {
-                var tempClient = await GetClientAsync(score.username);
+                var tempClient = await SignInAsync(score.username);
                 await DeleteMyScoresAsync(tempClient);
                 await PostScoreAsync(tempClient, score.score);
             }
 
 
-            var client = await GetClientAsync(username: "testuser");
+            var client = await SignInAsync(username: "testuser");
             await DeleteMyScoresAsync(client);
             await PostScoreAsync(client, 7500);
 
@@ -148,7 +148,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Limiting_top_scores_returns_limited_numer_of_rows()
         {
-            var client = await GetClientAsync();
+            var client = await SignInAsync();
             LeaderboardGetResponse response = await GetLeaderboardAsync(client, "Top_5", HttpStatusCode.OK);
 
             Assert.True(response.Entries.Length <= 5);
@@ -157,7 +157,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Posting_negative_score_causes_bad_request()
         {
-            var client = await GetClientAsync("testuser");
+            var client = await SignInAsync("testuser");
 
             await PostScoreAsync(client, -5, HttpStatusCode.BadRequest);
         }

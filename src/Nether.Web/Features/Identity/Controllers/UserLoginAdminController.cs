@@ -175,6 +175,5 @@ namespace Nether.Web.Features.Identity
                 _Link = Url.RouteUrl(nameof(UserLoginAdminController) + "_" + nameof(GetLoginForUser), new { userId, providerType = login.ProviderType })
             };
         }
-
     }
 }

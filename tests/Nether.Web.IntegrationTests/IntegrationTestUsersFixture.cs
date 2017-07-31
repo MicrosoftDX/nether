@@ -50,7 +50,7 @@ namespace Nether.Web.IntegrationTests
         }
         public async Task CreateUserAsync(string username, string password, string role, string gamertag)
         {
-            var client = await GetClientAsync(InitialAdminUserName, InitialAdminPassword).ConfigureAwait(false);
+            var client = await SignInAsync(InitialAdminUserName, InitialAdminPassword).ConfigureAwait(false);
 
             // create user
             var response = await client.PutAsJsonAsync(
@@ -77,7 +77,7 @@ namespace Nether.Web.IntegrationTests
             if (!string.IsNullOrEmpty(gamertag))
             {
                 // sign in as player and create gamertag
-                var playerClient = await GetClientAsync(username);
+                var playerClient = await SignInAsync(username);
                 var player = new
                 {
                     gamertag,
@@ -97,7 +97,7 @@ namespace Nether.Web.IntegrationTests
         }
         public async Task DeleteUserAsync(string username)
         {
-            var client = await GetClientAsync(InitialAdminUserName, InitialAdminPassword).ConfigureAwait(false);
+            var client = await SignInAsync(InitialAdminUserName, InitialAdminPassword).ConfigureAwait(false);
 
             await client.DeleteAsync($"/api/admin/users/{username}").ConfigureAwait(false);
         }
@@ -107,7 +107,7 @@ namespace Nether.Web.IntegrationTests
         }
         public async Task DeletePlayerAsync(string gamertag)
         {
-            var client = await GetClientAsync(InitialAdminUserName, InitialAdminPassword).ConfigureAwait(false);
+            var client = await SignInAsync(InitialAdminUserName, InitialAdminPassword).ConfigureAwait(false);
 
             await client.DeleteAsync($"/api/players/{gamertag}").ConfigureAwait(false);
         }
