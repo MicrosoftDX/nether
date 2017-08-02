@@ -35,7 +35,7 @@ The `_link` property of a login summary provides the URL to make a `DELETE` requ
 ## Check for a specific login type for the current user
 
 ```
-    GET /api/user/logins/&lt;providerType
+    GET /api/user/logins/<providerType>
 ```
 
 Check for a specific login type for the current user
@@ -63,7 +63,7 @@ The login type does not exist for the current user
 ## Add or update a login
 
 ```
-    PUT /api/user/logins/&lt;providerType&gt;
+    PUT /api/user/logins/<providerType>
 ```
 
 Add a new login for the current user, or update an existing login. This can be used to create or reset a user's password.
@@ -112,7 +112,7 @@ Response contains a `Location` header with the URL for the newly created login. 
 
 
 ```
-    DELETE /api/user/logins/&lt;providerType&gt;
+    DELETE /api/user/logins/<providerType>
 ```
 
 ### Response: 204 NoContent

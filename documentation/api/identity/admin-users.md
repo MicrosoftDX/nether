@@ -116,7 +116,7 @@ Response contains a `Location` header with the URL for the newly created user. I
 Authorisation: requires `admin` role
 
 ```
-    PUT /api/admin/users/&lt;userId&gt;
+    PUT /api/admin/users/<userId>
 ```
 
 Updates an existing user.
@@ -170,7 +170,7 @@ The user does not exist
 Authorisation: requires `admin` role
 
 ```
-    DELETE /api/admin/users/&lt;userId&gt;
+    DELETE /api/admin/users/<userId>
 ```
 
 ### Response: 204 NoContent

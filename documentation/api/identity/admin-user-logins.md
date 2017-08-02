@@ -10,7 +10,7 @@
 Authorisation: requires `admin` role
 
 ```
-    GET /api/admin/users/&lt;userId&gt;/logins
+    GET /api/admin/users/<userId>/logins
 ```
 
 Lists a summary of all logins for a user.
@@ -45,7 +45,7 @@ The user does not exist
 Authorisation: requires `admin` role
 
 ```
-    GET /api/admin/users/&lt;userId&gt;/logins/&lt;providerType
+    GET /api/admin/users/<userId>/logins/<providerType
 ```
 
 Check for a specific login type for a user
@@ -73,7 +73,7 @@ The user or login does not exist
 ## Add or update a login
 
 ```
-    PUT /api/admin/users/&lt;userId&gt;/logins/&lt;providerType&gt;
+    PUT /api/admin/users/<userId>/logins/<providerType>
 ```
 
 Add a new login for a user, or update an existing login. This can be used to create or reset a user's password.
@@ -119,7 +119,7 @@ Response contains a `Location` header with the URL for the newly created login. 
 Authorisation: requires `admin` role
 
 ```
-    DELETE /api/admin/users/&lt;userId&gt;/logins/&lt;providerType&gt;
+    DELETE /api/admin/users/<userId>/logins/<providerType>
 ```
 
 ### Response: 204 NoContent
