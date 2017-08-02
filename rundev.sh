@@ -30,6 +30,10 @@ export Identity__Clients__devclient__AllowedGrantTypes="password, hybrid, fb-use
 # enable guest authn
 export Identity__SignInMethods__GuestAccess__Enabled="true"
 
+# enable username+password user sign up
+export Identity__SignInMethods__UsernamePassword__AllowUserSignUp="true"
+
+
 
 pushd .
 cd src/Nether.Web

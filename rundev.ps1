@@ -27,6 +27,8 @@ ${env:Identity:Clients:devclient:AllowedGrantTypes} = "password, hybrid, fb-user
 # enable guest authn
 ${env:Identity:SignInMethods:GuestAccess:Enabled} = "true";
 
+# enable username+password user sign up
+${env:Identity:SignInMethods:UsernamePassword:AllowUserSignUp} = "true";
 
 Push-Location
 Set-Location src/Nether.Web
