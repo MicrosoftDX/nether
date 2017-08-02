@@ -229,7 +229,7 @@ namespace Nether.Web
                 _logger.LogInformation($"Facebook implicit flow enabled: {options.Facebook.EnableImplicit}");
                 _logger.LogInformation($"Facebook token flow enabled: {options.Facebook.EnableAccessToken}");
                 _logger.LogInformation($"UsernamePassword sign-up enabled: {options.UsernamePassword.AllowUserSignUp}");
-                
+
 
                 app.Map("/identity", idapp =>
                 {
