@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System;
 using System.Net.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Nether.Web.Features.Identity
 {
@@ -25,16 +26,19 @@ namespace Nether.Web.Features.Identity
         private readonly IUserStore _userStore;
         private readonly FacebookGraphService _facebookGraphService;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IOptions<SignInMethodOptions> _signInOptions;
         private readonly ILogger _logger;
 
         public UserController(IUserStore userStore,
             FacebookGraphService facebookGraphService,
             IPasswordHasher passwordHasher,
+            IOptions<SignInMethodOptions> signInOptions,
             ILogger<UserController> logger)
         {
             _userStore = userStore;
             _facebookGraphService = facebookGraphService;
             _passwordHasher = passwordHasher;
+            _signInOptions = signInOptions;
             _logger = logger;
         }
 
@@ -122,6 +126,10 @@ namespace Nether.Web.Features.Identity
             [FromBody] FacebookUserLoginRequestModel userLoginModel)
         {
             const string providerType = "facebook";
+            if (!_signInOptions.Value.Facebook.EnableAccessToken)
+            {
+                return this.ValidationFailed(new ErrorDetail("facebook", "Facebook access token sign-up is not allowed by configuration"));
+            }
             var providerResult = await GetFacebookProviderLoginDetailsAsync(userLoginModel.FacebookToken);
 
             return await UpdateProviderLogin(providerType, providerResult);
@@ -140,6 +148,10 @@ namespace Nether.Web.Features.Identity
             [FromBody] UsernamePasswordUserLoginRequestModel userLoginModel)
         {
             const string providerType = "password";
+            if (!_signInOptions.Value.UsernamePassword.AllowUserSignUp)
+            {
+                return this.ValidationFailed(new ErrorDetail("password", "UsernamePassword sign-up is not allowed by configuration"));
+            }
             var providerResult = await GetUsernamePasswordProviderLoginDetailsAsync(userLoginModel.Username, userLoginModel.Password);
 
             return await UpdateProviderLogin(providerType, providerResult);

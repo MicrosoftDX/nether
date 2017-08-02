@@ -10,19 +10,20 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace Nether.Web.Features.Identity
 {
     public class FacebookGraphService
     {
-        private readonly IConfiguration _configuration;
+        private readonly IOptions<SignInMethodOptions> _signInOptions;
 
         public FacebookGraphService(
-            IConfiguration configuration
+            IOptions<SignInMethodOptions> signInOptions
         )
         {
-            _configuration = configuration;
+            _signInOptions = signInOptions;
         }
         private static Lazy<HttpClient> s_httpClientLazy = new Lazy<HttpClient>(CreateHttpClient);
         private static HttpClient CreateHttpClient()
@@ -44,9 +45,8 @@ namespace Nether.Web.Features.Identity
             // Call facebook graph api to validate the token
 
             // As per https://developers.facebook.com/docs/facebook-login/access-tokens/#apptokens, we're using "appid|appsecret" for the app token
-            var appId = _configuration["Identity:SignInMethods:Facebook:AppId"];
-            var appSecret = _configuration["Identity:SignInMethods:Facebook:AppSecret"];
-            var appToken = appId + "|" + appSecret;
+            var facebookOptions = _signInOptions.Value.Facebook;
+            var appToken = facebookOptions.AppId + "|" + facebookOptions.AppSecret;
 
 
             var client = s_httpClientLazy.Value;
@@ -97,6 +97,7 @@ namespace Nether.Web.Features.Identity
         }
 
         private static readonly DateTime s_unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
         private static DateTime GetDateTimeFromUnixTime(int unixTime)
         {
             return s_unixEpoch.AddSeconds(unixTime);
