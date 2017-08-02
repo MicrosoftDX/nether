@@ -78,12 +78,14 @@ providerType | string | **Required**. Currently supported providers are `passwor
 The format of the request body depends on the provider type:
 
 **Password provider**
+
 Parameter | Type | Description
 ----------|------|------------
 username | string | The username
 password | string | The password for the user
 
 **Facebook provider**
+
 Parameter | Type | Description
 ----------|------|------------
 facebookToken | string | The facebook user access token for the user (e.g. as obtained via the facebook JS SDK, or Unity SDK)

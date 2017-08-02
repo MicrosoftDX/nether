@@ -89,6 +89,7 @@ providerType | string | **Required**. Currently only `password` is supported for
 The format of the request body depends on the provider type:
 
 **Password provider**
+
 Parameter | Type | Description
 ----------|------|------------
 username | string | The username
