@@ -87,7 +87,7 @@ namespace IdentityTestClient
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);
 
-            var response = await client.PostAsJsonAsync($"{Application.ApiRootUrl}user/logins/password", payload);
+            var response = await client.PutAsJsonAsync($"{Application.ApiRootUrl}user/logins/password", payload);
             Console.WriteLine(response);
             dynamic responseBody = await response.Content.ReadAsAsync<dynamic>();
 

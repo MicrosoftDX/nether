@@ -81,7 +81,8 @@ To configure the sign-in methods that can be used, modify the `SignInMethods` as
 
 Currently supported methods:
 * [Facebook](#facebook)
-
+* [Guest](#guest-authentication)
+* [Username + password](#username-password-authentication)
 
 ### Facebook
 
@@ -119,14 +120,14 @@ To enable, set the `Identity:SignInMethods:GuestAccess:Enabled` to `true`
   "Identity" : {
     "SignInMethods": {
         "GuestAccess": {
-            "Enabled":  false
+            "Enabled": true
         }
     }
   }
 ```
 
 
-### Username + password authentication
+### Username password authentication
 
 By default, sign-up via username + password is disallowed. To enable this (e.g. to allow guest users to create a username + password), set the `Identity:SignInMethods:UsernamePassword:AllowUserSignUp` to `true`
 
@@ -134,7 +135,7 @@ By default, sign-up via username + password is disallowed. To enable this (e.g. 
   "Identity" : {
     "SignInMethods": {
         "UsernamePassword": {
-            "AllowUserSignUp":  false
+            "AllowUserSignUp": true
         }
     }
   }

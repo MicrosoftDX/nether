@@ -34,7 +34,7 @@ namespace Nether.Web.IntegrationTests
             // Add username + password
             var username = $"user-{guestId}";
             var password = "test-password";
-            var usernameResponse = await client.PostAsJsonAsync("api/user/logins/password", new { username, password });
+            var usernameResponse = await client.PutAsJsonAsync("api/user/logins/password", new { username, password });
             await usernameResponse.AssertSuccessStatusCodeAsync();
 
             // sign in using username+password

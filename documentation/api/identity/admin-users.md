@@ -1,4 +1,4 @@
-# Users API (Identity)
+# Users Admin API (Identity)
 
 * [List all users](#list-all-users)
 * [Get a user](#get-a-user)

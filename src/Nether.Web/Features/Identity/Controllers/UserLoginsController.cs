@@ -18,10 +18,10 @@ using Microsoft.Extensions.Options;
 
 namespace Nether.Web.Features.Identity
 {
-    [Route("user")]
+    [Route("user/logins")]
     [NetherService("Identity")]
     [Authorize(Roles = RoleNames.Player)]
-    public class UserController : ControllerBase
+    public class UserLoginController : ControllerBase
     {
         private readonly IUserStore _userStore;
         private readonly FacebookGraphService _facebookGraphService;
@@ -29,11 +29,11 @@ namespace Nether.Web.Features.Identity
         private readonly IOptions<SignInMethodOptions> _signInOptions;
         private readonly ILogger _logger;
 
-        public UserController(IUserStore userStore,
+        public UserLoginController(IUserStore userStore,
             FacebookGraphService facebookGraphService,
             IPasswordHasher passwordHasher,
             IOptions<SignInMethodOptions> signInOptions,
-            ILogger<UserController> logger)
+            ILogger<UserLoginController> logger)
         {
             _userStore = userStore;
             _facebookGraphService = facebookGraphService;
@@ -47,7 +47,7 @@ namespace Nether.Web.Features.Identity
         /// </summary>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserLoginListModel))]
-        [HttpGet("logins")]
+        [HttpGet("")]
         public async Task<IActionResult> GetLogins()
         {
             var user = await _userStore.GetCurrentUserAsync(User);
@@ -64,7 +64,7 @@ namespace Nether.Web.Features.Identity
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserLoginModel))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [HttpGet("logins/{providerType}", Name = nameof(UserController) + "_" + nameof(GetLogin))]
+        [HttpGet("{providerType}", Name = nameof(UserLoginController) + "_" + nameof(GetLogin))]
         public async Task<IActionResult> GetLogin(string providerType)
         {
             var user = await _userStore.GetCurrentUserAsync(User);
@@ -83,7 +83,7 @@ namespace Nether.Web.Features.Identity
         /// </summary>
         /// <param name="providerType">The provider type identifying the provider to be removed.</param>
         /// <returns></returns>
-        [HttpDelete("logins/{providerType}")]
+        [HttpDelete("{providerType}")]
         public async Task<IActionResult> DeleteUsersLogin(string providerType)
         {
             var user = await _userStore.GetCurrentUserAsync(User);
@@ -121,8 +121,8 @@ namespace Nether.Web.Features.Identity
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FacebookUserLoginRequestModel))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [HttpPost("logins/facebook")]
-        public async Task<IActionResult> PostFacebookUserLogin(
+        [HttpPut("facebook")]
+        public async Task<IActionResult> PutFacebookUserLogin(
             [FromBody] FacebookUserLoginRequestModel userLoginModel)
         {
             const string providerType = "facebook";
@@ -143,8 +143,8 @@ namespace Nether.Web.Features.Identity
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UsernamePasswordUserLoginRequestModel))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [HttpPost("logins/password")]
-        public async Task<IActionResult> PostUsernamePasswordLogin(
+        [HttpPut("password")]
+        public async Task<IActionResult> PutUsernamePasswordLogin(
             [FromBody] UsernamePasswordUserLoginRequestModel userLoginModel)
         {
             const string providerType = "password";
@@ -184,7 +184,7 @@ namespace Nether.Web.Features.Identity
 
             await _userStore.SaveUserAsync(user);
 
-            return CreatedAtRoute(nameof(UserController) + "_" + nameof(GetLogin), new { providerType }, login);
+            return CreatedAtRoute(nameof(UserLoginController) + "_" + nameof(GetLogin), new { providerType }, login);
         }
 
         // TODO - consider creating services that group the login provider specific implementations together
@@ -261,7 +261,7 @@ namespace Nether.Web.Features.Identity
             {
                 ProviderType = login.ProviderType,
                 ProviderId = login.ProviderId,
-                _Link = Url.RouteUrl(nameof(UserController) + "_" + nameof(GetLogin), new { providerType = login.ProviderType })
+                _Link = Url.RouteUrl(nameof(UserLoginController) + "_" + nameof(GetLogin), new { providerType = login.ProviderType })
             };
         }
     }

@@ -1,6 +1,7 @@
-# User Logins API (Identity)
+# User Logins Admin API (Identity)
 
 * [List all logins for a user](#list-all-logins-for-a-user)
+* [Check for a specific login type](#check-for-a-specific-login-type-for-a-user)
 * [Add or update a login](#add-or-update-a-login)
 * [Remove a login](#remove-a-login)
 
@@ -19,8 +20,7 @@ Lists a summary of all logins for a user.
 
 ```json
 {
-    "userId" : "netheruser",
-    "login" : [
+    "logins" : [
         {
             "providerType" : "password",
             "providerId" : "netheruser",
@@ -40,15 +40,43 @@ See [Get a user](admin-users.md#get-a-user) for more information on `providerTyp
 The user does not exist
 
 
-## Add or update a login
+## Check for a specific login type for a user
 
 Authorisation: requires `admin` role
+
+```
+    GET /api/admin/users/&lt;userId&gt;/logins/&lt;providerType
+```
+
+Check for a specific login type for a user
+
+
+### Response: 200 OK
+
+```json
+{
+    "providerType" : "password",
+    "providerId" : "netheruser",
+    "_link" : "http://.../api/admin/users/netheruser/logins/password"
+}
+```
+
+The `_link` property of a login summary provides the URL to make a `DELETE` request against to remove the login for the user.
+
+See [Get a user](admin-users.md#get-a-user) for more information on `providerType` and `providerId`.
+
+
+### Response: 404 NotFound
+The user or login does not exist
+
+
+## Add or update a login
 
 ```
     PUT /api/admin/users/&lt;userId&gt;/logins/&lt;providerType&gt;
 ```
 
-Add a new login for a user, or update and existing login. This can be used to create or reset a user's password.
+Add a new login for a user, or update an existing login. This can be used to create or reset a user's password.
 
 ### URL Parameters
 The API is designed to allow it to be used with multiple login providers, but currently it only supports the `password` provider.
