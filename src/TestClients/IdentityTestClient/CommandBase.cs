@@ -82,7 +82,7 @@ namespace IdentityTestClient
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = await client.GetAsync("http://localhost:5000/api/player");
+            var response = await client.GetAsync($"{Application.ApiRootUrl}/player");
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
