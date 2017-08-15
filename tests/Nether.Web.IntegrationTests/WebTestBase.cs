@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Net.Http.Headers;
 
 namespace Nether.Web.IntegrationTests
 {
@@ -69,12 +70,12 @@ namespace Nether.Web.IntegrationTests
             return new HttpClient(handler) { BaseAddress = new Uri(baseUrl) };
         }
 
-        protected async Task<HttpClient> GetAdminClientAsync()
+        protected async Task<HttpClient> SignInAsAdminAsync()
         {
-            return await GetClientAsync("devadmin");
+            return await SignInAsync("devadmin");
         }
 
-        protected async Task<HttpClient> GetClientAsync(string username = "testuser", string password = null)
+        protected async Task<HttpClient> SignInAsync(string username = "testuser", string password = null)
         {
             HttpClient client = CreateClient(BaseUrl);
             if (password == null)
@@ -100,6 +101,98 @@ namespace Nether.Web.IntegrationTests
             return client;
         }
 
+
+
+        protected async Task<HttpClient> SignInAsGuestAsync(string guestId)
+        {
+            var client = new HttpClient
+            {
+                BaseAddress = new Uri(BaseUrl)
+            };
+
+            // Sign in as a guest
+            var accessTokenResult = await GetGuestAccesstoken(client, guestId);
+
+            if (accessTokenResult.Error != null)
+            {
+                throw new Exception("Error in auth:" + accessTokenResult.Error);
+            }
+
+            Assert.NotNull(accessTokenResult.AccessToken);
+
+            // Set the Bearer token on subsequent requests
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessTokenResult.AccessToken);
+            return client;
+        }
+
+        protected async Task<AccessTokenResult> GetAccessToken(HttpClient client, string username, string password)
+        {
+            const string client_id = "devclient";
+            const string client_secret = "devsecret";
+            const string scope = "openid profile nether-all";
+
+
+            var requestBody = new FormUrlEncodedContent(
+                  new Dictionary<string, string>
+                  {
+                        { "grant_type", "password" },
+                        { "client_id",  client_id },
+                        { "client_secret", client_secret },
+                        { "username", username },
+                        { "password", password },
+                        { "scope", scope }
+                  }
+              );
+
+            return await MakeTokenRequestAsync(client, requestBody);
+        }
+
+        protected async Task<AccessTokenResult> GetGuestAccesstoken(HttpClient client, string guestIdentifier)
+        {
+            const string client_id = "devclient";
+            const string client_secret = "devsecret";
+            const string scope = "openid profile nether-all";
+
+
+            var requestBody = new FormUrlEncodedContent(
+                  new Dictionary<string, string>
+                  {
+                        { "grant_type", "guest-access" },
+                        { "client_id",  client_id },
+                        { "client_secret", client_secret },
+                        { "guest_identifier", guestIdentifier },
+                        { "scope", scope }
+                  }
+              );
+
+            return await MakeTokenRequestAsync(client, requestBody);
+        }
+
+        private static async Task<AccessTokenResult> MakeTokenRequestAsync(HttpClient client, FormUrlEncodedContent requestBody)
+        {
+            var response = await client.PostAsync("/identity/connect/token", requestBody);
+            dynamic responseBody = await response.Content.ReadAsAsync<dynamic>();
+
+
+            if (responseBody.error != null)
+            {
+                return new AccessTokenResult { Error = responseBody.error };
+            }
+            return new AccessTokenResult
+            {
+                AccessToken = (string)responseBody.access_token,
+                ExpiresIn = (int)responseBody.expires_in
+            };
+        }
+
+
+
+        public class AccessTokenResult
+        {
+            public string Error { get; set; }
+            public string AccessToken { get; set; }
+            public int ExpiresIn { get; set; }
+        }
         private string GetPassword(string username)
         {
             return s_users.FirstOrDefault(u => u.UserName == username)?.Password;

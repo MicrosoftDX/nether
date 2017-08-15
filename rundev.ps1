@@ -21,6 +21,15 @@ ${env:Identity:Clients:customgranttest:AllowedGrantTypes} = "fb-usertoken"
 ${env:Identity:Clients:customgranttest:ClientSecrets} = "devsecret"
 ${env:Identity:Clients:customgranttest:AllowedScopes} = "nether-all"
 
+# ensure guest-access is allowed for 'devclient' client
+${env:Identity:Clients:devclient:AllowedGrantTypes} = "password, hybrid, fb-usertoken, guest-access";
+
+# enable guest authn
+${env:Identity:SignInMethods:GuestAccess:Enabled} = "true";
+
+# enable username+password user sign up
+${env:Identity:SignInMethods:UsernamePassword:AllowUserSignUp} = "true";
+
 Push-Location
 Set-Location src/Nether.Web
 try{

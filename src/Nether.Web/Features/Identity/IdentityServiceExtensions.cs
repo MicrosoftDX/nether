@@ -80,16 +80,44 @@ namespace Nether.Web.Features.Identity
                 .AddInMemoryApiResources(Scopes.GetApiResources())
             ;
 
-            var facebookUserAccessTokenEnabled = bool.Parse(configuration["Identity:SignInMethods:Facebook:EnableAccessToken"] ?? "false");
-            if (facebookUserAccessTokenEnabled)
-            {
-                identityServerBuilder.AddExtensionGrantValidator<FacebookUserAccessTokenExtensionGrantValidator>();
-            }
+            // Facebook Sign-in method
 
+            //var facebookUserAccessTokenEnabled = bool.Parse(configuration["Identity:SignInMethods:Facebook:EnableAccessToken"] ?? "false");
+            //if (facebookUserAccessTokenEnabled)
+            //{
+            //    identityServerBuilder.AddExtensionGrantValidator<FacebookUserAccessTokenExtensionGrantValidator>();
+            //}
+
+            identityServerBuilder.AddGrantValidatorIfConfigured<FacebookUserAccessTokenExtensionGrantValidator>("Identity:SignInMethods:Facebook:EnableAccessToken", configuration);
+            identityServerBuilder.AddGrantValidatorIfConfigured<GuestAccessTokenExtensionGrantValidator>("Identity:SignInMethods:GuestAccess:Enabled", configuration);
+
+
+            // Guest access token sign-in 
             services.AddTransient<IPasswordHasher, PasswordHasher>();
             services.AddTransient<IProfileService, StoreBackedProfileService>();
             services.AddTransient<IResourceOwnerPasswordValidator, StoreBackedResourceOwnerPasswordValidator>();
             services.AddTransient<UserClaimsProvider>();
+            services.AddTransient<FacebookGraphService>();
+        }
+
+        private static void AddGrantValidatorIfConfigured<TValidator>(this IIdentityServerBuilder builder, string configurationOption, IConfiguration configuration)
+            where TValidator : class, IExtensionGrantValidator
+        {
+            var option = false;
+            bool.TryParse(configuration[configurationOption] ?? bool.FalseString, out option);
+
+            builder.AddGrantValidatorWithCondition<TValidator>(() => option);
+        }
+
+        private static void AddGrantValidatorWithCondition<TValidator>(this IIdentityServerBuilder builder, Func<bool> condition)
+        where TValidator : class, IExtensionGrantValidator
+        {
+            if (!condition())
+            {
+                return;
+            }
+
+            builder.AddExtensionGrantValidator<TValidator>();
         }
     }
 }

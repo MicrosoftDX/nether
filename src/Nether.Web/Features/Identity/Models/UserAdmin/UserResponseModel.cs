@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Nether.Web.Features.Identity.Models.User
+namespace Nether.Web.Features.Identity.Models.UserAdmin
 {
     public class UserResponseModel
     {
@@ -26,7 +26,7 @@ namespace Nether.Web.Features.Identity.Models.User
                             {
                                 ProviderType = l.ProviderType,
                                 ProviderId = l.ProviderId,
-                                _Link = url.RouteUrl(nameof(UserLoginController.DeleteUserLogin), new { userId = user.UserId, providerType = l.ProviderType, providerId = l.ProviderId }, null)
+                                _Link = url.RouteUrl(nameof(UserLoginAdminController.DeleteUserLogin), new { userId = user.UserId, providerType = l.ProviderType }, null)
                             }).ToList()
                 }
             };

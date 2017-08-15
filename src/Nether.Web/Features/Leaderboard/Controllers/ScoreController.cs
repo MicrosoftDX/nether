@@ -66,12 +66,12 @@ namespace Nether.Web.Features.Leaderboard
             }
 
             //TODO: Handle exceptions and retries
-            /*var gamertag = User.GetGamerTag();
+            var gamertag = User.GetGamerTag();
             if (string.IsNullOrWhiteSpace(gamertag))
             {
-                _logger.LogError("user has no gamertag: '{0}'", User.GetId());
+                _logger.LogError("User has no gamertag: '{0}'", User.GetId());
                 return this.ValidationFailed(new ErrorDetail("gamertag", "The user doesn't have a gamertag"));
-            }*/
+            }
 
 
             var userId = User.GetId();

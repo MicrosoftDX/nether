@@ -4,7 +4,7 @@
 
 using Newtonsoft.Json;
 
-namespace Nether.Web.Features.Identity.Models.User
+namespace Nether.Web.Features.Identity.Models.UserAdmin
 {
     public class UserLoginModel
     {

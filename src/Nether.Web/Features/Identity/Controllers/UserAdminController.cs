@@ -4,8 +4,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nether.Data.Identity;
-using Nether.Web.Features.Identity.Models;
-using Nether.Web.Features.Identity.Models.User;
+using Nether.Web.Features.Identity.Models.UserAdmin;
 using Nether.Web.Utilities;
 using System.Linq;
 using System.Net;
@@ -13,14 +12,14 @@ using System.Threading.Tasks;
 
 namespace Nether.Web.Features.Identity
 {
-    [Route("identity/users")]
+    [Route("admin/users")]
     [NetherService("Identity")]
     [Authorize(Roles = RoleNames.Admin)]
-    public class UserController : ControllerBase
+    public class UserAdminController : ControllerBase
     {
         private readonly IUserStore _userStore;
 
-        public UserController(IUserStore userStore)
+        public UserAdminController(IUserStore userStore)
         {
             _userStore = userStore;
         }

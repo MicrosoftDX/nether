@@ -25,7 +25,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Get_leaderboard_call_succeeds()
         {
-            var client = await GetClientAsync();
+            var client = await SignInAsync();
             HttpResponseMessage response = await client.GetAsync(LeaderboardBasePath + "/Default");
             await response.AssertStatusCodeAsync(HttpStatusCode.OK);
         }
@@ -33,14 +33,14 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Post_leaderboard_call_succeeds()
         {
-            var client = await GetClientAsync();
+            var client = await SignInAsync();
             await PostScoreAsync(client, 1);
         }
 
         [Fact]
         public async Task Posting_new_score_updates_default_leaderboard()
         {
-            var client = await GetClientAsync(username: "testuser");
+            var client = await SignInAsync(username: "testuser");
 
             LeaderboardGetResponse leaderboardBefore = await GetLeaderboardAsync(client);
 
@@ -71,30 +71,30 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
             // set up scores
             var scores = new[] {
-                    new { username = "testuser1", score = 100 },
-                    new { username = "testuser2", score = 200 },
-                    new { username = "testuser3", score = 300 },
-                    new { username = "testuser4", score = 400 },
-                    new { username = "testuser5", score = 500 },
-                    new { username = "testuser6", score = 600 },
-                    new { username = "testuser7", score = 700 },
-                    new { username = "testuser8", score = 800 },
-                    new { username = "testuser9", score = 900 },
-                    new { username = "testuser10", score = 1000 },
-                    new { username = "testuser11", score = 1100 },
-                    new { username = "testuser12", score = 1200 },
+                    new { username = "testuser1", score = 1000 },
+                    new { username = "testuser2", score = 2000 },
+                    new { username = "testuser3", score = 3000 },
+                    new { username = "testuser4", score = 4000 },
+                    new { username = "testuser5", score = 5000 },
+                    new { username = "testuser6", score = 6000 },
+                    new { username = "testuser7", score = 7000 },
+                    new { username = "testuser8", score = 8000 },
+                    new { username = "testuser9", score = 9000 },
+                    new { username = "testuser10", score = 10000 },
+                    new { username = "testuser11", score = 11000 },
+                    new { username = "testuser12", score = 12000 },
                 };
             foreach (var score in scores)
             {
-                var tempClient = await GetClientAsync(score.username);
+                var tempClient = await SignInAsync(score.username);
                 await DeleteMyScoresAsync(tempClient);
                 await PostScoreAsync(tempClient, score.score);
             }
 
 
-            var client = await GetClientAsync(username: "testuser");
+            var client = await SignInAsync(username: "testuser");
             await DeleteMyScoresAsync(client);
-            await PostScoreAsync(client, 750);
+            await PostScoreAsync(client, 7500);
 
             var response = await GetLeaderboardAsync(client, leaderboardName);
             Assert.Collection(response.Entries,
@@ -113,7 +113,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
 
 
             // update score to one that matches another score
-            await PostScoreAsync(client, 900);
+            await PostScoreAsync(client, 9000);
             response = await GetLeaderboardAsync(client, leaderboardName);
             Assert.Collection(response.Entries,
                 entry => { Assert.Equal("testuser12", entry.Gamertag); Assert.Equal(1, entry.Rank); },
@@ -131,7 +131,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
                 //entry => { Assert.Equal("testuser3", entry.Gamertag); Assert.Equal(11, entry.Rank); }
              );
             // update testuser make their score similar to mine and check they are around me
-            await PostScoreAsync(client, 1050);
+            await PostScoreAsync(client, 10500);
             response = await GetLeaderboardAsync(client, leaderboardName);
             Assert.Collection(response.Entries,
                 entry => Assert.Equal("testuser12", entry.Gamertag),
@@ -148,7 +148,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Limiting_top_scores_returns_limited_numer_of_rows()
         {
-            var client = await GetClientAsync();
+            var client = await SignInAsync();
             LeaderboardGetResponse response = await GetLeaderboardAsync(client, "Top_5", HttpStatusCode.OK);
 
             Assert.True(response.Entries.Length <= 5);
@@ -157,7 +157,7 @@ namespace Nether.Web.IntegrationTests.Leaderboard
         [Fact]
         public async Task Posting_negative_score_causes_bad_request()
         {
-            var client = await GetClientAsync("testuser");
+            var client = await SignInAsync("testuser");
 
             await PostScoreAsync(client, -5, HttpStatusCode.BadRequest);
         }

@@ -21,26 +21,43 @@ The Nether Identity endpoint currently supports two means of authenticating: fac
 The facebook user token authentication uses a custom grant flow (`fb-usertoken`) to allow a non-interactive flow that receives a facebook user token (e.g. as per the facebook Unity extension) and converting it to a Nether token.
 The resource owner password flow allows a user to sign in with user name and password combination. The main drivers for this flow are integration and load testing.
 
+### Interactive (implicit) flow
+The interactive/implicit flow is used when signing in via the browser. The user 
 
-Since we don't currently have the client SDK for Nether created, I have created two sample projects showing how you can authenticate against the Nether Identity endpoint to get a token to use with other Nether APIs (under `/src/TestClients`):
+Adding new providers for this flow is relatively straight-forward. This flow currently supports the following providers
+* Username + Password
+* Facebook
 
-* FacebookUserTokenClient
-* IdentityServerTestClient
+### Resource owner (username + password) flow 
+The resource owner (username + password) flow allows programmatic authentication with a username and password
 
-### FacebookUserTokenClient
-This sample shows how to take a facebook user token (as available [here](https://developers.facebook.com/tools/accesstoken) for testing).
-It has minimal dependencies, so will hopefully be easiest to make available to work across target environments
+### Facebook user access token flow
+The facebook user access token flow allows programmatic authentication with a facebook user access token. This is useful for scenarios where the game has a facebook SDK (e.g. Unity or JavaScript) that allows them to perform authentication with facebook and then use the resulting access token from facebook to authentication with nether. This provides tight control over the sign-in experience.
 
-The `GetAccessTokenAsync` method performs the authentication call using the custom `fb-usertoken` authentication flow
+Using this flow, if the facebook user hasn't been encountered before then a new user will be created and associated with the facebook identity.
 
+This is implemented using an [OAuth 2 extension grant](https://tools.ietf.org/html/rfc6749#section-4.5). 
 
-### IdentityServerTestClient
-This sample was created to show the different flows that are currently implemented:
-* ClientCredentials - identifies the client application (not the user). Was useful as a validation step in the implementation
-* ResourceOwnerPassword - signs in with a user name and password
-* CustomGrant - signs in with a facebook user accesstoken
+### Guest flow
+The guest flow allows for a lightweight authentication where the client simply sends a single identifier (e.g. device id for mobile games). This authentication mechanism is relatively weak and should be disabled in [configuration](../configuration/identity.md) if not needed.
 
-For speed of coding, this project used the [IdentityModel](https://www.nuget.org/packages/IdentityModel/) client library from IdentityServer, but this isn't a requirement for clients.  
+Using this flow, if the facebook user hasn't been encountered before then a new user will be created and associated with the guest identifier.
+
+This is implemented using an [OAuth 2 extension grant](https://tools.ietf.org/html/rfc6749#section-4.5).
+
+## IdentityTestClient
+
+This test client allows you to test different authentication flows supported by Nether, as well as providing sample implementations for those flows.
+
+The client takes command line switches to allow you to specify which flow to use and the paramaters required for the flow. Running the client without any options shows the in-built help.
+
+Flows covered by the client:
+* client-credentials - this is a simple flow that validates the client id and secret. Implemented using IdentityModel.Client
+* resource-owner - performs the resource owner flow. Implemented using IdentityModel.Client
+* fb-usertoken - performs the fb-usertoken flow, using the extension grant. Implemented using IdentityModel.Client
+* fb-usertoken-raw - performs the fb-usertoken flow, using the extension grant. Implemented using raw HttpClient calls
+* guest - performs the guest-access flow, using the extension grant. Implemented using IdentityModel.Client
+* guest-raw - performs the guest-access flow, using the extension grant. Implemented using raw HttpClient calls
 
 
 ## Game Sign in ##

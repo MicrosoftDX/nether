@@ -3,7 +3,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Nether.Web.Features.Identity.Models.User
+namespace Nether.Web.Features.Identity.Models.UserAdmin
 {
     public class UserRequestModel
     {

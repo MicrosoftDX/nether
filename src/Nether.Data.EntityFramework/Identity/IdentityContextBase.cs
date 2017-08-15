@@ -36,7 +36,7 @@ namespace Nether.Data.EntityFramework.Identity
                 .HasForeignKey(l => l.UserId);
 
             builder.Entity<LoginEntity>()
-                .HasKey(l => new { l.UserId, l.ProviderType, l.ProviderId });
+                .HasKey(l => new { l.UserId, l.ProviderType });
 
             builder.Entity<UserEntity>().Property(u => u.UserId).HasMaxLength(50).IsRequired();
             builder.Entity<UserEntity>().Property(u => u.Role).HasMaxLength(50).IsRequired();

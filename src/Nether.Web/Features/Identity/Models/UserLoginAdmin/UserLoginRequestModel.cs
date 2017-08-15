@@ -3,10 +3,12 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Nether.Web.Features.Identity.Models.UserLogin
+namespace Nether.Web.Features.Identity.Models.UserLoginAdmin
 {
     public class UserLoginRequestModel
     {
+        [Required]
+        public string Username { get; set; }
         [Required]
         public string Password { get; set; }
     }

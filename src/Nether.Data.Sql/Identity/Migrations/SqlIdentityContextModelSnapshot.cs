@@ -32,7 +32,7 @@ namespace Nether.Data.Sql.Identity.Migrations
 
                     b.Property<string>("ProviderData");
 
-                    b.HasKey("UserId", "ProviderType", "ProviderId");
+                    b.HasKey("UserId", "ProviderType");
 
                     b.ToTable("Logins");
 

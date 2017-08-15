@@ -1,7 +1,6 @@
 src/Nether.Data.MongoDB
 src/Nether.Web
-src/TestClients/FacebookUserTokenClient
-src/TestClients/IdentityServerTestClient
+src/TestClients/IdentityTestClient
 tests/Nether.Web.UnitTests
 tests/Nether.Web.IntegrationTests
 

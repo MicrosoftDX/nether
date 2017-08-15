@@ -81,12 +81,14 @@ To configure the sign-in methods that can be used, modify the `SignInMethods` as
 
 Currently supported methods:
 * [Facebook](#facebook)
-
+* [Guest](#guest-authentication)
+* [Username + password](#username-password-authentication)
 
 ### Facebook
 
 To use this sign-in method you need to create a Facebook App at https://developers.facebook.com/apps/. There is a walkthrough of [creating a Facebook application](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/facebook-logins). When setting the `Valid OAuth Redirect URIs` set this to `http://localhost:5000/identity/signin-facebook` (or the URL for your published site)
 
+The options for Facebook authentication can be configured under the `Identity:SignInMethods:Facebook` settings:
 
 ```json
   "Identity" : {
@@ -107,6 +109,38 @@ EnableImplicit | bool | True to enable the implicit (in-browser) login flow|
 EnableAccessToken | bool | True to enable the custom token grant flow (e.g. for use from Unity)
 AppId | string | The AppId for your Facebook app from https://developers.facebook.com/apps
 AppSecret | string | The AppSecret for your Facebook app from https://developers.facebook.com/apps
+
+### Guest authentication
+
+Guest authentication is disabled by default as it is a relatively weak authentication mechanism.
+
+To enable, set the `Identity:SignInMethods:GuestAccess:Enabled` to `true`
+
+```json
+  "Identity" : {
+    "SignInMethods": {
+        "GuestAccess": {
+            "Enabled": true
+        }
+    }
+  }
+```
+
+
+### Username password authentication
+
+By default, sign-up via username + password is disallowed. To enable this (e.g. to allow guest users to create a username + password), set the `Identity:SignInMethods:UsernamePassword:AllowUserSignUp` to `true`
+
+```json
+  "Identity" : {
+    "SignInMethods": {
+        "UsernamePassword": {
+            "AllowUserSignUp": true
+        }
+    }
+  }
+```
+
 
 
 ## Player Management Integration Configuration

@@ -35,7 +35,7 @@ namespace Nether.Data.Sql.Identity.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserLogins", x => new { x.UserId, x.ProviderType, x.ProviderId });
+                    table.PrimaryKey("PK_UserLogins", x => new { x.UserId, x.ProviderType });
                     table.ForeignKey(
                         name: "FK_UserLogins_Users_UserId",
                         column: x => x.UserId,

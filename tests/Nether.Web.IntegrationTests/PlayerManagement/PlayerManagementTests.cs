@@ -26,7 +26,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_a_player_I_can_get_my_player_info()
         {
-            var client = await GetClientAsync();
+            var client = await SignInAsync();
 
             PlayerGetResponse myPlayer = await GetPlayerAsync(client);
         }
@@ -34,7 +34,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_a_player_I_can_update_my_info()
         {
-            var client = await GetClientAsync(username: "testuser");
+            var client = await SignInAsync(username: "testuser");
             PlayerGetResponse beforeUpdate = await GetPlayerAsync(client);
 
             string newCountry = Guid.NewGuid().ToString();
@@ -47,7 +47,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_a_player_I_can_update_my_player_state()
         {
-            var client = await GetClientAsync(username: "testuser-state");
+            var client = await SignInAsync(username: "testuser-state");
             var newState = Guid.NewGuid().ToString();
 
             // Update state
@@ -73,7 +73,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_an_admin_I_can_update_player_state()
         {
-            var client = await GetAdminClientAsync();
+            var client = await SignInAsAdminAsync();
             var newState = Guid.NewGuid().ToString();
 
             // Update state
@@ -99,7 +99,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_a_player_I_cannot_add_new_players()
         {
-            var client = await GetClientAsync();
+            var client = await SignInAsync();
             await AddNewPlayerAsync(
                 client,
                 Guid.NewGuid().ToString(),
@@ -112,7 +112,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_an_admin_I_can_add_new_players()
         {
-            var client = await GetAdminClientAsync();
+            var client = await SignInAsAdminAsync();
 
             string gamertag = Guid.NewGuid().ToString();
             string userId = Guid.NewGuid().ToString();
@@ -132,7 +132,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_an_admin_I_can_get_all_players()
         {
-            var client = await GetAdminClientAsync();
+            var client = await SignInAsAdminAsync();
 
             PlayerListGetResponse response = await GetPlayersAdminAsync(client);
 
@@ -143,7 +143,7 @@ namespace Nether.Web.IntegrationTests.PlayerManagement
         [Fact]
         public async Task As_a_player_user_I_cant_get_player_list()
         {
-            var client = await GetClientAsync();
+            var client = await SignInAsync();
 
             PlayerListGetResponse response = await GetPlayersAdminAsync(client, HttpStatusCode.Forbidden);
         }

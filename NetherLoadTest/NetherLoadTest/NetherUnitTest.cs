@@ -205,7 +205,7 @@ namespace NetherLoadTest
             var adminClient = await GetClientAsync(AdminUserName, AdminPassword);
 
             // check if the user already exist            
-            var response = await adminClient.GetAsync($"/api/identity/users/{UserName}");
+            var response = await adminClient.GetAsync($"/api/admin/users/{UserName}");
             // 404 - user not found - create the user         
             if (response.StatusCode.Equals(HttpStatusCode.NotFound))
             {
@@ -213,7 +213,7 @@ namespace NetherLoadTest
 
                 // Create the user
                 response = await adminClient.PutAsJsonAsync(
-                    $"/api/identity/users/{UserName}",
+                    $"/api/admin/users/{UserName}",
                     new
                     {
                         role = "Player",
@@ -223,9 +223,10 @@ namespace NetherLoadTest
 
                 // create login
                 response = await adminClient.PutAsJsonAsync(
-                    $"/api/identity/users/{UserName}/logins/password/{UserName}", // reuse username as gamertag
+                    $"/api/admin/users/{UserName}/logins/password", // reuse username as gamertag
                     new
                     {
+                        UserName,
                         Password
                     });
 

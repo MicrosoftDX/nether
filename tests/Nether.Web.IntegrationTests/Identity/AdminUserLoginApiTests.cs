@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Nether.Web.IntegrationTests.Identity
 {
-    public class LoginApiTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
+    public class AdminUserLoginApiTests : WebTestBase, IClassFixture<IntegrationTestUsersFixture>
     {
         [Fact()]
         public async Task As_an_admin_I_can_create_a_user_with_a_login_and_login_as_that_user()
@@ -21,7 +21,7 @@ namespace Nether.Web.IntegrationTests.Identity
 
             // create user
             var response = await client.PostAsJsonAsync(
-                "/api/identity/users",
+                "/api/admin/users",
                 new
                 {
                     role = "Player",
@@ -36,9 +36,10 @@ namespace Nether.Web.IntegrationTests.Identity
             string username = Guid.NewGuid().ToString();
             const string password = "TestPassword";
             response = await client.PutAsJsonAsync(
-                $"{userLocation}/logins/password/{username}",
+                $"{userLocation}/logins/password",
                 new
                 {
+                    username,
                     password
                 });
 
@@ -46,6 +47,7 @@ namespace Nether.Web.IntegrationTests.Identity
 
             var loginLocation = response.Headers.Location.LocalPath;
             Assert.NotNull(loginLocation);
+            Assert.Equal(userLocation + "/logins/password", loginLocation);
 
             // Get the user again and verify the login is present in the returned data
             response = await client.GetAsync(userLocation);
@@ -59,7 +61,7 @@ namespace Nether.Web.IntegrationTests.Identity
             var login = logins[0];
             Assert.Equal("password", (string)login.providerType);
             Assert.Equal(username, (string)login.providerId);
-            Assert.Equal($"/api/identity/users/{user.userId}/logins/password/{username}", (string)login._link);
+            Assert.Equal($"/api/admin/users/{user.userId}/logins/password", (string)login._link);
 
 
             // login as that user
@@ -73,11 +75,11 @@ namespace Nether.Web.IntegrationTests.Identity
 
         private async Task<HttpClient> AsPlayerAsync(string username = "testuser", string password = null)
         {
-            return await GetClientAsync(username, password);
+            return await SignInAsync(username, password);
         }
         private async Task<HttpClient> AsAdminAsync()
         {
-            return await GetClientAsync("devadmin");
+            return await SignInAsync("devadmin");
         }
     }
 }

@@ -37,6 +37,7 @@ using Nether.Web.Features.Identity;
 using Nether.Web.Features.Leaderboard;
 using Nether.Web.Features.PlayerManagement;
 using Nether.Web.Utilities;
+using Microsoft.Extensions.Options;
 
 namespace Nether.Web
 {
@@ -83,6 +84,8 @@ namespace Nether.Web
             var serviceSwitches = new NetherServiceSwitchSettings();
             services.AddSingleton(serviceSwitches);
 
+            services.AddOptions();
+            services.Configure<SignInMethodOptions>(Configuration.GetSection("Identity:SignInMethods"));
 
             // Add framework services.
             services
@@ -220,6 +223,14 @@ namespace Nether.Web
             // as they each have different auth requirements!
             if (serviceSwitchSettings.IsServiceEnabled("Identity"))
             {
+                var options = app.ApplicationServices.GetRequiredService<IOptions<SignInMethodOptions>>().Value;
+
+                _logger.LogInformation($"Guest auth enabled: {options.GuestAccess.Enabled}");
+                _logger.LogInformation($"Facebook implicit flow enabled: {options.Facebook.EnableImplicit}");
+                _logger.LogInformation($"Facebook token flow enabled: {options.Facebook.EnableAccessToken}");
+                _logger.LogInformation($"UsernamePassword sign-up enabled: {options.UsernamePassword.AllowUserSignUp}");
+
+
                 app.Map("/identity", idapp =>
                 {
                     JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -233,13 +244,13 @@ namespace Nether.Web
                         AutomaticChallenge = false
                     });
 
-                    var facebookEnabled = bool.Parse(Configuration["Identity:SignInMethods:Facebook:EnableImplicit"] ?? "false");
+                    var facebookEnabled = options.Facebook.EnableImplicit;
                     if (facebookEnabled)
                     {
-                        var appId = Configuration["Identity:SignInMethods:Facebook:AppId"];
-                        var appSecret = Configuration["Identity:SignInMethods:Facebook:AppSecret"];
+                        var appId = options.Facebook.AppId;
+                        var appSecret = options.Facebook.AppSecret;
 
-                        idapp.UseFacebookAuthentication(new FacebookOptions()
+                        idapp.UseFacebookAuthentication(new Microsoft.AspNetCore.Builder.FacebookOptions()
                         {
                             DisplayName = "Facebook",
                             SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
