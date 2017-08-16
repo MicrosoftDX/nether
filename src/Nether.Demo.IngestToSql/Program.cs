@@ -1,20 +1,29 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.Azure.EventHubs.Processor;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.Rest.Azure.Authentication;
-using Nether.DataLake;
-using Nether.EventHubs;
-using Nether.GeoLocation;
-using Nether.Ingest;
-using System;
-using System.Threading.Tasks;
+//using Microsoft.Azure.EventHubs.Processor;
 
-namespace Nether.Demo.IngestFull
+using Microsoft.Azure.EventHubs.Processor;
+using Nether.EventHubs;
+using Nether.Ingest;
+using Nether.SQLDatabase;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Data;
+
+namespace Nether.Demo.IngestToSql
 {
     internal class Program
     {
+        // Demo of Nether Ingest setup to
+        // - Input from EventHub
+        // - Using Custom JSON Message Format
+        //   - where "event_name" identifies the type of event rather than the default one "type"
+        //   - where no version number is contained in the messages, so using a static version number of 1.0.0
+        // - Only using the default pipeline, meaning that all messages goes through the same simple pipeline
+        // - Outputting to SQLDatabase
+
         private static void Main(string[] args)
         {
             Console.WriteLine();
@@ -23,7 +32,7 @@ namespace Nether.Demo.IngestFull
             Console.WriteLine(@"  |  \| |/ _ \ __| '_ \ / _ \ '__|");
             Console.WriteLine(@"  | |\  |  __/ |_| | | |  __/ |   ");
             Console.WriteLine(@"  |_| \_|\___|\__|_| |_|\___|_|   ");
-            Console.WriteLine(@"  Demo Ingest Full ");
+            Console.WriteLine(@"  Demo Ingest To Sql ");
             Console.WriteLine();
 
             var app = new ProgramEx();
@@ -47,10 +56,6 @@ namespace Nether.Demo.IngestFull
                 return;
             }
 
-            // Authenticate against Azure AD once and re-use for all needed purposes
-            var serviceClientCretentials = await ApplicationTokenProvider.LoginSilentAsync(Config.Root[Config.NAH_AAD_Domain],
-                new ClientCredential(Config.Root[Config.NAH_AAD_CLIENTID], Config.Root[Config.NAH_AAD_CLIENTSECRET]));
-
             // Setup Listener. This will be the same for all pipelines we are building.
             var listenerConfig = new EventProcessorHostOptions
             {
@@ -64,62 +69,33 @@ namespace Nether.Demo.IngestFull
 
             // Setup Message Parser. By default we are using Nether JSON Messages
             // Setting up parser that knows how to parse those messages.
-            var parser = new EventHubListenerMessageJsonParser { AllowDbgEnqueuedTime = true, CorruptMessageAsyncFunc = OnCorruptMessageAsync };
+            var parser = new EventHubListenerMessageJsonParser
+            {
+                AllowDbgEnqueuedTime = true,
+                CorruptMessageAsyncFunc = OnCorruptMessageAsync,
+                MessageTypePropertyName = "type",
+                UseStaticMessageVersion = true,
+                StaticMessageVersion = "1.0.0"
+            };
 
             // User a builder to create routing infrastructure for messages and the pipelines
             var builder = new MessageRouterBuilder();
 
-            var filePathAlgorithm = new DateFolderStructure(newFileOption: NewFileNameOptions.Every3Hours);
+            Dictionary<string, Tuple<SqlDbType, int>> columntoDatatypeMapping = new Dictionary<string, Tuple<SqlDbType, int>>()
+            {
+                {"event_time", Tuple.Create<SqlDbType, int>(SqlDbType.DateTime, 0 )},
+                {"install_time", Tuple.Create<SqlDbType, int>(SqlDbType.DateTime, 0 )},
+                {"enqueuedTimeUtc", Tuple.Create<SqlDbType, int>(SqlDbType.DateTime, 0 )},
+                {"offline", Tuple.Create<SqlDbType, int>(SqlDbType.Int, 0 )},
+                {"resource_change", Tuple.Create<SqlDbType, int>(SqlDbType.Int, 0 )},
+                {"amount", Tuple.Create<SqlDbType, int>(SqlDbType.Int, 0 )}
+            };
 
-            // Setting up "Geo Clustering Recipe"
-
-            var clusteringSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "lat", "lon", "geoHash", "geoHashPrecision", "geoHashCenterLat", "geoHashCenterLon", "geoHashCenterDist", "rnd");
-
-            builder.Pipeline("geoclusters")
-                .HandlesMessageType("geo-location", 1, 0)
-                .AddHandler(new GeoHashMessageHandler { CalculateGeoHashCenterCoordinates = true })
-                .AddHandler(new RandomIntMessageHandler())
-                .OutputTo(
-                            new FileOutputManager(clusteringSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER]),
-                            new DataLakeStoreOutputManager(
-                                clusteringSerializer,
-                                filePathAlgorithm,
-                                serviceClientCretentials,
-                                Config.Root[Config.NAH_AZURE_SUBSCRIPTIONID],
-                                Config.Root[Config.NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME])
-                        );
-
-            // Setting up "Daily Active Users Recipe"
-
-            var dauSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession", "gamerTag");
-            builder.Pipeline("dau")
-                .HandlesMessageType("session-start", 1, 0)
-                .OutputTo(
-                            new FileOutputManager(dauSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER]),
-                            new DataLakeStoreOutputManager(
-                                dauSerializer,
-                                filePathAlgorithm,
-                                serviceClientCretentials,
-                                Config.Root[Config.NAH_AZURE_SUBSCRIPTIONID],
-                                Config.Root[Config.NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME])
-                        );
-
-            var sessionSerializer = new CsvMessageFormatter("id", "type", "version", "enqueuedTimeUtc", "gameSession");
-            builder.Pipeline("sessions")
-                .HandlesMessageType("heartbeat", 1, 0)
-                .OutputTo(
-                            new FileOutputManager(sessionSerializer, filePathAlgorithm, Config.Root[Config.NAH_FILEOUTPUTMANAGER_LOCALDATAFOLDER]),
-                            new DataLakeStoreOutputManager(
-                                sessionSerializer,
-                                filePathAlgorithm,
-                                serviceClientCretentials,
-                                Config.Root[Config.NAH_AZURE_SUBSCRIPTIONID],
-                                Config.Root[Config.NAH_AZURE_DLSOUTPUTMANAGER_ACCOUNTNAME])
-                );
+            var sqlOutputManager = new SQLDatabaseOutputManager(Config.Root[Config.NAH_AZURE_SQLUTPUTMANAGER_CONNECTIONSTRING], columntoDatatypeMapping, true);
 
             builder.DefaultPipeline
-                .AddHandler(new RandomIntMessageHandler())
-                .OutputTo(new ConsoleOutputManager(new CsvMessageFormatter { IncludeHeaders = false }));
+                .AddHandler(new UnixTimeToDateTimeMessageHandler("install_time", "event_time"))
+                .OutputTo(sqlOutputManager);
 
             // Build all pipelines
             var router = builder.Build();

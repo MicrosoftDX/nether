@@ -32,6 +32,7 @@ namespace Nether.Test.ConsoleClient
             }
 
             MenuItems.Add('1', new ConsoleMenuItem("Loop and send random messages", LoopAndSendRandom));
+            MenuItems.Add('2', new ConsoleMenuItem("Send using sample messages as template", () => { new SendSampleMessageMenu(_client).Show(); }));
         }
 
         private void LoopAndSendRandom()

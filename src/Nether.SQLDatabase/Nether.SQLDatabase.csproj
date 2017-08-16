@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp1.1;net46</TargetFrameworks>
+    <Version>0.0.2-alpha</Version>
+    <Authors>MicrosoftDX</Authors>
+    <Company>MicrosoftDX</Company>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/MicrosoftDX/nether/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/microsoftdx/nether</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/MicrosoftDX/nether/raw/master/logos/logo-only/nether-logo-256x256.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/MicrosoftDX/nether.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>gaming, azure, nether, unity</PackageTags>
+    <Description>Nether, a library to help you build gaming backends on Microsoft Azure.</Description>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-setversion" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.3.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nether.Ingest\Nether.Ingest.csproj" />
+  </ItemGroup>
+</Project>

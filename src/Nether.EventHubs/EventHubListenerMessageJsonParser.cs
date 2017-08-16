@@ -12,13 +12,12 @@ namespace Nether.EventHubs
 {
     public class EventHubListenerMessageJsonParser : IMessageParser<EventHubListenerMessage>
     {
-        public EventHubListenerMessageJsonParser(ICorruptMessageHandler corruptMessageHandler)
-        {
-            CorruptMessageHandler = corruptMessageHandler;
-        }
-
-        public ICorruptMessageHandler CorruptMessageHandler { get; private set; }
+        public Func<string, Task> CorruptMessageAsyncFunc { get; set; } = null;
         public bool AllowDbgEnqueuedTime { get; set; } = false;
+        public string MessageTypePropertyName { get; set; } = "type";
+        public string MessageVersionPropertyName { get; set; } = "version";
+        public bool UseStaticMessageVersion { get; set; } = false;
+        public string StaticMessageVersion { get; set; } = null;
 
         public async Task<Message> ParseMessageAsync(EventHubListenerMessage unparsedMsg)
         {
@@ -31,26 +30,36 @@ namespace Nether.EventHubs
             }
             catch //JSON serialization failed
             {
-                await CorruptMessageHandler.HandleAsync(data);
+                await CorruptMessageAsyncFunc?.Invoke(data);
                 return null;
             }
 
-            var gameEventType = (string)json["type"];
+            // Game Event Type
+            var gameEventType = (string)json[MessageTypePropertyName];
             if (gameEventType == null)
             {
-                await CorruptMessageHandler.HandleAsync(data);
+                await CorruptMessageAsyncFunc?.Invoke(data);
                 return null;
             }
 
+            // Game Event Version
             string version;
-            try
+
+            if (UseStaticMessageVersion && !string.IsNullOrWhiteSpace(StaticMessageVersion))
             {
-                version = (string)json["version"];
+                version = StaticMessageVersion;
             }
-            catch
+            else
             {
-                await CorruptMessageHandler.HandleAsync(data);
-                return null;
+                try
+                {
+                    version = (string)json["version"];
+                }
+                catch
+                {
+                    await CorruptMessageAsyncFunc?.Invoke(data);
+                    return null;
+                }
             }
 
             var dbgEnqueuedTime = (string)json["dbgEnqueuedTimeUtc"];

@@ -10,7 +10,7 @@
     <Name>Nether.DataLake.Jobs</Name>
     <RootNamespace>Nether.Analytics.ADLA</RootNamespace>
     <RuntimeVersion>default</RuntimeVersion>
-    <OutputStreamPath>C:\dev\USQLDataRoot</OutputStreamPath>
+    <OutputStreamPath>C:\Users\rzdebski\AppData\Local\USQLDataRoot</OutputStreamPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
