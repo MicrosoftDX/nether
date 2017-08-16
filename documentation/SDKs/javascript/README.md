@@ -284,7 +284,7 @@ checkLogin = function(status) {
         console.log('User logged into facebook');
 }
 loginUser = function() {
-    nether.player.Identity.facebookLogin(checkLogin);
+    nether.player.identity.facebookLogin(checkLogin);
 }
 </script>
 ```
@@ -297,7 +297,7 @@ checkAuth = function(status) {
     if (status === true) 
         console.log('User authenticated with nether');
 }
-nether.player.identity.authWithToken(nether.Player.Identity.tokenProvider, checkAuth);
+nether.player.identity.authWithToken(nether.player.identity.tokenProvider, checkAuth);
 ```
 
 ### authWithFacebookToken
