@@ -65,8 +65,8 @@ The ***initProvider*** callback initialises the specified login provider and aut
         console.log(status)
     }
 
-    nether.initProvider(nether.player.identity.provider.nether, providerInitCallback, netherInitCallback);
-    nether.initProvider(nether.player.identity.provider.facebook, providerInitCallback, netherInitCallback, document)
+    nether.initProvider(nether.player.identity.providers.nether, providerInitCallback, netherInitCallback);
+    nether.initProvider(nether.player.identity.providers.facebook, providerInitCallback, netherInitCallback, document)
 ```
 
 ### Nether provider callback page
