@@ -33,6 +33,8 @@ Get started with end-to-end scenarios:
 - [Nether sample](getstarted/nethersample.md)
 - [Analytics for your game](getstarted/analytics.md)
 - [Leaderboard for your game](getstarted/leaderboard.md)
+- Player management for your game
+- Identity for your game
 
 ### [How to develop using Nether](howto/develop)
 
