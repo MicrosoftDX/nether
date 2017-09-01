@@ -1,6 +1,6 @@
 # Player Management
 
-Player Management functionality, implementing Nether [Player Management APIs](../api/players/README.md), using SQL Database as a data store.
+Player Management functionality, implementing Nether [Player Management APIs](../api/player-management/README.md), using SQL Database as a data store.
 
 ## Prerequisites
 * SQL Database - [learn how to create a SQL Database](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-get-started)
