@@ -16,7 +16,7 @@ Nether is built on top of .NET Core 1.1. Make sure you install at least version 
 
 **SQL Server**
 
-The out-of-the-box configuration for nether uses in-memory data stores. You can configure it to run against SQL Server as per [the configuration docs](./configuration.md), and there is a partial implementation of MongoDB providers
+The out-of-the-box configuration for nether uses in-memory data stores. You can configure it to run against SQL Server as per [the configuration docs](../configuration/README.md), and there is a partial implementation of MongoDB providers
 
 **Azure Powershell**
 
@@ -32,13 +32,13 @@ We support and plan to build SDKs for [Unity](http://unity3d.com). However, sinc
 
 Nether has been built using ASP.NET Core with a pluggable identity system. Currently, there is support for Facebook authentication (more to follow). To get set up with Facebook authentication you need to register an application with Facebook then configure it for use by your instance of Nether.
 
-For more details on configuring the identity system see the [Nether identity configuration docs](configuration/identity.md).
+For more details on configuring the identity system see the [Nether identity configuration docs](../configuration/identity.md).
 
 ## Building and running Nether
 
 Assuming you have installed the Prerequisites above, follow the steps to build and run Nether in your chosen environment below.
 
-If you want to configure nether to use a different connection string or data store then see the [Configuration](configuration.md) section.
+If you want to configure nether to use a different connection string or data store then see the [Configuration](../configuration/README.md) section.
 
 **Visual Studio**
 
