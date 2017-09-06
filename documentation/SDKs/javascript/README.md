@@ -34,7 +34,7 @@ To use the nether SDK include the nether script in your project. Reference the s
 ```javascript
 var config = {
         netherBaseUrl: '<nether url>',
-        providers: nether.player.identity.providers.facebook | nether.player.identity.providers.nether,
+        providers: nether.player.identity.providers.facebook | nether.player.identity.providers.nether, nether.player.identity.providers.guest
         providerConfig: [{
                 provider: nether.player.identity.providers.facebook,
                 netherClientId: '<client Id>',
@@ -46,6 +46,11 @@ var config = {
                 netherClientId: '<client Id>',
                 redirectUrl: '<callback page>',
                 postLogoutRedirectUrl: '<home url>' 
+            },
+            {
+                provider: nether.player.identity.providers.guest,
+                netherClientId: '<client Id>',
+                netherClientSecret: '<client secret>'
             }]
     }
     nether.init(config);
@@ -310,6 +315,20 @@ checkAuth = function(status) {
         console.log('User authenticated with nether');
 }
 nether.player.identity.authWithFacebookToken(checkAuth);
+```
+
+### Guest login
+You can use the ***nether.player.identity.guestLogin(callback)*** method to authenticate a user as guest with Nether
+
+#### Example usage
+```javascript
+checkLogin = function(status) {
+    if (status === true) 
+        console.log('User logged in as guest');
+}
+loginUser = function() {
+    nether.player.identity.guestLogin(checkLogin);
+}
 ```
 
 ### netherLogout

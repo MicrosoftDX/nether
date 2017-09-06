@@ -537,7 +537,8 @@ nether.player.identity = (function() {
 
     identity.providers = {
         facebook: 'facebook',
-        nether: 'nether'
+        nether: 'nether',
+        guest: 'guest'
     }
 
     identity.init = function(providerCallback, netherCallback) {
@@ -597,6 +598,49 @@ nether.player.identity = (function() {
             callback: function(status, res) {
                 var data = JSON.parse(res);
                 
+                if (data.access_token) {
+                    identity.accessToken = data.access_token;
+                    identity.loggedIn = true;
+                    console.log(identity.accessToken);
+                    callback(true);
+                } else {
+                    console.log('couldnt get the access token');
+                    callback(new Error('couldn\'t get access token'));
+                }
+            }
+        });
+    };
+
+
+    function createGuestIdentifier() {
+        var id = "";
+        var validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxys0123456789";
+        for (var i = 1; i < 50; i++) {
+            index = Math.floor(validChars.length * Math.random());
+            id += validChars[index];
+        }
+        return id;
+    }
+
+    identity.guestLogin = function guestLogin(callback) {
+        netherConfig = getProviderConfig(nether.player.identity.providers.guest);
+        var guestIdentifier = localStorage.getItem("nether_guest_identifier");
+        if (guestIdentifier === null) {
+            guestIdentifier = createGuestIdentifier();
+        }
+        // persist so that we use the same id next time
+        localStorage.setItem('nether_guest_identifier', guestIdentifier);
+
+        nether.common.ajax({
+            url: nether.netherBaseUrl + '/identity/connect/token',
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/x-www-form-urlencoded'
+            },
+            data: "grant_type=guest-access&client_id=" + netherConfig.netherClientId + "&client_secret=" + netherConfig.netherClientSecret + "&scope=openid+profile+nether-all&guest_identifier=" + guestIdentifier,
+            callback: function (status, res) {
+                var data = JSON.parse(res);
+
                 if (data.access_token) {
                     identity.accessToken = data.access_token;
                     identity.loggedIn = true;
