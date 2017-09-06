@@ -565,7 +565,9 @@ nether.player.identity = (function() {
     identity.facebookLogin = function(callback) {
         if (identity.facebookAccessToken !== '') {
             console.log('User already logged into facebook');
-            if (identity.loggedIn === false) {
+            if (identity.loggedIn === true) {
+                callback(true);
+            } else {
                 identity.authWithFacebookToken(callback);
             }
         } else {
