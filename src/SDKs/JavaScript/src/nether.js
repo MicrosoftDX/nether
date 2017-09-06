@@ -429,7 +429,7 @@ nether.player = (function() {
                 if (status === 204) {
                     nether.player.gamertag = gamerTag;
                     nether.player.country = country;
-                    callback();
+                    callback(true);
                     return;
                 } else if (status === 400) {
                     try {
