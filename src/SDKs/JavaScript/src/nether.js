@@ -611,11 +611,11 @@ nether.player.identity = (function() {
     // nether login
     identity.netherLogin = function() {
         nether.oidcMgr.signinRedirect();
-    }
+    };
 
     identity.netherLogout = function() {
         nether.oidcMgr.signoutRedirect();
-    }
+    };
 
     getProviderConfig = function(provider) {
         for (var i = 0; i < nether.player.identity.providerConfig.length; i++ ) {
