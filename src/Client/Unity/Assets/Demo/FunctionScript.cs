@@ -98,10 +98,10 @@ namespace Nether
 
         private void LoadLeaderboard()
         {
-            StartCoroutine(leaderboardService.Get<LeaderboardItem>(LoadCompleted));
+            StartCoroutine(leaderboardService.Get<LeaderboardItem>(LoadLeaderboardCompleted));
         }
 
-        private void LoadCompleted(IRestResponse<LeaderboardItem[]> response)
+        private void LoadLeaderboardCompleted(IRestResponse<LeaderboardItem[]> response)
         {
             if (response.IsError)
             {
@@ -132,15 +132,20 @@ namespace Nether
             double score = 0;
             Double.TryParse(inputScore.text, out score);
 
+            SubmitScore(inputPlayer.text, score);
+        }
+
+        private void SubmitScore(string player, double score)
+        {
             ScoreItem body = new ScoreItem();
-            body.player = inputPlayer.text;
+            body.player = player;
             body.score = score;
             body.playerId = inputPlayer.text.ToLower();
             body.leaderboard = leaderboard;
-            StartCoroutine(scoreService.Post<ScoreItem, string>(body, SubmitCompleted));
+            StartCoroutine(scoreService.Post<ScoreItem, string>(body, SubmitScoreCompleted));
         }
 
-        private void SubmitCompleted(IRestResponse<string> response)
+        private void SubmitScoreCompleted(IRestResponse<string> response)
         {
             if (response.IsError)
             {
@@ -175,7 +180,7 @@ namespace Nether
             LeaderboardItem data = highscores[row];
             cell.Name.text = data.player;
             cell.Score.text = data.score.ToString();
-            cell.Rank.text = (row + 1).ToString();
+            cell.Rank.text = data.rank.ToString();
             return cell;
         }
 
