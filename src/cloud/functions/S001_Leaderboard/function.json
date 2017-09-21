@@ -1,16 +1,20 @@
 {
-  "disabled": false,
   "bindings": [
     {
       "authLevel": "function",
       "name": "req",
       "type": "httpTrigger",
-      "direction": "in"
+      "direction": "in",
+      "methods": [
+        "get"
+      ],
+      "route": "leaderboard/{leaderboard}"
     },
     {
       "name": "$return",
       "type": "http",
       "direction": "out"
     }
-  ]
+  ],
+  "disabled": false
 }
