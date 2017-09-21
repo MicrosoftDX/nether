@@ -26,8 +26,7 @@ namespace Azure.Functions
 
 		public IEnumerator Post<B,T> (B body, Action<IRestResponse<T>> callback = null) 
 		{
-			string url = ApiUrl();
-			RestRequest request = new RestRequest(url, Method.POST);
+			RestRequest request = new RestRequest(ApiUrl(), Method.POST);
 			if (client.HasKey()) {
 				request.AddQueryParam("code", client.GetKey(), true);
 			}
@@ -44,6 +43,18 @@ namespace Azure.Functions
                 request.ParseJson<T>(callback);
             }
 		}
+
+        public IEnumerator Get<T>(Action<IRestResponse<T[]>> callback = null)
+        {
+            RestRequest request = new RestRequest(ApiUrl(), Method.GET);
+            if (client.HasKey())
+            {
+                request.AddQueryParam("code", client.GetKey(), true);
+            }
+            Debug.Log("GET Request URL: " + request.Request.url);
+            yield return request.Request.Send();
+            request.ParseJsonArray<T>(callback);
+        }
 
         private string ApiUrl()
         {

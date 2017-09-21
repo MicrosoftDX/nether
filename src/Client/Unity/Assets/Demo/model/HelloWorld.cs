@@ -1,6 +1,4 @@
-using System;
-
-[Serializable]
+[System.Serializable]
 public class HelloWorld
 {
     public string name;
@@ -9,5 +7,4 @@ public class HelloWorld
     {
         this.name = name;
     }
-
 }
