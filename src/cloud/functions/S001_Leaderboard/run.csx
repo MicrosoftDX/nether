@@ -1,21 +1,73 @@
-using System.Net;
+    using System.Net;
+    using System.Linq;
+    using System.Configuration;
 
-public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceWriter log)
-{
-    log.Info("C# HTTP trigger function processed a request.");
+    using Microsoft.Azure.Documents;
+    using Microsoft.Azure.Documents.Client;
+    using Newtonsoft.Json;
 
-    // parse query parameter
-    string name = req.GetQueryNameValuePairs()
-        .FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0)
-        .Value;
+    public static HttpResponseMessage Run(HttpRequestMessage req, TraceWriter log)
+    {
+        string DB = ConfigurationManager.AppSettings["DB"];    
+        string COLLECTION = ConfigurationManager.AppSettings["COLLECTION"];
+        string ENDPOINT = ConfigurationManager.AppSettings["ENDPOINT"];
+        string KEY = ConfigurationManager.AppSettings["KEY"];
+        const int LENGTH_OF_LEADERBOARD = 10;
 
-    // Get request body
-    dynamic data = await req.Content.ReadAsAsync<object>();
+        var client = new DocumentClient(new Uri(ENDPOINT), KEY);
 
-    // Set name to query string or body data
-    name = name ?? data?.name;
+        try
+        {
+            var collection = client.CreateDocumentQuery<ScoreItem>(
+                UriFactory.CreateDocumentCollectionUri(DB, COLLECTION), new FeedOptions { EnableCrossPartitionQuery = true });
+            
+            var query = 
+                (from s in collection
+                orderby s.Score descending
+                select new LeaderboardItem {Player = s.Player, Score = s.Score}).Take(LENGTH_OF_LEADERBOARD);
 
-    return name == null
-        ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
-        : req.CreateResponse(HttpStatusCode.OK, "Hello " + name);
-}
+            var leaders = query.ToList();
+
+            for (int i=0; i < leaders.Count; i++)
+            {
+                leaders[i].Rank = i + 1;
+            }
+
+            return req.CreateResponse(HttpStatusCode.OK, leaders);
+
+        }
+        catch (DocumentClientException ex)
+        {
+            log.Info(ex.ToString());
+
+            if (ex.StatusCode == HttpStatusCode.NotFound)
+                return req.CreateResponse(HttpStatusCode.BadRequest, "This user does not exist in the database.");
+
+            return req.CreateResponse(HttpStatusCode.BadRequest, $"An unknown error has occured. Message: {ex.Message}");
+        }
+    }
+
+
+    public class ScoreItem
+    {
+        [JsonProperty(PropertyName = "id")]
+        public string Id { get; set;}    
+        [JsonProperty(PropertyName = "leaderboard")]
+        public string Leaderboard { get; set;}    
+        [JsonProperty(PropertyName = "player")]
+        public string Player { get; set;}
+        [JsonProperty(PropertyName = "playerId")]
+        public string PlayerId { get; set;}
+        [JsonProperty(PropertyName = "score")]
+        public double Score { get; set;}
+    }
+
+    public class LeaderboardItem
+    {
+        [JsonProperty(PropertyName = "rank")]
+        public int Rank { get; set; }
+        [JsonProperty(PropertyName = "player")]
+        public string Player { get; set; }
+        [JsonProperty(PropertyName = "score")]
+        public double Score { get; set; }
+    }
