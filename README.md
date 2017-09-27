@@ -26,19 +26,19 @@ Click on the scenario below that best fit your needs to get started:
 * [Top N Leaderboard](src/cloud/functions/leaderboards/top-n/) (tags: #serverless, #functions, #cosmosdb)
 * Around Me Leaderboard (tags: #serverless, #functions, #cosmosdb)
 
-#### Inventories
+### Inventories
 
 * Basic Cloud Inventory
 
-#### Match Making
+### Match Making
 
 * Simple N Player Match Making
 
-#### Game Server Hosting
+### Game Server Hosting
 
 * ...
 
-#### Analytics
+### Analytics
 
 * Daily / Monthly Active Users, DAU/MAU
 
