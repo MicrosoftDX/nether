@@ -19,18 +19,12 @@ Nether is a project composed of reusable set of building blocks, projects, servi
 
 ## Getting Started
 
-Unless you are using an already existing multitenant service for you game backend, no two backends will look the same. Nether is divided into separate scenarios with receipts that will help you implement your custom backend. Scenarios can be used alone or combined into a bigger backend for your game.
-
 Click on the scenario below that best fit your needs to get started:
 
-### Serverless Implementations
+### Leaderboards
 
-Scenarios described below uses serverless architectures in Azure in order to achieve the decired outcome. Using a serverless architecture is a recommended starting point if you are new to server side development or if you just want to avoid the hassle of managing your own cluster of servers.
-
-#### Leaderboards
-
-* [Top N Leaderboard](src/cloud/functions/leaderboards/top-n/)
-* Around Me Leaderboard
+* [Top N Leaderboard](src/cloud/functions/leaderboards/top-n/) (tags: #serverless, #functions, #cosmosdb)
+* Around Me Leaderboard (tags: #serverless, #functions, #cosmosdb)
 
 #### Inventories
 
@@ -38,7 +32,11 @@ Scenarios described below uses serverless architectures in Azure in order to ach
 
 #### Match Making
 
-* N Player Match
+* Simple N Player Match Making
+
+#### Game Server Hosting
+
+* ...
 
 #### Analytics
 
@@ -46,8 +44,7 @@ Scenarios described below uses serverless architectures in Azure in order to ach
 
 ## Reporting issues and feedback
 
-If you encounter any bugs with the tool please file an issue in the Issues
-section of our GitHub repo.
+If you encounter any bugs please file an issue in the Issues section of our GitHub repo.
 
 ## Contribute Code
 
