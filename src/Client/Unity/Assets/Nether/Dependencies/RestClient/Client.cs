@@ -23,13 +23,10 @@ namespace RestClient
 		public Client (string url, bool forceHttps = true)
 		{
 			if (forceHttps) {
-                Url = HttpsUri (url);
+        Url = HttpsUri (url);
 			}
-			Debug.Log ("App Url: " + DomainName(Url));
-
 			// required for running in Windows and Android
 			#if !NETFX_CORE || UNITY_ANDROID
-			Debug.Log ("ServerCertificateValidation");
 			ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
 			#endif
 		}
@@ -58,8 +55,7 @@ namespace RestClient
 		#if !NETFX_CORE || UNITY_ANDROID
 		private bool RemoteCertificateValidationCallback (System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
 		{
-            // Check the certificate to see if it was issued from Azure
-            Debug.Log("@ " + certificate.Subject);
+      // Check the certificate to see if it was issued from Azure
 			if (certificate.Subject.Contains (DomainName(Url))) {
 				return true;
 			} else {

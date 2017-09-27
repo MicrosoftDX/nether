@@ -59,15 +59,12 @@ namespace RestClient
         {
             if (queryParams == null)
             {
-                Debug.Log("- No query");
                 return;
             }
             var match = Regex.Match(Request.url, @"^(.+)(\\?)(.+)", RegexOptions.IgnoreCase);
-            Debug.Log("* Match: " + match.Groups[0].Value );
             if (match.Groups.Count == 4 && match.Groups[0].Value.Length > 0)
             {
                 string url = match.Groups[0].Value + queryParams.ToString();
-                Debug.Log("Update Request URL: " + url);
                 Request.url = url;
             }
         }
