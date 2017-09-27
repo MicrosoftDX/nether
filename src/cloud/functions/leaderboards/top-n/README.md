@@ -46,9 +46,9 @@ In order to follow along in this scenario the following prerequisite need to be 
 
 ### 2. Deploy Required Services on Microsoft Azure
 
-There are many ways to deploy services on Microsoft Azure, pick the one that feels most natural to you, then continue to step 2.
+There are many ways to deploy services on Microsoft Azure, pick the one that feels most natural to you, then continue to next step.
 
-#### a) ... using an Azure Resource Manager, ARM, Template
+#### A) ... using an Azure Resource Manager, ARM, Template
 
 Your resources in Azure can be deployed automatically using a JSON formated document, called Azure Resource Manager, ARM, Template. The template describes the needed resources/services for your deployment and if there are any dependencies between them.
 
@@ -61,3 +61,8 @@ Template used in this scenario: [azuredeploy.json](azuredeploy.json)
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoftDX%2Fnether%2Fserverless%2Fsrc%2Fcloud%2Ffunctions%2Fleaderboards%2Ftop-n%2Fazuredeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
 
 You'll be asked to fill in a few parameters before deployment begins. Please provide them as following.
+
+Parameter           | Description
+--------------------|-------------------------------
+cosmosDBAccountName | A globally unique name that identifies your Cosmos DB account. Make up a name that identifies your solutions database, for example: netherdb
+

@@ -1,3 +1,32 @@
 {
-    "$schema": ""
-}
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "cosmosDBAccountName": {
+        "type": "string",
+        "minLength": 3,
+        "metadata": {
+          "description": "The Cosmos DB account name."
+        }
+      }
+    },
+    "variables": {
+      "offerType": "Standard"
+    },
+    "resources": [
+      {
+        "apiVersion": "2015-04-08",
+        "type": "Microsoft.DocumentDB/databaseAccounts",
+        "name": "[parameters('cosmosDBAccountName')]",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "name": "[parameters('cosmosDBAccountName')]",
+          "databaseAccountOfferType": "[variables('offerType')]",
+          "consistencyPolicy": {
+            "defaultConsistencyLevel": "Session"
+          }
+        }
+      }
+    ]
+  }
+  
