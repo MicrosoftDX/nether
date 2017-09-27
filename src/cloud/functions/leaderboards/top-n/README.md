@@ -2,7 +2,7 @@
 
 This guide will help you implement a Top N Leaderboard on Microsoft Azure using a serverless architecture. The Top N leaderboard will save the top N scores, where N is a configurable positive integer, and retrieve the the sorted highscore list when requested.
 
-## Requirements
+## Scenario Requirements
 
 The following requirements where considered while creating this leaderboard implementation:
 
