@@ -48,21 +48,27 @@ In order to follow along in this scenario the following prerequisite need to be 
 
 There are many ways to deploy services on Microsoft Azure, pick the one that feels most natural to you, then continue to next step.
 
-#### A) ... using an Azure Resource Manager, ARM, Template
+#### A) Deploy using an Azure Resource Manager, ARM, Template
 
 Your resources in Azure can be deployed automatically using a JSON formated document, called Azure Resource Manager, ARM, Template. The template describes the needed resources/services for your deployment and if there are any dependencies between them.
 
 You don't need to understand how they are designed in order to use them, but please have a look at our ARM Template documentation if you are interested in learning more and perhaps designing your own templates.
 
-Have a quick look at the template being used in this scenario before you click the "Deploy to Azure" button below in order to start deployment of required resources/services.
+Have a quick look at the template being used in this scenario before you click the "Deploy to Azure" button below in order to start deployment of required resources/services. You'll be taken to the Azure Portal and might have to sign in on your account if you are not allready signed in.
 
 Template used in this scenario: [azuredeploy.json](azuredeploy.json)
+
+Click the below button to start deployment
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkrist00fer%2Fnether%2Fserverless%2Fsrc%2Fcloud%2Ffunctions%2Fleaderboards%2Ftop-n%2Fazuredeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
 
 You'll be asked to fill in a few parameters before deployment begins. Please provide them as following.
 
-Parameter           | Description
---------------------|-------------------------------
-cosmosDBAccountName | A globally unique name that identifies your Cosmos DB account. Make up a name that identifies your solutions database, for example: netherdb
+Parameter           | Description                   | Example Values
+--------------------|-------------------------------|--------------------
+Subscription        | The Azure Subscription you want to deploy to. Often you will not have more than one option here. | MySubscription
+Resource group      | A resource group keeps related resources together. | Leaderboard
+Location            | Defines where in the world you want your service to be deployed. | North Europe
+Cosmos DB Account Name | A globally unique name that identifies your Cosmos DB account. Make up a name that identifies your solutions database. You can re-use the same database account many implementations. | LeaderboardDB
 
+#### B)
