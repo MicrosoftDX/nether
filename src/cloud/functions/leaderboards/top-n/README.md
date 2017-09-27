@@ -71,4 +71,6 @@ Resource group      | A resource group keeps related resources together. | Leade
 Location            | Defines where in the world you want your service to be deployed. | North Europe
 Cosmos DB Account Name | A globally unique name that identifies your Cosmos DB account. Make up a name that identifies your solutions database. You can re-use the same database account many implementations. | LeaderboardDB
 
+Agree to the terms and click "Purchase" to start deployment of required services for your leaderboard.
+
 #### B)
