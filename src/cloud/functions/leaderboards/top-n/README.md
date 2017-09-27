@@ -6,10 +6,16 @@ This guide will help you implement a Top N Leaderboard on Microsoft Azure using 
 
 The following requirements where considered while creating this leaderboard implementation:
 
-* Keep requirements simple
+* Game client should be able to send achieved scores to the leaderboard using a REST API.
+* Game client should be able to retrieve the leaderboard using a REST API.
+
+### Non Functional Requirements
+
+* Keep scenario simple
 * Minimize the need of maintainence
 * Scale from low, to extreme usage
 * Keep cost to a minimum
+* Service should be implemented using C# Script in order for ease of understanding and modification
 
 ## Azure Services Used
 
@@ -27,8 +33,11 @@ The leaderboard created in this scenario can be called from any client that can 
 
 ## Prerequisite
 
-In order to follow along in this scenario, you need to have completed the following:
+In order to follow along in this scenario the following prerequisite need to be fulfilled:
 
-* Created an Microsoft Azure Account
-* Installed Unity 3D
+* Have access to a Microsoft Azure Account
+* Have Installed Unity 3D *
 
+*) If you plan to call the leaderboard from a Unity game
+
+## Getting started
