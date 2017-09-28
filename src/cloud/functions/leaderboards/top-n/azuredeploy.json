@@ -2,118 +2,136 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "cosmosDBAccountName": {
-            "type": "string",
-            "minLength": 3,
-            "metadata": {
-                "description": "The Cosmos DB account name."
-            }
-        },
-        "appName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the function app that you wish to create."
-            }
-        }
+      "AppServicePlanName": {
+        "type": "string",
+        "minLength": 1
+      },
+      "CosmosDBAccountName": {
+        "type": "string",
+        "minLength": 1
+      },
+      "StorageAccountName": {
+        "type": "string",
+        "minLength": 1
+      },
+      "FunctionAppName": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "variables": {
-        "offerType": "Standard",
-        "functionAppName": "[parameters('appName')]",
-        "hostingPlanName": "[parameters('appName')]",
-        "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'azfunctions')]",
-        "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+      "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', parameters('StorageAccountName'))]"
     },
     "resources": [
       {
-        "apiVersion": "2015-04-08",
+        "type": "Microsoft.Storage/storageAccounts",
+        "apiVersion": "2017-06-01",
+        "name": "[parameters('StorageAccountName')]",
+        "tags": {
+          "displayName": "StorageAccount"
+        },
+        "location": "[resourceGroup().location]",
+        "kind": "Storage",
+        "sku": {
+          "name": "Standard_LRS"
+        }
+      },
+  
+      {
         "type": "Microsoft.DocumentDB/databaseAccounts",
+        "apiVersion": "2015-04-08",
         "name": "[parameters('cosmosDBAccountName')]",
+        "tags": {
+          "displayName": "CosmosDB"
+        },
         "location": "[resourceGroup().location]",
         "properties": {
           "name": "[parameters('cosmosDBAccountName')]",
-          "databaseAccountOfferType": "[variables('offerType')]",
+          "databaseAccountOfferType": "Standard",
           "consistencyPolicy": {
             "defaultConsistencyLevel": "Session"
           }
         }
-    },
+      },
+  
       {
-        "type": "Microsoft.Storage/storageAccounts",
-        "name": "[variables('storageAccountName')]",
-        "apiVersion": "2017-06-01",
-        "location": "[resourceGroup().location]",
-        "kind": "Storage",
-        "sku": {
-            "name": "Standard_LRS"
-        }
-    },
-    {
         "type": "Microsoft.Web/serverfarms",
-        "apiVersion": "2015-08-01",
-        "name": "[variables('hostingPlanName')]",
+        "apiVersion": "2016-09-01",
+        "name": "[parameters('AppServicePlanName')]",
+        "tags": {
+          "displayName": "AppServicePlan"
+        },
         "location": "[resourceGroup().location]",
+        "sku": {
+          "name": "Y1",
+          "tier": "Dynamic",
+          "size": "Y1",
+          "family": "Y",
+          "capacity": 0
+        },
+        "kind": "functionapp",
+        "dependsOn": [],
         "properties": {
-            "name": "[variables('hostingPlanName')]",
-            "computeMode": "Dynamic",
-            "sku": "Dynamic"
+          "name": "[parameters('AppServicePlanName')]"
         }
-    },
-    {
-        "apiVersion": "2015-08-01",
+      },
+  
+      {
         "type": "Microsoft.Web/sites",
-        "name": "[variables('functionAppName')]",
+        "apiVersion": "2016-08-01",
+        "name": "[parameters('FunctionAppName')]",
+        "tags": {
+          "displayName": "FunctionApp"
+        },
         "location": "[resourceGroup().location]",
-        "kind": "functionapp",            
+        "kind": "functionapp",
         "dependsOn": [
-            "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
-            "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+          "[resourceId('Microsoft.Web/serverfarms', parameters('AppServicePlanName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName'))]",
+          "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('CosmosDBAccountName'))]"
         ],
         "properties": {
-            "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
-            "siteConfig": {
-                "appSettings": [
-                    {
-                        "name": "AzureWebJobsDashboard",
-                        "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
-                    },
-                    {
-                        "name": "AzureWebJobsStorage",
-                        "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
-                    },
-                    {
-                        "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                        "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
-                    },
-                    {
-                        "name": "WEBSITE_CONTENTSHARE",
-                        "value": "[toLower(variables('functionAppName'))]"
-                    },
-                    {
-                        "name": "FUNCTIONS_EXTENSION_VERSION",
-                        "value": "~1"
-                    },
-                    {
-                        "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                        "value": "6.5.0"
-                    },
-                    {
-                        "Name": "DB",
-                        "Value": "leaderboard"
-                    }, {
-                        "Name": "COLLECTION",
-                        "Value": "scores"
-                    },
-                    {
-                        "Name": "DOCUMENTDB_ENDPOINT",
-                        "Value": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', parameters('cosmosDBAccountName'))).documentEndpoint]"
-                    }, {
-                        "Name": "DOCUMENTDB_PRIMARY_KEY",
-                        "Value": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', parameters('cosmosDBAccountName')), '2015-04-08').primaryMasterKey]"
-                    }
-                ]
-            }
-        }          
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('AppServicePlanName'))]",
+          "siteConfig": {
+            "appSettings": [
+              {
+                "name": "AzureWebJobsDashboard",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('StorageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
+              },
+              {
+                "name": "AzureWebJobsStorage",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('StorageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
+              },
+              {
+                "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('StorageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
+              },
+              {
+                "name": "WEBSITE_CONTENTSHARE",
+                "value": "[toLower(parameters('FunctionAppName'))]"
+              },
+              {
+                "name": "FUNCTIONS_EXTENSION_VERSION",
+                "value": "~1"
+              },
+              {
+                "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                "value": "6.5.0"
+              },
+              {
+                "Name": "DB",
+                "Value": "leaderboard"
+              },
+              {
+                "Name": "COLLECTION",
+                "Value": "scores"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": {
     }
-    ]
   }
   
