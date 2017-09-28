@@ -9,10 +9,6 @@ AppVeyor: [![Build status](https://ci.appveyor.com/api/projects/status/v5btbm617
 Travis:   [![Build Status](https://travis-ci.org/MicrosoftDX/nether.svg?branch=master)](https://travis-ci.org/MicrosoftDX/nether)
 -->
 
-
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoftDX%2Fnether%2Fmaster%2Fdeployment%2Fnether-deploy-quickstart.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
-
-
 ## About
 
 Nether is a project composed of reusable set of building blocks, projects, services and best practices designed for Gaming workloads powered by Microsoft Azure, aimed to be beneficial for many type of game developers seeking inspiration or a fully implemented solution.
