@@ -55,11 +55,13 @@ Game communicates
 
 There are many ways to deploy services on Microsoft Azure, pick the one that feels most natural to you, then continue to next step.
 
-#### A) Deploy using an Azure Resource Manager, ARM, Template
+> If you already have the required services setup in Azure, you could re-use them and just add or tweak the required "functions" that implement this scenario.
+
+#### 2A) Deploy using an Azure Resource Manager, ARM, Template
 
 Your resources in Azure can be deployed automatically using a JSON formated document, called Azure Resource Manager, ARM, Template. The template describes the needed resources/services for your deployment and if there are any dependencies between them.
 
-You don't need to understand how they are designed in order to use them, but please have a look at our ARM Template documentation if you are interested in learning more and perhaps designing your own templates.
+> You don't need to understand how the template is designed in order to use it, but please have a look at the [ARM Template documentation](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates) if you are interested in learning more and perhaps designing your own templates.
 
 Have a quick look at the template being used in this scenario before you click the "Deploy to Azure" button below in order to start deployment of required resources/services. You'll be taken to the Azure Portal and might have to sign in on your account if you are not allready signed in.
 
@@ -83,4 +85,8 @@ Cosmos DB Account Name | A globally unique name that will identify your Cosmos D
 
 Agree to the terms and click "Purchase" to start deployment of required services for your leaderboard.
 
-#### B)
+This will setup the services needed to implement this scenario and also provide the provisioned Azure Function App with insights into where to find the provisioned Cosmos DB Account.
+
+Please continue to step 3 below
+
+#### 2B)
