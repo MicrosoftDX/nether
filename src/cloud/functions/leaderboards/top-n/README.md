@@ -44,7 +44,7 @@ In order to follow along in this scenario the following prerequisite need to be 
 
 ### 1. Understanding the architecture
 
-![Architecture Diagram][../../../architectures/game-function-cosmos.png]
+![Architecture Diagram](../../../architectures/game-function-cosmos.png)
 
 ### 2. Deploy Required Services on Microsoft Azure
 
