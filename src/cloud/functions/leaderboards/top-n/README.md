@@ -44,7 +44,12 @@ In order to follow along in this scenario the following prerequisite need to be 
 
 ### 1. Understanding the architecture
 
-![Architecture Diagram](../../../architectures/game-function-cosmos.png)
+This scenario uses a very simple architecture in order to achieve the required outcome. The game will communicate with a custom REST API, hosted as a set of "Functions" in Azure. Those functions will then reach down to "Cosmos DB" in order to save or retrieve the required data.
+
+#### Architecture Diagram
+
+Game communicates
+![Architecture Diagram](../../../architectures/game-function-cosmos.png "Game-> Functions-> CosmosDB")
 
 ### 2. Deploy Required Services on Microsoft Azure
 
