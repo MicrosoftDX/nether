@@ -44,6 +44,8 @@ In order to follow along in this scenario the following prerequisite need to be 
 
 ### 1. Understanding the architecture
 
+![Architecture Diagram][../../../architectures/game-function-cosmos.png]
+
 ### 2. Deploy Required Services on Microsoft Azure
 
 There are many ways to deploy services on Microsoft Azure, pick the one that feels most natural to you, then continue to next step.
@@ -58,7 +60,9 @@ Have a quick look at the template being used in this scenario before you click t
 
 Template used in this scenario: [azuredeploy.json](azuredeploy.json)
 
-Click the below button to start deployment
+Click the below button to start deployment.
+
+(Ctrl + Click will open the portal with the deployment in a separate tab in most browsers, hence allow you to keep this documentation available and ready to use)
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkrist00fer%2Fnether%2Fserverless%2Fsrc%2Fcloud%2Ffunctions%2Fleaderboards%2Ftop-n%2Fazuredeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
 
@@ -69,7 +73,8 @@ Parameter           | Description                   | Example Values
 Subscription        | The Azure Subscription you want to deploy to. Often you will not have more than one option here. | MySubscription
 Resource group      | A resource group keeps related resources together. | Leaderboard
 Location            | Defines where in the world you want your service to be deployed. | North Europe
-Cosmos DB Account Name | A globally unique name that identifies your Cosmos DB account. Make up a name that identifies your solutions database. You can re-use the same database account many implementations. | LeaderboardDB
+Function App Name   | A globally unique name that will identify your Function App in Azure. Pick a name that identifies your solution. | nether
+Cosmos DB Account Name | A globally unique name that will identify your Cosmos DB Account in Azure. Pick a name that identifies your solution. | netherdb
 
 Agree to the terms and click "Purchase" to start deployment of required services for your leaderboard.
 
