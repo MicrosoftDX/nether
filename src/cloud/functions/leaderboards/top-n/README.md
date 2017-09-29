@@ -44,12 +44,13 @@ In order to follow along in this scenario the following prerequisite need to be 
 
 ### 1. Understanding the architecture
 
-This scenario uses a very simple architecture in order to achieve the required outcome. The game will communicate with a custom REST API, hosted as a set of "Functions" in Azure. Those functions will then reach down to "Cosmos DB" in order to save or retrieve the required data.
+This scenario uses a very simple architecture in order to achieve the required outcome. The game will communicate with a custom REST API, hosted as a set of "Functions" in Azure that in turn will connect to Cosmos DB for storing and querying of data.
 
-#### Architecture Diagram
-
-Game communicates
 ![Architecture Diagram](../../../architectures/game-function-cosmos.png "Game-> Functions-> CosmosDB")
+
+This architecture works both for small scale workloads and for big workloads since both Azure Functions and Azure Cosmos DB are cloud services designed with scale in mind.
+
+Now, let's move on to deploying these services on Azure.
 
 ### 2. Deploy Required Services on Microsoft Azure
 
