@@ -113,11 +113,11 @@
                 "value": "6.5.0"
               },
               {
-                "Name": "DB",
-                "Value": "leaderboard"
+                "Name": "DOCUMENTDB_DATABASE",
+                "Value": "nether"
               },
               {
-                "Name": "COLLECTION",
+                "Name": "DOCUMENTDB_COLLECTION",
                 "Value": "scores"
               },
               {

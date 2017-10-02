@@ -120,3 +120,7 @@ Resource          | Verb | Description
 3. Replace the sample implementation in run.csx with [the script found here (leaderboard/run.csx)](leaderboard/run.csx). This will give you the basic logic to accept incomming requests and forward them to Cosmos DB. Remeber to save before continuing.
 4. Click on the option "View files" to see all related files to this "Function", and click "+ Add" to create a new file. Name the file: project.json
 5. Replace the content of Project.json with [the script found here (leaderboard/project.json)](leaderboard/project.json). This will pull down any dependencies needed to implement the function. Remember to save before continuing.
+
+### Calling the API from a Client Application/Game
+
+Now you've created your leaderboard API and a next step would be to test it out from a client application.
