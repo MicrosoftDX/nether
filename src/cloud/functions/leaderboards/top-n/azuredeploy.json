@@ -127,6 +127,10 @@
               {
                 "Name": "DOCUMENTDB_PRIMARY_KEY",
                 "Value": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosDBAccountName')), '2015-04-08').primaryMasterKey]"
+              },
+              {
+                  "Name": "LENGTH_OF_LEADERBOARD",
+                  "value": "10"
               }
             ]
           }

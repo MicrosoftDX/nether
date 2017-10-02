@@ -1,33 +1,57 @@
-using System.Net;
-using System.Linq;
 using System.Configuration;
-
+using System.Linq;
+using System.Net;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
 
-public static HttpResponseMessage Run(HttpRequestMessage req, string leaderboard, TraceWriter log)
-{
-    string DB = ConfigurationManager.AppSettings["DB"];    
-    string COLLECTION = ConfigurationManager.AppSettings["COLLECTION"];
-    string ENDPOINT = ConfigurationManager.AppSettings["ENDPOINT"];
-    string KEY = ConfigurationManager.AppSettings["KEY"];
-    const int LENGTH_OF_LEADERBOARD = 10;
-    
-    var client = new DocumentClient(new Uri(ENDPOINT), KEY);
+// Read application settings
+private static string db = ConfigurationManager.AppSettings["DOCUMENTDB_DATABASE"];    
+private static string collection = ConfigurationManager.AppSettings["DOCUMENTDB_COLLECTION"];
+private static string endpoint = ConfigurationManager.AppSettings["DOCUMENTDB_ENDPOINT"];
+private static string key = ConfigurationManager.AppSettings["DOCUMENTDB_PRIMARY_KEY"];
+private static int lengthOfLeaderboard = int.Parse(ConfigurationManager.AppSettings["LENGTH_OF_LEADERBOARD"] ?? "10");
 
-    log.Info(leaderboard);
+private static bool runOnce = true;
+private static DocumentClient client;
+
+public static HttpResponseMessage Run(HttpRequestMessage req, TraceWriter log)
+{
+    // Run initialization only once.
+    // Remarks: This initialization will run once on every instance and on every recompile of this function
+    if (runOnce)
+    {
+        log.Info("Running initialization");
+
+        // Check required application settings
+        if (string.IsNullOrWhiteSpace(db)) log.Error("DOCUMENTDB_DATABASE settings wasn't provided");
+        if (string.IsNullOrWhiteSpace(collection)) log.Error("DOCUMENTDB_COLLECTION settings wasn't provided");
+        if (string.IsNullOrWhiteSpace(endpoint)) log.Error("DOCUMENTDB_ENDPOINT settings wasn't provided");
+        if (string.IsNullOrWhiteSpace(key)) log.Error("DOCUMENTDB_PRIMARY_KEY settings wasn't provided");
+
+        // Create Cosmos DB Client from settings
+        client = new DocumentClient(new Uri(endpoint), key);
+
+        // Create Database and Collection in Cosmos DB Account if they don't exist
+        await client.CreateDatabaseIfNotExistsAsync(new Database { Id = db });
+        await client.CreateDocumentCollectionIfNotExistsAsync(
+            UriFactory.CreateDatabaseUri(db), 
+            new DocumentCollection { Id = collection });
+
+        runOnce = false;
+
+        log.Info("Initialization done!");
+    }
 
     try
     {
         var collection = client.CreateDocumentQuery<ScoreItem>(
-            UriFactory.CreateDocumentCollectionUri(DB, COLLECTION), new FeedOptions { EnableCrossPartitionQuery = true });
+            UriFactory.CreateDocumentCollectionUri(db, collection), new FeedOptions { EnableCrossPartitionQuery = true });
         
         var query = 
             (from s in collection
             orderby s.Score descending
-            where s.Leaderboard == leaderboard
-            select new LeaderboardItem {Player = s.Player, Score = s.Score}).Take(LENGTH_OF_LEADERBOARD);
+            select new LeaderboardItem {Player = s.Player, Score = s.Score}).Take(lengthOfLeaderboard);
 
         var leaders = query.ToList();
 

@@ -16,7 +16,7 @@ private static DocumentClient client;
 public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceWriter log)
 {
     // Run initialization only once.
-    // Remarks: This initialization will run once on every instance and on every reset of the app
+    // Remarks: This initialization will run once on every instance and on every recompile of this function
     if (runOnce)
     {
         log.Info("Running initialization");

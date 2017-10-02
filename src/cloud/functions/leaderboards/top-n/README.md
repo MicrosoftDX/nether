@@ -6,8 +6,8 @@ This guide will help you implement a Top N Leaderboard on Microsoft Azure using 
 
 The following requirements where considered while creating this leaderboard implementation:
 
-* Game client should be able to send achieved scores to the leaderboard using a REST API.
-* Game client should be able to retrieve the leaderboard using a REST API.
+* Game client should be able to send achieved scores to a REST API.
+* Game client should be able to retrieve a leaderboard using a REST API.
 
 ### Non Functional Requirements
 
