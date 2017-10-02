@@ -4,19 +4,42 @@ using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
 using System.Configuration;
 
+// Read application settings
+private static string db = ConfigurationManager.AppSettings["DOCUMENTDB_DATABASE"];    
+private static string collection = ConfigurationManager.AppSettings["DOCUMENTDB_COLLECTION"];
+private static string endpoint = ConfigurationManager.AppSettings["DOCUMENTDB_ENDPOINT"];
+private static string key = ConfigurationManager.AppSettings["DOCUMENTDB_PRIMARY_KEY"];
+
+private static bool runOnce = true;
+private static DocumentClient client;
+
 public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceWriter log)
 {
-    // Read application settings
-    string db = ConfigurationManager.AppSettings["DOCUMENTDB_DATABASE"];    
-    string collection = ConfigurationManager.AppSettings["DOCUMENTDB_COLLECTION"];
-    string endpoint = ConfigurationManager.AppSettings["DOCUMENTDB_ENDPOINT"];
-    string key = ConfigurationManager.AppSettings["DOCUMENTDB_PRIMARY_KEY"];
-    
-    // Check required application settings
-    if (string.IsNullOrWhiteSpace(db)) log.Error("DOCUMENTDB_DATABASE settings wasn't provided");
-    if (string.IsNullOrWhiteSpace(collection)) log.Error("DOCUMENTDB_COLLECTION settings wasn't provided");
-    if (string.IsNullOrWhiteSpace(endpoint)) log.Error("DOCUMENTDB_ENDPOINT settings wasn't provided");
-    if (string.IsNullOrWhiteSpace(key)) log.Error("DOCUMENTDB_PRIMARY_KEY settings wasn't provided");
+    // Run initialization only once.
+    // Remarks: This initialization will run once on every instance and on every reset of the app
+    if (runOnce)
+    {
+        log.Info("Running initialization");
+
+        // Check required application settings
+        if (string.IsNullOrWhiteSpace(db)) log.Error("DOCUMENTDB_DATABASE settings wasn't provided");
+        if (string.IsNullOrWhiteSpace(collection)) log.Error("DOCUMENTDB_COLLECTION settings wasn't provided");
+        if (string.IsNullOrWhiteSpace(endpoint)) log.Error("DOCUMENTDB_ENDPOINT settings wasn't provided");
+        if (string.IsNullOrWhiteSpace(key)) log.Error("DOCUMENTDB_PRIMARY_KEY settings wasn't provided");
+
+        // Create Cosmos DB Client from settings
+        client = new DocumentClient(new Uri(endpoint), key);
+
+        // Create Database and Collection in Cosmos DB Account if they don't exist
+        await client.CreateDatabaseIfNotExistsAsync(new Database { Id = db });
+        await client.CreateDocumentCollectionIfNotExistsAsync(
+            UriFactory.CreateDatabaseUri(db), 
+            new DocumentCollection { Id = collection });
+
+        runOnce = false;
+
+        log.Info("Initialization done!");
+    }
 
     dynamic data = await req.Content.ReadAsAsync<object>();
     string id = data?.playerId;
@@ -32,14 +55,8 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
     postedScore.Player = data?.player;
     postedScore.Score = data?.score;
 
-    var client = new DocumentClient(new Uri(endpoint), key);
     try
     {
-        await client.CreateDatabaseIfNotExistsAsync(new Database { Id = db });
-        await client.CreateDocumentCollectionIfNotExistsAsync(
-            UriFactory.CreateDatabaseUri(db), 
-            new DocumentCollection { Id = collection });
-
         var scoreItems = client.CreateDocumentQuery<ScoreItem>(UriFactory.CreateDocumentCollectionUri(db, collection), new FeedOptions { EnableCrossPartitionQuery = true });
         var existingPlayer = new ScoreItem();
         var query  = 
