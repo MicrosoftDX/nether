@@ -58,7 +58,7 @@ There are many ways to deploy services on Microsoft Azure, pick the one that fee
 
 > If you already have the required services setup in Azure, you could re-use them and just add or tweak the required "functions" that implement this scenario.
 
-#### 2A) Deploy using an Azure Resource Manager, ARM, Template
+#### 2A. Deploy using an Azure Resource Manager, ARM, Template
 
 Your resources in Azure can be deployed automatically using a JSON formated document, called Azure Resource Manager, ARM, Template. The template describes the needed resources/services for your deployment and if there are any dependencies between them.
 
@@ -88,6 +88,35 @@ Agree to the terms and click "Purchase" to start deployment of required services
 
 This will setup the services needed to implement this scenario and also provide the provisioned Azure Function App with insights into where to find the provisioned Cosmos DB Account.
 
-Please continue to step 3 below
+> The above used ARM Template can also be used to deploy the solution from [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli), [Azure PowerShell](https://docs.microsoft.com/en-us/powershell/azure/install-azurerm-ps) or from your Build Server within your CI/CD pipeline.
 
-#### 2B)
+Please continue to step 3 below once deployment has finished.
+
+#### 2B. Deploy Manually using the Azure Portal
+
+// TODO: Describe here how to deploy manually
+
+### 3. Create the API
+
+So at this stage you should have the required services setup in Azure. Now it's time to implement some server side logic that make up our leaderboard.
+
+Resource          | Verb | Description
+------------------|------|-----------------------------
+/api/score        | POST | Adds or updates a highscore for a specific player
+/api/leaderboard  | GET  | Retrieves the leaderboard
+
+#### 3.1 Create the "Score API"
+
+1. In the Azure Portal, find your "Function App"
+2. Add a new C# "Function" triggered by HTTP requests
+3. Replace the sample implementation in run.csx with [the script found here (run.csx)](score/run.csx). This will give you the basic logic to accept incomming requests and forward them to Cosmos DB. Remeber to save before continuing.
+4. Click on the option "View files" to see all related files to this "Function", and click "+ Add" to create a new file. Name the file: project.json
+5. Replace the content of Project.json with [the script found here (project.json)](score/project.json). This will pull down any dependencies needed to implement the function. Remember to save before continuing.
+
+#### 3.2 Create the "Leaderboard API"
+
+1. In the Azure Portal, stay within the same "Function App" as you used above to implement the Score API. Note that a single Function App can host several "Functions". You'll notice that the below instructions are very similar to the above, but the implementation of the "Function" is slightly different.
+2. Add a new C# "Function" triggered by HTTP requests
+3. Replace the sample implementation in run.csx with [the script found here (leaderboard/run.csx)](leaderboard/run.csx). This will give you the basic logic to accept incomming requests and forward them to Cosmos DB. Remeber to save before continuing.
+4. Click on the option "View files" to see all related files to this "Function", and click "+ Add" to create a new file. Name the file: project.json
+5. Replace the content of Project.json with [the script found here (leaderboard/project.json)](leaderboard/project.json). This will pull down any dependencies needed to implement the function. Remember to save before continuing.
