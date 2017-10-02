@@ -35,6 +35,11 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
     var client = new DocumentClient(new Uri(endpoint), key);
     try
     {
+        await client.CreateDatabaseIfNotExistsAsync(new Database { Id = db });
+        await client.CreateDocumentCollectionIfNotExistsAsync(
+            UriFactory.CreateDatabaseUri(db), 
+            new DocumentCollection { Id = collection });
+
         var scoreItems = client.CreateDocumentQuery<ScoreItem>(UriFactory.CreateDocumentCollectionUri(db, collection), new FeedOptions { EnableCrossPartitionQuery = true });
         var existingPlayer = new ScoreItem();
         var query  = 
