@@ -9,24 +9,15 @@
 		"cosmosDBAccountName": {
 			"type": "string",
 			"minLength": 1
-		},
-		"sourceCodeRepositoryURL": {
-			"type": "string",
-			"minLength": 1
-		},
-		"sourceCodeBranch": {
-			"type": "string",
-			"minLength": 1
-		},
-		"sourceCodeDirectory": {
-			"type": "string",
-			"minLength": 1
 		}
 	},
 	"variables": {
 		"appServicePlanName": "[concat(parameters('functionAppName'), 'plan')]",
 		"storageAccountName": "[concat(uniquestring(resourceGroup().id), 'azfunctions')]",
-		"storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+		"storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+		"githubRepository": "https://github.com/MicrosoftDX/nether",
+		"githubBranch": "serverless",
+		"githubSourceFolder": "src/cloud/functions/leaderboards/top-n"
 	},
 	"resources": [
 		{
@@ -143,7 +134,7 @@
 						},
 						{
 							"name": "Project",
-							"value": "[parameters('sourceCodeDirectory')]"
+							"value": "[variables('githubSourceFolder')]"
 						}
 					]
 				}
@@ -157,8 +148,8 @@
 						"[resourceId('Microsoft.Web/sites/', parameters('functionAppName'))]"
 					],
 					"properties": {
-						"RepoUrl": "[parameters('sourceCodeRepositoryURL')]",
-						"branch": "[parameters('sourceCodeBranch')]",
+						"RepoUrl": "[variables('githubRepository')]",
+						"branch": "[variables('githubBranch')]",
 						"IsManualIntegration": true
 					}
 				}
