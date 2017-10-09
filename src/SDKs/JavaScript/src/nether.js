@@ -429,7 +429,7 @@ nether.player = (function() {
                 if (status === 204) {
                     nether.player.gamertag = gamerTag;
                     nether.player.country = country;
-                    callback();
+                    callback(true);
                     return;
                 } else if (status === 400) {
                     try {
@@ -537,7 +537,8 @@ nether.player.identity = (function() {
 
     identity.providers = {
         facebook: 'facebook',
-        nether: 'nether'
+        nether: 'nether',
+        guest: 'guest'
     }
 
     identity.init = function(providerCallback, netherCallback) {
@@ -565,7 +566,9 @@ nether.player.identity = (function() {
     identity.facebookLogin = function(callback) {
         if (identity.facebookAccessToken !== '') {
             console.log('User already logged into facebook');
-            if (identity.loggedIn === false) {
+            if (identity.loggedIn === true) {
+                callback(true);
+            } else {
                 identity.authWithFacebookToken(callback);
             }
         } else {
@@ -608,14 +611,57 @@ nether.player.identity = (function() {
         });
     };
 
+
+    function createGuestIdentifier() {
+        var id = "";
+        var validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxys0123456789";
+        for (var i = 1; i < 50; i++) {
+            index = Math.floor(validChars.length * Math.random());
+            id += validChars[index];
+        }
+        return id;
+    }
+
+    identity.guestLogin = function guestLogin(callback) {
+        netherConfig = getProviderConfig(nether.player.identity.providers.guest);
+        var guestIdentifier = localStorage.getItem("nether_guest_identifier");
+        if (guestIdentifier === null) {
+            guestIdentifier = createGuestIdentifier();
+        }
+        // persist so that we use the same id next time
+        localStorage.setItem('nether_guest_identifier', guestIdentifier);
+
+        nether.common.ajax({
+            url: nether.netherBaseUrl + '/identity/connect/token',
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/x-www-form-urlencoded'
+            },
+            data: "grant_type=guest-access&client_id=" + netherConfig.netherClientId + "&client_secret=" + netherConfig.netherClientSecret + "&scope=openid+profile+nether-all&guest_identifier=" + guestIdentifier,
+            callback: function (status, res) {
+                var data = JSON.parse(res);
+
+                if (data.access_token) {
+                    identity.accessToken = data.access_token;
+                    identity.loggedIn = true;
+                    console.log(identity.accessToken);
+                    callback(true);
+                } else {
+                    console.log('couldnt get the access token');
+                    callback(new Error('couldn\'t get access token'));
+                }
+            }
+        });
+    };
+
     // nether login
     identity.netherLogin = function() {
         nether.oidcMgr.signinRedirect();
-    }
+    };
 
     identity.netherLogout = function() {
         nether.oidcMgr.signoutRedirect();
-    }
+    };
 
     getProviderConfig = function(provider) {
         for (var i = 0; i < nether.player.identity.providerConfig.length; i++ ) {
