@@ -14,10 +14,7 @@
 	"variables": {
 		"appServicePlanName": "[concat(parameters('functionAppName'), 'plan')]",
 		"storageAccountName": "[concat(uniquestring(resourceGroup().id), 'azfunctions')]",
-		"storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-		"githubRepository": "https://github.com/MicrosoftDX/nether",
-		"githubBranch": "serverless",
-		"githubSourceFolder": "src/cloud/functions/leaderboards/top-n"
+		"storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
 	},
 	"resources": [
 		{
@@ -131,29 +128,10 @@
 						{
 							"Name": "LENGTH_OF_LEADERBOARD",
 							"value": "10"
-						},
-						{
-							"name": "Project",
-							"value": "[variables('githubSourceFolder')]"
 						}
 					]
 				}
-			},
-			"resources": [
-				{
-					"apiVersion": "2015-08-01",
-					"name": "web",
-					"type": "sourcecontrols",
-					"dependsOn": [
-						"[resourceId('Microsoft.Web/sites/', parameters('functionAppName'))]"
-					],
-					"properties": {
-						"RepoUrl": "[variables('githubRepository')]",
-						"branch": "[variables('githubBranch')]",
-						"IsManualIntegration": true
-					}
-				}
-			]
+			}
 		}
 	],
 	"outputs": {}

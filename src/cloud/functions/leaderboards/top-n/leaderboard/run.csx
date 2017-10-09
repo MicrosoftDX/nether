@@ -15,7 +15,7 @@ private static int lengthOfLeaderboard = int.Parse(ConfigurationManager.AppSetti
 private static bool runOnce = true;
 private static DocumentClient client;
 
-public static HttpResponseMessage Run(HttpRequestMessage req, TraceWriter log)
+public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceWriter log)
 {
     // Run initialization only once.
     // Remarks: This initialization will run once on every instance and on every recompile of this function
@@ -45,11 +45,11 @@ public static HttpResponseMessage Run(HttpRequestMessage req, TraceWriter log)
 
     try
     {
-        var collection = client.CreateDocumentQuery<ScoreItem>(
+        var leaderboard = client.CreateDocumentQuery<ScoreItem>(
             UriFactory.CreateDocumentCollectionUri(db, collection), new FeedOptions { EnableCrossPartitionQuery = true });
         
         var query = 
-            (from s in collection
+            (from s in leaderboard
             orderby s.Score descending
             select new LeaderboardItem {Player = s.Player, Score = s.Score}).Take(lengthOfLeaderboard);
 
