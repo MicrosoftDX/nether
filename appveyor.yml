@@ -13,4 +13,4 @@ deploy:
   folder: master
   artifact: nether-serverless.zip,commit.txt
   on:
-    branch: master
+    branch: serverless
