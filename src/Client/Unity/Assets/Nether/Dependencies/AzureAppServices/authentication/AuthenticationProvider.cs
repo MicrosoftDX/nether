@@ -1,4 +1,4 @@
-﻿namespace Azure.App
+﻿namespace Azure.AppServices
 {
 	public enum AuthenticationProvider
 	{

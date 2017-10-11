@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Net;
 
-namespace RestClient
-{
-	public interface IRestResponse<T>
-	{
-		bool IsError { get; }
+namespace RESTClient {
+  public interface IRestResponse<T> {
+    bool IsError { get; }
 
-		string ErrorMessage { get; }
+    string ErrorMessage { get; }
 
-		string Url { get; }
+    string Url { get; }
 
-		HttpStatusCode StatusCode { get; }
+    HttpStatusCode StatusCode { get; }
 
-		string Content { get; }
+    string Content { get; }
 
-		T Data { get; }
-	}
+    T Data { get; }
+  }
 }
 

@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Azure.App
+﻿namespace Azure.AppServices
 {
-	[Serializable]
+	[System.Serializable]
 	public class AccessToken
 	{
 		public string access_token;
