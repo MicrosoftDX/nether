@@ -1,4 +1,7 @@
-﻿#pragma warning disable 0649 // ignores warning: array "is never assigned to, and will always have its default value 'null'"
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+#pragma warning disable 0649 // ignores warning: array "is never assigned to, and will always have its default value 'null'"
 using UnityEngine;
 using System;
 using System.Text.RegularExpressions;
