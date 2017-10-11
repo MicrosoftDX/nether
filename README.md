@@ -1,7 +1,7 @@
 ![Nether Logo](https://raw.githubusercontent.com/MicrosoftDX/nether/master/logos/both-logo-and-title/logo-title-1109x256.png)
 # Building blocks for gaming on Azure
 
-master branch status
+serverless branch status
 
 AppVeyor: [![Build status](https://ci.appveyor.com/api/projects/status/v5btbm617bcmu6nq/branch/serverless?svg=true)](https://ci.appveyor.com/project/stuartleeks/nether/branch/serverless)
 
