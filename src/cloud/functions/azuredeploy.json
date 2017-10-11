@@ -160,5 +160,9 @@
 			"type": "string",
 			"value": "[concat('http://',reference(resourceId('Microsoft.Web/sites', parameters('functionAppName'))).hostNames[0])]"
 		},
+		"kuduUri": {
+			"type": "string",
+			"value": "[replace(concat('http://',reference(resourceId('Microsoft.Web/sites', parameters('functionAppName'))).hostNames[0]), '.azurewebsites.net', '.scm.azurewebsites.net')]"
+		}
 	}
 }
