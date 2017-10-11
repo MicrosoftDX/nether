@@ -10,7 +10,7 @@ deploy:
   storage_access_key:
     secure: /KfEywXdV6Ys21sIob+Sjo3c3D+XPfQ/mftzcEeJs1Mom8HJmFSCu5919qqa/FzS++agyWJPwjBl0P7y8uc8m1CyszF5q/OUvWmgM0dIgGCWdR3FM2crLAGBipPqUF8G
   container: deployment-artifacts
-  folder: master
+  folder: serverless
   artifact: nether-serverless.zip,commit.txt
   on:
     branch: serverless
