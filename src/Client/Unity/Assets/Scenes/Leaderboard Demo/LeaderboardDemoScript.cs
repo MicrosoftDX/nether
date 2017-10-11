@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Azure.Functions;
-using RestClient;
+using RESTClient;
 using Tacticsoft;
 using Nether;
 
 namespace NetherDemo {
   public class LeaderboardDemoScript : MonoBehaviour {
     [Header("Unity UI")]
+    [SerializeField]
+    private InputField inputUserAccessToken;
     [SerializeField]
     private InputField inputPlayer;
 
@@ -28,6 +30,7 @@ namespace NetherDemo {
       if (leaderboardManager == null ||
           inputPlayer == null ||
           inputScore == null ||
+          inputUserAccessToken == null ||
           outputText == null) {
         Debug.LogError("Inspector elements need to be linked up to game objects in hierarchy.");
         return;
@@ -41,8 +44,17 @@ namespace NetherDemo {
 
     #region Demo UI
 
+    public void ClickLogin() {
+      string token = inputUserAccessToken.text;
+      if (string.IsNullOrEmpty(token)) {
+        outputText.text = "Please enter access token!";
+        return;
+      }
+      leaderboardManager.Login(token);
+    }
+
     public void ClickLeaderboard() {
-      if (!leaderboardManager.IsLeaderboardOpen()){
+      if (!leaderboardManager.IsLeaderboardOpen()) {
         outputText.text = "Loading...";
       } else {
         outputText.text = "";
@@ -71,22 +83,33 @@ namespace NetherDemo {
 
     #region Event handlers (optional)
 
-    void OnEnable()
-    {
-        LeaderboardManager.OnLoadLeaderboardSuccess += OnLoadLeaderboardSuccess;
-        LeaderboardManager.OnLoadLeaderboardFail += OnLoadLeaderboardFail;
-        LeaderboardManager.OnSubmitScoreSuccess += OnSubmitScoreSuccess;
-        LeaderboardManager.OnSubmitScoreFail += OnSubmitScoreFail;
+    void OnEnable() {
+      LeaderboardManager.OnLoginSuccess += OnLoginSuccess;
+      LeaderboardManager.OnLoginFail += OnLoginFail;
+      LeaderboardManager.OnLoadLeaderboardSuccess += OnLoadLeaderboardSuccess;
+      LeaderboardManager.OnLoadLeaderboardFail += OnLoadLeaderboardFail;
+      LeaderboardManager.OnSubmitScoreSuccess += OnSubmitScoreSuccess;
+      LeaderboardManager.OnSubmitScoreFail += OnSubmitScoreFail;
     }
 
 
-    void OnDisable()
-    {
-        LeaderboardManager.OnLoadLeaderboardSuccess -= OnLoadLeaderboardSuccess;
-        LeaderboardManager.OnLoadLeaderboardFail -= OnLoadLeaderboardFail;
-        LeaderboardManager.OnSubmitScoreSuccess -= OnSubmitScoreSuccess;
-        LeaderboardManager.OnSubmitScoreFail -= OnSubmitScoreFail;
+    void OnDisable() {
+      LeaderboardManager.OnLoginSuccess -= OnLoginSuccess;
+      LeaderboardManager.OnLoginFail -= OnLoginFail;
+      LeaderboardManager.OnLoadLeaderboardSuccess -= OnLoadLeaderboardSuccess;
+      LeaderboardManager.OnLoadLeaderboardFail -= OnLoadLeaderboardFail;
+      LeaderboardManager.OnSubmitScoreSuccess -= OnSubmitScoreSuccess;
+      LeaderboardManager.OnSubmitScoreFail -= OnSubmitScoreFail;
     }
+
+    private void OnLoginSuccess() {
+      outputText.text = "Logged In!";
+    }
+
+    private void OnLoginFail() {
+      outputText.text = "Failed to login";
+    }
+
     private void OnLoadLeaderboardSuccess(LeaderboardItem[] scores) {
       outputText.text = "Loaded " + scores.Length + " scores.";
     }

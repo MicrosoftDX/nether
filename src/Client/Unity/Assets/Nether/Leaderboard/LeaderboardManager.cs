@@ -1,19 +1,28 @@
-﻿using Azure.Functions;
-using RestClient;
+﻿using Azure.AppServices;
+using Azure.Functions;
+using RESTClient;
 using System.Collections;
 using System.Collections.Generic;
 using Tacticsoft;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 namespace Nether {
   public class LeaderboardManager : MonoBehaviour, ITableViewDataSource {
-    // Delegates - broadcast when async tasks are complete
+    // Login delegates
+    public delegate void LoginSuccess();
+    public delegate void LoginFail();
+    public static event LoginSuccess OnLoginSuccess;
+    public static event LoginFail OnLoginFail;
+
+    // Leaderboard delegates
     public delegate void LoadLeaderboardSuccess(LeaderboardItem[] scores);
     public delegate void LoadLeaderboardFail();
     public static event LoadLeaderboardSuccess OnLoadLeaderboardSuccess;
     public static event LoadLeaderboardFail OnLoadLeaderboardFail;
 
+    // Score delegates
     public delegate void SubmitScoreSuccess();
     public delegate void SubmitScoreFail();
     public static event SubmitScoreSuccess OnSubmitScoreSuccess;
@@ -73,15 +82,33 @@ namespace Nether {
         return;
       }
 
-      client = AzureFunctionClient.Create(account, key);
-      leaderboardService = new AzureFunction(leaderboardFunction, client);
-      scoreService = new AzureFunction(scoreFunction, client);
+      client = AzureFunctionClient.Create(account);
+      leaderboardService = new AzureFunction(leaderboardFunction, client, key);
+      scoreService = new AzureFunction(scoreFunction, client, key);
     }
 
     // Update is called once per frame
     void Update() {
 
     }
+
+    #region User Authentication
+
+    public void Login(string token) {
+      StartCoroutine( client.Login(AuthenticationProvider.Facebook, token, LoginCompleted) );
+    }
+
+    private void LoginCompleted(IRestResponse<AuthenticatedUser> response)
+    {
+      if (response.IsError) {
+        Debug.unityLogger.LogError(kTAG, "Error login failed. " + response.ErrorMessage);
+        OnLoginFail();
+        return;
+      }
+      OnLoginSuccess();
+    }
+
+    #endregion
 
     #region Show/hide leaderboard
 
@@ -147,10 +174,11 @@ namespace Nether {
     #region Submit new highscore
 
     public void SubmitScore(string player, double score) {
+      string userId = client.User != null ? client.User.user.userId : player.ToLower();
       ScoreItem body = new ScoreItem();
       body.player = player;
       body.score = score;
-      body.playerId = player.ToLower();
+      body.playerId = userId;
       body.leaderboard = leaderboard;
       StartCoroutine(scoreService.Post<ScoreItem, string>(body, SubmitScoreCompleted));
     }
