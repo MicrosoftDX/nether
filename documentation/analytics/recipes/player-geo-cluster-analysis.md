@@ -9,29 +9,30 @@ You will answer the following questions: How many players have played your game 
 The coordinates associated with a given geohash can vary from median or random.
 For instance, take the following 5 coordinates within a geohash (square):
 
-          +-----------------------------------------------+
-          |                                               |
-          |                                               |
-          |   x1                                          |
-          |                                               |
-          |                                               |
-          |                                               |
-          |                          x2                   |
-          |                                               |
-          |                                               |
-          |                                               |
-          |                                               |
-       ^  |                                               |
-       |  |                                               |
-       |  |                                        x3     |
-       |  |                                               |
-       |  |                                               |
-       |  |           x4             x5                   |
-       +  |                                               |
-Longitude |                                               |
-          +-----------------------------------------------+
-           Latitude+------>
-
+```
+               +-----------------------------------------------+
+               |                                               |
+               |                                               |
+               |   x1                                          |
+               |                                               |
+               |                                               |
+               |                                               |
+               |                          x2                   |
+               |                                               |
+               |                                               |
+               |                                               |
+               |                                               |
+            ^  |                                               |
+            |  |                                               |
+            |  |                                        x3     |
+            |  |                                               |
+            |  |                                               |
+            |  |           x4             x5                   |
+            +  |                                               |
+     Longitude |                                               |
+               +-----------------------------------------------+
+            Latitude+------>
+```
 
 - median: pick median latitude (horizontal axis) and then the associated minimum longitude of a data point within a geohash. In this case, x5 is a data point with the median latitude given the 5 data points within the geohash. This results
 - random: pick any point within geohash (partially implemented in clustering.usql)
@@ -162,14 +163,14 @@ Task.Run(async () =>
 
 | Query that should be run           | By what service                           |
 |------------------------------------|-------------------------------------------|
-| [geoclustering.usql](../../../src/Nether.Analytics.DataLakeJobs/geoclustering.usql)             | Using ADLA (Azure Data Lake Analytics)    |
+| [GeoClusters.usql](../../../src/Nether.Analytics.DataLakeJobs/GeoClusters.usql)             | Using ADLA (Azure Data Lake Analytics)    |
 
 
 ```cs
 
 ```
 
-#### 3.1 Setup and Schedule geoclustering.usql
+#### 3.1 Setup and Schedule GeoClusters.usql
 
 (TODO: Explain how someone should go ahead to setup the required query to be run at appropriate times)
 The ADLA-job can be run in a batch mode. In other words, you can run it once a day but specify that you want to see the hotspots in chunks of a 15-minute timespan.
