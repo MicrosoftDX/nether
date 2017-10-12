@@ -31,3 +31,5 @@ Get-Content "$path\functiondeploy.txt" `
         }
         Copy-Item "$path\$_" "$here\$_"
     }
+
+"Deployment done!"
