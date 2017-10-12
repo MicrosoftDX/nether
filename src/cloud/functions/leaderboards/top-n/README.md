@@ -28,6 +28,18 @@ Resource          | Verb | Parameters               | Description
 /api/score        | POST | [Body Application/Json](score/sample.dat) | Posts a score to the leaderboard
 /api/leaderboard  | GET  | [None](leaderboard/sample.dat) | Retrieves the leaderboard
 
+## Deploying the Scenario
+
+> Please refer to the instructions in [Deploy a Nether Scenario](../../../../../doc/deploy-scenario.md) for more detailed instructions on how to find your Kudo PowerShell interface and how deployment works.
+
+From the Kudo PowerShell interface in your Azure Function App, execute the following command:
+
+```
+./deploy.ps1 -Group leaderboards -Scenario top-n
+```
+
+Wait for the deployment to finish before continuing.
+
 ## Calling the API from a Client Application/Game
 
 _To be provided_

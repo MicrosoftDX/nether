@@ -26,6 +26,18 @@ Resource          | Verb | Parameters               | Description
 ------------------|------|--------------------------|-----------------------------
 /api/quote        | GET  | [None](quote/sample.dat) | Retrieves the quote of the day
 
+## Deploying the Scenario
+
+> Please refer to the instructions in [Deploy a Nether Scenario](../../../../../doc/deploy-scenario.md) for more detailed instructions on how to find your Kudo PowerShell interface and how deployment works.
+
+From the Kudo PowerShell interface in your Azure Function App, execute the following command:
+
+```
+./deploy.ps1 -Group generic -Scenario quote-of-the-day
+```
+
+Wait for the deployment to finish before continuing.
+
 ## Calling the API from a Client Application/Game
 
 _To be provided_

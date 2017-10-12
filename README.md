@@ -29,39 +29,21 @@ These are the scenarios that we currently have implemented in Nether. Each scena
 
 ### Generic
 
-#### [Quote of the Date](src/cloud/functions/generic/quote-of-the-day/)
-
-Give your players a different quote ever day of the week. Perhaps this is not the main end-scenario, but with simple tweaks this could be used to give your players a message what is going on with the game, what features are new or comming outages. You decide.
-
-_Tags: #serverless, #functions_
+* [Quote of the Date](src/cloud/functions/generic/quote-of-the-day/)
 
 ### Leaderboards
 
-#### [Top N Leaderboard](src/cloud/functions/leaderboards/top-n/)
-
-A simple top 10 global leaderboard implementation that allows you to submit scores and retrieve the higscore.
-
-_Tags: #serverless, #functions, #cosmosdb_
-
-#### Around Me Leaderboard (_work in progress_)
-
-A simple leaderboard that shows your position among other players.
-
-_Tags: #serverless, #functions, #cosmosdb_
-
-#### Facebook Friends Leaderboard (_work in progress_)
-
-A leaderboard that shows your position among your Facebook friends.
-
-_Tags: #serverless, #functions, #cosmosdb_
+* [Top N Leaderboard](src/cloud/functions/leaderboards/top-n/)
+* Around Me Leaderboard (_work in progress_)
+* Facebook Friends Leaderboard (_work in progress_)
 
 ### Match Making
 
-#### Simple Match Making (_work in progress_)
+* Simple Match Making (_work in progress_)
 
-Simplest version of matchmaking service where two players looking for a game will be paired together.
+## Legacy
 
-_Tags: #serverless, #functions, #cosmosdb_
+There are more re-usable content in Nether, located in the legacy folder, including things for: Custom Authentication, REST APIs using Web Apps, Custom Analytics Pipelines, JavaScript Client, Java Client and more. We are currently moving towards an easier to use model with the server less approach and will try to bring back functionality that was previously implemented. The code is still int the [legacy](legacy) folder if you ever need it.
 
 ## Contribute Code
 
