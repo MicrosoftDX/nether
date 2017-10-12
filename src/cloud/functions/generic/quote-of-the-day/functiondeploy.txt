@@ -1,0 +1,4 @@
+message/function.json
+message/project.json
+message/run.csx
+message/sample.dat

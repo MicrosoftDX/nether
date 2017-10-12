@@ -8,7 +8,7 @@
       "methods": [
         "get"
       ],
-      "route": "leaderboard"
+      "route": "quote"
     },
     {
       "name": "$return",
