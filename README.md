@@ -15,88 +15,34 @@ Nether is a project composed of reusable set of building blocks, projects, servi
 
 ## Getting Started
 
-Click on the scenario below that best fit your needs to get started:
+Getting started is an easy three step project:
+
+1. Sign up for an Azure Subscription if you don't already have one at [https://azure.com](https://azure.com)
+2. [Deploy the Base Architecture](doc/deploy-base-architecture.md)
+3. Pick one of the scenarios below, read through the scenario description and deploy using [these instructions](doc/deploy-scenario.md)
+
+> That's it. Even though Azure definitively have a lot of SDKs and client tools that can help you out, the Server Less Architecture used in these scenarios require no local tools at all. In fact you could use your phone to deploy a leaderboard if you wanted to.
+
+## Scenarios
+
+These are the scenarios that we currently have implemented in Nether. Each scenario contains some documentation as well as the required code to implement them. Unless otherwise stated, the scenarios all use the "base architecture".
+
+### Generic
+
+#### [Quote of the Date](src/cloud/functions/generic/quote-of-the-day/)
+
+Give your players a different quote ever day of the week. Perhaps this is not the main end-scenario, but with simple tweaks this could be used to give your players a message what is going on with the game, what features are new or comming outages. You decide.
+
+_Tags: #serverless, #functions_
 
 ### Leaderboards
 
-* [Top N Leaderboard](src/cloud/functions/leaderboards/top-n/) (tags: #serverless, #functions, #cosmosdb)
-* Around Me Leaderboard (tags: #serverless, #functions, #cosmosdb)
+#### [Top N Leaderboard](src/cloud/functions/leaderboards/top-n/)
 
-### Inventories
+A simple top 10 global leaderboard implementation that allows you to submit scores and retrieve the higscore.
 
-* Basic Cloud Inventory
+_Tags: #serverless, #functions, #cosmosdb_
 
-### Match Making
-
-* Simple N Player Match Making
-
-### Game Server Hosting
-
-* ...
-
-### Analytics
-
-* Daily / Monthly Active Users, DAU/MAU
-
-### Deployment
-
-The quickest way to get started and explore Nether is to use the quickstart deployment. This will deploy a Function App with no functions, but with the function templates that can be deployed thrugh 
-
-Click the below button to start deployment.
-
-(Ctrl + Click will open the portal with the deployment in a separate tab in most browsers, hence allow you to keep this documentation available and ready to use)
-
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoftDX%2Fnether%2Fserverless%2Fsrc%2Fcloud%2Ffunctions%2F%2Fazuredeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
-
-#### Creating a function
-
-Once the template deployment has completed then you can deploy one or more of the built-in scenarios.
-
-To do this, you need to go to the Kudu site behind your Functions App.
-
-##### Finding Kudu
-In the outputs for the template deployment there is a `KuduUri` value that will be something like `yourapp.scm.azurewebsites.net`, and you can browse to that.
-
-![template output](doc/images/template-outputs.png)
-
-
-Alternatively, you can navigate to the Function App in the Azure Portal, click on "Platform Features" and then choose "Advanced Tools (Kudu)" as shown below:
-
-![advanced tools - kudu](doc/images/advanced-tools-kudu.png)
-
-##### Deploying a template
-
-In Kudu, select "PowerShell" from the "Debug console" menu:
-
-![debug console - powershell](doc/images/debug-console-powershell.png)
-
-
-In the PowerShell console, navigate to `site\wwwroot` (either by clicking the hyperlinked directories, or by typing `cd site\wwwroot`)
-
-At this point you should see `deploy.ps1` listed. This is the script that allows you to easily deploy scenarios.
-
-To deploy a scenario, run `./deploy.ps1 -Group <groupname> -Scenario <scenario>`
-
-E.g `./deploy.ps1 -Group leaderboards -Scenario top-n`
-
-Current supported combinations for Group and Scenario are:
-
-|Group|Scenario|Description|
-|-|-|-|
-|leaderboards|top-n|functions to capture scores and show a top-n (e.g. top 10) leaderboard|
-
-
-After running the `deploy.ps1` script you should see new folders that have been created:
-
-![kudu scenario folders](doc/images/kudu-scenario-folders.png)
-
-And navigating back to the Azure Functions blade in the [Azure Portal](https://portal.azure.com) you will see the newly created functions:
-
-![new functions](doc/images/new-functions.png)
-
-## Reporting issues and feedback
-
-If you encounter any bugs please file an issue in the Issues section of our GitHub repo.
 
 ## Contribute Code
 
@@ -106,6 +52,10 @@ We welcome contributions. To contribute please follow the instructions on
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
 or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+## Reporting issues and feedback
+
+If you encounter any bugs please file an issue in the Issues section of our GitHub repo.
 
 ## License
 

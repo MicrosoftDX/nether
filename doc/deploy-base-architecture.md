@@ -1,4 +1,4 @@
-# Deploying the base architecture for the "Server Less" Nether Scenarios
+# Deploy the Base Architecture
 
 Nether is a project composed of reusable set of building blocks, projects, services and best practices designed for Gaming workloads powered by Microsoft Azure. Some of these scenarios uses an architecture style that is known as a Server Less Architecture.
 
