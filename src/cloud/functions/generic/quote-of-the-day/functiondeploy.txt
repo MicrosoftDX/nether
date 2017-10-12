@@ -1,4 +1,4 @@
-message/function.json
-message/project.json
-message/run.csx
-message/sample.dat
+quote/function.json
+quote/project.json
+quote/run.csx
+quote/sample.dat
