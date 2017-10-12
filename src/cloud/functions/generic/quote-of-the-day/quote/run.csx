@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 using System.Net;
 
 public static HttpResponseMessage Run(HttpRequestMessage req, TraceWriter log)
