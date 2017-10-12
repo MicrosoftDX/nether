@@ -43,6 +43,25 @@ A simple top 10 global leaderboard implementation that allows you to submit scor
 
 _Tags: #serverless, #functions, #cosmosdb_
 
+#### Around Me Leaderboard (_work in progress_)
+
+A simple leaderboard that shows your position among other players.
+
+_Tags: #serverless, #functions, #cosmosdb_
+
+#### Facebook Friends Leaderboard (_work in progress_)
+
+A leaderboard that shows your position among your Facebook friends.
+
+_Tags: #serverless, #functions, #cosmosdb_
+
+### Match Making
+
+#### Simple Match Making (_work in progress_)
+
+Simplest version of matchmaking service where two players looking for a game will be paired together.
+
+_Tags: #serverless, #functions, #cosmosdb_
 
 ## Contribute Code
 
