@@ -6,6 +6,16 @@ Nether is a project composed of reusable set of building blocks, projects, servi
 
 In order to follow along this instruction, you need to have completed the [deployment of the Base Architecture for a Serverless Nether Architecture](deploy-base-architecture.md).
 
+## Non Functional Requirements
+
+Unless otherwise stated, all scenarios are implemented with the following requirements in mind
+
+* Keep scenario simple
+* Minimize the need of maintainence
+* Scale from low, to extreme usage
+* Keep cost to a minimum
+* Service should be implemented using C# Script in order for ease of understanding and modification
+
 ## Azure Functions
 
 Nether uses Azure Functions for a serverless implemenation of your game services. Functions allow you to respond to different triggers and execute custom logic. A function can be triggered by: HTTP Requests, messages on queues, blobs created, etc. and can be implemented using several different languages. Even if you could have chosen any language to implement your server side code, in Nether we've taken a decission to use C# as a programming language whenever fit.
