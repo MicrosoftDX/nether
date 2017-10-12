@@ -2,34 +2,66 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $Group, 
     [Parameter(Mandatory = $true)]
-    [string]$Scenario
+    [string]$Scenario,
+    [Parameter()]
+    [string]$BaseUrl = "https://raw.githubusercontent.com/MicrosoftDX/nether/serverless/src/cloud/functions/"
 )
-
 $here = $PSScriptRoot
 
-# check group exists
-$path = "$here\App_Data\$Group"
-if (-Not (Test-Path $path)) {
-    Write-Output "Group '$group' not found"
-    exit
+function EnsureTrailingSlash($url) {
+    if (-not $url.EndsWith("/")) {
+        $url + "/"
+    }
+    else {
+        $url
+    }
 }
-# check scenario exists
-$path = "$path\$Scenario"
-if (-Not (Test-Path $path)) {
-    Write-Output "Scenario '$Scenario' not found"
-    exit
-}
-
-# TODO warn if target exists
-# TODO allow cherry-picking functions?
-Get-Content "$path\functiondeploy.txt" `
-    | Where-Object { -not [string]::IsNullOrEmpty($_) } `
-    | ForEach-Object {
-        $folder = Split-Path "$here\$_"
-        if (-not(Test-Path($folder))){
-            New-Item -Path $folder -ItemType Directory | out-null
+function DownloadScenario($url, $groupName, $scenarioName) {
+    $webClient = New-Object System.Net.WebClient
+    try {
+        Write-Output "Determining file list for Group '$groupName', Scenario '$scenarioName'..."
+        $scenarioUrl = "$url$groupName/$scenarioName"
+        $files = $webClient.DownloadString("$scenarioUrl/functiondeploy.txt").Split() `
+            | Where-Object { -not [string]::IsNullOrEmpty($_) }
+    }
+    catch {
+        $e = $error[0]
+        if ($e.Exception.InnerException.Response.StatusCode -eq "NotFound") {
+            Write-Output "Scenario not found"
         }
-        Copy-Item "$path\$_" "$here\$_"
+        else {
+            Write-Output "Error occurred: $($e.Exception.ToString())"
+        }
+        return
+        $webClient.Dispose()
     }
 
+    try {
+        $files | ForEach-Object { 
+            $filename = $_
+            $folder = Split-Path -Path "$here\$filename";
+            if ( -not (Test-Path $folder)) { 
+                "Creating folder $folder"; mkdir $folder | Out-Null 
+            }
+            Write-Output "Downloading $filename..."
+            $webClient.DownloadFile("$scenarioUrl/$filename", "$here/$filename")
+        }
+    }
+    catch {
+        $e = $error[0]
+        Write-Output "Error occurred: $($e.Exception.ToString())"
+    }
+    finally {
+        $webClient.Dispose()
+    }
+}
+
+$BaseUrl = EnsureTrailingSlash $BaseUrl
+
+# TODO - error handling (url not found etc)
+# TODO warn if target exists
+# TODO allow cherry-picking functions?
+
+DownloadScenario $BaseUrl $Group $Scenario
+    
 "Deployment done!"
