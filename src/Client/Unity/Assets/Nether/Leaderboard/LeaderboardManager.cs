@@ -16,6 +16,12 @@ namespace Nether {
     public static event LoginSuccess OnLoginSuccess;
     public static event LoginFail OnLoginFail;
 
+    // Logout delegates
+    public delegate void LogoutSuccess();
+    public delegate void LogoutFail();
+    public static event LoginSuccess OnLogoutSuccess;
+    public static event LoginFail OnLogoutFail;
+
     // Leaderboard delegates
     public delegate void LoadLeaderboardSuccess(LeaderboardItem[] scores);
     public delegate void LoadLeaderboardFail();
@@ -94,18 +100,49 @@ namespace Nether {
 
     #region User Authentication
 
-    public void Login(string token) {
-      StartCoroutine( client.Login(AuthenticationProvider.Facebook, token, LoginCompleted) );
+    public void Login(AuthenticationProvider provider, string accessToken, string secretToken = null) {
+      switch (provider) {
+        case AuthenticationProvider.Facebook:
+          StartCoroutine(client.LoginWithFacebook(accessToken, LoginCompleted));
+          break;
+        case AuthenticationProvider.Twitter:
+          if (string.IsNullOrEmpty(secretToken)) {
+            Debug.LogError("Twitter login requires access token secret");
+          }
+          StartCoroutine(client.LoginWithTwitter(accessToken, secretToken, LoginCompleted));
+          break;
+        case AuthenticationProvider.Google:
+          if (string.IsNullOrEmpty(secretToken)) {
+            Debug.LogError("Google+ login requires id token");
+          }
+          StartCoroutine(client.LoginWithGoogle(accessToken, secretToken, LoginCompleted));
+          break;
+        case AuthenticationProvider.MicrosoftAccount:
+          StartCoroutine(client.LoginWithMicrosoftAccount(accessToken, LoginCompleted));
+          break;
+      }
     }
 
-    private void LoginCompleted(IRestResponse<AuthenticatedUser> response)
-    {
+    private void LoginCompleted(IRestResponse<AuthenticatedUser> response) {
       if (response.IsError) {
         Debug.unityLogger.LogError(kTAG, "Error login failed. " + response.ErrorMessage);
         OnLoginFail();
         return;
       }
       OnLoginSuccess();
+    }
+
+    public void Logout() {
+      StartCoroutine(client.Logout(LogoutCompleted));
+    }
+
+    public void LogoutCompleted(IRestResponse<string> response) {
+      if (response.IsError) {
+        Debug.unityLogger.LogError(kTAG, "Error logout failed. " + response.ErrorMessage);
+        OnLogoutFail();
+        return;
+      }
+      OnLogoutSuccess();
     }
 
     #endregion

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Azure.AppServices;
 using Azure.Functions;
 using RESTClient;
 using Tacticsoft;
@@ -12,7 +13,13 @@ namespace NetherDemo {
   public class LeaderboardDemoScript : MonoBehaviour {
     [Header("Unity UI")]
     [SerializeField]
+    private GameObject loginUI;
+    [SerializeField]
+    private Button logoutButton;
+    [SerializeField]
     private InputField inputUserAccessToken;
+    [SerializeField]
+    private InputField inputUserSecret;
     [SerializeField]
     private InputField inputPlayer;
 
@@ -24,6 +31,7 @@ namespace NetherDemo {
     [Header("Nether")]
     [SerializeField]
     private LeaderboardManager leaderboardManager;
+    private AuthenticationProvider identityProvider = AuthenticationProvider.Facebook; // default to Facebook
 
     // Use this for initialization
     void Start() {
@@ -31,8 +39,9 @@ namespace NetherDemo {
           inputPlayer == null ||
           inputScore == null ||
           inputUserAccessToken == null ||
+          inputUserSecret == null ||
           outputText == null) {
-        Debug.LogError("Inspector elements need to be linked up to game objects in hierarchy.");
+        Debug.LogError("Unity missing links to game objects in hierarchy.");
         return;
       }
     }
@@ -44,13 +53,33 @@ namespace NetherDemo {
 
     #region Demo UI
 
+    public void ChangeIdentityProvider(Dropdown dropdown) {
+      if (dropdown == null) {
+        Debug.LogWarning("Unity missing link to dropdown element");
+        return;
+      }
+      identityProvider = (AuthenticationProvider)dropdown.value;
+      if (identityProvider.Equals(AuthenticationProvider.Twitter) || identityProvider.Equals(AuthenticationProvider.Google)) {
+        inputUserSecret.placeholder.GetComponent<Text>().text =
+          identityProvider.Equals(AuthenticationProvider.Twitter) ? "Enter access token secret..." : "Enter id token...";
+        inputUserSecret.gameObject.SetActive(true);
+      } else {
+        inputUserSecret.gameObject.SetActive(false);
+      }
+    }
+
     public void ClickLogin() {
       string token = inputUserAccessToken.text;
       if (string.IsNullOrEmpty(token)) {
         outputText.text = "Please enter access token!";
         return;
       }
-      leaderboardManager.Login(token);
+      string secret = inputUserSecret.text;
+      leaderboardManager.Login(identityProvider, token, secret);
+    }
+
+    public void ClickLogout() {
+      leaderboardManager.Logout();
     }
 
     public void ClickLeaderboard() {
@@ -79,6 +108,11 @@ namespace NetherDemo {
       leaderboardManager.SubmitScore(inputPlayer.text, score);
     }
 
+    private void ChangeLoginUI(bool isLoggedIn = false) {
+      loginUI.SetActive(!isLoggedIn);
+      logoutButton.gameObject.SetActive(isLoggedIn);
+    }
+
     #endregion
 
     #region Event handlers (optional)
@@ -86,6 +120,8 @@ namespace NetherDemo {
     void OnEnable() {
       LeaderboardManager.OnLoginSuccess += OnLoginSuccess;
       LeaderboardManager.OnLoginFail += OnLoginFail;
+      LeaderboardManager.OnLogoutSuccess += OnLogoutSuccess;
+      LeaderboardManager.OnLogoutFail += OnLogoutFail;
       LeaderboardManager.OnLoadLeaderboardSuccess += OnLoadLeaderboardSuccess;
       LeaderboardManager.OnLoadLeaderboardFail += OnLoadLeaderboardFail;
       LeaderboardManager.OnSubmitScoreSuccess += OnSubmitScoreSuccess;
@@ -96,6 +132,8 @@ namespace NetherDemo {
     void OnDisable() {
       LeaderboardManager.OnLoginSuccess -= OnLoginSuccess;
       LeaderboardManager.OnLoginFail -= OnLoginFail;
+      LeaderboardManager.OnLogoutSuccess -= OnLogoutSuccess;
+      LeaderboardManager.OnLogoutFail -= OnLogoutFail;
       LeaderboardManager.OnLoadLeaderboardSuccess -= OnLoadLeaderboardSuccess;
       LeaderboardManager.OnLoadLeaderboardFail -= OnLoadLeaderboardFail;
       LeaderboardManager.OnSubmitScoreSuccess -= OnSubmitScoreSuccess;
@@ -103,11 +141,21 @@ namespace NetherDemo {
     }
 
     private void OnLoginSuccess() {
-      outputText.text = "Logged In!";
+      outputText.text = "Logged in!";
+      ChangeLoginUI(true);
     }
 
     private void OnLoginFail() {
       outputText.text = "Failed to login";
+    }
+
+    private void OnLogoutSuccess() {
+      outputText.text = "Logged out!";
+      ChangeLoginUI(false);
+    }
+
+    private void OnLogoutFail() {
+      outputText.text = "Failed to logout";
     }
 
     private void OnLoadLeaderboardSuccess(LeaderboardItem[] scores) {

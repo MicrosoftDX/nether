@@ -1,0 +1,18 @@
+namespace Azure.AppServices
+{
+	[System.Serializable]
+	public class AccessTokenSecret
+	{
+		public string access_token;
+		public string access_token_secret;
+
+		/// <summary>
+		/// Twitter with "access_token" and "access_token_secret" request body
+		/// </summary>
+		public AccessTokenSecret (string accessTokenValue, string accessTokenSecret)
+		{
+			access_token = accessTokenValue;
+			access_token_secret = accessTokenSecret;
+		}
+	}
+}

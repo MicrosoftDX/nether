@@ -6,7 +6,7 @@
 		public string access_token;
 
 		/// <summary>
-		/// Facebook, Google, AAD access_token request
+		/// Facebook, Microsoft Account, Azure Active Directory "access_token" request body
 		/// </summary>
 		public AccessToken (string accessTokenValue)
 		{
