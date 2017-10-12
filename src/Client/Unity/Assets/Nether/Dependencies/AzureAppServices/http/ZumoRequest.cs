@@ -8,7 +8,10 @@ using RESTClient;
 namespace Azure.AppServices {
   public sealed class ZumoRequest : RestRequest {
 
-    private bool excludeSystemProperties; // strips App Services System Properties from request body
+    // NB: Exclude system properties is a workaround to ignore read-only system properties during JSON utility deserialization.
+    // If set to true then App Services System Properties will be stripped from the request body during deserialization.
+    private bool excludeSystemProperties;
+
     public ZumoRequest(string url, Method httpMethod = Method.GET, bool excludeSystemProperties = true, AuthenticatedUser user = null) : base(url, httpMethod) {
       this.excludeSystemProperties = excludeSystemProperties;
       this.AddHeader("ZUMO-API-VERSION", "2.0.0");
@@ -20,10 +23,25 @@ namespace Azure.AppServices {
       }
     }
 
+    // Facebook, Microsoft Account, Azure Active Directory
     public void AddBodyAccessToken(string token) {
       AccessToken accessToken = new AccessToken(token);
       this.AddBody<AccessToken>(accessToken);
     }
+
+    // Twitter
+    public void AddBodyAccessTokenSecret (string token, string tokenSecret)
+		{
+			AccessTokenSecret accessTokenSecret = new AccessTokenSecret (token, tokenSecret);
+			this.AddBody<AccessTokenSecret> (accessTokenSecret);
+		}
+
+    // Google+
+    public void AddBodyAccessTokenId (string token, string idToken)
+		{
+			AccessTokenId accessTokenId = new AccessTokenId (token, idToken);
+			this.AddBody<AccessTokenId> (accessTokenId);
+		}
 
     public override void AddBody<T>(T data, string contentType = "application/json; charset=utf-8") {
       string jsonString = excludeSystemProperties ? JsonHelper.ToJsonExcludingSystemProperties(data) : JsonUtility.ToJson(data);
