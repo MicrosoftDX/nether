@@ -30,9 +30,9 @@ Resource          | Verb | Parameters               | Description
 
 ## Deploying the Scenario
 
-> Please refer to the instructions in [Deploy a Nether Scenario](../../../../../doc/deploy-scenario.md) for more detailed instructions on how to find your Kudo PowerShell interface and how deployment works.
+> Please refer to the instructions in [Deploy a Nether Scenario](../../../../../doc/deploy-scenario.md) for more detailed instructions on how to find your Kudu PowerShell interface and how deployment works.
 
-From the Kudo PowerShell interface in your Azure Function App, execute the following command:
+From the Kudu PowerShell interface in your Azure Function App, execute the following command:
 
 ```
 ./deploy.ps1 -Group leaderboards -Scenario top-n
