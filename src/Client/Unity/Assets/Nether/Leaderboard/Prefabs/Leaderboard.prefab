@@ -71,7 +71,7 @@ GameObject:
   - component: {fileID: 114260772183632426}
   - component: {fileID: 222872662492115682}
   - component: {fileID: 114912690727624108}
-  - component: {fileID: 114942097633727378}
+  - component: {fileID: 114308647652013068}
   m_Layer: 5
   m_Name: Leaderboard
   m_TagString: Untagged
@@ -276,6 +276,22 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114308647652013068
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1442061068657816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 254b98e02e9064aebb24408a5a65f593, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onCellVisibilityChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Tacticsoft.TableView+CellVisibilityChangeEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &114346013373026894
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -483,22 +499,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114942097633727378
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1442061068657816}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 594dcbc4150214625901b8b3440c7078, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onCellVisibilityChanged:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: Tacticsoft.TableView+CellVisibilityChangeEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!222 &222294204932881648
 CanvasRenderer:
   m_ObjectHideFlags: 1

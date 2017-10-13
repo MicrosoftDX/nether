@@ -104,6 +104,10 @@ namespace Nether {
     #region User Authentication
 
     public void Login(AuthenticationProvider provider, string accessToken, string secretToken = null) {
+      accessToken = accessToken.Trim();
+      if (!string.IsNullOrEmpty(secretToken)) {
+        secretToken = secretToken.Trim();
+      }
       switch (provider) {
         case AuthenticationProvider.Facebook:
           StartCoroutine(client.LoginWithFacebook(accessToken, LoginCompleted));
