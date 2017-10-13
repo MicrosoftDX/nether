@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using System.Net;
+using UnityEngine.Assertions;
 
 namespace Azure.AppServices {
   public abstract class ZumoClient : RestClient, IZumoClient {
@@ -79,23 +80,29 @@ namespace Azure.AppServices {
     public IEnumerator Logout(Action<IRestResponse<string>> callback = null) {
       if (User == null) {
         Debug.LogWarning("Error, requires user login.");
+        yield break;
       }
       string url = string.Format("{0}/.auth/logout", Url);
       var request = new ZumoRequest(url, Method.POST, false, User);
       yield return request.Request.Send();
-      // Detect logout webpage (using title tag to verify sign out success) with callback
-      if (callback != null) {
-        HttpStatusCode statusCode = (HttpStatusCode)Enum.Parse(typeof(HttpStatusCode), request.Request.responseCode.ToString());
-        RestResponse<string> response = new RestResponse<string>(statusCode, request.Request.url, request.Request.downloadHandler.text);
-        if (statusCode.Equals(HttpStatusCode.Accepted)) {
-          var match = Regex.Match(request.Request.downloadHandler.text, @"<title>(.+)<\/title>", RegexOptions.IgnoreCase);
-          if (match.Groups.Count == 2 && match.Groups[1].Value.Length > 0) {
-            string message = string.Equals(match.Groups[1].Value, "You have been signed out") ? match.Groups[1].Value : "Unexpected signout message: " + match.Groups[1].Value;
-            response = new RestResponse<string>(statusCode, request.Request.url, message);
-          }
-        }
-        callback(response);
+      if (callback == null) {
+        yield break;
       }
+      HttpStatusCode statusCode = (HttpStatusCode)Enum.Parse(typeof(HttpStatusCode), request.Request.responseCode.ToString());
+      RestResponse<string> response = new RestResponse<string>(statusCode, request.Request.url, request.Request.downloadHandler.text);
+      if (!statusCode.Equals(HttpStatusCode.OK)) {
+        Debug.LogWarning("Error, logout request failed.");
+        yield break;
+      }
+      // Detect result of logout webpage (using title tag to verify sign out success) with callback response
+      var match = Regex.Match(request.Request.downloadHandler.text, @"<title>(.+)<\/title>", RegexOptions.IgnoreCase);
+      if (match.Groups.Count == 2 && !string.IsNullOrEmpty(match.Groups[1].Value)) {
+        string title = match.Groups[1].Value;
+        Assert.IsTrue(string.Equals(title, "You have been signed out"));
+        response = new RestResponse<string>(statusCode, request.Request.url, title);
+      }
+      callback(response);
+      User = null;
       request.Dispose();
     }
 

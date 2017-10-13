@@ -36,7 +36,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 224124820909624086}
-  - component: {fileID: 114419418351064808}
+  - component: {fileID: 114653701069598104}
   m_Layer: 5
   m_Name: ScoreCell
   m_TagString: Untagged
@@ -155,20 +155,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 1
---- !u!114 &114419418351064808
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1314930625635210}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0672a9a6d415d4605a07eb9f566dc03f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Rank: {fileID: 114407880115532558}
-  Score: {fileID: 114594630096676346}
-  Name: {fileID: 114857251784737146}
 --- !u!114 &114594630096676346
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -202,6 +188,20 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 123456
+--- !u!114 &114653701069598104
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1314930625635210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c13559e52bb184a55986b52f4ecb3f2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Rank: {fileID: 114407880115532558}
+  Score: {fileID: 114594630096676346}
+  Name: {fileID: 114857251784737146}
 --- !u!114 &114857251784737146
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -231,7 +231,7 @@ MonoBehaviour:
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
+    m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Player
@@ -280,7 +280,7 @@ RectTransform:
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 30}
-  m_Pivot: {x: 0, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!224 &224320543031180314
 RectTransform:
   m_ObjectHideFlags: 1

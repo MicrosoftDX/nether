@@ -19,16 +19,18 @@ namespace NetherDemo {
     private GameObject loginUI;
     [SerializeField]
     private Button logoutButton;
+    [Space(10)]
     [SerializeField]
     private InputField inputUserAccessToken;
     [SerializeField]
     private InputField inputUserSecret;
+    [Space(10)]
     [SerializeField]
     private InputField inputPlayer;
-
     [SerializeField]
     private InputField inputScore;
     [SerializeField]
+    [Space(10)]
     private Text outputText;
 
     [Header("Nether")]
@@ -44,7 +46,7 @@ namespace NetherDemo {
           inputUserAccessToken == null ||
           inputUserSecret == null ||
           outputText == null) {
-        Debug.LogError("Unity missing links to game objects in hierarchy.");
+        Debug.LogError("Unity is missing connections to game objects in hierarchy.");
         return;
       }
     }
@@ -58,7 +60,7 @@ namespace NetherDemo {
 
     public void ChangeIdentityProvider(Dropdown dropdown) {
       if (dropdown == null) {
-        Debug.LogWarning("Unity missing link to dropdown element");
+        Debug.LogWarning("Unity missing connection to dropdown element");
         return;
       }
       identityProvider = (AuthenticationProvider)dropdown.value;
