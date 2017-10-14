@@ -29,7 +29,7 @@ These are the scenarios that we currently have implemented in Nether. Each scena
 
 ### Generic
 
-* [Quote of the Date](src/cloud/functions/generic/quote-of-the-day/)
+* [Quote of the Day](src/cloud/functions/generic/quote-of-the-day/)
 
 ### Leaderboards
 
