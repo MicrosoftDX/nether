@@ -3,8 +3,24 @@
 
 using System.Net;
 
+private static string baseArchitectureVersion = ConfigurationManager.AppSettings["BASE_ARCHITECTURE_VERSION"];
+private const string requiredBaseArchitectureVersion = "1";
+
+private static bool runOnce = true;
+
 public static HttpResponseMessage Run(HttpRequestMessage req, TraceWriter log)
 {
+        // Run initialization only once.
+    // Remarks: This initialization will run once on every instance and on every recompile of this function
+    if (runOnce)
+    {
+        log.Info("Running initialization");
+
+        if (string.IsNullOrWhiteSpace(baseArchitectureVersion) ||
+            baseArchitectureVersion.StartsWith(requiredBaseArchitectureVersion)) log.Error($"The base architecture version doesn't match the expected version {requiredBaseArchitectureVersion}");
+
+        log.Info("Initialization done!");
+    }
     var now = DateTime.UtcNow;
 
     string msg;
