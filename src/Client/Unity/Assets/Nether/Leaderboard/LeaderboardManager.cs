@@ -195,7 +195,7 @@ namespace Nether {
     #region Load highscores
 
     public void LoadLeaderboard() {
-      coroutine = leaderboardService.Get<LeaderboardItem>(leaderboard, LoadLeaderboardCompleted);
+      coroutine = leaderboardService.GetArray<LeaderboardItem>(LoadLeaderboardCompleted, leaderboard);
       StartCoroutine(coroutine);
     }
 

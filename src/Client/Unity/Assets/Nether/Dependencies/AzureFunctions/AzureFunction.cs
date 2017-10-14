@@ -43,13 +43,26 @@ namespace Azure.Functions {
       }
     }
 
-    public IEnumerator Get<T>(string path = null, Action<IRestResponse<T[]>> callback = null) {
+    public IEnumerator GetArray<T>(Action<IRestResponse<T[]>> callback = null, string path = null) {
       var request = new ZumoRequest(ApiUrl(path), Method.GET, false, client.User);
       if (!string.IsNullOrEmpty(key)) {
         request.AddQueryParam(PARAM_CODE, key, true);
       }
       yield return request.Request.Send();
       request.ParseJsonArray<T>(callback);
+    }
+
+    public IEnumerator Get<T>(Action<IRestResponse<T>> callback = null, string path = null) {
+      var request = new ZumoRequest(ApiUrl(path), Method.GET, false, client.User);
+      if (!string.IsNullOrEmpty(key)) {
+        request.AddQueryParam(PARAM_CODE, key, true);
+      }
+      yield return request.Request.Send();
+      if (typeof(T) == typeof(string)) {
+        request.GetText(callback);
+      } else {
+        request.ParseJson<T>(callback);
+      }
     }
 
     private string ApiUrl(string path = null) {

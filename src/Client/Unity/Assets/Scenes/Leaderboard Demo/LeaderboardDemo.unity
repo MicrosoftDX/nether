@@ -2868,7 +2868,7 @@ GameObject:
   - component: {fileID: 1371836285}
   - component: {fileID: 1371836286}
   m_Layer: 0
-  m_Name: Leaderboard Manager
+  m_Name: Nether Leaderboard Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
