@@ -47,14 +47,12 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
     dynamic data = await req.Content.ReadAsAsync<object>();
     string id = data?.playerId;
     string player = data?.player;
-    string leaderboard = data?.leaderboard;
 
-    if (string.IsNullOrEmpty(id) || data?.score == null || string.IsNullOrEmpty(player) || string.IsNullOrEmpty(leaderboard))
-        return req.CreateResponse(HttpStatusCode.BadRequest, "Please pass an playerId, player(name), leaderboard(name) and score in the request body");
+    if (string.IsNullOrEmpty(id) || data?.score == null || string.IsNullOrEmpty(player))
+        return req.CreateResponse(HttpStatusCode.BadRequest, "Please pass an playerId, player(name) and score in the request body");
     
     var postedScore = new ScoreItem();
     postedScore.PlayerId = data?.playerId;
-    postedScore.Leaderboard = data?.leaderboard;
     postedScore.Player = data?.player;
     postedScore.Score = data?.score;
 
@@ -93,7 +91,7 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
     }
     catch (DocumentClientException)
     {
-            return req.CreateResponse(HttpStatusCode.BadRequest, "Please pass an playerId, player(name), leaderboard(name) and score in the request body");
+            return req.CreateResponse(HttpStatusCode.BadRequest, "Please pass an playerId, player(name) and score in the request body");
     }
 }
 
@@ -101,8 +99,6 @@ public class ScoreItem
 {
     [JsonProperty(PropertyName = "id")]
     public string Id { get; set;}    
-    [JsonProperty(PropertyName = "leaderboard")]
-    public string Leaderboard { get; set;}    
     [JsonProperty(PropertyName = "player")]
     public string Player { get; set;}
     [JsonProperty(PropertyName = "playerId")]
