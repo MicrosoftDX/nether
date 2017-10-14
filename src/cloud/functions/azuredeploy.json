@@ -114,24 +114,16 @@
 							"value": "6.5.0"
 						},
 						{
-							"Name": "DOCUMENTDB_DATABASE",
+							"Name": "COSMOSDB_DBNAME",
 							"Value": "nether"
 						},
 						{
-							"Name": "DOCUMENTDB_COLLECTION",
-							"Value": "scores"
-						},
-						{
-							"Name": "DOCUMENTDB_ENDPOINT",
+							"Name": "COSMOSDB_ENDPOINT",
 							"Value": "[reference(concat('Microsoft.DocumentDB/databaseAccounts/', parameters('cosmosDBAccountName'))).documentEndpoint]"
 						},
 						{
-							"Name": "DOCUMENTDB_PRIMARY_KEY",
+							"Name": "COSMOSDB_PRIMARY_MASTER_KEY",
 							"Value": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosDBAccountName')), '2015-04-08').primaryMasterKey]"
-						},
-						{
-							"Name": "LENGTH_OF_LEADERBOARD",
-							"value": "10"
 						}
 					]
 				}

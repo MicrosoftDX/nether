@@ -8,11 +8,11 @@ using Newtonsoft.Json;
 using System.Configuration;
 
 // Read application settings
-private static string db = ConfigurationManager.AppSettings["DOCUMENTDB_DATABASE"];    
-private static string collection = ConfigurationManager.AppSettings["DOCUMENTDB_COLLECTION"];
-private static string endpoint = ConfigurationManager.AppSettings["DOCUMENTDB_ENDPOINT"];
-private static string key = ConfigurationManager.AppSettings["DOCUMENTDB_PRIMARY_KEY"];
+private static string db = ConfigurationManager.AppSettings["COSMOSDB_DBNAME"];    
+private static string endpoint = ConfigurationManager.AppSettings["COSMOSDB_ENDPOINT"];
+private static string key = ConfigurationManager.AppSettings["COSMOSDB_PRIMARY_MASTER_KEY"];
 
+private const string collection = "scores";
 private static bool runOnce = true;
 private static DocumentClient client;
 
@@ -25,10 +25,10 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
         log.Info("Running initialization");
 
         // Check required application settings
-        if (string.IsNullOrWhiteSpace(db)) log.Error("DOCUMENTDB_DATABASE settings wasn't provided");
-        if (string.IsNullOrWhiteSpace(collection)) log.Error("DOCUMENTDB_COLLECTION settings wasn't provided");
-        if (string.IsNullOrWhiteSpace(endpoint)) log.Error("DOCUMENTDB_ENDPOINT settings wasn't provided");
-        if (string.IsNullOrWhiteSpace(key)) log.Error("DOCUMENTDB_PRIMARY_KEY settings wasn't provided");
+        if (string.IsNullOrWhiteSpace(db)) log.Error("COSMOSDB_DBNAME settings wasn't provided");
+        if (string.IsNullOrWhiteSpace(collection)) log.Error("COSMOSDB_COLLECTION settings wasn't provided");
+        if (string.IsNullOrWhiteSpace(endpoint)) log.Error("COSMOSDB_ENDPOINT settings wasn't provided");
+        if (string.IsNullOrWhiteSpace(key)) log.Error("COSMOSDB_PRIMARY_MASTER_KEY settings wasn't provided");
 
         // Create Cosmos DB Client from settings
         client = new DocumentClient(new Uri(endpoint), key);
