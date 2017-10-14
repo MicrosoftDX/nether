@@ -221,7 +221,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   message: {fileID: 114731107093397938}
-  transistion: {fileID: 114863707493570648}
+  transition: {fileID: 114863707493570648}
 --- !u!114 &114401779837159056
 MonoBehaviour:
   m_ObjectHideFlags: 1
