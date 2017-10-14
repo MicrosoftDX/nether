@@ -2899,10 +2899,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   account: 
-  key: 
   leaderboardFunction: Leaderboard
+  leaderboardKey: 
   scoreFunction: Score
-  leaderboard: Global
+  scoreKey: 
   canvas: {fileID: 83807874}
   tableViewPrefab: {fileID: 114308647652013068, guid: ed365de9027fd4202a1e5d3c20c3f7c3,
     type: 2}
