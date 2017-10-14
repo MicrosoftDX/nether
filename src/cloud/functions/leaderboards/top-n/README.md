@@ -44,4 +44,4 @@ Wait for the deployment to finish before continuing.
 
 _To be provided_
 
-> Even if the documentation is not yet fully provided, we do have a sample implementation and Client Side SDK developed for Unity that you could use as a starting poing. Please have a look at [the implementation here](../../../../client/unity).
+> Even if the documentation is not yet fully provided, we do have a sample implementation and Client Side SDK developed for Unity that you could use as a starting poing. Please have a look at [the implementation here](../../../../Client/Unity).
