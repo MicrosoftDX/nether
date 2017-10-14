@@ -14,7 +14,7 @@ In order to deploy the base architecture you need to have a valid Azure Subscrip
 
 Unless otherwise stated, all scenarios that uses the server less approach in Nether use the same base architecture. A very simple architecture, but still scalable.
 
-![Architecture Diagram](architectures/game-function-cosmos.png "Game-> Functions-> CosmosDB")
+![Architecture Diagram](images/base-architecture.png "Base Architecture")
 
 * [Azure Functions](https://azure.microsoft.com/en-us/services/functions/)
 * [Azure Cosmos DB](https://azure.microsoft.com/en-us/services/cosmos-db/)
