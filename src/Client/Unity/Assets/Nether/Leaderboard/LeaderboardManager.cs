@@ -40,18 +40,18 @@ namespace Nether {
     [Header("Azure Functions")]
     [SerializeField]
     private string account;
-    [SerializeField]
-    private string key;
 
     [Space(10)]
     [SerializeField]
     private string leaderboardFunction = "Leaderboard";
     [SerializeField]
-    private string scoreFunction = "Score";
+    private string leaderboardKey;
 
-    [Header("Config")]
+    [Space(10)]
     [SerializeField]
-    private string leaderboard = "Global";
+    private string scoreFunction = "Score";
+    [SerializeField]
+    private string scoreKey;
 
     [Header("Unity UI")]
     [SerializeField]
@@ -81,7 +81,7 @@ namespace Nether {
         return;
       }
 
-      if (string.IsNullOrEmpty(account) || string.IsNullOrEmpty(key)) {
+      if (string.IsNullOrEmpty(account) || string.IsNullOrEmpty(leaderboardKey) || string.IsNullOrEmpty(scoreKey) ) {
         Debug.unityLogger.LogError(kTAG, "Azure Function account and key required.");
         return;
       }
@@ -92,8 +92,8 @@ namespace Nether {
       }
 
       client = AzureFunctionClient.Create(account);
-      leaderboardService = new AzureFunction(leaderboardFunction, client, key);
-      scoreService = new AzureFunction(scoreFunction, client, key);
+      leaderboardService = new AzureFunction(leaderboardFunction, client, leaderboardKey);
+      scoreService = new AzureFunction(scoreFunction, client, scoreKey);
     }
 
     // Update is called once per frame
@@ -195,7 +195,7 @@ namespace Nether {
     #region Load highscores
 
     public void LoadLeaderboard() {
-      coroutine = leaderboardService.GetArray<LeaderboardItem>(LoadLeaderboardCompleted, leaderboard);
+      coroutine = leaderboardService.GetArray<LeaderboardItem>(LoadLeaderboardCompleted);
       StartCoroutine(coroutine);
     }
 
@@ -223,7 +223,6 @@ namespace Nether {
       body.player = player;
       body.score = score;
       body.playerId = userId;
-      body.leaderboard = leaderboard;
       StartCoroutine(scoreService.Post<ScoreItem, string>(body, SubmitScoreCompleted));
     }
 
