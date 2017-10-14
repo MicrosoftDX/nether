@@ -11,6 +11,8 @@ using System.Configuration;
 private static string db = ConfigurationManager.AppSettings["COSMOSDB_DBNAME"];    
 private static string endpoint = ConfigurationManager.AppSettings["COSMOSDB_ENDPOINT"];
 private static string key = ConfigurationManager.AppSettings["COSMOSDB_PRIMARY_MASTER_KEY"];
+private static string baseArchitectureVersion = ConfigurationManager.AppSettings["BASE_ARCHITECTURE_VERSION"];
+private const string requiredBaseArchitectureVersion = "1.1";
 
 private const string collection = "scores";
 private static bool runOnce = true;
@@ -24,9 +26,11 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
     {
         log.Info("Running initialization");
 
+        if (string.IsNullOrWhiteSpace(baseArchitectureVersion) ||
+            baseArchitectureVersion.StartsWith(requiredBaseArchitectureVersion)) log.Error($"The base architecture version doesn't match the expected version {requiredBaseArchitectureVersion}");
+
         // Check required application settings
         if (string.IsNullOrWhiteSpace(db)) log.Error("COSMOSDB_DBNAME settings wasn't provided");
-        if (string.IsNullOrWhiteSpace(collection)) log.Error("COSMOSDB_COLLECTION settings wasn't provided");
         if (string.IsNullOrWhiteSpace(endpoint)) log.Error("COSMOSDB_ENDPOINT settings wasn't provided");
         if (string.IsNullOrWhiteSpace(key)) log.Error("COSMOSDB_PRIMARY_MASTER_KEY settings wasn't provided");
 

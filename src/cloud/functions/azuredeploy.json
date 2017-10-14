@@ -124,6 +124,10 @@
 						{
 							"Name": "COSMOSDB_PRIMARY_MASTER_KEY",
 							"Value": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosDBAccountName')), '2015-04-08').primaryMasterKey]"
+						},
+						{
+							"Name": "BASE_ARCHITECTURE_VERSION",
+							"Value": "1.1.0"
 						}
 					]
 				}
