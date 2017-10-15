@@ -18,7 +18,7 @@ public static HttpResponseMessage Run(HttpRequestMessage req, TraceWriter log)
         log.Info("Running initialization");
 
         if (string.IsNullOrWhiteSpace(baseArchitectureVersion) ||
-            baseArchitectureVersion.StartsWith(requiredBaseArchitectureVersion)) log.Error($"The base architecture version doesn't match the expected version {requiredBaseArchitectureVersion}");
+            !baseArchitectureVersion.StartsWith(requiredBaseArchitectureVersion)) log.Error($"The base architecture version doesn't match the expected version {requiredBaseArchitectureVersion}");
 
         log.Info("Initialization done!");
     }
