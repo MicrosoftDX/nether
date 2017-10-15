@@ -27,7 +27,7 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
         log.Info("Running initialization");
 
         if (string.IsNullOrWhiteSpace(baseArchitectureVersion) ||
-            baseArchitectureVersion.StartsWith(requiredBaseArchitectureVersion)) log.Error($"The base architecture version doesn't match the expected version {requiredBaseArchitectureVersion}");
+            !baseArchitectureVersion.StartsWith(requiredBaseArchitectureVersion)) log.Error($"The base architecture version doesn't match the expected version {requiredBaseArchitectureVersion}");
 
         // Check required application settings
         if (string.IsNullOrWhiteSpace(db)) log.Error("COSMOSDB_DBNAME settings wasn't provided");
