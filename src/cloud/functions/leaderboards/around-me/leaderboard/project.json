@@ -1,0 +1,9 @@
+{
+  "frameworks": {
+    "net46":{
+      "dependencies": {
+        "Microsoft.Azure.DocumentDB": "1.17.0"
+      }
+    }
+   }
+}
