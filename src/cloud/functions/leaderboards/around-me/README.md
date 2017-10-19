@@ -1,4 +1,4 @@
-# Top N Leaderboard
+# Around Me Leaderboard
 
 Implements a simple leaderboard service, that will allow you to submit scores and retrieve a leaderboard +/-5 positions around specific player with global ranking.
 
