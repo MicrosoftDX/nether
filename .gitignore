@@ -260,6 +260,10 @@ paket-files/
 !.vscode/tasks.json
 !.vscode/launch.json
 
+# Unity UWP build
+UWP
+*.pfx.meta
+
 # OS X
 .DS_Store
 
