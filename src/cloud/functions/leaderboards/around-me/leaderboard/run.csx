@@ -82,42 +82,104 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, string
                 where c.Score > currentPlayer.Score && c.Leaderboard == leaderboard
                 select c;
 
+        List<LeaderboardItem> sortedResult = new List<LeaderboardItem>(); //Sorted list from highest score (start of list) to lowest for output  
+
         globalRank = query.Count<ScoreItem>() + 1;
 
-        List<LeaderboardItem> sortedResult = new List<LeaderboardItem>();
-
-        // Get and add to output specific number of players (radiusOfLeaderboard constant) with scores below the current player)
-        query =
-            (from s in scores
-             where s.Score < currentPlayer.Score && s.Leaderboard == leaderboard
-             orderby s.Score descending
-             select s).Take(radiusOfLeaderboard);
-
-        var sortedList = query.ToList<ScoreItem>().OrderBy(a => a.Score);
-
-        foreach (ScoreItem scr in sortedList)
+        if (globalRank > 1) //if current player it not number 1 in global rank
         {
-            sortedResult.Add(new LeaderboardItem { Rank = 0, Player = scr.Player, Score = scr.Score });
-        }
-        // Add current player to output
-        sortedResult.Add(new LeaderboardItem { Rank = globalRank, Player = currentPlayer.Player, Score = currentPlayer.Score });
-
-        // Get and add to output specific number of players (radiusOfLeaderboard constant) with scores above the current player)
-        query =
+            // Get and add to output specific number of players (radiusOfLeaderboard constant) with scores above the current player)
+            query =
             (from s in scores
              where s.Score > currentPlayer.Score && s.Leaderboard == leaderboard
              orderby s.Score ascending
              select s).Take(radiusOfLeaderboard);
 
-        foreach (ScoreItem scr in query)
+            var sortedList = query.ToList<ScoreItem>().OrderByDescending(a => a.Score); //sort list from highest score to lowest
+
+            foreach (ScoreItem scr in sortedList)
+            {
+                sortedResult.Add(new LeaderboardItem { Rank = globalRank - 1, Player = scr.Player, Score = scr.Score });
+            }
+
+            for (int i = sortedResult.Count - 1; i > 0; i--) //iterate through scores above player from lowest score/position (end of array) to higher (start of array)
+            {
+                if (sortedResult[i].Score == sortedResult[i - 1].Score) //if current score is the same as one position higher in the list
+                {
+                    int sameScoreNum;
+                    sameScoreNum = NumberWithSameScores(sortedResult, i); //calculate how many people have the same score
+                    for (int j = 0; j < sameScoreNum; j++) //iterate through all the people with the same score
+                    {
+                        sortedResult[i - j].Rank = sortedResult[i].Rank - sameScoreNum + 1 + j; //assign same rank to everyone with the same score
+                    }
+                    if (i + 1 - sameScoreNum >= 2) // if there are 2 or more people left to iterate
+                    {
+                        i = i + 2 - sameScoreNum; //jump index to the last iterated with the same score in the current segment
+                    }
+                    else
+                    {
+                        if (i + 1 - sameScoreNum == 1) //if only one left 
+                        {
+                            sortedResult[0].Rank = sortedResult[i - 1].Rank - 1; //update the last person in the list with the right rank
+                            break;
+                            //i = 0;
+                        }
+                        else //no one left - stop iterating
+                        {
+                            break;
+                            //i = 0;
+                        }
+                    }
+                }
+                else // scores of compared players are not the same
+                {
+                    if (sortedResult[i].Score < sortedResult[i - 1].Score) //double check 
+                    {
+                        sortedResult[i - 1].Rank = sortedResult[i].Rank - 1; //assign rank -1 to one with higher score
+                    }
+                    else
+                    {
+                        log.Info("Error. Order of elements in score list is broken");
+                    }
+                }
+            }
+        }
+        int numElementHigherThanCurrent = sortedResult.Count;
+
+        // Add current player to output
+        sortedResult.Add(new LeaderboardItem { Rank = globalRank, Player = currentPlayer.Player, Score = currentPlayer.Score });
+
+        // Get and add to output specific number of players (radiusOfLeaderboard constant) with scores below the current player)
+        query =
+            (from s in scores
+             where s.Score <= currentPlayer.Score && s.Leaderboard == leaderboard && s.PlayerId != currentPlayer.PlayerId
+             orderby s.Score descending
+             select s).Take(radiusOfLeaderboard);
+
+        var sortedList2 = query.ToList<ScoreItem>().OrderByDescending(a => a.Score);
+
+        if (!(sortedList2 is null))
         {
-            sortedResult.Add(new LeaderboardItem { Rank = 0, Player = scr.Player, Score = scr.Score });
+            foreach (ScoreItem scr in sortedList2)
+            {
+                sortedResult.Add(new LeaderboardItem { Rank = 0, Player = scr.Player, Score = scr.Score });
+            }
         }
 
+        int numWithSameScore = 0;
         //Update the ranks in the output with global positions
-        for (int i = 0; i < sortedResult.Count; i++)
+        for (int i = numElementHigherThanCurrent + 1; i < sortedResult.Count; i++)
         {
-            sortedResult[i].Rank = globalRank - radiusOfLeaderboard + i;
+            if (sortedResult[i].Score < sortedResult[i - 1].Score)
+            {
+                sortedResult[i].Rank = sortedResult[i - 1].Rank + 1 + numWithSameScore;
+                numWithSameScore = 0;
+            }
+            else
+            {
+                sortedResult[i].Rank = sortedResult[i - 1].Rank;
+                numWithSameScore++;
+            }
         }
 
         return req.CreateResponse(HttpStatusCode.OK, sortedResult);
@@ -133,6 +195,24 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, string
 
         return req.CreateResponse(HttpStatusCode.BadRequest, $"An unknown error has occured. Message: {ex.Message}");
     }
+}
+
+
+public static int NumberWithSameScores(List<LeaderboardItem> listToRank, int startPosition)
+{
+    int numberWithSameScores = 1;
+    for (int i = startPosition; i > 0; i--)
+    {
+        if (listToRank[i].Score == listToRank[i - 1].Score)
+        {
+            numberWithSameScores++;
+        }
+        else
+        {
+            break;
+        }
+    }
+    return numberWithSameScores;
 }
 
 public class ScoreItem
