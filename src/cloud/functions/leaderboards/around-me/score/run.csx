@@ -16,7 +16,7 @@ private static string key = ConfigurationManager.AppSettings["COSMOSDB_PRIMARY_M
 private static string baseArchitectureVersion = ConfigurationManager.AppSettings["BASE_ARCHITECTURE_VERSION"];
 private const string requiredBaseArchitectureVersion = "1.1";
 
-private const string collection = "test";
+private const string collection = "scores";
 private const int radiusOfLeaderboard = 5;
 private static bool runOnce = true;
 private static DocumentClient client;
