@@ -34,7 +34,7 @@ These are the scenarios that we currently have implemented in Nether. Each scena
 ### Leaderboards
 
 * [Top N Leaderboard](src/cloud/functions/leaderboards/top-n/)
-* [Around Me Leaderboard] (src/cloud/functions/leaderboards/around-me)
+* [Around Me Leaderboard](src/cloud/functions/leaderboards/around-me)
 * Facebook Friends Leaderboard (_work in progress_)
 
 ### Match Making
