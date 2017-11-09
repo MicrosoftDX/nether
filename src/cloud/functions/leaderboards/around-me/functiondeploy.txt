@@ -1,0 +1,8 @@
+score/function.json
+score/project.json
+score/run.csx
+score/sample.dat
+leaderboard/function.json
+leaderboard/project.json
+leaderboard/run.csx
+leaderboard/sample.dat
