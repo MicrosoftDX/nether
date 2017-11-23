@@ -56,7 +56,6 @@ The Nether building blocks are comprised from the following components:
 
   [TO DO]
 
-  
 ### Analytics
 
   [TO DO]
