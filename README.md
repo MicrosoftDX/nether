@@ -1,4 +1,4 @@
-![Nether Logo](https://raw.githubusercontent.com/MicrosoftDX/nether/master/logos/both-logo-and-title/logo-title-1109x256.png)
+![Nether Logo](https://raw.githubusercontent.com/MicrosoftDX/nether/master/media/both-logo-and-title/logo-title-1109x256.png)
 # Building blocks for gaming on Azure
 
 serverless branch status
