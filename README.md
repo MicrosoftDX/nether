@@ -3,7 +3,7 @@
 
 serverless branch status
 
-AppVeyor: [![Build status](https://ci.appveyor.com/api/projects/status/v5btbm617bcmu6nq/branch/serverless?svg=true)](https://ci.appveyor.com/project/stuartleeks/nether/branch/serverless)
+AppVeyor: [![Build status](https://ci.appveyor.com/api/projects/status/v5btbm617bcmu6nq?svg=true)](https://ci.appveyor.com/project/stuartleeks/nether)
 
 <!--
 Travis:   [![Build Status](https://travis-ci.org/MicrosoftDX/nether.svg?branch=master)](https://travis-ci.org/MicrosoftDX/nether)
