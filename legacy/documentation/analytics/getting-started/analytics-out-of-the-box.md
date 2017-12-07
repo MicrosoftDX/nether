@@ -1,1 +1,0 @@
-# Getting started with Analytics out of the box experience

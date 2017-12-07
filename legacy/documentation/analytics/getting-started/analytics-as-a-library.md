@@ -1,1 +1,0 @@
-# Getting started with Nether Analytics as a Library
