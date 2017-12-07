@@ -41,10 +41,6 @@ These are the scenarios that we currently have implemented in Nether. Each scena
 
 * Simple Match Making (_work in progress_)
 
-## Legacy
-
-There are more re-usable content in Nether, located in the legacy folder, including things for: Custom Authentication, REST APIs using Web Apps, Custom Analytics Pipelines, JavaScript Client, Java Client and more. We are currently moving towards an easier to use model with the server less approach and will try to bring back functionality that was previously implemented. The code is still int the [legacy](legacy) folder if you ever need it.
-
 ## Contribute Code
 
 We welcome contributions. To contribute please follow the instructions on
