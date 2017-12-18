@@ -4,7 +4,7 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$Scenario,
     [Parameter()]
-    [string]$BaseUrl = "https://raw.githubusercontent.com/MicrosoftDX/nether/serverless/src/cloud/functions/"
+    [string]$BaseUrl = "https://raw.githubusercontent.com/MicrosoftDX/nether/master/src/cloud/functions/"
 )
 $here = $PSScriptRoot
 
