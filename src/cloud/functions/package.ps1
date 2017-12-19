@@ -14,7 +14,7 @@ function CopyDeployScript() {
     Copy-Item "$functionRootPath\deploy.ps1" "$functionContentRootPath\deploy.ps1"
 }
 function CreateZip() {
-    $zipPath = "$functionContentParentPath/nether-serverless.zip"
+    $zipPath = "$functionContentParentPath/nether-master.zip"
     if (Test-Path $zipPath) {
         Remove-Item $zipPath -Force
     }

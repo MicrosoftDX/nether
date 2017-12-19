@@ -2,7 +2,7 @@ image: Visual Studio 2017
 version: 1.0.{build}
 build_script:
 - ps: ./src/cloud/functions/package.ps1
-- ps: Push-AppveyorArtifact packaged-content/nether-serverless.zip -FileName nether-serverless.zip -Type WebDeployPackage
+- ps: Push-AppveyorArtifact packaged-content/nether-master.zip -FileName nether-master.zip -Type WebDeployPackage
 - git rev-parse HEAD > commit.txt
 deploy:
 - provider: AzureBlob
@@ -10,7 +10,7 @@ deploy:
   storage_access_key:
     secure: /KfEywXdV6Ys21sIob+Sjo3c3D+XPfQ/mftzcEeJs1Mom8HJmFSCu5919qqa/FzS++agyWJPwjBl0P7y8uc8m1CyszF5q/OUvWmgM0dIgGCWdR3FM2crLAGBipPqUF8G
   container: deployment-artifacts
-  folder: serverless
-  artifact: nether-serverless.zip,commit.txt
+  folder: master
+  artifact: nether-master.zip,commit.txt
   on:
-    branch: serverless
+    branch: master

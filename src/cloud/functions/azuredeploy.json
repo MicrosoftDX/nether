@@ -12,7 +12,7 @@
 		},
 		"webZipUri": {
 			"type": "string",
-			"defaultValue": "https://netherartifacts.blob.core.windows.net/deployment-artifacts/serverless/nether-serverless.zip"
+			"defaultValue": "https://netherartifacts.blob.core.windows.net/deployment-artifacts/master/nether-master.zip"
 		}
 	},
 	"variables": {
