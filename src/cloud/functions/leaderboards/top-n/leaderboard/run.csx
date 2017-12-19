@@ -67,7 +67,7 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
         {
             // Update rank to i + 1 if score is not the same as the last player's score
             // i.e. two or more players with the same score should have the same rank
-            if (i > 0 || leaders[i-1].Score != leaders[i].Score)
+            if (i > 0 && leaders[i-1].Score != leaders[i].Score)
                 rank = i + 1;
 
             leaders[i].Rank = rank;
