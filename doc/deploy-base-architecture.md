@@ -1,10 +1,10 @@
 # Deploy the Base Architecture
 
-Nether is a project composed of reusable set of building blocks, projects, services and best practices designed for Gaming workloads powered by Microsoft Azure. Some of these scenarios uses an architecture style that is known as a Server Less Architecture.
+Nether is a project composed of reusable set of building blocks, projects, services and best practices designed for Gaming workloads powered by Microsoft Azure. Some of these scenarios uses an architecture style that is known as a Serverless Architecture.
 
 > "Serverless architectures refer to applications that significantly depend on third-party services" -Martin Fowler
 
-In other words, Server Less Architecture is a Software Architecture where you don't need to  care about individual servers, but rather rely on platform services to provide you with the features you need. Microsoft Azure provides a plethora of such services in many different areas such as: custom code, databases, storage, AI, Connected Everything (IoT), analytics, etc. Nether is not the place to describe them all but different scenarios will use a few of those services. Please head over to [http://azure.com](http://azure.com) for more information of all services available.
+In other words, Serverless Architecture is a Software Architecture where you don't need to  care about individual servers, but rather rely on platform services to provide you with the features you need. Microsoft Azure provides a plethora of such services in many different areas such as: custom code, databases, storage, AI, Connected Everything (IoT), analytics, etc. Nether is not the place to describe them all but different scenarios will use a few of those services. Please head over to [http://azure.com](http://azure.com) for more information of all services available.
 
 ## Prerequisite
 
@@ -12,7 +12,7 @@ In order to deploy the base architecture you need to have a valid Azure Subscrip
 
 ## The base architecture
 
-Unless otherwise stated, all scenarios that uses the server less approach in Nether use the same base architecture. A very simple architecture, but still scalable.
+Unless otherwise stated, all scenarios that uses the serverless approach in Nether use the same base architecture. A very simple architecture, but still scalable.
 
 ![Architecture Diagram](images/base-architecture.png "Base Architecture")
 
@@ -23,9 +23,9 @@ This architecture works well in many cases, both for small scale workloads and f
 
 ## Deploying the base architecture to your Azure Subscription
 
-In order to get started and deploy the differnt scenarios, you first need to deploy the base architecture to your Azure Subscription.
+In order to get started and deploy the different scenarios, you first need to deploy the base architecture to your Azure Subscription.
 
-To get you up and running fast we have described the required services in a JSON-template format, quite often referred to as an Azure Resrouce Manager Template or ARM Template, that you can use to deploy the required services.
+To get you up and running fast we have described the required services in a JSON-template format, quite often referred to as an Azure Resource Manager Template or ARM Template, that you can use to deploy the required services.
 
 > There is nothing that hinders you from deploying the base architecture manually using the Azure Portal, the Azure PowerShell CmdLets or the Cross Platform Azure CLI. This template will just automate the setup for you.
 
