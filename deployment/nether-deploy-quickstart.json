@@ -19,7 +19,7 @@
         },
         "templateBaseURL": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/MicrosoftDX/nether/master/deployment/",
+            "defaultValue": "https://raw.githubusercontent.com/MicrosoftDX/nether/v1/deployment/",
             "metadata": {
                 "description": "The base location for all linked templates"
             }
